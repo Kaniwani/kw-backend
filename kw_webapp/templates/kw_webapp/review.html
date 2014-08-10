@@ -1,0 +1,26 @@
+
+{% extends "kw_webapp/base.html" %}
+{% block content %}
+Review Page!
+<div class="container">
+    <div class="row">
+        <div class="col"
+        <table class="table">
+            <th>Meaning</th>
+            <th>Reading 1</th>
+            <th>Reading 2</th>
+            <th>Reading 3</th>
+        {% for item in object_list %}
+            <tr>
+                <td>{{ item.meaning }}</td>
+                 {% for reading in item.reading_set.all %}
+                <td>{{ reading.character }}<br>{{ reading.level }}<br>{{ reading.kana }}</td>
+                 {% endfor %}
+            </tr>
+
+
+        {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}
