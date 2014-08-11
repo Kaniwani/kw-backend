@@ -1,26 +1,54 @@
 
 {% extends "kw_webapp/base.html" %}
+{% load staticfiles %}
+<!--Load review scripts-->
+{% block scripts %}
+    <script src="{% static "js/review.js"%}"></script>
+    <script src="{% static "js/wanakana.min.js" %}"></script>
+{% endblock scripts %}
+
 {% block content %}
 Review Page!
 <div class="container">
     <div class="row">
-        <div class="col"
-        <table class="table">
-            <th>Meaning</th>
-            <th>Reading 1</th>
-            <th>Reading 2</th>
-            <th>Reading 3</th>
-        {% for item in object_list %}
-            <tr>
-                <td>{{ item.meaning }}</td>
-                 {% for reading in item.reading_set.all %}
-                <td>{{ reading.character }}<br>{{ reading.level }}<br>{{ reading.kana }}</td>
-                 {% endfor %}
-            </tr>
-
-
-        {% endfor %}
-        </table>
+        <h1 id="meaning" class="col-md-12 text-center">Meaning</h1>
     </div>
+    <div class="row">
+        <input type="text" class="col-md-12 text-center" id="user-answer" placeholder="答え" style="font-size: 44pt">
+        <input type="hidden" id="us-id" value="Nothing!">
+        <button id="check">
+    </div>
+    <div class="row">
+        <div id="details" class="jumbotron">
+            <p id="kana" class="text-center" style="font-size: 44pt">Placeholder!</p>
+            <p id="character" class="text-center" style="font-size: 44pt">Placeholder Kanji</p>
+        </div>
+    </div>
+
 </div>
+
+
+
+<script>
+    var vocabulary_list = [
+        {% for item in object_list %}
+        {
+            'user_specific_id':'{{ item.id }}',
+            'meaning':'{{ item.vocabulary.meaning }}',
+            'readings':  [{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.kana }}',{% endif %}{% endfor %}],
+            'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
+        },
+        {% endfor %}
+    ];
+    console.log(vocabulary_list)
+    var current_vocab;
+    current_vocab = vocabulary_list.shift();
+    console.log(current_vocab.meaning)
+    $("#details").hide();
+    $("#meaning").html(current_vocab.meaning);
+    $("#us-id").val(current_vocab.user_specific_id);
+    $("#kana").html(current_vocab.readings);
+    $("#character").html(current_vocab.characters);
+
+</script>
 {% endblock %}

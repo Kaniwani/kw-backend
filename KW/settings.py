@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 LOGIN_URL = reverse_lazy("kw:login")
 LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+SOUTH_TESTS_MIGRATE = False
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -75,7 +76,7 @@ DATABASES = {
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
