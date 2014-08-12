@@ -6,7 +6,6 @@ from kw_webapp.forms import UserLoginForm
 #admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Examples:
     url(r'^$', login_required(Home.as_view()), name="home"),
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name':'registration/login.html', 'authentication_form':UserLoginForm}, name="login"),
     url(r'^register/$', Register.as_view(), name="register"),

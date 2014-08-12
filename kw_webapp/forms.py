@@ -1,16 +1,12 @@
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
+import requests
 
-class UserRegisterForm(forms.Form):
-    username = forms.CharField(label="Username", max_length=50)
-    email = forms.EmailField()
-    api_key = forms.CharField(label="WaniKani API Key", max_length=100)
-    pass1 = forms.PasswordInput()
-    pass2 = forms.PasswordInput()
 
 class UserLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
@@ -20,6 +16,7 @@ class UserLoginForm(AuthenticationForm):
         self.helper.form_class = 'form-horizontal'
         self.helper.form_method = 'post'
         self.helper.form_action = ''
+
 
 class UserCreateForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -42,6 +39,25 @@ class UserCreateForm(UserCreationForm):
         self.helper.help_text_inline = True
         self.helper.error_text_inline = False
 
+    def clean_email(self):
+        email = self.cleaned_data["email"]
+        try:
+            u = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return email
+        else:
+            raise ValidationError("Email is already in use")
+
+
+    def clean_api_key(self):
+        api_key = self.cleaned_data['api_key']
+        r = requests.get("https://www.wanikani.com/api/user/{}/user-information".format(api_key))
+        if r.status_code == 200:
+            json_data = r.json()
+            if "error" in json_data.keys():
+                raise ValidationError("API Key not associated with a WaniKani User!")
+        return api_key
+
     class Meta:
         model = User
-        fields = ( "username", "email" )
+        fields = ("username", "email")
