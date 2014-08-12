@@ -1,46 +1,44 @@
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.core.urlresolvers import reverse, reverse_lazy
-from django.contrib.auth import logout, login
+from django.core.urlresolvers import reverse_lazy
+from django.contrib.auth import logout
 from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, View
-from kw_webapp.models import Profile, Vocabulary, UserSpecific
+from kw_webapp.models import Profile, UserSpecific
 from kw_webapp.forms import UserCreateForm
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+import logging
 
-
-# Create your views here.
+logger = logging.getLogger("kw_webapp.views")
 
 class Home(TemplateView):
     template_name = "kw_webapp/home.html"
+
 
 @csrf_exempt
 def RecordAnswer(request):
     if request.method == "POST":
         us_id = request.POST["user_specific_id"]
         user_correct = request.POST["user_correct"]
-        us = UserSpecific.objects.get(pk=us_id)
-        if user_correct:
+        us = get_object_or_404(UserSpecific, pk=us_id)
+        logger.info("Recording Answer.On usid:{} the correctness was {}".format(us, user_correct))
+        if user_correct == "True":
             us.correct += 1
             us.streak += 1
             us.needs_review = False
             us.last_studied = timezone.now()
             us.save()
             return HttpResponse("Correct!")
-        else:
+        elif user_correct == "False":
             us.incorrect += 1
             us.streak -= 1
             if us.streak < 0:
                 us.streak = 0
             us.save()
             return HttpResponse("Incorrect!")
-
-
-
-
 
 
 class Review(ListView):
@@ -50,8 +48,9 @@ class Review(ListView):
     def get_context_data(self, **kwargs):
         context = super(Review, self).get_context_data()
         user = self.request.user
-        #this may end up unnecessary. Not using it at the moment.
-        context["json"] = serializers.serialize("json", UserSpecific.objects.filter(user=user, needs_review=True))
+        # this may end up unnecessary. Not using it at the moment.
+        context["json"] = serializers.serialize(
+            "json", UserSpecific.objects.filter(user=user, needs_review=True))
 
         print(context['json'])
         return context
@@ -63,6 +62,7 @@ class Review(ListView):
 
 
 class Logout(TemplateView):
+
     def get(self, request, *args, **kwargs):
         logout(request=request)
         return HttpResponseRedirect(reverse_lazy("kw:home"))
@@ -75,11 +75,10 @@ class Register(FormView):
 
     def form_valid(self, form):
         user = form.save()
-        profile = Profile.objects.create(user=user, api_key=form.cleaned_data['api_key'], level=1)
+        Profile.objects.create(
+            user=user, api_key=form.cleaned_data['api_key'], level=1)
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
 
 def home(request):
     return HttpResponseRedirect(reverse_lazy('kw:home'))
-
-
