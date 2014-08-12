@@ -1,10 +1,8 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
-from django.contrib.auth.forms import UserCreationForm
-from django.views.generic import TemplateView, ListView, DetailView, FormView, CreateView, View
+from django.views.generic import TemplateView, ListView, FormView
 from kw_webapp.models import Profile, UserSpecific
 from kw_webapp.forms import UserCreateForm
 from django.core import serializers
@@ -32,20 +30,21 @@ def RecordAnswer(request):
         user_correct = request.POST["user_correct"]
         us = get_object_or_404(UserSpecific, pk=us_id)
         logger.info("Recording Answer.On usid:{} the correctness was {}".format(us, user_correct))
-        if user_correct == "True":
+        if user_correct == "true":
             us.correct += 1
             us.streak += 1
             us.needs_review = False
             us.last_studied = timezone.now()
             us.save()
             return HttpResponse("Correct!")
-        elif user_correct == "False":
+        elif user_correct == "false":
             us.incorrect += 1
             us.streak -= 1
             if us.streak < 0:
                 us.streak = 0
             us.save()
             return HttpResponse("Incorrect!")
+
 
 
 class Review(ListView):
@@ -64,7 +63,7 @@ class Review(ListView):
 
     def get_queryset(self):
         user = self.request.user
-        res = UserSpecific.objects.filter(user=user, needs_review=True)
+        res = UserSpecific.objects.filter(user=user, needs_review=True).order_by('?')
         return res
 
 

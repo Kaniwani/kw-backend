@@ -1,5 +1,6 @@
-{% extends "kw_webapp/base.html" %}
+{% extends "kw_webapp/logged_in.html" %}
 {% block content %}
+{{ block.super }}
 <div class="container">
     <div class="row">
         <h1 class="text-center">{{ user.username }}</h1>
