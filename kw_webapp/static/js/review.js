@@ -1,6 +1,9 @@
 $(document).ready(function() {
     var input = document.getElementById("user-answer");
     wanakana.bind(input);
+
+    var correct_answers = new Array();
+    var incorrect_answers = new Array();
     function compareAnswer(){
        var us_id;
        var answer;
@@ -13,11 +16,19 @@ $(document).ready(function() {
            return
        }
        else if ($.inArray(answer, current_vocab.readings) == 0) {
+           if($.inArray(current_vocab.meaning, incorrect_answers) != 0) {
+               correct_answers.push(current_vocab.meaning);
+           }
+
            $("#user-answer").css('background-color', 'green');
            correct = true;
            $("#user-answer").addClass("marked");
        }
        else{
+           if($.inArray(current_vocab.meaning, incorrect_answers) != 0) {
+               incorrect_answers.push(current_vocab.meaning);
+           }
+
             vocabulary_list.push(current_vocab);
             $("#user-answer").css('background-color', 'red');
             $("#details").show();
@@ -26,13 +37,15 @@ $(document).ready(function() {
        }
 
        $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correct}, function(data) {
-           console.log("Got an answer!" + data);
+
        })
     }
 
     function rotateVocab(){
         if (vocabulary_list.length == 0){
             alert("Out of reviews!");
+            console.log(correct_answers)
+            console.log(incorrect_answers)
             return
         }
         current_vocab = vocabulary_list.shift();
