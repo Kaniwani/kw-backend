@@ -1,12 +1,10 @@
-from django.conf.urls import patterns, include, url
-from django.contrib import admin
-from kw_webapp.views import Home, Logout, Review, Register, RecordAnswer
+from django.conf.urls import patterns, url
+from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard
 from django.contrib.auth.decorators import login_required
 from kw_webapp.forms import UserLoginForm
-#admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', login_required(Home.as_view()), name="home"),
+    url(r'^$', login_required(Dashboard.as_view()), name="dashboard"),
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name':'registration/login.html', 'authentication_form':UserLoginForm}, name="login"),
     url(r'^register/$', Register.as_view(), name="register"),
     url(r'^logout/$', login_required(Logout.as_view()), name="logout"),

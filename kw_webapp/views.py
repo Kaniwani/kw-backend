@@ -14,8 +14,15 @@ import logging
 
 logger = logging.getLogger("kw_webapp.views")
 
-class Home(TemplateView):
+
+class Dashboard(TemplateView):
     template_name = "kw_webapp/home.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(Dashboard, self).get_context_data()
+        context['review_count'] = UserSpecific.objects.filter(user=self.request.user, needs_review=True).count()
+        return context
+
 
 
 @csrf_exempt
@@ -77,8 +84,8 @@ class Register(FormView):
         user = form.save()
         Profile.objects.create(
             user=user, api_key=form.cleaned_data['api_key'], level=1)
-        return HttpResponseRedirect(reverse_lazy("kw:home"))
+        return HttpResponseRedirect(reverse_lazy("kw:dashboard"))
 
 
 def home(request):
-    return HttpResponseRedirect(reverse_lazy('kw:home'))
+    return HttpResponseRedirect(reverse_lazy('kw:dashboard'))
