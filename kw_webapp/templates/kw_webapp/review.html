@@ -18,10 +18,13 @@
         <button id="check">
     </div>
     <div class="row">
-        <div id="details" class="jumbotron">
+        <div id="details-reading" class="jumbotron col-md-6">
             <p id="kana" class="text-center" style="font-size: 44pt">Placeholder!</p>
+        </div>
+        <div id="details-character" class="jumbotron col-md-6">
             <p id="character" class="text-center" style="font-size: 44pt">Placeholder Kanji</p>
         </div>
+
     </div>
 
 </div>
@@ -43,7 +46,8 @@
     var current_vocab;
     current_vocab = vocabulary_list.shift();
     console.log(current_vocab.meaning)
-    $("#details").hide();
+    $("#details-character").hide();
+    $("#details-reading").hide();
     $("#meaning").html(current_vocab.meaning);
     $("#us-id").val(current_vocab.user_specific_id);
     $("#kana").html(current_vocab.readings);

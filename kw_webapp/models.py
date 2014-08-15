@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.utils import timezone
+from django.utils.encoding import smart_str
 import requests
 
 
@@ -83,7 +84,8 @@ def sync_unlocks_with_wk(sender, **kwargs):
                 u_s, created = UserSpecific.objects.get_or_create(
                     vocabulary=v, user=user)
                 if created:
-                    print("User Recently Unlocked: {}".format(vocabulary))
+                    pass
+
 
 user_logged_in.connect(update_user_level)
 user_logged_in.connect(sync_unlocks_with_wk)

@@ -23,6 +23,7 @@ $(document).ready(function() {
            $("#user-answer").css('background-color', 'green');
            correct = true;
            $("#user-answer").addClass("marked");
+           $("#details-character").show();
        }
        else{
            if($.inArray(current_vocab.meaning, incorrect_answers) != 0) {
@@ -31,7 +32,8 @@ $(document).ready(function() {
 
             vocabulary_list.push(current_vocab);
             $("#user-answer").css('background-color', 'red');
-            $("#details").show();
+            $("#details-reading").show();
+            $("#details-character").show();
             correct = false;
            $("#user-answer").addClass("marked");
        }
@@ -49,7 +51,8 @@ $(document).ready(function() {
             return
         }
         current_vocab = vocabulary_list.shift();
-        $("#details").hide();
+        $("#details-reading").hide();
+        $("#details-character").hide();
         $("#meaning").html(current_vocab.meaning);
         $("#us-id").val(current_vocab.user_specific_id);
         $("#kana").html(current_vocab.readings);
