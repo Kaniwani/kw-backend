@@ -23,7 +23,7 @@ $(document).ready(function() {
            $("#user-answer").css('background-color', 'green');
            correct = true;
            $("#user-answer").addClass("marked");
-           $("#details-character").show();
+           fill_text_with_kanji();
        }
        else{
            if($.inArray(current_vocab.meaning, incorrect_answers) != 0) {
@@ -32,27 +32,44 @@ $(document).ready(function() {
 
             vocabulary_list.push(current_vocab);
             $("#user-answer").css('background-color', 'red');
-            $("#details-reading").show();
-            $("#details-character").show();
+
             correct = false;
            $("#user-answer").addClass("marked");
        }
-
+       enableButtons();
        $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correct}, function(data) {
 
        })
     }
 
+    function disableButtons(){
+        $("#button-reading").prop("disabled", "disabled");
+        $("#button-reading").removeClass("btn-primary");
+        $("#button-reading").addClass("btn-default");
+        $("#button-character").prop("disabled", "disabled");
+        $("#button-character").removeClass("btn-primary");
+        $("#button-character").addClass("btn-default");
+    }
+    function enableButtons(){
+        $("#button-reading").prop("disabled", "");
+        $("#button-reading").removeClass("btn-default");
+        $("#button-reading").addClass("btn-primary");
+        $("#button-character").prop("disabled", "");
+        $("#button-character").removeClass("btn-default");
+        $("#button-character").addClass("btn-primary");
+    }
+    function fill_text_with_kanji(){
+        $("#user-answer").val(current_vocab.characters);
+    }
     function rotateVocab(){
         if (vocabulary_list.length == 0){
             alert("Out of reviews!");
-            console.log(correct_answers)
-            console.log(incorrect_answers)
             return
         }
         current_vocab = vocabulary_list.shift();
         $("#details-reading").hide();
         $("#details-character").hide();
+        disableButtons();
         $("#meaning").html(current_vocab.meaning);
         $("#us-id").val(current_vocab.user_specific_id);
         $("#kana").html(current_vocab.readings);
@@ -83,5 +100,14 @@ $(document).ready(function() {
            compareAnswer();
 
        }
-   })
+   });
+
+   $("#button-reading").click(function() {
+       $("#details-reading").toggle();
+   });
+
+    $("#button-character").click(function() {
+       $("#details-character").toggle();
+   });
+
 });
