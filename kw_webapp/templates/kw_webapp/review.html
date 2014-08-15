@@ -8,9 +8,10 @@
 {% endblock scripts %}
 
 {% block content %}
-<div class="container">
+<div class="container-full">
     <div class="row">
-        <h1 id="meaning" class="col-md-12 text-center">Meaning</h1>
+        <h1 id="meaning" class="col-md-10 col-md-offset-1 text-center">Meaning</h1>
+        <h1 class="text-center col-md-1" id="reviews-left">1</p>
     </div>
     <div class="row">
         <input type="text" class="col-md-12 text-center" id="user-answer" placeholder="答え" style="font-size: 44pt">
@@ -48,6 +49,7 @@
     ];
     console.log(vocabulary_list)
     var current_vocab;
+    $("#reviews-left").html(vocabulary_list.length)
     current_vocab = vocabulary_list.shift();
     console.log(current_vocab.meaning)
     $("#details-character").hide();
@@ -56,6 +58,7 @@
     $("#us-id").val(current_vocab.user_specific_id);
     $("#kana").html(current_vocab.readings);
     $("#character").html(current_vocab.characters);
+
 
 </script>
 {% endblock %}

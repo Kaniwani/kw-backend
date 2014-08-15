@@ -11,11 +11,12 @@ $(document).ready(function() {
        us_id = $("#us-id").val();
        answer = $("#user-answer").val();
 
+
        if (!wanakana.isHiragana(answer) || answer == '') {
            $("#user-answer").css('background-color', 'yellow');
            return
        }
-       else if ($.inArray(answer, current_vocab.readings) == 0) {
+       else if ($.inArray(answer, current_vocab.readings) != -1) {
            if($.inArray(current_vocab.meaning, incorrect_answers) != 0) {
                correct_answers.push(current_vocab.meaning);
            }
@@ -66,6 +67,7 @@ $(document).ready(function() {
             alert("Out of reviews!");
             return
         }
+        $("#reviews-left").html(vocabulary_list.length);
         current_vocab = vocabulary_list.shift();
         $("#details-reading").hide();
         $("#details-character").hide();
