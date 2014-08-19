@@ -5,6 +5,7 @@ $(document).ready(function() {
 
     var correct_answers = new Array();
     var incorrect_answers = new Array();
+    var answer_correctness = new Array();
 
     function make_post(path, params) {
        var form = document.createElement("form");
@@ -48,10 +49,7 @@ $(document).ready(function() {
        }
        else if ($.inArray(answer, current_vocab.readings) != -1) {
            if($.inArray(current_vocab.meaning, incorrect_answers) == -1) {
-               correct_answers.push(current_vocab.meaning);
-               correct_answers.push("|");
-               console.log("Just pushed correct:" + current_vocab.meaning);
-               console.log(correct_answers)
+               answer_correctness[current_vocab.meaning] = true;
            }
 
            $("#user-answer").css('background-color', 'green');
@@ -61,12 +59,9 @@ $(document).ready(function() {
        }
        else{
            if($.inArray(current_vocab.meaning, incorrect_answers) == -1) {
-               incorrect_answers.push(current_vocab.meaning);
-               incorrect_answers.push("|"); //getting thrown into json removes the splits between words. Inserting a manual delimiter.
-               console.log("Just Pushed incorrect: "+ current_vocab.meaning);
-               console.log(incorrect_answers)
+               answer_correctness[current_vocab.meaning] = false;
            }
-
+            //Sets correctness of the answer
             vocabulary_list.push(current_vocab);
             $("#user-answer").css('background-color', 'red');
 
@@ -83,23 +78,25 @@ $(document).ready(function() {
         $("#button-reading").addClass("disabled");
         $("#button-character").addClass("disabled");
     }
+
     function enableButtons(){
         console.log("IN ENABLE BUTTONS");
         $("#button-reading").removeClass("disabled");
         $("#button-character").removeClass("disabled");
     }
+
     function fill_text_with_kanji(){
         $("#user-answer").val(current_vocab.characters);
     }
+
     function rotateVocab(){
+
         if (vocabulary_list.length == 0){
             alert("Out of reviews!");
-            var params = new Array();
-            params['incorrect_answers'] = incorrect_answers;
-            params['correct_answers'] = correct_answers;
-            make_post("/kw/summary/", params);
+            make_post("/kw/summary/", answer_correctness);
             return
         }
+
         $("#reviews-left").html(vocabulary_list.length);
         current_vocab = vocabulary_list.shift();
         $("#details-reading").hide();

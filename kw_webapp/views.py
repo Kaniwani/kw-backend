@@ -74,11 +74,9 @@ class ReviewSummary(View):
         return HttpResponseRedirect(reverse_lazy("kw:dashboard"))
 
     def post(self, request, *args, **kwargs):
-        correctly_reviewed = request.POST.get("correct_answers", False)
-        incorrectly_reviewed = request.POST.get("incorrect_answers", False)
-        print(correctly_reviewed)
-        print(incorrectly_reviewed)
-        print(request.POST)
+        all_reviews = request.POST
+        for vocab_meaning in all_reviews:
+            print(vocab_meaning + " === " + all_reviews[vocab_meaning])
 
 
 
