@@ -1,6 +1,18 @@
 {% extends "kw_webapp/base.html" %}
 {% block content %}
-    Wooo!
-    {{ correct }}
-    {{ incorrect }}
+    <div class="container">
+    <div class="row">
+        <div class=" col-md-6">
+            {% for wrongword in incorrect %}
+                <p>{{ wrongword }}</p>
+            {% endfor %}
+        </div>
+        <div class=" col-md-6">
+            {% for word in correct %}
+                <p>{{ word }}</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    </div>
 {% endblock content %}

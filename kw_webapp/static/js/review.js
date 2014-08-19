@@ -48,7 +48,7 @@ $(document).ready(function() {
            return
        }
        else if ($.inArray(answer, current_vocab.readings) != -1) {
-           if($.inArray(current_vocab.meaning, incorrect_answers) == -1) {
+           if($.inArray(current_vocab.meaning, Object.keys(answer_correctness)) == -1) {
                answer_correctness[current_vocab.meaning] = true;
            }
 

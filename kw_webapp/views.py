@@ -77,7 +77,7 @@ class ReviewSummary(TemplateView):
 
     def post(self, request, *args, **kwargs):
         all_reviews = request.POST
-
+        print(all_reviews)
         for vocab_meaning in all_reviews:
             if all_reviews[vocab_meaning] == "true":
                 self.correct.append(vocab_meaning)
@@ -85,8 +85,10 @@ class ReviewSummary(TemplateView):
                 self.incorrect.append(vocab_meaning)
             else:
                 print("Unparseable: {}".format(vocab_meaning))
-        #wow what a shit-ass hack. TODO figure out the proper way to render templates off a post. 
-        return render_to_response(self.template_name, {"correct":self.correct, "incorrect":self.incorrect})
+        print(self.correct)
+        print(self.incorrect)
+        #wow what a shit-ass hack. TODO figure out the proper way to render templates off a post.
+        return render_to_response(self.template_name, {"correct":self.correct, "incorrect": self.incorrect})
 
 
 class Logout(TemplateView):
