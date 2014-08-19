@@ -2,7 +2,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
-from django.views.generic import TemplateView, ListView, FormView
+from django.views.generic import TemplateView, ListView, FormView, View
 from kw_webapp.models import Profile, UserSpecific
 from kw_webapp.forms import UserCreateForm
 from django.core import serializers
@@ -65,6 +65,22 @@ class Review(ListView):
         user = self.request.user
         res = UserSpecific.objects.filter(user=user, needs_review=True).order_by('?')
         return res
+
+
+class ReviewSummary(View):
+    template_name = "kw_webapp/reviewsummary.html"
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect(reverse_lazy("kw:dashboard"))
+
+    def post(self, request, *args, **kwargs):
+        correctly_reviewed = request.POST.get("correct_answers", False)
+        incorrectly_reviewed = request.POST.get("incorrect_answers", False)
+        print(correctly_reviewed)
+        print(incorrectly_reviewed)
+        print(request.POST)
+
+
 
 
 class Logout(TemplateView):

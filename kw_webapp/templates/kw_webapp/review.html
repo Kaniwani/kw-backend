@@ -19,8 +19,8 @@
         <button id="check">
     </div>
     <div class="row">
-        <button id="button-reading" class="btn-default btn-lg  col-md-6" disabled="disabled">Show Phonetic</button>
-        <button id="button-character" class="btn-default btn-lg  col-md-6" disabled="disabled">Show Kanji</button>
+        <a href="#"  id="button-reading" class="btn btn-primary disabled btn-lg  col-md-6">Show Phonetic</a>
+        <a href="#" id="button-character" class="btn btn-primary disabled btn-lg  col-md-6">Show Kanji</a>
     </div>
     <div class="row">
         <div id="details-reading" class="jumbotron col-md-6">
@@ -33,7 +33,9 @@
     </div>
 
 </div>
-
+<form>
+<input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
+</form>
 
 
 <script>
@@ -51,7 +53,7 @@
     var current_vocab;
     $("#reviews-left").html(vocabulary_list.length)
     current_vocab = vocabulary_list.shift();
-    console.log(current_vocab.meaning)
+    console.log(current_vocab.meaning);
     $("#details-character").hide();
     $("#details-reading").hide();
     $("#meaning").html(current_vocab.meaning);
