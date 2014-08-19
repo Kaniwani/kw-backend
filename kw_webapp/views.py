@@ -1,5 +1,5 @@
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
 from django.views.generic import TemplateView, ListView, FormView, View
@@ -67,18 +67,26 @@ class Review(ListView):
         return res
 
 
-class ReviewSummary(View):
+class ReviewSummary(TemplateView):
     template_name = "kw_webapp/reviewsummary.html"
+    correct = []
+    incorrect = []
 
     def get(self, request, *args, **kwargs):
         return HttpResponseRedirect(reverse_lazy("kw:dashboard"))
 
     def post(self, request, *args, **kwargs):
         all_reviews = request.POST
+
         for vocab_meaning in all_reviews:
-            print(vocab_meaning + " === " + all_reviews[vocab_meaning])
-
-
+            if all_reviews[vocab_meaning] == "true":
+                self.correct.append(vocab_meaning)
+            elif all_reviews[vocab_meaning] == "false":
+                self.incorrect.append(vocab_meaning)
+            else:
+                print("Unparseable: {}".format(vocab_meaning))
+        #wow what a shit-ass hack. TODO figure out the proper way to render templates off a post. 
+        return render_to_response(self.template_name, {"correct":self.correct, "incorrect":self.incorrect})
 
 
 class Logout(TemplateView):
