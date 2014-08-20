@@ -92,7 +92,6 @@ $(document).ready(function() {
     function rotateVocab(){
 
         if (vocabulary_list.length == 0){
-            alert("Out of reviews!");
             make_post("/kw/summary/", answer_correctness);
             return
         }

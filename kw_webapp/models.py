@@ -24,6 +24,9 @@ class Vocabulary(models.Model):
     def num_options(self):
         return self.reading_set.all().count()
 
+    def get_absolute_url(self):
+        return "https://www.wanikani.com/vocabulary/{}/".format(self.reading_set.all()[0])
+
 
 class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
