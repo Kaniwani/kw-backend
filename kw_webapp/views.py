@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
+from django.utils.encoding import smart_str
 from django.views.generic import TemplateView, ListView, FormView, View
 from kw_webapp.models import Profile, UserSpecific
 from kw_webapp.forms import UserCreateForm
@@ -22,6 +23,28 @@ class Dashboard(TemplateView):
         return context
 
 
+class UnlockLevels(TemplateView):
+    template_name = "kw_webapp/unlocklevels.html"
+
+    def get_context_data(self, **kwargs):
+        user_profile = self.request.user.profile
+        context = super(UnlockLevels, self).get_context_data()
+        unlocked = []
+        locked = []
+        print("TEST")
+        #print(user_profile.unlocked_levels)
+        for level in range(0, 51):
+
+            if level in user_profile.unlocked_levels_list():
+                unlocked.append(level)
+            else:
+                locked.append(level)
+
+        context["locked"] = locked
+        context["unlocked"] = unlocked
+        return context
+
+
 class RecordAnswer(View):
     """
     Called via Ajax in reviews.js. Takes a UserSpecific object, and either True or False. Updates the DB in realtime
@@ -29,7 +52,7 @@ class RecordAnswer(View):
     """
     def get(self, request, *args, **kwargs):
         logger.info("Can't access RecordAnswer via a get!")
-        return HttpResponseRedirect(reverse_lazy("kw:dashboard"))
+        return HttpResponseRedirect(reverse_lazy("kw:home"))
 
     def post(self, request, *args, **kwargs):
         us_id = request.POST["user_specific_id"]
@@ -78,7 +101,7 @@ class ReviewSummary(TemplateView):
     incorrect = []
 
     def get(self, request, *args, **kwargs):
-        return HttpResponseRedirect(reverse_lazy("kw:dashboard"))
+        return HttpResponseRedirect(reverse_lazy("kw:home"))
 
     def post(self, request, *args, **kwargs):
         all_reviews = request.POST
@@ -110,8 +133,8 @@ class Register(FormView):
         user = form.save()
         Profile.objects.create(
             user=user, api_key=form.cleaned_data['api_key'], level=1)
-        return HttpResponseRedirect(reverse_lazy("kw:dashboard"))
+        return HttpResponseRedirect(reverse_lazy("kw:home"))
 
 
 def home(request):
-    return HttpResponseRedirect(reverse_lazy('kw:dashboard'))
+    return HttpResponseRedirect(reverse_lazy('kw:home'))

@@ -8,6 +8,13 @@ from django.utils.encoding import smart_str
 import requests
 
 
+class Level(models.Model):
+    level = models.PositiveIntegerField(validators=[
+        MinValueValidator(1),
+        MaxValueValidator(50),
+    ])
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User)
     api_key = models.CharField(max_length=255)
@@ -16,6 +23,11 @@ class Profile(models.Model):
         MinValueValidator(1),
         MaxValueValidator(50),
     ])
+    unlocked_levels = models.ManyToManyField(Level)
+
+    def unlocked_levels_list(self):
+        x = self.unlocked_levels.values_list('level')
+        return x
 
 
 class Vocabulary(models.Model):
@@ -23,6 +35,9 @@ class Vocabulary(models.Model):
 
     def num_options(self):
         return self.reading_set.all().count()
+
+    def available_readings(self, level):
+        return self.reading_set.filter(level__lte=level)
 
 
 class Reading(models.Model):
@@ -35,7 +50,8 @@ class Reading(models.Model):
     ])
 
     def __str__(self):
-        return "{} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character)
+        return "{} - {} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character, self.level)
+
 
 
 class UserSpecific(models.Model):
@@ -64,9 +80,10 @@ def update_user_level(sender, **kwargs):
     if r.status_code == 200:
         json_data = r.json()
         user_info = json_data["user_information"]
-        level = user_info["level"]
+        current_level = user_info["level"]
         gravatar = user_info["gravatar"]
-        kwargs['user'].profile.level = level
+        kwargs['user'].profile.level = current_level
+        kwargs['user'].profile.unlocked_levels.get_or_create(level=current_level)
         kwargs['user'].profile.gravatar = gravatar
         kwargs['user'].profile.save()
 
