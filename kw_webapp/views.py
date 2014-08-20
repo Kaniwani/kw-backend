@@ -22,10 +22,16 @@ class Dashboard(TemplateView):
         return context
 
 
+class RecordAnswer(View):
+    """
+    Called via Ajax in reviews.js. Takes a UserSpecific object, and either True or False. Updates the DB in realtime
+    so that if the session crashes the review at least gets partially done.
+    """
+    def get(self, request, *args, **kwargs):
+        logger.info("Can't access RecordAnswer via a get!")
+        return HttpResponseRedirect(reverse_lazy("kw:dashboard"))
 
-@csrf_exempt
-def RecordAnswer(request):
-    if request.method == "POST":
+    def post(self, request, *args, **kwargs):
         us_id = request.POST["user_specific_id"]
         user_correct = request.POST["user_correct"]
         us = get_object_or_404(UserSpecific, pk=us_id)
@@ -46,7 +52,6 @@ def RecordAnswer(request):
             return HttpResponse("Incorrect!")
         else:
             return HttpResponse("Error!")
-
 
 
 class Review(ListView):
