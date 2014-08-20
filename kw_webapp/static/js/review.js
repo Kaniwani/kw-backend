@@ -69,7 +69,7 @@ $(document).ready(function() {
            $("#user-answer").addClass("marked");
        }
        enableButtons();
-       $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correct}, function(data) {
+       $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correct, csrfmiddlewaretoken:csrf_token}, function(data) {
 
        })
     }
