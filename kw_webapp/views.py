@@ -44,6 +44,8 @@ def RecordAnswer(request):
                 us.streak = 0
             us.save()
             return HttpResponse("Incorrect!")
+        else:
+            return HttpResponse("Error!")
 
 
 
