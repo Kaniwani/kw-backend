@@ -38,6 +38,9 @@ class Vocabulary(models.Model):
 
     def available_readings(self, level):
         return self.reading_set.filter(level__lte=level)
+    def get_absolute_url(self):
+        return "https://www.wanikani.com/vocabulary/{}/".format(self.reading_set.all()[0])
+
 
 
 class Reading(models.Model):
