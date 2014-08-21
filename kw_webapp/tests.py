@@ -64,17 +64,16 @@ class TestViews(TestCase):
 
     def test_recording_answer_works_on_correct_answer(self):
         us = create_full_user_specific("cat")
-        self.c.post('/kw/record_answer/', {'user_correct': "true", 'user_specific_id': us.id})
+        self.c.post('/kw/record_answer/', {'user_correct': True, 'user_specific_id': us.id})
         us = UserSpecific.objects.get(pk=us.id)
-        print(us)
         recorded_properly = us.correct == 1 and us.streak == 1 and us.needs_review is False
         self.assertTrue(recorded_properly)
 
     def test_wrong_answer_records_failure(self):
         us = create_full_user_specific("dog")
-        self.c.post('/kw/record_answer/', {'user_correct': "false", 'user_specific_id': us.id})
+        self.c.post('/kw/record_answer/', {'user_correct': False, 'user_specific_id': us.id})
         us = UserSpecific.objects.get(pk=us.id)
-        recorded_properly = (us.incorrect == 1 and us.streak == 0 and us.needs_review is True)
+        recorded_properly = us.incorrect == 1 and us.streak == 0 and us.needs_review is True
         self.assertTrue(recorded_properly)
 
     def test_nonexistent_user_specifc_id_raises_error_in_record_answer(self):
@@ -86,6 +85,5 @@ class TestViews(TestCase):
         u2 = create_user("user2")
         r1 = create_review_for_user(u1, "cat")
         r2 = create_review_for_user(u2, "dog")
-        u1.authenticate()
-        u1.login()
+        #TODO finish this
 
