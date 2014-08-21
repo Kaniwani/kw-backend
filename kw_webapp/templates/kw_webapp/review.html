@@ -10,31 +10,44 @@
 {% block content %}
 <div class="container-full">
     <div class="row">
-        <h1 id="meaning" class="col-md-10 col-md-offset-1 text-center">Meaning</h1>
-        <h1 class="text-center col-md-1" id="reviews-left">1</p>
+        <div class="col-md-1">
+               <a href="{% url "kw:home" %}" class="center-block"><button class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-home"></i></button></a>
+        </div>
+        <h1 id="meaning" class="col-md-10 text-center">Meaning</h1>
+        <h1 class="text-center col-md-1" id="reviews-left">1</h1>
     </div>
     <div class="row">
         <input type="text" class="col-md-12 text-center" id="user-answer" placeholder="答え" style="font-size: 44pt">
         <input type="hidden" id="us-id" value="Nothing!">
-        <button id="check">
+        <button id="check"></button>
     </div>
     <div class="row">
-        <a href="#"  id="button-reading" class="btn btn-primary disabled btn-lg  col-md-6">Show Phonetic</a>
-        <a href="#" id="button-character" class="btn btn-primary disabled btn-lg  col-md-6">Show Kanji</a>
-    </div>
-    <div class="row">
-        <div id="details-reading" class="jumbotron col-md-6">
-            <p id="kana" class="text-center" style="font-size: 44pt">Placeholder!</p>
-        </div>
-        <div id="details-character" class="jumbotron col-md-6">
-            <p id="character" class="text-center" style="font-size: 44pt">Placeholder Kanji</p>
+        <div class="col-md-6">
+            <div class="row">
+                <a href="#"  id="button-reading" class="btn btn-primary disabled btn-lg col-md-12">Show <strong>P</strong>honetic</a>
+            </div>
+            <div class="row">
+                <div id="details-reading" class="jumbotron">
+                    <p id="kana" class="text-center" style="font-size: 44pt">Placeholder!</p>
+                </div>
+            </div>
         </div>
 
+        <div class="col-md-6">
+            <div class="row">
+                <a href="#" id="button-character" class="btn btn-primary disabled btn-lg col-md-12">Show <strong>K</strong>anji</a>
+            </div>
+            <div class="row">
+                <div id="details-character" class="jumbotron">
+                    <p id="character" class="text-center" style="font-size: 44pt">Placeholder Kanji</p>
+                 </div>
+            </div>
+        </div>
     </div>
-
 </div>
+
 <form>
-<input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
+<input type="hidden" id="csrf" value="{{ csrf_token }}">
 </form>
 
 
@@ -49,7 +62,7 @@
         },
         {% endfor %}
     ];
-    console.log(vocabulary_list)
+    console.log(vocabulary_list);
     var current_vocab;
     $("#reviews-left").html(vocabulary_list.length)
     current_vocab = vocabulary_list.shift();

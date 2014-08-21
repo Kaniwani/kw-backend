@@ -41,6 +41,7 @@ $(document).ready(function() {
        var correct;
        us_id = $("#us-id").val();
        answer = $("#user-answer").val();
+       $("#user-answer").blur();
 
 
        if (!wanakana.isHiragana(answer) || answer == '') {
@@ -108,6 +109,7 @@ $(document).ready(function() {
 
         $("#user-answer").val("");
         $("#user-answer").css('background-color', 'white');
+        $("#user-answer").focus();
 
     }
 
@@ -115,6 +117,16 @@ $(document).ready(function() {
     if (e.which == 13){
         $("#check").click();
     }
+    if($("#user-answer").hasClass("marked")) {
+        if (e.which == 80 || e.which == 112) {
+            $("#button-reading").click();
+        } else if (e.which == 75 || e.which == 107) {
+            $("#button-character").click();
+        }
+    }
+
+
+
 });
 
   var vocab_list = [];
