@@ -15,6 +15,12 @@ from django.core.urlresolvers import reverse_lazy
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
+#CELERY SETTINGS
+CELERY_RESULT_BACKEND = 'amqp'
+BROKER_URL = broker='amqp://guest@localhost//'
+CELERY_TIMEZONE = 'America/New_York'
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 

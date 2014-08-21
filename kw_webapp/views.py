@@ -83,7 +83,10 @@ class RecordAnswer(View):
             return HttpResponse("Correct!")
         elif user_correct == "false":
             us.incorrect += 1
-            us.streak -= 1
+            if us.streak == 7:
+                us.streak -= 2
+            else:
+                us.streak -= 1
             if us.streak < 0:
                 us.streak = 0
             us.save()
