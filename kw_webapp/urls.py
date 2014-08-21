@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard, ReviewSummary, UnlockLevels
+from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard, ReviewSummary, UnlockLevels, UnlockRequested
 from django.contrib.auth.decorators import login_required
 from kw_webapp.forms import UserLoginForm
 
@@ -12,5 +12,6 @@ urlpatterns = patterns('',
     url(r'^summary/$', login_required(ReviewSummary.as_view()), name="summary"),
     url(r'^record_answer/$', login_required(RecordAnswer.as_view()), name="record_answer"),
     url(r'^unlocks/$', login_required(UnlockLevels.as_view()), name="unlocks"),
+    url(r'^levelunlock/$', login_required(UnlockRequested.as_view()), name="do_unlock")
 )
 

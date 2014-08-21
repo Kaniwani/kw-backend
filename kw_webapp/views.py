@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
 from django.utils.encoding import smart_str
 from django.views.generic import TemplateView, ListView, FormView, View
-from kw_webapp.models import Profile, UserSpecific
+from kw_webapp.models import Profile, UserSpecific, Vocabulary
 from kw_webapp.forms import UserCreateForm
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
@@ -23,25 +23,39 @@ class Dashboard(TemplateView):
         return context
 
 
+class UnlockRequested(View):
+    """
+    Ajax-only view meant for unlocking previous levels. Post params: Level.
+    """
+    def post(self, request, *args, **kwargs):
+        print("woo!")
+        user = self.request.user
+        requested_level = request.POST["level"]
+        all_level_vocab = Vocabulary.objects.filter(reading__level=requested_level)
+        print(all_level_vocab)
+        for vocabulary in all_level_vocab:
+            UserSpecific.objects.get_or_create(user=user, vocabulary=vocabulary)
+        count = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level).count()
+        user.profile.unlocked_levels.get_or_create(level=requested_level)
+        print(count)
+        return HttpResponse("{} vocabulary unlocked! Get Reviewing!".format(count))
+
 class UnlockLevels(TemplateView):
     template_name = "kw_webapp/unlocklevels.html"
 
     def get_context_data(self, **kwargs):
         user_profile = self.request.user.profile
         context = super(UnlockLevels, self).get_context_data()
-        unlocked = []
-        locked = []
+        level_status = []
         print("TEST")
-        #print(user_profile.unlocked_levels)
-        for level in range(0, 51):
-
-            if level in user_profile.unlocked_levels_list():
-                unlocked.append(level)
+        unlocked_levels = [item[0] for item in user_profile.unlocked_levels_list()]
+        for level in range(1, 51):
+            if level in unlocked_levels:
+                level_status.append([level, True])
             else:
-                locked.append(level)
+                level_status.append([level, False])
 
-        context["locked"] = locked
-        context["unlocked"] = unlocked
+        context["levels"] = level_status
         return context
 
 
