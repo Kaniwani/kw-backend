@@ -2,12 +2,13 @@
 {% load staticfiles %}
 
 {% block scripts %}
-
+{{ block.super }}
 <script src="{% static "js/unlocklevels.js" %}"></script>
 
 {% endblock %}
 
 {% block content %}
+{{ block.super }}
 <div class="container">
     <div class="col-md-6 col-md-offset-3">
         <ul class="list-group">

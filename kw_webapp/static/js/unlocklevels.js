@@ -1,5 +1,7 @@
 $(document).ready(function() {
     var csrf_token = $("#csrf").val();
+    //Setting the highlighted tab in the nav bar.
+    $("#unlocks_tab").addClass("active");
 
     $(".locked").click(function(){
         var requested_level = $(this).attr("id");

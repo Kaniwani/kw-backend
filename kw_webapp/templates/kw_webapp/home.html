@@ -1,4 +1,10 @@
 {% extends "kw_webapp/logged_in.html" %}
+{% load staticfiles %}
+{% block scripts %}
+{{ block.super }}
+    <script src="{% static "js/home.js"%}"></script>
+{% endblock %}
+
 {% block content %}
 {{ block.super }}
 <div class="container">
