@@ -13,10 +13,11 @@ def repopulate():
             vocabulary_list = json_data['requested_information']
             for vocabulary in vocabulary_list:
                 character = vocabulary["character"]
-                kana = vocabulary["kana"]
+                kana = [reading.strip() for reading in vocabulary["kana"].split(",")]#Splits out multiple readings for one vocab.
                 meaning = vocabulary["meaning"]
                 level = vocabulary["level"]
                 new_vocab, created = Vocabulary.objects.get_or_create(
                     meaning=meaning)
-                new_vocab.reading_set.create(
-                    kana=kana, character=character, level=level)
+                for reading in kana:
+                    new_vocab.reading_set.get_or_create(
+                        kana=reading, character=character, level=level)

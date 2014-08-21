@@ -71,8 +71,15 @@
     $("#details-reading").hide();
     $("#meaning").html(current_vocab.meaning);
     $("#us-id").val(current_vocab.user_specific_id);
-    $("#kana").html(current_vocab.readings);
-    $("#character").html(current_vocab.characters);
+    $("#kana").html("");
+        for(i = 0; i < current_vocab.readings.length; i++){
+            $("#kana").append(current_vocab.readings[i] + "</br>");
+        }
+        $("#character").html("");
+        for(i = 0; i < current_vocab.characters.length; i++){
+            $("#character").append(current_vocab.characters[i] + "</br>");
+        }
+
 
 
 </script>

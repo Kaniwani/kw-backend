@@ -34,11 +34,12 @@ class UnlockRequested(View):
         all_level_vocab = Vocabulary.objects.filter(reading__level=requested_level)
         print(all_level_vocab)
         for vocabulary in all_level_vocab:
-            UserSpecific.objects.get_or_create(user=user, vocabulary=vocabulary)
-        count = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level).count()
+            UserSpecific.objects.get_or_create(user=user, vocabulary=vocabulary, needs_review=True)
+        count = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level).distinct().count()
         user.profile.unlocked_levels.get_or_create(level=requested_level)
         print(count)
         return HttpResponse("{} vocabulary unlocked! Get Reviewing!".format(count))
+
 
 class UnlockLevels(TemplateView):
     template_name = "kw_webapp/unlocklevels.html"

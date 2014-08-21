@@ -13,9 +13,7 @@ $(document).ready(function() {
        form.setAttribute("action", path);
 
        for(var key in params) {
-           console.log(key + " --- " + params[key]);
            if(params.hasOwnProperty(key)) {
-               console.log("HAS OWN PROPERTY")
                var hiddenField = document.createElement("input");
                hiddenField.setAttribute("type", "hidden");
                hiddenField.setAttribute("name", key);
@@ -30,9 +28,21 @@ $(document).ready(function() {
        csrf_field.setAttribute("value", csrf_token);
        form.appendChild(csrf_field);
        document.body.appendChild(form);
-       console.log(form);
        form.submit();
    }
+
+    function wrongAnswer(){
+        vocabulary_list.push(current_vocab);
+        $("#user-answer").css('background-color', 'red');
+        $("#user-answer").addClass("marked");
+        $("#user-answer").blur();
+    }
+    function rightAnswer(){
+        $("#user-answer").css('background-color', 'green');
+        $("#user-answer").blur();
+        $("#user-answer").addClass("marked");
+
+    }
 
 
     function compareAnswer(){
@@ -41,8 +51,6 @@ $(document).ready(function() {
        var correct;
        us_id = $("#us-id").val();
        answer = $("#user-answer").val();
-       $("#user-answer").blur();
-
 
        if (!wanakana.isHiragana(answer) || answer == '') {
            $("#user-answer").css('background-color', 'yellow');
@@ -52,22 +60,17 @@ $(document).ready(function() {
            if($.inArray(current_vocab.meaning, Object.keys(answer_correctness)) == -1) {
                answer_correctness[current_vocab.meaning] = true;
            }
-
-           $("#user-answer").css('background-color', 'green');
+           rightAnswer();
            correct = true;
-           $("#user-answer").addClass("marked");
-           fill_text_with_kanji();
+           var answer_index = $.inArray(answer, current_vocab.readings);
+           fill_text_with_kanji(answer_index); //Fills the correct kanji based on the user's answers.
        }
        else{
            if($.inArray(current_vocab.meaning, incorrect_answers) == -1) {
                answer_correctness[current_vocab.meaning] = false;
            }
-            //Sets correctness of the answer
-            vocabulary_list.push(current_vocab);
-            $("#user-answer").css('background-color', 'red');
+           correct = false;
 
-            correct = false;
-           $("#user-answer").addClass("marked");
        }
        enableButtons();
        $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correct, csrfmiddlewaretoken:csrf_token}, function(data) {
@@ -81,13 +84,12 @@ $(document).ready(function() {
     }
 
     function enableButtons(){
-        console.log("IN ENABLE BUTTONS");
         $("#button-reading").removeClass("disabled");
         $("#button-character").removeClass("disabled");
     }
 
-    function fill_text_with_kanji(){
-        $("#user-answer").val(current_vocab.characters);
+    function fill_text_with_kanji(index){
+        $("#user-answer").val(current_vocab.characters[index]);
     }
 
     function rotateVocab(){
@@ -98,14 +100,23 @@ $(document).ready(function() {
         }
 
         $("#reviews-left").html(vocabulary_list.length);
+        var i;
+
         current_vocab = vocabulary_list.shift();
         $("#details-reading").hide();
         $("#details-character").hide();
         disableButtons();
         $("#meaning").html(current_vocab.meaning);
         $("#us-id").val(current_vocab.user_specific_id);
-        $("#kana").html(current_vocab.readings);
-        $("#character").html(current_vocab.characters);
+
+        $("#kana").html("");
+        for(i = 0; i < current_vocab.readings.length; i++){
+            $("#kana").append(current_vocab.readings[i] + "</br>");
+        }
+        $("#character").html("");
+        for(i = 0; i < current_vocab.characters.length; i++){
+            $("#character").append(current_vocab.characters[i] + "</br>");
+        }
 
         $("#user-answer").val("");
         $("#user-answer").css('background-color', 'white');
