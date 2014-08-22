@@ -38,6 +38,7 @@ class Vocabulary(models.Model):
 
     def available_readings(self, level):
         return self.reading_set.filter(level__lte=level)
+
     def get_absolute_url(self):
         return "https://www.wanikani.com/vocabulary/{}/".format(self.reading_set.all()[0])
 
@@ -101,10 +102,18 @@ def sync_unlocks_with_wk(sender, **kwargs):
         for vocabulary in json_data['requested_information']:
             if vocabulary['user_specific'] is not None:
                 v = Vocabulary.objects.get(meaning=vocabulary['meaning'])
-                u_s, created = UserSpecific.objects.get_or_create(
-                    vocabulary=v, user=user)
-                if created:
-                    pass
+                print(v.meaning)
+                try:
+                    u_s, created = UserSpecific.objects.get_or_create(vocabulary=v, user=user)
+                    print(u_s.vocabulary.meaning)
+                    if created:
+                        u_s.needs_review = True
+                        u_s.save()
+                except UserSpecific.MultipleObjectsReturned:
+                    us = UserSpecific.objects.filter(vocabulary=v, user=user)
+                    for u in us:
+                        print("UH OH , somehow got multipleS!! ")
+                        print(u)
 
 
 user_logged_in.connect(update_user_level)
