@@ -68,13 +68,14 @@ def srs_three_months():
     to_be_reviewed = UserSpecific.objects.filter(last_studied__lte=cutoff_time, streak=7)
     return to_be_reviewed
 
-def all_srs():
+def all_srs(user=None):
     hours = [4, 8, 24, 72, 168, 336, 720, 2160]
-    srs_level = zip(hours, range(0, 8))
+    srs_level = zip(map(lambda x: past_time(x), hours), range(0, 8))
     all_reviews = []
     for level in srs_level:
-        review_set = UserSpecific.objects.filter(last_studied__lte=level[0], streak=level[1])
+        if user:
+            review_set = UserSpecific.objects.filter(user=user, last_studied__lte=level[0], streak=level[1])
+        else:
+            review_set = UserSpecific.objects.filter(last_studied__lte=level[0], streak=level[1])
         review_set.update(needs_review=True)
-        print("SRS level {} had {} updates set".format(level[1], review_set.count()))
-
-
+        print("SRS level {} for {} had {} updates set".format(level[1], (user or "all users"),  review_set.count()))

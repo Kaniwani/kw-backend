@@ -31,10 +31,13 @@ class UnlockRequested(View):
         print("woo!")
         user = self.request.user
         requested_level = request.POST["level"]
-        all_level_vocab = Vocabulary.objects.filter(reading__level=requested_level)
+        all_level_vocab = Vocabulary.objects.filter(reading__level=requested_level).distinct()
         print(all_level_vocab)
         for vocabulary in all_level_vocab:
-            UserSpecific.objects.get_or_create(user=user, vocabulary=vocabulary, needs_review=True)
+            study_item, created = UserSpecific.objects.get_or_create(user=user, vocabulary=vocabulary)
+            #DO NOT PUT THIS IN THE GET OR CREATE OR YOULL MAKE TWO DAMN OBJECTS WF+ASDFKAJSLKHFGAKLHS (that is, if the review status is set to false
+            study_item.needs_review = True
+            study_item.save()
         count = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level).distinct().count()
         user.profile.unlocked_levels.get_or_create(level=requested_level)
         print(count)
