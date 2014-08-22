@@ -31,20 +31,6 @@ $(document).ready(function() {
        form.submit();
    }
 
-    function wrongAnswer(){
-        vocabulary_list.push(current_vocab);
-        $("#user-answer").css('background-color', 'red');
-        $("#user-answer").addClass("marked");
-        $("#user-answer").blur();
-    }
-    function rightAnswer(){
-        $("#user-answer").css('background-color', 'green');
-        $("#user-answer").blur();
-        $("#user-answer").addClass("marked");
-
-    }
-
-
     function compareAnswer(){
        var us_id;
        var answer;
@@ -52,11 +38,14 @@ $(document).ready(function() {
        us_id = $("#us-id").val();
        answer = $("#user-answer").val();
 
-       if (!wanakana.isHiragana(answer) || answer == '') {
-           $("#user-answer").css('background-color', 'yellow');
-           return
+        console.log("comparing")
+       if (!wanakana.isHiragana(answer) || answer == '')
+       {
+           nonHiraganaAnswer();
+           return;
        }
-       else if ($.inArray(answer, current_vocab.readings) != -1) {
+       else if ($.inArray(answer, current_vocab.readings) != -1)
+       {
            if($.inArray(current_vocab.meaning, Object.keys(answer_correctness)) == -1) {
                answer_correctness[current_vocab.meaning] = true;
            }
@@ -65,17 +54,37 @@ $(document).ready(function() {
            var answer_index = $.inArray(answer, current_vocab.readings);
            fill_text_with_kanji(answer_index); //Fills the correct kanji based on the user's answers.
        }
-       else{
+       else
+       {
            if($.inArray(current_vocab.meaning, incorrect_answers) == -1) {
                answer_correctness[current_vocab.meaning] = false;
            }
+           wrongAnswer();
            correct = false;
 
        }
        enableButtons();
        $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correct, csrfmiddlewaretoken:csrf_token}, function(data) {
-
+            console.log(data)
        })
+    }
+
+    function nonHiraganaAnswer(){
+        $("#user-answer").css('background-color', 'yellow');
+    }
+
+    function wrongAnswer(){
+        vocabulary_list.push(current_vocab);
+        $("#user-answer").css('background-color', 'red');
+        $("#user-answer").addClass("marked");
+        $("#user-answer").blur();
+    }
+
+    function rightAnswer(){
+        $("#user-answer").css('background-color', 'green');
+        $("#user-answer").blur();
+        $("#user-answer").addClass("marked");
+
     }
 
     function disableButtons(){
@@ -100,7 +109,7 @@ $(document).ready(function() {
         }
 
         $("#reviews-left").html(vocabulary_list.length);
-        var i;
+
 
         current_vocab = vocabulary_list.shift();
         $("#details-reading").hide();
@@ -110,6 +119,7 @@ $(document).ready(function() {
         $("#us-id").val(current_vocab.user_specific_id);
 
         $("#kana").html("");
+        var i;
         for(i = 0; i < current_vocab.readings.length; i++){
             $("#kana").append(current_vocab.readings[i] + "</br>");
         }
@@ -125,13 +135,18 @@ $(document).ready(function() {
     }
 
     $(document).keypress(function(e){
-    if (e.which == 13){
+    if (e.which == 13)
+    {
         $("#check").click();
     }
-    if($("#user-answer").hasClass("marked")) {
-        if (e.which == 80 || e.which == 112) {
+    if($("#user-answer").hasClass("marked"))
+    {
+        if (e.which == 80 || e.which == 112)
+        {
             $("#button-reading").click();
-        } else if (e.which == 75 || e.which == 107) {
+        }
+        else if (e.which == 75 || e.which == 107)
+        {
             $("#button-character").click();
         }
     }
@@ -148,7 +163,6 @@ $(document).ready(function() {
        }
        else {
            compareAnswer();
-
        }
    });
 
