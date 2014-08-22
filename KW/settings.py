@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from datetime import timedelta
 import os
 from django.core.urlresolvers import reverse_lazy
 
@@ -17,8 +18,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 #CELERY SETTINGS
 CELERY_RESULT_BACKEND = 'amqp'
-BROKER_URL = broker='amqp://guest@localhost//'
+BROKER_URL = broker = 'amqp://guest@localhost//'
 CELERY_TIMEZONE = 'America/New_York'
+CELERYBEAT_SCHEDULE = {
+    'all_user_srs_every_hour': {
+        'task': 'kw_webapp.tasks.all_srs',
+        'schedule': timedelta(minutes=1)
+    },
+}
 
 
 # Quick-start development settings - unsuitable for production
@@ -36,8 +43,11 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
 LOGIN_URL = reverse_lazy("kw:login")
 LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
+
+
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 SOUTH_TESTS_MIGRATE = False
 

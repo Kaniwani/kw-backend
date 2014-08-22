@@ -9,6 +9,7 @@ from kw_webapp.forms import UserCreateForm
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from kw_webapp.tasks import all_srs
 import logging
 
 logger = logging.getLogger("kw_webapp.views")
@@ -21,6 +22,18 @@ class Dashboard(TemplateView):
         context = super(Dashboard, self).get_context_data()
         context['review_count'] = UserSpecific.objects.filter(user=self.request.user, needs_review=True).count()
         return context
+
+class ForceSRSCheck(View):
+    """
+    temporary view that allows users to force an SRS update check on their account. Any thing that needs reviewing will
+    added to the review queue.
+    """
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        number_of_reviews = all_srs(user)
+        new_review_count = UserSpecific.objects.filter(user=request.user, needs_review=True).count()
+        return HttpResponse(new_review_count)
+
 
 
 class UnlockRequested(View):

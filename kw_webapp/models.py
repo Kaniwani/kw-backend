@@ -102,17 +102,15 @@ def sync_unlocks_with_wk(sender, **kwargs):
         for vocabulary in json_data['requested_information']:
             if vocabulary['user_specific'] is not None:
                 v = Vocabulary.objects.get(meaning=vocabulary['meaning'])
-                print(v.meaning)
                 try:
                     u_s, created = UserSpecific.objects.get_or_create(vocabulary=v, user=user)
-                    print(u_s.vocabulary.meaning)
                     if created:
                         u_s.needs_review = True
                         u_s.save()
                 except UserSpecific.MultipleObjectsReturned:
                     us = UserSpecific.objects.filter(vocabulary=v, user=user)
                     for u in us:
-                        print("UH OH , somehow got multipleS!! ")
+                        print("UH OH , somehow got multiple!! ")
                         print(u)
 
 
