@@ -1,0 +1,10 @@
+Django==1.6.5
+South==1.0
+amqp==1.4.6
+anyjson==0.3.3
+billiard==3.3.0.18
+celery==3.1.13
+django-crispy-forms==1.4.0
+kombu==3.0.21
+pytz==2014.4
+requests==2.3.0
