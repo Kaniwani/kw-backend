@@ -1,3 +1,4 @@
+import logging
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
@@ -6,6 +7,8 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.utils import timezone
 from django.utils.encoding import smart_str
 import requests
+
+logger = logging.getLogger("kw.models")
 
 
 class Level(models.Model):
@@ -79,39 +82,53 @@ class UserSpecific(models.Model):
 
 # User object is passed along in the call.
 def update_user_level(sender, **kwargs):
+    user = kwargs['user']
+    logger.info("{} began Syncing user data from WK...".format(user.username))
     r = requests.get(
         "https://www.wanikani.com/api/user/{}/user-information".format(kwargs['user'].profile.api_key))
     if r.status_code == 200:
         json_data = r.json()
         user_info = json_data["user_information"]
-        current_level = user_info["level"]
-        gravatar = user_info["gravatar"]
-        kwargs['user'].profile.level = current_level
-        kwargs['user'].profile.unlocked_levels.get_or_create(level=current_level)
-        kwargs['user'].profile.gravatar = gravatar
-        kwargs['user'].profile.save()
+
+        user.profile.level = user_info["level"]
+        user.profile.unlocked_levels.get_or_create(level=user_info["level"])
+        user.profile.gravatar = user_info["gravatar"]
+        user.profile.save()
+
+        logger.info("{} finished Syncing user data from WK.".format(user.username))
+    else:
+        logger.error("Issue communicating with WK API. User {} with api_key {} ".format(user.username, user.profile.api_key))
 
 
 def sync_unlocks_with_wk(sender, **kwargs):
-    print("SYNCING WITH WK")
+    logger.info("Beginning WK sync for user")
     user = kwargs['user']
+    logger.info("{} has begun Syncing with WK...".format(user.username))
     r = requests.get("https://www.wanikani.com/api/user/{}/vocabulary/{}".format(
         user.profile.api_key, user.profile.level))
     if r.status_code == 200:
         json_data = r.json()
         for vocabulary in json_data['requested_information']:
+            #user_specific is None until the user actually unlocks it in WK. This allows us to sync perfectly with what
+            #the user currently has unlocked.
             if vocabulary['user_specific'] is not None:
-                v = Vocabulary.objects.get(meaning=vocabulary['meaning'])
+                #This will cause issues if WK ever updates their vocabulary limit.
+                try:
+                    v = Vocabulary.objects.get(meaning=vocabulary['meaning'])
+                except Vocabulary.DoesNotExist:
+                    logger.error("While attempting to get vocabulary {} we could not find it!".format(vocabulary['meaning']))
+                    continue
                 try:
                     u_s, created = UserSpecific.objects.get_or_create(vocabulary=v, user=user)
                     if created:
+                        logger.info("{} just unlocked {} from WK.".format(user.username, u_s.vocabulary.meaning))
                         u_s.needs_review = True
                         u_s.save()
                 except UserSpecific.MultipleObjectsReturned:
                     us = UserSpecific.objects.filter(vocabulary=v, user=user)
                     for u in us:
-                        print("UH OH , somehow got multiple!! ")
-                        print(u)
+                        logger.error("during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(u))
+
 
 
 user_logged_in.connect(update_user_level)

@@ -12,13 +12,14 @@ from django.utils import timezone
 from kw_webapp.tasks import all_srs
 import logging
 
-logger = logging.getLogger("kw_webapp.views")
+logger = logging.getLogger("kw.views")
 
 
 class Dashboard(TemplateView):
     template_name = "kw_webapp/home.html"
 
     def get_context_data(self, **kwargs):
+        logger.info("{} has navigated to dashboard".format(self.request.user.username))
         context = super(Dashboard, self).get_context_data()
         context['review_count'] = UserSpecific.objects.filter(user=self.request.user, needs_review=True).count()
         return context
@@ -32,6 +33,7 @@ class ForceSRSCheck(View):
         user = request.user
         number_of_reviews = all_srs(user)
         new_review_count = UserSpecific.objects.filter(user=request.user, needs_review=True).count()
+        logger.info("{} has requested an SRS update. {} reviews added. {} reviews total.".format(user.username, number_of_reviews or 0, new_review_count or 0))
         return HttpResponse(new_review_count)
 
 
@@ -41,11 +43,9 @@ class UnlockRequested(View):
     Ajax-only view meant for unlocking previous levels. Post params: Level.
     """
     def post(self, request, *args, **kwargs):
-        print("woo!")
         user = self.request.user
         requested_level = request.POST["level"]
         all_level_vocab = Vocabulary.objects.filter(reading__level=requested_level).distinct()
-        print(all_level_vocab)
         for vocabulary in all_level_vocab:
             study_item, created = UserSpecific.objects.get_or_create(user=user, vocabulary=vocabulary)
             #DO NOT PUT THIS IN THE GET OR CREATE OR YOULL MAKE TWO DAMN OBJECTS WF+ASDFKAJSLKHFGAKLHS (that is, if the review status is set to false
@@ -53,7 +53,7 @@ class UnlockRequested(View):
             study_item.save()
         count = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level).distinct().count()
         user.profile.unlocked_levels.get_or_create(level=requested_level)
-        print(count)
+        logger.info("User {} has requested to unlock level {}. {} vocabulary added to review list.".format(user.username, requested_level, all_level_vocab.count()))
         return HttpResponse("{} vocabulary unlocked! Get Reviewing!".format(count))
 
 
@@ -64,7 +64,6 @@ class UnlockLevels(TemplateView):
         user_profile = self.request.user.profile
         context = super(UnlockLevels, self).get_context_data()
         level_status = []
-        print("TEST")
         unlocked_levels = [item[0] for item in user_profile.unlocked_levels_list()]
         for level in range(1, 51):
             if level in unlocked_levels:
@@ -82,14 +81,14 @@ class RecordAnswer(View):
     so that if the session crashes the review at least gets partially done.
     """
     def get(self, request, *args, **kwargs):
-        logger.info("Can't access RecordAnswer via a get!")
+        logger.error("{} attempted to access RecordAnswer via a get!".format(request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
     def post(self, request, *args, **kwargs):
         us_id = request.POST["user_specific_id"]
         user_correct = request.POST["user_correct"]
         us = get_object_or_404(UserSpecific, pk=us_id)
-        logger.info("Recording Answer.On usid:{} the correctness was {}".format(us, user_correct))
+        logger.info("Recording Answer for vocab:{}.\tUser Correct?: {}".format(us.vocabulary.meaning, user_correct))
         if user_correct == "true":
             us.correct += 1
             us.streak += 1
@@ -108,6 +107,7 @@ class RecordAnswer(View):
             us.save()
             return HttpResponse("Incorrect!")
         else:
+            logger.error("{} managed to post some bad data to RecordAnswer: {}".format(request.user.username, request.POST))
             return HttpResponse("Error!")
 
 
@@ -115,18 +115,21 @@ class Review(ListView):
     template_name = "kw_webapp/review.html"
     model = UserSpecific
 
+    def get(self, request, *args, **kwargs):
+        logger.info("{} has started a review session.".format(request.user.username))
+        return super(Review, self).get(request)
+
     def get_context_data(self, **kwargs):
         context = super(Review, self).get_context_data()
         user = self.request.user
         # this may end up unnecessary. Not using it at the moment.
         context["json"] = serializers.serialize(
             "json", UserSpecific.objects.filter(user=user, needs_review=True))
-
-        print(context['json'])
         return context
 
     def get_queryset(self):
         user = self.request.user
+        #? randomizes the queryset.
         res = UserSpecific.objects.filter(user=user, needs_review=True).order_by('?')
         return res
 
@@ -137,27 +140,28 @@ class ReviewSummary(TemplateView):
     incorrect = []
 
     def get(self, request, *args, **kwargs):
+        logger.warning("{} tried to GET ReviewSummary. Redirecting".format(request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
     def post(self, request, *args, **kwargs):
+        logger.info("{} navigated to review summary page.".format(request.user.username))
         all_reviews = request.POST
-        print(all_reviews)
         for vocab_meaning in all_reviews:
             if all_reviews[vocab_meaning] == "true":
                 self.correct.append(vocab_meaning)
             elif all_reviews[vocab_meaning] == "false":
                 self.incorrect.append(vocab_meaning)
             else:
-                print("Unparseable: {}".format(vocab_meaning))
-        print(self.correct)
-        print(self.incorrect)
+                #this is here to catch the CSRF token essentially.
+                logging.debug("Un-parseable: {}".format(vocab_meaning))
         #wow what a shit-ass hack. TODO figure out the proper way to render templates off a post.
-        return render_to_response(self.template_name, {"correct":self.correct, "incorrect": self.incorrect})
+        return render_to_response(self.template_name, {"correct": self.correct, "incorrect": self.incorrect})
 
 
 class Logout(TemplateView):
 
     def get(self, request, *args, **kwargs):
+        logger.info("{} has requested a logout.".format(request.user.username))
         logout(request=request)
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
@@ -169,6 +173,7 @@ class Register(FormView):
 
     def form_valid(self, form):
         user = form.save()
+        logger.info("New User Created: {}, with API key {}.".format(user.username, form.cleaned_data['api_key']))
         Profile.objects.create(
             user=user, api_key=form.cleaned_data['api_key'], level=1)
         return HttpResponseRedirect(reverse_lazy("kw:home"))

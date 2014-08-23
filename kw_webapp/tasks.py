@@ -1,8 +1,11 @@
 from __future__ import absolute_import
+import logging
 from KW.celery import app as celery_app
 from kw_webapp.models import UserSpecific
 from datetime import timedelta
 from django.utils import timezone
+
+logger = logging.getLogger('kw.tasks')
 
 def past_time(hours_ago):
     """
@@ -71,6 +74,7 @@ def srs_three_months():
 
 @celery_app.task()
 def all_srs(user=None):
+    logger.info("Beginning SRS run for {}.".format(user or "all users"))
     hours = [4, 8, 24, 72, 168, 336, 720, 2160]
     srs_level = zip(map(lambda x: past_time(x), hours), range(0, 8))
     for level in srs_level:
@@ -84,5 +88,8 @@ def all_srs(user=None):
                                                      streak=level[1],
                                                      needs_review=False)
         if review_set.count() > 0:
-            print("SRS level {} for {} had {} updates set".format(level[1], (user or "all users"),  review_set.count()))
+            logger.info("SRS level {} for {} had {} updates set".format(level[1], (user or "all users"),  review_set.count()))
+        else:
+            logger.info("{} has no reviews for SRS level {}".format((user or "all users"), level[1]))
         review_set.update(needs_review=True)
+    logger.info("Finished SRS run for {}.".format(user or "all users"))

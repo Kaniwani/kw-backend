@@ -15,6 +15,62 @@ from django.core.urlresolvers import reverse_lazy
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+    'verbose': {
+        'format': '%(levelname)s---%(asctime)s---%(module)s : %(message)s',
+      },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'views': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': os.path.join(BASE_DIR, "logs\\views.log"),
+        },
+        'models': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': os.path.join(BASE_DIR, "logs\\models.log"),
+        },
+        'errors': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': os.path.join(BASE_DIR, "logs\\errors.log"),
+        },
+        'tasks': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': os.path.join(BASE_DIR, "logs\\tasks.log"),
+        }
+    },
+    'loggers': {
+        'kw.views': {
+            'handlers': ['views', 'errors'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'kw.models': {
+            'handlers': ['models', 'errors'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'kw.tasks': {
+            'handlers': ['tasks', 'errors'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
 
 #CELERY SETTINGS
 CELERY_RESULT_BACKEND = 'amqp'
