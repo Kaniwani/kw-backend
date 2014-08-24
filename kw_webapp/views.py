@@ -155,7 +155,11 @@ class ReviewSummary(TemplateView):
                 #this is here to catch the CSRF token essentially.
                 logging.debug("Un-parseable: {}".format(vocab_meaning))
         #wow what a shit-ass hack. TODO figure out the proper way to render templates off a post.
-        return render_to_response(self.template_name, {"correct": self.correct, "incorrect": self.incorrect})
+        return render_to_response(self.template_name, {"correct": self.correct,
+                                                       "incorrect": self.incorrect,
+                                                       "correct_count": len(self.correct),
+                                                       "incorrect_count": len(self.incorrect),
+                                                       "review_count": len(self.correct) + len(self.incorrect)})
 
 
 class Logout(TemplateView):

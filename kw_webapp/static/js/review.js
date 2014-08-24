@@ -135,10 +135,21 @@ $(document).ready(function() {
 
     }
 
+
+    function enter_pressed() {
+       if($("#user-answer").hasClass("marked")){
+           rotateVocab();
+           $("#user-answer").removeClass("marked");
+       }
+       else {
+           compareAnswer();
+       }
+   }
+
     $(document).keypress(function(e){
     if (e.which == 13)
     {
-        $("#check").click();
+        enter_pressed();
     }
     if($("#user-answer").hasClass("marked"))
     {
@@ -157,15 +168,7 @@ $(document).ready(function() {
 });
 
   var vocab_list = [];
-   $("#check").click(function() {
-       if($("#user-answer").hasClass("marked")){
-           rotateVocab();
-           $("#user-answer").removeClass("marked");
-       }
-       else {
-           compareAnswer();
-       }
-   });
+
 
    $("#button-reading").click(function() {
        $("#details-reading").toggle();

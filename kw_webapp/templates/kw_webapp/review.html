@@ -8,7 +8,7 @@
 {% endblock scripts %}
 
 {% block content %}
-<div class="container-full">
+<div class="container-full container-fluid">
     <div class="row">
         <div class="col-md-1">
                <a href="{% url "kw:home" %}" class="center-block"><button class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-home"></i></button></a>
@@ -19,7 +19,6 @@
     <div class="row">
         <input type="text" class="col-md-12 text-center" id="user-answer" placeholder="答え" style="font-size: 44pt">
         <input type="hidden" id="us-id" value="Nothing!">
-        <button id="check"></button>
     </div>
     <div class="row">
         <div class="col-md-6">
