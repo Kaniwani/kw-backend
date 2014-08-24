@@ -81,7 +81,7 @@ $(document).ready(function() {
     }
 
     function rightAnswer(){
-        $("#user-answer").css('background-color', 'green');
+        $("#user-answer").css('background-color', '#32cd32');
         $("#user-answer").blur();
         $("#user-answer").addClass("marked");
 
