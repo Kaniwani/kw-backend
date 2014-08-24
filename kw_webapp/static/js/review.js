@@ -2,6 +2,7 @@ $(document).ready(function() {
     var input = document.getElementById("user-answer");
     var csrf_token = $("#csrf").val();//Grab CSRF token off of dummy form.
     wanakana.bind(input);
+    $("#user-answer").focus();
 
     var correct_answers = new Array();
     var incorrect_answers = new Array();
