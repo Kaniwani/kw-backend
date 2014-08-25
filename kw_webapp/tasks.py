@@ -88,7 +88,7 @@ def all_srs(user=None):
                                                      streak=level[1],
                                                      needs_review=False)
         if review_set.count() > 0:
-            logger.info("SRS level {} for {} had {} updates set".format(level[1], (user or "all users"),  review_set.count()))
+            logger.info("{} has {} reviews for SRS level {}".format((user or "all users"), review_set.count(), level[1]))
         else:
             logger.info("{} has no reviews for SRS level {}".format((user or "all users"), level[1]))
         review_set.update(needs_review=True)
