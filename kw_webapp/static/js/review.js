@@ -96,7 +96,7 @@ $(document).ready(function() {
     }
 
     function rightAnswer(){
-        $("#user-answer").css('background-color', '#32cd32');
+        $("#user-answer").css('background-color', '#00FF00');
         $("#user-answer").blur();
         $("#user-answer").addClass("marked");
 
