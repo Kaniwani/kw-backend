@@ -31,6 +31,9 @@ $(document).ready(function() {
        document.body.appendChild(form);
        form.submit();
    }
+    String.prototype.endsWith = function(suffix) {
+        return this.indexOf(suffix, this.length - suffix.length) !== -1;
+    };
 
     function compareAnswer(){
        var us_id;
@@ -39,14 +42,22 @@ $(document).ready(function() {
        us_id = $("#us-id").val();
        answer = $("#user-answer").val();
 
-        console.log("comparing")
+       //Fixing the terminal n.
+       if(answer.endsWith("n")){
+           answer = answer.slice(0,-1) + "ん";
+       }
+
+       //Ensure answer is full hiragana
        if (!wanakana.isHiragana(answer) || answer == '')
        {
            nonHiraganaAnswer();
            return;
        }
+       //Checking if the user's answer exists in valid readings.
        else if ($.inArray(answer, current_vocab.readings) != -1)
        {
+           //Ensures this is the first time the vocab has been answered in this session, so it goes in the right
+           //container(incorrect/correct)
            if($.inArray(current_vocab.meaning, Object.keys(answer_correctness)) == -1) {
                answer_correctness[current_vocab.meaning] = true;
            }
@@ -55,6 +66,7 @@ $(document).ready(function() {
            var answer_index = $.inArray(answer, current_vocab.readings);
            fill_text_with_kanji(answer_index); //Fills the correct kanji based on the user's answers.
        }
+       //answer was not in the known readings.
        else
        {
            if($.inArray(current_vocab.meaning, incorrect_answers) == -1) {
@@ -65,10 +77,12 @@ $(document).ready(function() {
 
        }
        enableButtons();
+        //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
        $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correct, csrfmiddlewaretoken:csrf_token}, function(data) {
             console.log(data)
        })
     }
+
 
     function nonHiraganaAnswer(){
         $("#user-answer").css('background-color', 'yellow');
@@ -86,6 +100,12 @@ $(document).ready(function() {
         $("#user-answer").blur();
         $("#user-answer").addClass("marked");
 
+    }
+
+    function newVocab(){
+        $("#user-answer").val("");
+        $("#user-answer").css('background-color', 'white');
+        $("#user-answer").focus();
     }
 
     function disableButtons(){
@@ -110,8 +130,6 @@ $(document).ready(function() {
         }
 
         $("#reviews-left").html(vocabulary_list.length);
-
-
         current_vocab = vocabulary_list.shift();
         $("#details-reading").hide();
         $("#details-character").hide();
@@ -129,9 +147,8 @@ $(document).ready(function() {
             $("#character").append(current_vocab.characters[i] + "</br>");
         }
 
-        $("#user-answer").val("");
-        $("#user-answer").css('background-color', 'white');
-        $("#user-answer").focus();
+        newVocab();
+
 
     }
 
@@ -145,30 +162,21 @@ $(document).ready(function() {
            compareAnswer();
        }
    }
-
+    //Binding Enter, P, and K.
     $(document).keypress(function(e){
-    if (e.which == 13)
-    {
-        enter_pressed();
-    }
-    if($("#user-answer").hasClass("marked"))
-    {
-        if (e.which == 80 || e.which == 112)
-        {
-            $("#button-reading").click();
+        if (e.which == 13) {
+            enter_pressed();
         }
-        else if (e.which == 75 || e.which == 107)
-        {
-            $("#button-character").click();
+        if($("#user-answer").hasClass("marked")) {
+            //expansion of phonetic and and char readings via keyboard.
+            if (e.which == 80 || e.which == 112) {
+                $("#button-reading").click();
+            }
+            else if (e.which == 75 || e.which == 107) {
+                $("#button-character").click();
+            }
         }
-    }
-
-
-
-});
-
-  var vocab_list = [];
-
+    });
 
    $("#button-reading").click(function() {
        $("#details-reading").toggle();
