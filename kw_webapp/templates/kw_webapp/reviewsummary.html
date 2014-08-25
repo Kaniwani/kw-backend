@@ -9,42 +9,40 @@
 {% block content %}
     {{ block.super }}
     <div class="container">
-    <div class="row">
-        <a href="{% url "kw:home" %}" class="btn-link col-md-1 col-md-offset-4"><span class="glyphicon glyphicon-home"></span></a>
-        <h1 class="text-center center-block col-md-3">{% widthratio correct_count review_count 100 %}% Accuracy</h1>
-    </div>
-    <div class="row">
-        <div class="col-md-3 col-md-offset-3">
-            <div class="row">
-                <button class="btn btn-success btn-lg col-md-12" id="correct-expand-button">{{ correct_count }} Correct <span class="caret"></span> </button >
+        <div class="row">
+            <a href="{% url "kw:home" %}" class="btn-link col-md-1 col-md-offset-4"><span class="glyphicon glyphicon-home"></span></a>
+            <h1 class="text-center center-block col-md-3">{% widthratio correct_count review_count 100 %}% Accuracy</h1>
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-md-offset-3">
+                <div class="row">
+                    <button class="btn btn-success btn-lg col-md-12" id="correct-expand-button">{{ correct_count }} Correct <span class="caret"></span> </button >
+                </div>
+                <div class="row">
+                    <div class="jumbotron" id="correct_jumbo">
+                        <ul>
+                            {% for word in correct %}
+                            <li>{{ word }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
             </div>
-            <div class="row">
-                <div class="jumbotron" id="correct_jumbo">
-                    <ul>
-                        {% for word in correct %}
-                        <li>{{ word }}</li>
-                        {% endfor %}
-                    </ul>
+            <div class="col-md-3">
+                <div class="row">
+                    <button class="btn btn-danger btn-lg col-md-12" id="incorrect-expand-button">{{ incorrect_count }} Incorrect <span class="caret "></span></button >
+                </div>
+                <div class="row">
+                    <div class="jumbotron" id="incorrect_jumbo">
+                        <ul>
+                            {% for word in incorrect %}
+                            <li>{{ word }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
-
         </div>
-    <div class="col-md-3">
-            <div class="row">
-                <button class="btn btn-danger btn-lg col-md-12" id="incorrect-expand-button">{{ incorrect_count }} Incorrect <span class="caret "></span></button >
-            </div>
-            <div class="row">
-                <div class="jumbotron" id="incorrect_jumbo">
-                    <ul>
-                        {% for word in incorrect %}
-                        <li>{{ word }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
     </div>
 {% endblock content %}
