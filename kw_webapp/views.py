@@ -136,8 +136,6 @@ class Review(ListView):
 
 class ReviewSummary(TemplateView):
     template_name = "kw_webapp/reviewsummary.html"
-    correct = []
-    incorrect = []
 
     def get(self, request, *args, **kwargs):
         logger.warning("{} tried to GET ReviewSummary. Redirecting".format(request.user.username))
@@ -146,11 +144,13 @@ class ReviewSummary(TemplateView):
     def post(self, request, *args, **kwargs):
         logger.info("{} navigated to review summary page.".format(request.user.username))
         all_reviews = request.POST
+        correct = []
+        incorrect = []
         for vocab_meaning in all_reviews:
             if all_reviews[vocab_meaning] == "true":
-                self.correct.append(vocab_meaning)
+                correct.append(vocab_meaning)
             elif all_reviews[vocab_meaning] == "false":
-                self.incorrect.append(vocab_meaning)
+                incorrect.append(vocab_meaning)
             else:
                 #this is here to catch the CSRF token essentially.
                 logging.debug("Un-parseable: {}".format(vocab_meaning))
