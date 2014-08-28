@@ -14,7 +14,11 @@
             <h1 class="text-center center-block col-md-3">{% widthratio correct_count review_count 100 %}% Accuracy</h1>
         </div>
         <div class="row">
-            <div class="col-md-3 col-md-offset-3">
+            {% if incorrect_count > 0 %}
+                <div class="col-md-3 col-md-offset-3">
+            {% else %}
+                <div class="col-md-6 col-md-offset-3">
+            {% endif %}
                 <div class="row">
                     <button class="btn btn-success btn-lg col-md-12" id="correct-expand-button">{{ correct_count }} Correct <span class="caret"></span> </button >
                 </div>
@@ -41,6 +45,7 @@
                 </div>
 
             </div>
+            {% if incorrect_count > 0 %}
             <div class="col-md-3">
                 <div class="row">
                     <button class="btn btn-danger btn-lg col-md-12" id="incorrect-expand-button">{{ incorrect_count }} Incorrect <span class="caret "></span></button >
@@ -67,6 +72,7 @@
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 {% endblock content %}

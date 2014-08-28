@@ -4,7 +4,6 @@ $(document).ready(function() {
 
     $("#force-srs").click(function(){
         $.get("/kw/force_srs/").done(function(data){
-           alert(data);
             if (parseInt(data) > 0){
                 $("#review-count").html(data + " Reviews");
                 $("#review-count").removeClass("disabled");
