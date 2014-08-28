@@ -146,20 +146,22 @@ class ReviewSummary(TemplateView):
         all_reviews = request.POST
         correct = []
         incorrect = []
-        for vocab_meaning in all_reviews:
-            if all_reviews[vocab_meaning] == "true":
-                correct.append(vocab_meaning)
-            elif all_reviews[vocab_meaning] == "false":
-                incorrect.append(vocab_meaning)
+        for us_id in all_reviews:
+            if all_reviews[us_id] == "true":
+                related_review = UserSpecific.objects.get(pk=us_id)
+                correct.append(related_review)
+            elif all_reviews[us_id] == "false":
+                related_review = UserSpecific.objects.get(pk=us_id)
+                incorrect.append(related_review)
             else:
                 #this is here to catch the CSRF token essentially.
-                logging.debug("Un-parseable: {}".format(vocab_meaning))
+                logging.debug("Un-parseable: {}".format(us_id))
         #wow what a shit-ass hack. TODO figure out the proper way to render templates off a post.
-        return render_to_response(self.template_name, {"correct": self.correct,
-                                                       "incorrect": self.incorrect,
-                                                       "correct_count": len(self.correct),
-                                                       "incorrect_count": len(self.incorrect),
-                                                       "review_count": len(self.correct) + len(self.incorrect)})
+        return render_to_response(self.template_name, {"correct": correct,
+                                                       "incorrect": incorrect,
+                                                       "correct_count": len(correct),
+                                                       "incorrect_count": len(incorrect),
+                                                       "review_count": len(correct) + len(incorrect)})
 
 
 class Logout(TemplateView):

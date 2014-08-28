@@ -58,8 +58,8 @@ $(document).ready(function() {
        {
            //Ensures this is the first time the vocab has been answered in this session, so it goes in the right
            //container(incorrect/correct)
-           if($.inArray(current_vocab.meaning, Object.keys(answer_correctness)) == -1) {
-               answer_correctness[current_vocab.meaning] = true;
+           if($.inArray(us_id, Object.keys(answer_correctness)) == -1) {
+               answer_correctness[us_id] = true;
            }
            rightAnswer();
            correct = true;
@@ -69,9 +69,7 @@ $(document).ready(function() {
        //answer was not in the known readings.
        else
        {
-           if($.inArray(current_vocab.meaning, incorrect_answers) == -1) {
-               answer_correctness[current_vocab.meaning] = false;
-           }
+           answer_correctness[us_id] = false;
            wrongAnswer();
            correct = false;
 

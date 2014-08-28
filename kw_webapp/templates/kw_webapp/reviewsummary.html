@@ -20,9 +20,21 @@
                 </div>
                 <div class="row">
                     <div class="jumbotron" id="correct_jumbo">
-                        <ul>
-                            {% for word in correct %}
-                            <li>{{ word }}</li>
+                        <ul class="media-list">
+                            {% for review in correct %}
+                                <li class="media">
+                                    <li class="media-heading"> <h2 class="text-center">{{ review.vocabulary.meaning }}</h2></li>
+                                    <li class="media-body">
+                                    <table class="table">
+                                    {% for reading in review.vocabulary.reading_set.all %}
+                                        <tr>
+                                            <td>{{ reading.kana }}</td>
+                                            <td>{{ reading.character }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </table>
+                                    </li>
+                                </li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -35,9 +47,21 @@
                 </div>
                 <div class="row">
                     <div class="jumbotron" id="incorrect_jumbo">
-                        <ul>
-                            {% for word in incorrect %}
-                            <li>{{ word }}</li>
+                         <ul class="media-list">
+                            {% for review in incorrect %}
+                                <li class="media">
+                                    <li class="media-heading"> <h2 class="text-center">{{ review.vocabulary.meaning }}</h2></li>
+                                    <li class="media-body">
+                                    <table class="table">
+                                    {% for reading in review.vocabulary.reading_set.all %}
+                                        <tr>
+                                            <td>{{ reading.kana }}</td>
+                                            <td>{{ reading.character }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </table>
+                                    </li>
+                                </li>
                             {% endfor %}
                         </ul>
                     </div>
