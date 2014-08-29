@@ -1,15 +1,14 @@
 {% extends "kw_webapp/base.html" %}
+{% load staticfiles %}
 {% load crispy_forms_tags %}
+{% block scripts %}
+    <link rel="stylesheet" href="{% static "css/login.css" %}">
+    <script src="{% static "js/login.js" %}"></script>
+{% endblock %}
 {% block content %}
-<div class="container col-md-12">
-  <div class="col-md-4 col-md-offset-4 vcenter" id="formdiv">
-      <div class="jumbotron text-center">
-          <h1>Login</h1>
+ <div class="well well-lg"  id="formdiv">
+          <h1 class="text-center">Login</h1>
           {% crispy form %}
-          <a href="{% url "kw:register" %}">Register</a>
-      </div>
-  </div>
+          <a href="{% url "kw:register" %}" class="pull-right">Register</a>
 </div>
-
-
 {% endblock %}

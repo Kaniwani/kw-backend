@@ -11,8 +11,12 @@ import requests
 class UserLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(UserLoginForm, self).__init__(*args, **kwargs)
+        self.fields['username'].label = False
+        self.fields['username'].widget.attrs['placeholder'] = "Username"
+        self.fields['password'].widget.attrs['placeholder'] = "Password"
+        self.fields['password'].label = False
         self.helper = FormHelper()
-        self.helper.add_input(Submit("submit", "Login"))
+        self.helper.add_input(Submit("submit", "Sign In", css_class='btn btn-primary col-md-12'))
         self.helper.form_class = 'form-horizontal'
         self.helper.form_method = 'post'
         self.helper.form_action = ''
