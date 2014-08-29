@@ -4,7 +4,7 @@
 {% block scripts %}
 {{ block.super }}
 <script src="{% static "js/unlocklevels.js" %}"></script>
-
+<script src="{% static "js/notify.min.js" %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -14,11 +14,11 @@
         <ul class="list-group">
             {% for level in levels %}
                     {% if level.0 > user.profile.level %}
-                        <li class="list-group-item list-group-item-danger text-center">Level {{ level.0 }} Locked</li>
+                        <a href="" class="list-group-item list-group-item-danger text-center locked">Level {{ level.0 }} Locked</a>
                     {% elif level.1 == True %}
-                        <li class="list-group-item list-group-item-success text-center">Level {{ level.0 }} Unlocked</li>
+                        <a href="" class="list-group-item list-group-item-success text-center unlocked">Level {{ level.0 }} Unlocked</a>
                     {% elif level.1 == False %}
-                        <a href="#" class="list-group-item list-group-item-warning text-center locked" id="{{ level.0 }}">Level {{ level.0 }} Unlockable</a>
+                        <a href="" class="list-group-item list-group-item-warning text-center unlockable" id="{{ level.0 }}">Level {{ level.0 }} Unlockable</a>
                     {% endif %}
             {% endfor %}
         </ul>
