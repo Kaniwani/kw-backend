@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 from datetime import timedelta
 import os
 from django.core.urlresolvers import reverse_lazy
+import KW.secrets as secrets
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -88,7 +89,7 @@ CELERYBEAT_SCHEDULE = {
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '^9i9vl$ct1t9s$1k#d5y@1@nnh&ljtpxx5*ym7yr8b!=^0(nuv'
+SECRET_KEY = secrets.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -116,7 +117,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'kw_webapp',
     'south',
-    'crispy_forms'
+    'crispy_forms',
+    'gunicorn',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -138,8 +140,12 @@ WSGI_APPLICATION = 'KW.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': secrets.DB_NAME,
+        'USER': secrets.DB_USER,
+        'PASSWORD': secrets.DB_PASSWORD,
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
