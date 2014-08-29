@@ -1,0 +1,15 @@
+{% extends "kw_webapp/logged_in.html" %}
+{% load staticfiles %}
+{% block scripts %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static "css/contact.css" %}">
+    <script src="{% static "js/contact.js" %}"></script>
+{% endblock %}
+{% block content %}
+    {{ block.super }}
+     <div class="well"  id="contactdiv">
+          <h1 class="text-center">Contact me</h1>
+          <p>Sorry, no contact form setup yet. Please get a hold of me at <a href="mailto:tadgh@cs.toronto.edu">my email address.</a></p>
+    </div>
+
+{% endblock %}

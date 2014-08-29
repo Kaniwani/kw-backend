@@ -15,6 +15,12 @@ import logging
 logger = logging.getLogger("kw.views")
 
 
+class About(TemplateView):
+    template_name = "kw_webapp/about.html"
+
+class Contact(TemplateView):
+    template_name = "kw_webapp/contact.html"
+
 class Dashboard(TemplateView):
     template_name = "kw_webapp/home.html"
 
@@ -54,7 +60,7 @@ class UnlockRequested(View):
         count = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level).distinct().count()
         user.profile.unlocked_levels.get_or_create(level=requested_level)
         logger.info("User {} has requested to unlock level {}. {} vocabulary added to review list.".format(user.username, requested_level, all_level_vocab.count()))
-        return HttpResponse("{} vocabulary unlocked! Get Reviewing!".format(count))
+        return HttpResponse("{}".format(count))
 
 
 class UnlockLevels(TemplateView):
