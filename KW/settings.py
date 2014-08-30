@@ -32,25 +32,25 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs\\views.log"),
+            'filename': os.path.join(BASE_DIR, "logs", "views.log"),
         },
         'models': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs\\models.log"),
+            'filename': os.path.join(BASE_DIR, "logs", "models.log"),
         },
         'errors': {
             'level': 'ERROR',
             'class': 'logging.FileHandler',
             'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs\\errors.log"),
+            'filename': os.path.join(BASE_DIR, "logs", "errors.log"),
         },
         'tasks': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs\\tasks.log"),
+            'filename': os.path.join(BASE_DIR, "logs", "tasks.log"),
         }
     },
     'loggers': {
@@ -118,7 +118,6 @@ INSTALLED_APPS = (
     'kw_webapp',
     'south',
     'crispy_forms',
-    'gunicorn',
 )
 
 MIDDLEWARE_CLASSES = (
