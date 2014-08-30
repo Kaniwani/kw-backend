@@ -81,6 +81,23 @@ class UnlockLevels(TemplateView):
         return context
 
 
+class UnflagReview(View):
+    """
+    removes the Needs_review flag from the
+    """
+    def get(self, request, *args, **kwargs):
+        logger.error("{} attempted to access UnflagReview via a get!".format(request.user.username))
+        return HttpResponseRedirect(reverse_lazy("kw:home"))
+
+    def post(self, request, *args, **kwargs):
+        us_id = request.POST["user_specific_id"]
+        us = get_object_or_404(UserSpecific, pk=us_id)
+        us.needs_review = False
+        us.last_studied = timezone.now()
+        us.save()
+        return HttpResponse("{} no longer needs review!".format(us.vocabulary.meaning))
+
+
 class RecordAnswer(View):
     """
     Called via Ajax in reviews.js. Takes a UserSpecific object, and either True or False. Updates the DB in realtime
@@ -98,8 +115,6 @@ class RecordAnswer(View):
         if user_correct == "true":
             us.correct += 1
             us.streak += 1
-            us.needs_review = False
-            us.last_studied = timezone.now()
             us.save()
             return HttpResponse("Correct!")
         elif user_correct == "false":

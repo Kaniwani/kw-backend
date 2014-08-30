@@ -60,9 +60,10 @@ $(document).ready(function() {
            //container(incorrect/correct)
            if($.inArray(us_id, Object.keys(answer_correctness)) == -1) {
                answer_correctness[us_id] = true;
+               record_answer(us_id, true); //record answer as true
            }
            rightAnswer();
-           correct = true;
+           unflagReview(us_id);
            var answer_index = $.inArray(answer, current_vocab.readings);
            fill_text_with_kanji(answer_index); //Fills the correct kanji based on the user's answers.
        }
@@ -71,17 +72,24 @@ $(document).ready(function() {
        {
            answer_correctness[us_id] = false;
            wrongAnswer();
-           correct = false;
+           record_answer(us_id, false)
 
        }
        enableButtons();
-        //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
-       $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correct, csrfmiddlewaretoken:csrf_token}, function(data) {
+
+    }
+
+    function unflagReview(us_id){
+        $.post("/kw/unflag_review/", {user_specific_id:us_id, csrfmiddlewaretoken:csrf_token}, function(data) {
             console.log(data)
        })
     }
-
-
+    function record_answer(us_id, correctness){
+       //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
+       $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correctness, csrfmiddlewaretoken:csrf_token}, function(data) {
+            console.log(data)
+       })
+    }
     function nonHiraganaAnswer(){
         $("#user-answer").css('background-color', 'yellow');
     }
