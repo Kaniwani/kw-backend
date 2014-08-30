@@ -75,8 +75,8 @@ def srs_three_months():
 @celery_app.task()
 def all_srs(user=None):
     logger.info("Beginning SRS run for {}.".format(user or "all users"))
-    hours = [4, 8, 24, 72, 168, 336, 720, 2160]
-    srs_level = zip(map(lambda x: past_time(x), hours), range(0, 8))
+    hours = [4, 4, 8, 24, 72, 168, 336, 720, 2160]
+    srs_level = zip(map(lambda x: past_time(x), hours), range(0, 9))
     for level in srs_level:
         if user:
             review_set = UserSpecific.objects.filter(user=user,
