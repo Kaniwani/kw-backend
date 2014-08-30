@@ -80,7 +80,7 @@ CELERY_TIMEZONE = 'America/New_York'
 CELERYBEAT_SCHEDULE = {
     'all_user_srs_every_hour': {
         'task': 'kw_webapp.tasks.all_srs',
-        'schedule': timedelta(minutes=1)
+        'schedule': timedelta(minutes=15)
     },
 }
 
