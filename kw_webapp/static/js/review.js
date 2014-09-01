@@ -39,6 +39,7 @@ $(document).ready(function() {
        var us_id;
        var answer;
        var correct;
+       var previously_wrong;
        us_id = $("#us-id").val();
        answer = $("#user-answer").val();
 
@@ -53,40 +54,49 @@ $(document).ready(function() {
            nonHiraganaAnswer();
            return;
        }
+
+
+
        //Checking if the user's answer exists in valid readings.
        else if ($.inArray(answer, current_vocab.readings) != -1)
        {
            //Ensures this is the first time the vocab has been answered in this session, so it goes in the right
            //container(incorrect/correct)
            if($.inArray(us_id, Object.keys(answer_correctness)) == -1) {
-               answer_correctness[us_id] = true;
-               record_answer(us_id, true); //record answer as true
+               answer_correctness[us_id] = 1;
+               previously_wrong = false;
+
            }
+           else{
+               previously_wrong = true;
+           }
+           correct= true;
            rightAnswer();
-           unflagReview(us_id);
            var answer_index = $.inArray(answer, current_vocab.readings);
            fill_text_with_kanji(answer_index); //Fills the correct kanji based on the user's answers.
        }
        //answer was not in the known readings.
        else
        {
-           answer_correctness[us_id] = false;
+           if($.inArray(us_id, Object.keys(answer_correctness)) == -1){
+               answer_correctness[us_id] = -1;
+               previously_wrong = false
+           }else{
+               answer_correctness[us_id] -= 1;
+               previously_wrong = true
+           }
            wrongAnswer();
-           record_answer(us_id, false)
+           correct = false;
 
        }
+       record_answer(us_id, correct, previously_wrong); //record answer as true
        enableButtons();
 
     }
 
-    function unflagReview(us_id){
-        $.post("/kw/unflag_review/", {user_specific_id:us_id, csrfmiddlewaretoken:csrf_token}, function(data) {
-            console.log(data)
-       })
-    }
-    function record_answer(us_id, correctness){
+    function record_answer(us_id, correctness, previously_wrong){
        //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
-       $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correctness, csrfmiddlewaretoken:csrf_token}, function(data) {
+       $.post("/kw/record_answer/", {user_specific_id:us_id, user_correct:correctness, csrfmiddlewaretoken:csrf_token, wrong_before:previously_wrong}, function(data) {
             console.log(data)
        })
     }

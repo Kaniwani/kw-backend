@@ -80,24 +80,6 @@ class UnlockLevels(TemplateView):
         context["levels"] = level_status
         return context
 
-
-class UnflagReview(View):
-    """
-    removes the Needs_review flag from the
-    """
-    def get(self, request, *args, **kwargs):
-        logger.error("{} attempted to access UnflagReview via a get!".format(request.user.username))
-        return HttpResponseRedirect(reverse_lazy("kw:home"))
-
-    def post(self, request, *args, **kwargs):
-        us_id = request.POST["user_specific_id"]
-        us = get_object_or_404(UserSpecific, pk=us_id)
-        us.needs_review = False
-        us.last_studied = timezone.now()
-        us.save()
-        return HttpResponse("{} no longer needs review!".format(us.vocabulary.meaning))
-
-
 class RecordAnswer(View):
     """
     Called via Ajax in reviews.js. Takes a UserSpecific object, and either True or False. Updates the DB in realtime
@@ -108,16 +90,27 @@ class RecordAnswer(View):
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
     def post(self, request, *args, **kwargs):
+
         us_id = request.POST["user_specific_id"]
-        user_correct = request.POST["user_correct"]
+        user_correct = True if request.POST['user_correct'] == 'true' else False
+        previously_wrong = True if request.POST['wrong_before'] == 'true' else False
+        print("User correct: {}".format(user_correct))
+        print("previously wrong: {}".format(previously_wrong))
+
         us = get_object_or_404(UserSpecific, pk=us_id)
         logger.info("Recording Answer for vocab:{}.\tUser Correct?: {}".format(us.vocabulary.meaning, user_correct))
-        if user_correct == "true":
+        if user_correct and not previously_wrong:
             us.correct += 1
             us.streak += 1
+            us.needs_review = False
+            us.last_studied = timezone.now()
             us.save()
-            return HttpResponse("Correct!")
-        elif user_correct == "false":
+        elif user_correct and previously_wrong:
+            us.needs_review = False
+            us.last_studied = timezone.now()
+            us.save()
+            return HttpResponse("Correct, but not on first attempt!")
+        elif not user_correct:
             us.incorrect += 1
             if us.streak == 7:
                 us.streak -= 2
@@ -168,13 +161,17 @@ class ReviewSummary(TemplateView):
         correct = []
         incorrect = []
         for us_id in all_reviews:
-            if all_reviews[us_id] == "true":
-                related_review = UserSpecific.objects.get(pk=us_id)
-                correct.append(related_review)
-            elif all_reviews[us_id] == "false":
-                related_review = UserSpecific.objects.get(pk=us_id)
-                incorrect.append(related_review)
-            else:
+            try:
+                if int(all_reviews[us_id]) > 0:
+                    related_review = UserSpecific.objects.get(pk=us_id)
+                    correct.append(related_review)
+                elif int(all_reviews[us_id]) < 0:
+                    related_review = UserSpecific.objects.get(pk=us_id)
+                    incorrect.append(related_review)
+                else:
+                    #in case somehow the us_id value is zero. should be impossible.
+                    logging.error("Un-parseable: {}".format(us_id))
+            except ValueError as e:
                 #this is here to catch the CSRF token essentially.
                 logging.debug("Un-parseable: {}".format(us_id))
         #wow what a shit-ass hack. TODO figure out the proper way to render templates off a post.
