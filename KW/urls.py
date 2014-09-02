@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
-# admin.autodiscover()
+#from kw_webapp.models import Announcement
+admin.autodiscover()
 
 urlpatterns = patterns('',
                        url(r'^$', 'kw_webapp.views.home', name='home'),

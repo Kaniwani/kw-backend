@@ -11,6 +11,16 @@ import requests
 logger = logging.getLogger("kw.models")
 
 
+class Announcement(models.Model):
+    title = models.CharField(max_length=255)
+    body = models.TextField()
+    pub_date = models.DateTimeField('Date Published', default=timezone.now(), null=True)
+    creator = models.ForeignKey(User)
+
+    def __str__(self):
+        return self.title
+
+
 class Level(models.Model):
     level = models.PositiveIntegerField(validators=[
         MinValueValidator(1),

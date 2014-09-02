@@ -3,6 +3,7 @@ from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard, R
 from django.contrib.auth.decorators import login_required
 from kw_webapp.forms import UserLoginForm
 
+
 urlpatterns = patterns('',
     url(r'^$', login_required(Dashboard.as_view()), name="home"),
     url(r'^login/$', 'django.contrib.auth.views.login', {'template_name':'registration/login.html', 'authentication_form':UserLoginForm}, name="login"),

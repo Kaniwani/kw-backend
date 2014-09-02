@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
 from django.utils.encoding import smart_str
 from django.views.generic import TemplateView, ListView, FormView, View
-from kw_webapp.models import Profile, UserSpecific, Vocabulary
+from kw_webapp.models import Profile, UserSpecific, Vocabulary, Announcement
 from kw_webapp.forms import UserCreateForm
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
@@ -31,6 +31,7 @@ class Dashboard(TemplateView):
         logger.info("{} has navigated to dashboard".format(self.request.user.username))
         context = super(Dashboard, self).get_context_data()
         context['review_count'] = UserSpecific.objects.filter(user=self.request.user, needs_review=True).count()
+        context['announcements'] = Announcement.objects.all().order_by('-pub_date')[:2]
         return context
 
 
