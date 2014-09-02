@@ -54,7 +54,7 @@ def get_vocab_by_meaning(meaning):
         v = Vocabulary.objects.get(meaning=meaning)
     except Vocabulary.DoesNotExist:
         logger.error("While attempting to get vocabulary {} we could not find it!".format(meaning))
-        return None
+        raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(meaning))
     else:
         return v
 
@@ -160,8 +160,6 @@ def sync_with_wk(user):
         logger.info("Finished Vocabulary Sync for {}".format(user.username))
     else:
         logger.error("{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
-
-
 
 @celery_app.task()
 def sync_all_users_to_wk():

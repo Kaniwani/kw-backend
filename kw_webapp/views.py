@@ -102,9 +102,6 @@ class RecordAnswer(View):
         us_id = request.POST["user_specific_id"]
         user_correct = True if request.POST['user_correct'] == 'true' else False
         previously_wrong = True if request.POST['wrong_before'] == 'true' else False
-        print("User correct: {}".format(user_correct))
-        print("previously wrong: {}".format(previously_wrong))
-
         us = get_object_or_404(UserSpecific, pk=us_id)
         logger.info("Recording Answer for vocab:{}.\tUser Correct?: {}".format(us.vocabulary.meaning, user_correct))
         if user_correct and not previously_wrong:
