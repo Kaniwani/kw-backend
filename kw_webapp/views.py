@@ -9,7 +9,8 @@ from kw_webapp.forms import UserCreateForm
 from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
-from kw_webapp.tasks import all_srs
+from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level
+import kw_webapp.signals
 import logging
 
 logger = logging.getLogger("kw.views")
@@ -18,8 +19,10 @@ logger = logging.getLogger("kw.views")
 class About(TemplateView):
     template_name = "kw_webapp/about.html"
 
+
 class Contact(TemplateView):
     template_name = "kw_webapp/contact.html"
+
 
 class Dashboard(TemplateView):
     template_name = "kw_webapp/home.html"
@@ -30,38 +33,41 @@ class Dashboard(TemplateView):
         context['review_count'] = UserSpecific.objects.filter(user=self.request.user, needs_review=True).count()
         return context
 
+
 class ForceSRSCheck(View):
     """
     temporary view that allows users to force an SRS update check on their account. Any thing that needs reviewing will
     added to the review queue.
     """
+
     def get(self, request, *args, **kwargs):
         user = request.user
         number_of_reviews = all_srs(user)
         new_review_count = UserSpecific.objects.filter(user=request.user, needs_review=True).count()
-        logger.info("{} has requested an SRS update. {} reviews added. {} reviews total.".format(user.username, number_of_reviews or 0, new_review_count or 0))
+        logger.info("{} has requested an SRS update. {} reviews added. {} reviews total.".format(user.username,
+                                                                                                 number_of_reviews or 0,
+                                                                                                 new_review_count or 0))
         return HttpResponse(new_review_count)
-
 
 
 class UnlockRequested(View):
     """
     Ajax-only view meant for unlocking previous levels. Post params: Level.
     """
+
     def post(self, request, *args, **kwargs):
         user = self.request.user
         requested_level = request.POST["level"]
-        all_level_vocab = Vocabulary.objects.filter(reading__level=requested_level).distinct()
-        for vocabulary in all_level_vocab:
-            study_item, created = UserSpecific.objects.get_or_create(user=user, vocabulary=vocabulary)
-            #DO NOT PUT THIS IN THE GET OR CREATE OR YOULL MAKE TWO DAMN OBJECTS WF+ASDFKAJSLKHFGAKLHS (that is, if the review status is set to false
-            study_item.needs_review = True
-            study_item.save()
-        count = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level).distinct().count()
-        user.profile.unlocked_levels.get_or_create(level=requested_level)
-        logger.info("User {} has requested to unlock level {}. {} vocabulary added to review list.".format(user.username, requested_level, all_level_vocab.count()))
-        return HttpResponse("{}".format(count))
 
+        ul_count, l_count = unlock_eligible_vocab_from_level(user, requested_level)
+        user.profile.unlocked_levels.get_or_create(level=requested_level)
+
+        if l_count == 0:
+            return HttpResponse("{} vocabulary unlocked".format(ul_count))
+        else:
+            return HttpResponse(
+                "{} vocabulary unlocked.\nHowever, you still have {} vocabulary locked in WaniKani".format(ul_count,
+                                                                                                          l_count))
 
 class UnlockLevels(TemplateView):
     template_name = "kw_webapp/unlocklevels.html"
@@ -80,11 +86,13 @@ class UnlockLevels(TemplateView):
         context["levels"] = level_status
         return context
 
+
 class RecordAnswer(View):
     """
     Called via Ajax in reviews.js. Takes a UserSpecific object, and either True or False. Updates the DB in realtime
     so that if the session crashes the review at least gets partially done.
     """
+
     def get(self, request, *args, **kwargs):
         logger.error("{} attempted to access RecordAnswer via a get!".format(request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:home"))
@@ -121,7 +129,8 @@ class RecordAnswer(View):
             us.save()
             return HttpResponse("Incorrect!")
         else:
-            logger.error("{} managed to post some bad data to RecordAnswer: {}".format(request.user.username, request.POST))
+            logger.error(
+                "{} managed to post some bad data to RecordAnswer: {}".format(request.user.username, request.POST))
             return HttpResponse("Error!")
 
 
@@ -143,7 +152,7 @@ class Review(ListView):
 
     def get_queryset(self):
         user = self.request.user
-        #? randomizes the queryset.
+        # ? randomizes the queryset.
         res = UserSpecific.objects.filter(user=user, needs_review=True).order_by('?')
         return res
 
@@ -169,12 +178,12 @@ class ReviewSummary(TemplateView):
                     related_review = UserSpecific.objects.get(pk=us_id)
                     incorrect.append(related_review)
                 else:
-                    #in case somehow the us_id value is zero. should be impossible.
+                    # in case somehow the us_id value is zero. should be impossible.
                     logging.error("Un-parseable: {}".format(us_id))
             except ValueError as e:
-                #this is here to catch the CSRF token essentially.
+                # this is here to catch the CSRF token essentially.
                 logging.debug("Un-parseable: {}".format(us_id))
-        #wow what a shit-ass hack. TODO figure out the proper way to render templates off a post.
+        # wow what a shit-ass hack. TODO figure out the proper way to render templates off a post.
         return render_to_response(self.template_name, {"correct": correct,
                                                        "incorrect": incorrect,
                                                        "correct_count": len(correct),
@@ -183,7 +192,6 @@ class ReviewSummary(TemplateView):
 
 
 class Logout(TemplateView):
-
     def get(self, request, *args, **kwargs):
         logger.info("{} has requested a logout.".format(request.user.username))
         logout(request=request)

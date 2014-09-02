@@ -5,6 +5,7 @@
 {{ block.super }}
 <script src="{% static "js/unlocklevels.js" %}"></script>
 <script src="{% static "js/notify.min.js" %}"></script>
+<link rel="stylesheet" href="{% static "css/unlocklevels.css" %}">
 {% endblock %}
 
 {% block content %}
@@ -14,11 +15,15 @@
         <ul class="list-group">
             {% for level in levels %}
                     {% if level.0 > user.profile.level %}
-                        <a href="" class="list-group-item list-group-item-danger text-center locked">Level {{ level.0 }} Locked</a>
+                        <a href="" class="list-group-item list-group-item-danger text-center locked"><p>Level {{ level.0 }} Locked</p></a>
                     {% elif level.1 == True %}
-                        <a href="" class="list-group-item list-group-item-success text-center unlocked">Level {{ level.0 }} Unlocked</a>
+                        <a href="" class="list-group-item list-group-item-success text-center unlocked"><p>Level {{ level.0 }} Unlocked</p></a>
                     {% elif level.1 == False %}
-                        <a href="" class="list-group-item list-group-item-warning text-center unlockable" id="{{ level.0 }}">Level {{ level.0 }} Unlockable</a>
+                        <a href="" class="list-group-item list-group-item-warning text-center unlockable" id="{{ level.0 }}" style="position: relative;">
+                            <p>Level {{ level.0 }} Unlockable</p>
+                            <img src="{% static "images/ajax-loader.gif" %}" id="img_{{ level.0 }}" class="image">
+                        </a>
+
                     {% endif %}
             {% endfor %}
         </ul>
