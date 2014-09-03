@@ -66,6 +66,7 @@ class Reading(models.Model):
         MaxValueValidator(50),
     ])
 
+
     def __str__(self):
         return "{} - {} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character, self.level)
 
@@ -78,14 +79,16 @@ class UserSpecific(models.Model):
     streak = models.PositiveIntegerField(default=0)
     last_studied = models.DateTimeField(auto_now_add=True, blank=True)
     needs_review = models.BooleanField(default=True)
+    unlock_date = models.DateTimeField(default=timezone.now, blank=True)
 
     def __str__(self):
-        return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{}".format(self.vocabulary.meaning,
+        return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
                                                                      self.user.username,
                                                                      self.correct,
                                                                      self.incorrect,
                                                                      self.streak,
                                                                      self.last_studied,
-                                                                     self.needs_review)
+                                                                     self.needs_review,
+                                                                     self.unlock_date)
 
 
