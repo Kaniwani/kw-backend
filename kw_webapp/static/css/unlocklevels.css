@@ -5,4 +5,5 @@ img {
     position: absolute;
     display: inline;
     right: 0;
+    top:10px;
 }

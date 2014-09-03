@@ -32,6 +32,7 @@ class Dashboard(TemplateView):
         context = super(Dashboard, self).get_context_data()
         context['review_count'] = UserSpecific.objects.filter(user=self.request.user, needs_review=True).count()
         context['announcements'] = Announcement.objects.all().order_by('-pub_date')[:2]
+        #context['recent_unlocks'] = UserSpecific.objects.filter(user=self.request.user).order_by("-unlock_date")[:100]
         return context
 
 
