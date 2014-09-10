@@ -100,7 +100,6 @@ class RecordAnswer(View):
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
     def post(self, request, *args, **kwargs):
-
         us_id = request.POST["user_specific_id"]
         user_correct = True if request.POST['user_correct'] == 'true' else False
         previously_wrong = True if request.POST['wrong_before'] == 'true' else False
@@ -112,6 +111,7 @@ class RecordAnswer(View):
             us.needs_review = False
             us.last_studied = timezone.now()
             us.save()
+            return HttpResponse("Correct on first attempt!")
         elif user_correct and previously_wrong:
             us.needs_review = False
             us.last_studied = timezone.now()
@@ -131,6 +131,7 @@ class RecordAnswer(View):
             logger.error(
                 "{} managed to post some bad data to RecordAnswer: {}".format(request.user.username, request.POST))
             return HttpResponse("Error!")
+        return HttpResponse("Error!")
 
 
 class Review(ListView):
