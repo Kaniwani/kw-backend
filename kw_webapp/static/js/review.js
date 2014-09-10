@@ -108,12 +108,12 @@ $(document).ready(function() {
         vocabulary_list.push(current_vocab);
         $("#user-answer").css('background-color', 'red');
         $("#user-answer").addClass("marked");
-        $("#user-answer").blur();
+        //$("#user-answer").blur();
     }
 
     function rightAnswer(){
         $("#user-answer").css('background-color', '#00FF00');
-        $("#user-answer").blur();
+        //$("#user-answer").blur();
         $("#user-answer").addClass("marked");
 
     }
@@ -179,19 +179,49 @@ $(document).ready(function() {
        }
    }
     //Binding Enter, P, and K.
-    $(document).keypress(function(e){
-        if (e.which == 13) {
+     //$(document).keypress(function(e){
+     //   e.preventDefault();
+     //   if (e.which == 13) {
+     //       enter_pressed();
+     //   }
+     //   if($("#user-answer").hasClass("marked")) {
+     //       //expansion of phonetic and and char readings via keyboard.
+     //       if (e.which == 80 || e.which == 112) {
+     //           $("#button-reading").click();
+     //       }
+     //       else if (e.which == 75 || e.which == 107) {
+     //           $("#button-character").click();
+     //       }
+     //   }
+    //});
+
+   function keyboard_shortcuts(event){
+       if (event.which == 13) {
+           event.stopPropagation();
+           event.preventDefault();
             enter_pressed();
-        }
-        if($("#user-answer").hasClass("marked")) {
-            //expansion of phonetic and and char readings via keyboard.
-            if (e.which == 80 || e.which == 112) {
-                $("#button-reading").click();
-            }
-            else if (e.which == 75 || e.which == 107) {
-                $("#button-character").click();
-            }
-        }
+       }
+       if($("#user-answer").hasClass("marked")) {
+           event.stopPropagation();
+           event.preventDefault();
+
+           //expansion of phonetic and and char readings via keyboard.
+           if (event.which == 80 || event.which == 112) {
+               $("#button-reading").click();
+           }
+           else if (event.which == 75 || event.which == 107) {
+               $("#button-character").click();
+           }
+       }
+    }
+    function null_out(event){
+        event.preventDefault();
+    }
+
+    $("#user-answer").on("keypress", keyboard_shortcuts);
+
+    $("#check-ans-btn").click(function(){
+       enter_pressed();
     });
 
    $("#button-reading").click(function() {

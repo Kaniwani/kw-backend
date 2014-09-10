@@ -5,19 +5,23 @@
 {% block scripts %}
     <script src="{% static "js/review.js"%}"></script>
     <script src="{% static "js/wanakana.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "css/review.css"%}">
 {% endblock scripts %}
 
 {% block content %}
 <div class="container-full container-fluid">
-    <div class="row">
-        <div class="col-md-1">
-               <a href="{% url "kw:home" %}" class="center-block"><button class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-home"></i></button></a>
-        </div>
-        <h1 id="meaning" class="col-md-10 text-center">Meaning</h1>
-        <h1 class="text-center col-md-1" id="reviews-left">1</h1>
+    <div class="row"style="height: 70px">
+               <a href="{% url "kw:home" %}" class="col-md-1 col-md-offset-0 col-xs-2 col-xs-offset-2 "><button class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-home"></i></button></a>
+               <h1 id="reviews-left" class="col-xs-2 col-xs-offset-4 col-md-offset-10 col-md-1">1</h1>
     </div>
-    <div class="row">
-        <input type="text" class="col-md-12 text-center" id="user-answer" placeholder="答え" style="font-size: 44pt" autocapitalize="off" autocorrect="off" spellcheck="false">
+
+    <div class="row" style="height: 100px">
+        <h1 id="meaning" class="text-center hint">Meaning</h1>
+    </div>
+    <div class="row" style="height: 100px">
+        <!--<input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" class="col-md-12 text-center" id="user-answer" placeholder="答え" style="font-size: 44pt"> -->
+        <input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" class="col-sm-12 col-xs-10 text-center" id="user-answer" placeholder="答え" style="height:100%; font-size: 44pt">
+        <button id="check-ans-btn" class=" btn btn-lg btn-primary col-xs-2 visible-xs-inline visible-xs-inline-block" style="height: 100%"><span class="glyphicon glyphicon-chevron-right"></span> </button>
         <input type="hidden" id="us-id" value="Nothing!">
     </div>
     <div class="row">
@@ -27,18 +31,17 @@
             </div>
             <div class="row">
                 <div id="details-reading" class="jumbotron">
-                    <p id="kana" class="text-center" style="font-size: 44pt">Placeholder!</p>
+                    <h1 id="kana" class="text-center hint">Placeholder!</h1>
                 </div>
             </div>
         </div>
-
         <div class="col-md-6 col-xs-6 col-sm-6">
             <div class="row">
                 <a href="#" id="button-character" class="btn btn-primary disabled btn-lg col-md-12 col-xs-12 col-sm-12">Show <strong>K</strong>anji</a>
             </div>
             <div class="row">
                 <div id="details-character" class="jumbotron">
-                    <p id="character" class="text-center" style="font-size: 44pt">Placeholder Kanji</p>
+                    <h1 id="character" class="text-center hint">Placeholder Kanji</h1>
                  </div>
             </div>
         </div>
