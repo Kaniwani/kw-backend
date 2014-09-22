@@ -22,9 +22,9 @@
         <div class="row">
             <button id="force-srs" class="btn-success btn-lg col-xs-4"><span class="glyphicon glyphicon-refresh"></span> </button>
             {% if review_count > 0 %}
-                <a href="{% url "kw:review" %}" class="btn btn-primary btn-lg center-block col-xs-8" role="button" id="review-count">{{ review_count }} Review{{ review_count|pluralize }} </a>
+                <a id="review-count" href="{% url "kw:review" %}" class="btn btn-primary btn-lg center-block col-xs-8" role="button" >{{ review_count }} Review{{ review_count|pluralize }} </a>
             {% else %}
-                <a href="{% url "kw:review" %}" class="btn btn-primary btn-lg disabled center-block col-xs-8" role="button" id="review-count"> No Reviews</a>
+                <a id="review-count" href="{% url "kw:review" %}" class="btn btn-primary btn-lg disabled center-block col-xs-8" role="button" id="review-count"> No Reviews</a>
             {% endif %}
         </div>
         <div class="row">

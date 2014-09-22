@@ -10,4 +10,5 @@ $(document).ready(function() {
         $("#incorrect_jumbo").toggle();
     });
 
+
 });
