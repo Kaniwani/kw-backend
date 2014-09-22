@@ -82,6 +82,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'kw_webapp.tasks.all_srs',
         'schedule': timedelta(minutes=15)
     },
+    'update_users_unlocked_vocab': {
+        'task': 'kw_webapp.tasks.sync_all_users_to_wk',
+        'schedule': timedelta(hours=12)
+    },
 }
 
 

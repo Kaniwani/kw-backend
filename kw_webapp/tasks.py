@@ -134,6 +134,7 @@ def sync_with_wk(user):
     :param user: The user to check for new unlocks
     :return:
     '''
+    #We split this into two seperate API calls as we do not necessarily know the current level until
     logger.info("Beginning Profile Sync with WK for {}".format(user.username))
     sync_user_profile_with_wk(user)
     logger.info("Finished Profile Sync with WK for {}".format(user.username))
@@ -163,11 +164,10 @@ def sync_with_wk(user):
 
 @celery_app.task()
 def sync_all_users_to_wk():
-    logger.info("Beginning Daily Sync for all user!")
+    logger.info("Beginning Bi-daily Sync for all user!")
     users = User.objects.all()
     for user in users:
         try:
-            print(user.profile.level)
             sync_with_wk.delay(user)
         except Profile.DoesNotExist:
             logger.error("{} has no profile!".format(user.username))
