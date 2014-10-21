@@ -183,4 +183,27 @@ class TestViews(TestCase):
 
         self.assertRaises(Http404, generic_view, request)
 
+    def test_vocab_page_contains_only_unlocked_vocab(self):
+        u = create_user("Tadgh")
+        v1 = create_vocab("cat")
+        r1 = create_reading(v1, "猫", "ねこ", 5)
+        v2 = create_vocab("dog")
+        r2 = create_reading(v2, "犬", "いぬ", 5)
+        review = create_userspecific(v1, u)
+        request = self.factory.get('/kw/vocabulary')
+        request.user = u
+        returned_response = kw_webapp.views.UnlockedVocab.as_view()(request).render().content
+        self.assertIn("cat", str(returned_response))
+
+    def test_vocab_page_doesnt_contain_locked_vocab(self):
+        u = create_user("Tadgh")
+        v1 = create_vocab("cat")
+        r1 = create_reading(v1, "猫", "ねこ", 5)
+        v2 = create_vocab("dog")
+        r2 = create_reading(v2, "犬", "いぬ", 5)
+        review = create_userspecific(v1, u)
+        request = self.factory.get('/kw/vocabulary')
+        request.user = u
+        returned_response = kw_webapp.views.UnlockedVocab.as_view()(request).render().content
+        self.assertNotIn("dog", str(returned_response))
 
