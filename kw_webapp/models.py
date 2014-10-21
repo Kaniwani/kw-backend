@@ -26,6 +26,8 @@ class Level(models.Model):
         MinValueValidator(1),
         MaxValueValidator(50),
     ])
+    def __str__(self):
+        return self.level
 
 
 class Profile(models.Model):
@@ -41,6 +43,10 @@ class Profile(models.Model):
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')
         return x
+    
+    def __str__(self):
+        return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
+
 
 
 class Vocabulary(models.Model):
@@ -55,6 +61,8 @@ class Vocabulary(models.Model):
     def get_absolute_url(self):
         return "https://www.wanikani.com/vocabulary/{}/".format(self.reading_set.all()[0])
 
+    def __str__(self):
+        return self.meaning
 
 
 class Reading(models.Model):

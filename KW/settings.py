@@ -51,7 +51,13 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "tasks.log"),
-        }
+        },
+	'sporadic_tasks': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'formatter': 'verbose',
+            'filename': os.path.join(BASE_DIR, "logs", "sporadic_tasks.log"),
+	}
     },
     'loggers': {
         'kw.views': {
@@ -69,6 +75,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+	'kw.db_repopulator': {
+            'handlers': ['sporadic_tasks', 'errors'],
+            'level': 'DEBUG',
+            'propagate': True,
+	},
     },
 }
 
