@@ -107,11 +107,11 @@ CELERYBEAT_SCHEDULE = {
 SECRET_KEY = secrets.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1','localhost', 'www.kaniwani.com', '.kaniwani.com']
 
 # Application definition
 
