@@ -5,8 +5,9 @@ $(document).ready(function() {
     $("#force-srs").click(function(){
         $.get("/kw/force_srs/").done(function(data){
             if (parseInt(data) > 0){
-                $("#review-count").html(data + " Reviews");
+                $("#review-count").html(data + (parseInt(data) > 1 ? " Reviews" : " Review"));
                 $("#review-count").removeClass("disabled");
+
             }
 
         });

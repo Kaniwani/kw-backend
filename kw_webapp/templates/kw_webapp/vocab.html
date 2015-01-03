@@ -1,0 +1,14 @@
+{% extends "kw_webapp/logged_in.html" %}
+{% load staticfiles %}
+{% block content %}
+{{ block.super}}
+<ul class="list-group">
+{% for vocabulary in object_list %}
+    <li class="list-group-item">
+        {% for reading in vocabulary.reading_set.all %}
+           {{ reading.vocabulary.meaning }} -- {{reading.character}} -- {{ reading.kana }} <br>
+        {% endfor %}
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}

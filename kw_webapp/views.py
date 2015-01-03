@@ -88,6 +88,15 @@ class UnlockLevels(TemplateView):
         context["levels"] = level_status
         return context
 
+class UnlockedVocab(ListView):
+    template_name = "kw_webapp/vocab.html"
+    model = Vocabulary
+
+    def get_queryset(self):
+        all_us = UserSpecific.objects.filter(user=self.request.user).select_related('vocabulary')
+        all_vocab = [u.vocabulary for u in all_us]
+        return all_vocab
+
 
 class RecordAnswer(View):
     """
