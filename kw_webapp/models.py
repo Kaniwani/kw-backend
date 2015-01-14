@@ -27,7 +27,7 @@ class Level(models.Model):
         MaxValueValidator(50),
     ])
     def __str__(self):
-        return self.level
+        return str(self.level)
 
 
 class Profile(models.Model):
