@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 from datetime import timedelta
 import os
 from django.core.urlresolvers import reverse_lazy
+
 import KW.secrets as secrets
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -107,7 +109,7 @@ CELERYBEAT_SCHEDULE = {
 SECRET_KEY = secrets.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 TEMPLATE_DEBUG = True
 
@@ -152,16 +154,24 @@ WSGI_APPLICATION = 'KW.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': secrets.DB_NAME,
-        'USER': secrets.DB_USER,
-        'PASSWORD': secrets.DB_PASSWORD,
-        'HOST': 'localhost',
-        'PORT': '',
+if secrets.DB_TYPE == "postgres":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': secrets.DB_NAME,
+            'USER': secrets.DB_USER,
+            'PASSWORD': secrets.DB_PASSWORD,
+            'HOST': 'localhost',
+            'PORT': '',
+        }
     }
-}
+elif secrets.DB_TYPE == "sqlite":
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
