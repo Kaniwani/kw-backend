@@ -113,7 +113,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost', 'www.kaniwani.com', '.kaniwani.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 
 # Application definition
 
