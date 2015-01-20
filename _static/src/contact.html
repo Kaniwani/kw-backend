@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title></title>
+
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+
+  <link rel="stylesheet" href="/static/css/navbar_top.css">
+  <link rel="stylesheet" href="/static/css/contact.css">
+  <script src="/static/js/contact.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">KaniWani</a>
+        </div>
+        <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li id="home_tab">
+              <a href="/kw/">
+                <span class="glyphicon glyphicon-home">
+                </span>
+              </a>
+            </li>
+            <li id="unlocks_tab">
+              <a href="/kw/unlocks/">
+                <span class="glyphicon glyphicon-lock">
+                </span>
+              </a>
+            </li>
+            <li id="about_tab">
+              <a href="/kw/about/">
+                <span class="glyphicon glyphicon-question-sign">
+                </span>
+              </a>
+            </li>
+            <li id="vocabulary_tab">
+              <a href="/kw/vocabulary/">
+                <span class="glyphicon glyphicon-briefcase">
+                </span>
+              </a>
+            </li>
+            <li id="contact_tab" class="active">
+              <a href="/kw/contact/">
+                <span class="glyphicon glyphicon-envelope">
+                </span>
+              </a>
+            </li>
+          </ul>
+          <a href="/kw/logout/" id="logoutbtn" class="btn btn-default navbar-btn navbar-nav navbar-right" role="button">Logout</a>
+        </div>
+        <!--/.nav-collapse -->
+      </div>
+    </div>
+  </div>
+  <div class="well" id="contactdiv">
+    <h1 class="text-center">Contact me</h1>
+    <p>Sorry, no contact form setup yet. Please get a hold of me at <a href="mailto:tadgh@cs.toronto.edu">my email address.</a> If you find a bug in the site(and there will be plenty, I'm not a web developer), submit a bug report <a href="https://docs.google.com/forms/d/11y5CimRb7E1m-xCsRcPu-Ee5z1hddArCScy6s8XUGqA/viewform?usp=send_form"> here!</a>
+    </p>
+  </div>
+</body>
+</html>
