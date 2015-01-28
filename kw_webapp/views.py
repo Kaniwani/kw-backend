@@ -41,7 +41,6 @@ class ForceSRSCheck(View):
     temporary view that allows users to force an SRS update check on their account. Any thing that needs reviewing will
     added to the review queue.
     """
-
     def get(self, request, *args, **kwargs):
         user = request.user
         number_of_reviews = all_srs(user)
