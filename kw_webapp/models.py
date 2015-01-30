@@ -87,7 +87,7 @@ class UserSpecific(models.Model):
     last_studied = models.DateTimeField(auto_now_add=True, blank=True)
     needs_review = models.BooleanField(default=True)
     unlock_date = models.DateTimeField(default=timezone.now, blank=True)
-    next_review_date = models.DateTimeField(null=True, blank=True)
+    next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
     burnt = models.BooleanField(default=False)
 
     def __str__(self):

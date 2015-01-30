@@ -70,6 +70,7 @@ def associate_vocab_to_user(vocab, user):
         review, created = UserSpecific.objects.get_or_create(vocabulary=vocab, user=user)
         if created:
             review.needs_review = True
+            review.next_review_date = timezone.now()
             meaning = review.vocabulary.meaning
             review.save()
             return meaning
@@ -214,3 +215,26 @@ def repopulate():
                                      associated to vocab {}""".format(new_reading.kana,new_reading.level, new_reading.vocabulary.meaning))
         else:
             logger.error("Status code returned from WaniKani API was not 200! It was {}".format(r.status_code))
+
+def correct_next_review_times():
+    srs_times = {
+        0: 4,
+        1: 4,
+        2: 8,
+        3: 24,
+        4: 72,
+        5: 168,
+        6: 336,
+        7: 720,
+        8: 2160,
+    }
+
+    us = UserSpecific.objects.filter(next_review_date=None)
+    for review in us:
+        review.next_review_date = review.last_studied + timedelta(hours=srs_times[review.streak])
+        print("****\nLR:\t{}\nS:\t{}\nNR:\t{}\n".format(review.last_studied, review.streak, review.next_review_date))
+        review.save()
+
+
+
+

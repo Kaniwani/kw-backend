@@ -57,13 +57,15 @@ class Dashboard(TemplateView):
         context = super(Dashboard, self).get_context_data()
         context['review_count'] = UserSpecific.objects.filter(user=self.request.user, needs_review=True).count()
         if context['review_count'] == 0:
-            next_review_timestamp = UserSpecific.objects.filter(user=self.request.user).exclude(next_review_date=None).annotate(Min('next_review_date')).order_by('next_review_date')[0].next_review_date
-            print(next_review_timestamp)
-            context['next_review_date'] = next_review_timestamp - timezone.now()
-            #TODO figure out how to show this on the main page.
+            reviews = UserSpecific.objects.filter(user=self.request.user).exclude(next_review_date=None).annotate(Min('next_review_date')).order_by('next_review_date')
+            print(reviews)
+            if reviews:
+                next_review_timestamp = reviews[0].next_review_date
+                print(next_review_timestamp)
+                context['next_review_date'] = next_review_timestamp
+
         else:
             context['next_review_date'] = 0
-        print("NEXT REVIEW TIME IS: {}".format(context['next_review_date']))
         context['announcements'] = Announcement.objects.all().order_by('-pub_date')[:2]
         #context['recent_unlocks'] = UserSpecific.objects.filter(user=self.request.user).order_by("-unlock_date")[:100]
         return context

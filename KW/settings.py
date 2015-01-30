@@ -38,31 +38,36 @@ LOGGING = {
         },
         'views': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "views.log"),
         },
         'models': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "models.log"),
         },
         'errors': {
             'level': 'ERROR',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "errors.log"),
         },
         'tasks': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "tasks.log"),
         },
         'sporadic_tasks': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "sporadic_tasks.log"),
         }
@@ -151,7 +156,8 @@ INSTALLED_APPS = (
     'kw_webapp',
     'south',
     'crispy_forms',
-    'raven.contrib.django.raven_compat'
+    'raven.contrib.django.raven_compat',
+    'django.contrib.humanize',
 )
 
 MIDDLEWARE_CLASSES = (
