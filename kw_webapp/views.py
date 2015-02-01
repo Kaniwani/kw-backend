@@ -3,9 +3,9 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
-from django.views.generic import TemplateView, ListView, FormView, View
+from django.views.generic import TemplateView, ListView, FormView, View, DetailView
 from kw_webapp.models import Profile, UserSpecific, Vocabulary, Announcement
-from kw_webapp.forms import UserCreateForm
+from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.core import serializers
 from django.utils import timezone
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level
@@ -13,6 +13,32 @@ from django.db.models import Min
 import logging
 
 logger = logging.getLogger("kw.views")
+
+
+class Settings(FormView):
+    template_name = "kw_webapp/settings.html"
+    form_class = SettingsForm
+
+    def get_context_data(self, **kwargs):
+        context = super(Settings, self).get_context_data()
+        form = SettingsForm(instance=self.request.user.profile)
+        context['form'] = form
+        return context
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        data = form.cleaned_data
+        self.request.user.profile.api_key = data['api_key']
+        self.request.user.profile.save()
+        logger.info("Saved Settings changes for {}.".format(self.request.user.username))
+        return HttpResponseRedirect(reverse_lazy("kw:settings"))
+
+    def form_invalid(self, form):
+        print(form.cleaned_data)
+        print(form.errors)
+        return HttpResponseRedirect(reverse_lazy("kw:settings"))
+
+
 
 
 class About(TemplateView):

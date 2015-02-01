@@ -6,6 +6,9 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 import requests
+from kw_webapp.models import Profile
+from django.utils.translation import ugettext, ugettext_lazy as _
+
 
 
 class UserLoginForm(AuthenticationForm):
@@ -65,3 +68,35 @@ class UserCreateForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "email")
+
+
+class SettingsForm(ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['api_key', 'level']
+
+    def __init__(self, *args, **kwargs):
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_action = ''
+        self.helper.add_input(Submit("submit", "Save"))
+        self.helper.form_class = 'form-horizontal'
+        self.helper.label_class = 'col-lg-4'
+        self.helper.field_class = 'col-lg-8'
+        self.helper.form_style = "default"
+        self.helper.help_text_inline = True
+        self.helper.error_text_inline = False
+        super(SettingsForm, self).__init__(*args, **kwargs)
+        self.fields['level'].widget.attrs['readonly'] = True
+
+    def clean_api_key(self):
+        api_key = self.cleaned_data['api_key']
+        r = requests.get("https://www.wanikani.com/api/user/{}/user-information".format(api_key))
+        if r.status_code == 200:
+            json_data = r.json()
+            if "error" in json_data.keys():
+                raise ValidationError("API Key not associated with a WaniKani User!")
+        print("cleaned api Key...")
+        return api_key
+
+
