@@ -205,12 +205,18 @@ $(document).ready(function() {
            event.stopPropagation();
            event.preventDefault();
 
-           //expansion of phonetic and and char readings via keyboard.
+           //Pressing P toggles phonetic reading
            if (event.which == 80 || event.which == 112) {
                $("#button-reading").click();
            }
+           //Pressing K toggles the actual kanji reading.
            else if (event.which == 75 || event.which == 107) {
                $("#button-character").click();
+           }
+           //Pressing F toggles both item info boxes.
+           else if (event.which == 70 || event.which == 102) {
+               $("#button-character").click();
+               $("#button-reading").click();
            }
        }
     }
@@ -231,8 +237,5 @@ $(document).ready(function() {
    $("#button-character").click(function() {
        $("#details-character").toggle();
    });
-
-
-
 
 });

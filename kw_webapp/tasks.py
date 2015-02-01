@@ -149,19 +149,34 @@ def sync_with_wk(user):
 
         vocab_info = json_data['requested_information']
         recently_unlocked = []
-        for vocabulary in vocab_info: #go through All vocab for the level
-            if vocabulary['user_specific'] is not None: #if user has unlocked it in WK
-                vocab = get_vocab_by_meaning(vocabulary['meaning'])
-                if vocab:
-                    new_review = associate_vocab_to_user(vocab, user) #gets or creates a review object. if created, set it to need review now.
-                    if new_review:
-                        recently_unlocked.append(new_review)
+        for vocabulary_json in vocab_info: #go through All vocab for the level
+            if vocabulary_json['user_specific'] is not None: #if user has unlocked it in WK
+                try:
+                    vocab = get_vocab_by_meaning(vocabulary_json['meaning'])
+                except Vocabulary.DoesNotExist as e:
+                    logger.error(e)
+                    vocab = create_new_vocabulary(vocabulary_json)
 
+                new_review = associate_vocab_to_user(vocab, user) #gets or creates a review object. if created, set it to need review now.
+                if new_review:
+                    recently_unlocked.append(new_review)
         logger.info("{} recently unlocked: {}".format(user.username, recently_unlocked))
         logger.info("Finished Vocabulary Sync for {}".format(user.username))
     else:
         logger.error("{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
 
+def create_new_vocabulary(vocabulary_json):
+    logger.info("Creating new vocabulary...")
+    character = vocabulary_json["character"]
+    kana_list = [reading.strip() for reading in vocabulary_json["kana"].split(",")]#Splits out multiple readings for one vocab.
+    meaning = vocabulary_json["meaning"]
+    level = vocabulary_json["level"]
+    vocab = Vocabulary.objects.create(meaning=meaning)
+    for reading in kana_list:
+        vocab.reading_set.get_or_create(kana=reading, character=character, level=level)
+        logger.info("added reading to {}: {} ".format(vocab, reading))
+
+    return vocab
 @celery_app.task()
 def sync_all_users_to_wk():
     logger.info("Beginning Bi-daily Sync for all user!")
@@ -171,3 +186,31 @@ def sync_all_users_to_wk():
             sync_with_wk.delay(user)
         except Profile.DoesNotExist:
             logger.error("{} has no profile!".format(user.username))
+
+@celery_app.task()
+def repopulate():
+    url = "https://www.wanikani.com/api/user/50f4abec6b4afdecdb892938e1193edb/vocabulary/{}"
+    logger.info("Staring DB Repopulation from WaniKani")
+    for level in range(1, 51):
+        r = requests.get(
+            url.format(level))
+        if r.status_code == 200:
+            json_data = r.json()
+            vocabulary_list = json_data['requested_information']
+            for vocabulary in vocabulary_list:
+                character = vocabulary["character"]
+                kana = [reading.strip() for reading in vocabulary["kana"].split(",")]#Splits out multiple readings for one vocab.
+                meaning = vocabulary["meaning"]
+                level = vocabulary["level"]
+                new_vocab, created = Vocabulary.objects.get_or_create(
+                    meaning=meaning)
+                if created:
+                    logger.info("Found new Vocabulary item from WaniKani:{}".format(new_vocab.meaning))
+                for reading in kana:
+                    new_reading, created = new_vocab.reading_set.get_or_create(
+                        kana=reading, character=character, level=level)
+                    if created:
+                        logger.info("""Created new reading: {}, level {}
+                                     associated to vocab {}""".format(new_reading.kana,new_reading.level, new_reading.vocabulary.meaning))
+        else:
+            logger.error("Status code returned from WaniKani API was not 200! It was {}".format(r.status_code))

@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 from datetime import timedelta
 import os
 from django.core.urlresolvers import reverse_lazy
+import raven
+
 
 import KW.secrets as secrets
 
@@ -30,6 +32,10 @@ LOGGING = {
         },
     },
     'handlers': {
+        'sentry': {
+            'level': 'ERROR',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+        },
         'views': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
@@ -54,34 +60,34 @@ LOGGING = {
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "tasks.log"),
         },
-	'sporadic_tasks': {
+        'sporadic_tasks': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "sporadic_tasks.log"),
-	}
+        }
     },
     'loggers': {
         'kw.views': {
-            'handlers': ['views', 'errors'],
+            'handlers': ['views', 'errors', 'sentry'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.models': {
-            'handlers': ['models', 'errors'],
+            'handlers': ['models', 'errors', 'sentry'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.tasks': {
-            'handlers': ['tasks', 'errors'],
+            'handlers': ['tasks', 'errors', 'sentry'],
             'level': 'DEBUG',
             'propagate': True,
         },
-	'kw.db_repopulator': {
-            'handlers': ['sporadic_tasks', 'errors'],
+        'kw.db_repopulator': {
+            'handlers': ['sporadic_tasks', 'errors', 'sentry'],
             'level': 'DEBUG',
             'propagate': True,
-	},
+        },
     },
 }
 
@@ -99,6 +105,16 @@ CELERYBEAT_SCHEDULE = {
         'task': 'kw_webapp.tasks.sync_all_users_to_wk',
         'schedule': timedelta(hours=12)
     },
+    'sync_vocab_db_with_wk': {
+        'task': 'kw_webapp.tasks.repopulate',
+        'schedule': timedelta(hours=3)
+
+    }
+}
+
+#RAVEN DSN SETTINGS
+RAVEN_CONFIG = {
+    'dsn': secrets.RAVEN_DSN,
 }
 
 
@@ -113,7 +129,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost', 'www.kaniwani.com', '.kaniwani.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 
 # Application definition
 
@@ -135,6 +151,7 @@ INSTALLED_APPS = (
     'kw_webapp',
     'south',
     'crispy_forms',
+    'raven.contrib.django.raven_compat'
 )
 
 MIDDLEWARE_CLASSES = (
