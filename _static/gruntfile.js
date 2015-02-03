@@ -71,16 +71,18 @@ module.exports = function(grunt) {
     compass: {
       dist: {
         options: {
-          require: ['breakpoint'],
-          sassDir: 'src/scss',
-          cssDir: 'dist/assets/css'
+          bundleExec: true,
+          require: ['breakpoint', 'bootstrap-sass'],
+          sassDir: 'source/scss',
+          cssDir: 'dist/assets/css',
           environment: 'production'
         }
       },
       dev: {
         options: {
-          require: ['breakpoint'],
-          sassDir: 'src/scss',
+          bundleExec: true,
+          require: ['breakpoint', 'bootstrap-sass'],
+          sassDir: 'source/scss',
           cssDir: 'build/assets/css'
         }
       }
