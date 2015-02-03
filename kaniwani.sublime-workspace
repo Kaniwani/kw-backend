@@ -1,0 +1,301 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "My01kaniwani2password3!\ne81356b92ec6dd90bf427d3d103caf3ab60c53f5\ndjango-auth",
+			"settings":
+			{
+				"buffer_size": 76,
+				"line_ending": "Unix",
+				"name": "My01kaniwani2password3!"
+			}
+		},
+		{
+			"file": ".gitignore",
+			"settings":
+			{
+				"buffer_size": 1269,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"selected_items":
+		[
+			[
+				"rein",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"ins",
+				"Package Control: Install Package"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"inst",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 533.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '7183a2d3e96f11eeadd761d777e62404' + 'e330c659d4bb41d3bdf022e94cab3cd0'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com"
+	],
+	"file_history":
+	[
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/gruntfile.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/scripts.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/package.json",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/helpers/_helpers.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/layout/_layout.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/pages/_pages.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/themes/_themes.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/vendor/_vendor.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/vendor/_owl.theme.default-old.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/pages/_world.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/components/_components.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/base/_fonts.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/base/_base.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/scss/components/_animation.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/components/gallery.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/vendor/CSSPlugin.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/vendor/track.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/vendor/autoplay.detect.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/src/login.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/fonts/icomoon.eot",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/components/animations.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/components/animate.svg.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/components/menu.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/components/more.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/components/scroll.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/components/smoothstate.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/components/sticky.header.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/components/video.transitions.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/js/components/utilities.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/src/contact.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/src/index.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/src/about.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/src/vocab.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/src/unlocks.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/README.md",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/templates/kw_webapp/home.html",
+		"/Users/jonathancousins/.bashrc",
+		"/Users/jonathancousins/Dev/ry/smoothstate2/scss/components/_animation.scss",
+		"/Users/jonathancousins/Dev/ry/smoothstate2/index.html",
+		"/Users/jonathancousins/Dev/ry/smoothstate2/new.html",
+		"/Users/jonathancousins/Dev/ry/smoothstate2/assets/js/scripts.js",
+		"/Users/jonathancousins/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings",
+		"/Users/jonathancousins/Library/Application Support/Sublime Text 3/Packages/User/_Preferences.sublime-settings",
+		"/Users/jonathancousins/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings",
+		"/Users/jonathancousins/Library/Application Support/Sublime Text 3 copy/Packages/User/Preferences.sublime-settings"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"                   //",
+			"source",
+			".Gallery",
+			"MaceWorld.",
+			">",
+			"><"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 76,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								76,
+								76
+							]
+						],
+						"settings":
+						{
+							"auto_name": "My01kaniwani2password3!",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": ".gitignore",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1269,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								920,
+								920
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 793.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 32.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "kaniwani.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 283.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
