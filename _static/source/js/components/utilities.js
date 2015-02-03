@@ -1,7 +1,7 @@
-window.MaceWorld = window.MaceWorld || {};
+window.KaniWani = window.KaniWani || {};
 
 
-MaceWorld.utility = {
+KaniWani.utility = {
   /**
    * Checks to see if the url is an internal hash
    * @param   {string}    url - url being evaluated

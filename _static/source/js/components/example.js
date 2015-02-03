@@ -28,7 +28,7 @@ KaniWani.Example = {
 
   helpers: {
     exampleHelper: function($this) {
-      console.log('woot')
+      console.log('woot');
     },
   }
 };

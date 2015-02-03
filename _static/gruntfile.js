@@ -10,27 +10,27 @@ module.exports = function(grunt) {
         expand: true,
         src: '**/*.html',
         dest: 'build', 
-        cwd: 'src'
+        cwd: 'source'
       },
 
       fontassets: {
         expand: true,
         src: '**/*',
         dest: 'build/assets/fonts',
-        cwd: 'src/fonts'
+        cwd: 'source/fonts'
       },
 
       imgassets: {
         expand: true,
         src: '**/*',
         dest: 'build/assets/img',
-        cwd: 'src/img'
+        cwd: 'source/img'
       }
     },
 
     //Check JavaScript quality
     jshint: {
-      all: ['src/js/components/**/*', 'src/js/helpers/**/*.js', 'src/js/scripts.js'],
+      all: ['source/js/components/**/*', 'source/js/helpers/**/*.js', 'source/js/scripts.js'],
       options: {
         jshintrc: '.jshintrc',
       }
@@ -40,7 +40,7 @@ module.exports = function(grunt) {
     codekit: {
       jsinclude : {
         files : {
-          'build/assets/js/scripts.js' : 'src/js/scripts.js'
+          'build/assets/js/scripts.js' : 'source/js/scripts.js'
         }
       }
     },
@@ -63,7 +63,7 @@ module.exports = function(grunt) {
       },
         
       allFiles: [
-        'src/scss/**/*.scss'
+        'source/scss/**/*.scss', '!source/scss/vendor/**/*.scss'
       ]
     },
 
@@ -92,7 +92,7 @@ module.exports = function(grunt) {
     connect: {
       server: {
         options: {
-          hostname: '',
+          hostname: '127.0.0.1',
           port: 8888,
           base: 'build',
           livereload: true
@@ -103,27 +103,27 @@ module.exports = function(grunt) {
     //Watch task with livereload
     watch: {
       html: {
-        files: ['src/**/*.html'],
+        files: ['source/**/*.html'],
         tasks: ['copy:html']
       },
       
       scripts: {
-        files: ['src/js/**/*.js'],
+        files: ['source/js/**/*.js'],
         tasks: ['jshint','codekit']
       },
 
       styles: {
-        files: 'src/scss/**/*.scss',
+        files: 'source/scss/**/*.scss',
         tasks: ['compass']
       },
 
       images: {
-        files: ['src/img/**/*'],
+        files: ['source/img/**/*'],
         tasks: ['copy:imgassets']
       },
 
       fonts: {
-        files: ['src/fonts/**/*'],
+        files: ['source/fonts/**/*'],
         tasks: ['copy:fontassets']
       },
 
@@ -171,7 +171,6 @@ module.exports = function(grunt) {
     'copy',
     'jshint',
     'codekit',
-    // 'uglify',
     'scsslint',
     'compass:dev',
     'connect:server',
@@ -179,7 +178,7 @@ module.exports = function(grunt) {
   ]);
 
   // Production task
-  grunt.registerTask('default', [
+  grunt.registerTask('dist', [
     'copy',
     'jshint',
     'codekit',
