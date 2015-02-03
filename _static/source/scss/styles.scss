@@ -1,7 +1,9 @@
 @import 'compass';
+@import 'breakpoint';
+
+$icon-font-path: '/assets/fonts/bootstrap/';
 @import 'bootstrap-sprockets';
 @import 'bootstrap';
-@import 'breakpoint';
 
 @import 'vendor/vendor';
 @import 'helpers/helpers';
