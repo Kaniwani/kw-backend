@@ -289,7 +289,7 @@ def correct_next_review_times():
     '''
 
 
-    us = UserSpecific.objects.filter(next_review_date=None)
+    us = UserSpecific.objects.filter(next_review_date=None, streak__lte=8)
     for review in us:
         review.next_review_date = review.last_studied + timedelta(hours=constants.SRS_TIMES[review.streak])
         #TODO dump this before the push.
@@ -312,17 +312,25 @@ def pull_user_synonyms_by_level(user, level):
     print(request_string)
     if r.status_code == 200:
         json_data = r.json()
-        vocabulary_list = json_data['requested_information']
-        for vocabulary in vocabulary_list:
-            meaning = vocabulary["meaning"]
-            if vocabulary['user_specific'] and vocabulary['user_specific']['user_synonyms']:
-                try:
-                    review = UserSpecific.objects.get(vocabulary__meaning=meaning)
-                    review.synonyms = vocabulary['user_specific']['user_synonyms']
-                    review.save()
-                except UserSpecific.DoesNotExist as e:
-                    logger.error("Couldn't pull review during a synonym sync: {}".format(e))
-
+        try: 
+            vocabulary_list = json_data['requested_information']
+            for vocabulary in vocabulary_list:
+                meaning = vocabulary["meaning"]
+                if vocabulary['user_specific'] and vocabulary['user_specific']['user_synonyms']:
+                    try:
+                        review = UserSpecific.objects.get(user=user, vocabulary__meaning=meaning)
+                        review.synonyms = vocabulary['user_specific']['user_synonyms']
+                        review.save()
+                    except UserSpecific.DoesNotExist as e:
+                        logger.error("Couldn't pull review during a synonym sync: {}".format(e))
+                    except KeyError as e:
+                        print("No user_specific or synonyms?: {}".format(json_data))
+                    except UserSpecific.MultipleObjectsReturned:
+                        reviews = UserSpecific.objects.filter(user=user, vocabulary__meaning=meaning)
+                        for review in reviews:
+                            logger.error("Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(review))
+        except KeyError:
+            print("NO requested info?: {}".format(json_data))
     else:
         logger.error("Status code returned from WaniKani API was not 200! It was {}".format(r.status_code))
 
@@ -340,10 +348,11 @@ def pull_all_user_synonyms(user = None):
             logger.info("Pulled user synonyms for {}".format(user.username))
     else:
         for profile in Profile.objects.all():
-            user = profile.user
-            for level in profile.unlocked_levels_list():
-                pull_user_synonyms_by_level(user, level)
-            logger.info("Pulled user synonyms for {}".format(user.username))
+            if len(profile.api_key) == 32:
+                user = profile.user
+                for level in profile.unlocked_levels_list():
+                    pull_user_synonyms_by_level(user, level)
+                logger.info("Pulled user synonyms for {}".format(user.username))
 
 
 
