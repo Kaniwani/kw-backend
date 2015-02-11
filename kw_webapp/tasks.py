@@ -175,6 +175,9 @@ def sync_with_wk(user):
     '''
     #We split this into two seperate API calls as we do not necessarily know the current level until
     #TODO refactor this function.
+
+    #For the love of god don't delete this next line
+    sync_user_profile_with_wk(user)
     request_string = build_API_sync_string_for_user(user)
     r = requests.get(request_string)
     if r.status_code == 200:
