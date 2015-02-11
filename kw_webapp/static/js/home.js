@@ -1,7 +1,6 @@
 $(document).ready(function() {
 //Setting the highlighted tab in the nav bar.
     $("#home_tab").addClass("active");
-    $("abbr.timeago").timeago();
 
     $("#force-srs").click(function(){
         $.get("/kw/force_srs/").done(function(data){

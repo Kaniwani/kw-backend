@@ -80,6 +80,7 @@ class Reading(models.Model):
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
+    synonyms = models.CharField(max_length=255, default=None, blank=True, null=True)
     user = models.ForeignKey(User)
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)
