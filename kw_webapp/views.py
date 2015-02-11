@@ -1,19 +1,45 @@
+from datetime import timedelta
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
-from django.utils.encoding import smart_str
-from django.views.generic import TemplateView, ListView, FormView, View
+from django.views.generic import TemplateView, ListView, FormView, View, DetailView
+from kw_webapp import constants
 from kw_webapp.models import Profile, UserSpecific, Vocabulary, Announcement
-from kw_webapp.forms import UserCreateForm
+from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.core import serializers
-from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level
-import kw_webapp.signals
+from django.db.models import Min
 import logging
 
 logger = logging.getLogger("kw.views")
+data_logger = logging.getLogger("kw.review_data")
+
+class Settings(FormView):
+    template_name = "kw_webapp/settings.html"
+    form_class = SettingsForm
+
+    def get_context_data(self, **kwargs):
+        context = super(Settings, self).get_context_data()
+        form = SettingsForm(instance=self.request.user.profile)
+        context['form'] = form
+        return context
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        data = form.cleaned_data
+        self.request.user.profile.api_key = data['api_key']
+        self.request.user.profile.save()
+        logger.info("Saved Settings changes for {}.".format(self.request.user.username))
+        return HttpResponseRedirect(reverse_lazy("kw:settings"))
+
+    def form_invalid(self, form):
+        print(form.cleaned_data)
+        print(form.errors)
+        return HttpResponseRedirect(reverse_lazy("kw:settings"))
+
+
 
 
 class About(TemplateView):
@@ -28,9 +54,17 @@ class Dashboard(TemplateView):
     template_name = "kw_webapp/home.html"
 
     def get_context_data(self, **kwargs):
-        logger.info("{} has navigated to dashboard".format(self.request.user.username))
         context = super(Dashboard, self).get_context_data()
         context['review_count'] = UserSpecific.objects.filter(user=self.request.user, needs_review=True).count()
+        if context['review_count'] == 0:
+            reviews = UserSpecific.objects.filter(user=self.request.user).exclude(next_review_date=None).annotate(Min('next_review_date')).order_by('next_review_date')
+            if reviews:
+                next_review_timestamp = reviews[0].next_review_date
+                print(next_review_timestamp)
+                context['next_review_date'] = next_review_timestamp
+
+        else:
+            context['next_review_date'] = 0
         context['announcements'] = Announcement.objects.all().order_by('-pub_date')[:2]
         #context['recent_unlocks'] = UserSpecific.objects.filter(user=self.request.user).order_by("-unlock_date")[:100]
         return context
@@ -41,7 +75,6 @@ class ForceSRSCheck(View):
     temporary view that allows users to force an SRS update check on their account. Any thing that needs reviewing will
     added to the review queue.
     """
-
     def get(self, request, *args, **kwargs):
         user = request.user
         number_of_reviews = all_srs(user)
@@ -103,6 +136,7 @@ class RecordAnswer(View):
     Called via Ajax in reviews.js. Takes a UserSpecific object, and either True or False. Updates the DB in realtime
     so that if the session crashes the review at least gets partially done.
     """
+    srs_times = constants.SRS_TIMES
 
     def get(self, request, *args, **kwargs):
         logger.error("{} attempted to access RecordAnswer via a get!".format(request.user.username))
@@ -113,19 +147,18 @@ class RecordAnswer(View):
         user_correct = True if request.POST['user_correct'] == 'true' else False
         previously_wrong = True if request.POST['wrong_before'] == 'true' else False
         us = get_object_or_404(UserSpecific, pk=us_id)
-        logger.info("Recording Answer for vocab:{}.\tUser Correct?: {}".format(us.vocabulary.meaning, user_correct))
-        if user_correct and not previously_wrong:
-            us.correct += 1
-            us.streak += 1
+        data_logger.info("{}|{}|{}|{}".format(us.user.username, us.vocabulary.meaning, user_correct, us.streak, us.synonyms))
+        if user_correct:
+            if not previously_wrong:
+                us.correct += 1
+                us.streak += 1
+                if us.streak >= 9:
+                    us.burnt = True
             us.needs_review = False
             us.last_studied = timezone.now()
+            us.next_review_date = timezone.now() + timedelta(hours=RecordAnswer.srs_times[us.streak])
             us.save()
-            return HttpResponse("Correct on first attempt!")
-        elif user_correct and previously_wrong:
-            us.needs_review = False
-            us.last_studied = timezone.now()
-            us.save()
-            return HttpResponse("Correct, but not on first attempt!")
+            return HttpResponse("Correct!")
         elif not user_correct:
             us.incorrect += 1
             if us.streak == 7:

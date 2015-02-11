@@ -58,7 +58,7 @@
         {% for item in object_list %}
         {
             'user_specific_id':'{{ item.id }}',
-            'meaning':'{{ item.vocabulary.meaning }}',
+            'meaning':'{{ item.vocabulary.meaning }}{% if item.synonyms %}, {{ item.synonyms }}{% endif %}',
             'readings':  [{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.kana }}',{% endif %}{% endfor %}],
             'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
         },

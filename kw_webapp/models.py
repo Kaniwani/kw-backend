@@ -39,7 +39,6 @@ class Profile(models.Model):
         MaxValueValidator(50),
     ])
     unlocked_levels = models.ManyToManyField(Level)
-
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')
         return x
@@ -81,6 +80,7 @@ class Reading(models.Model):
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
+    synonyms = models.CharField(max_length=255, default=None, blank=True, null=True)
     user = models.ForeignKey(User)
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)
@@ -88,6 +88,8 @@ class UserSpecific(models.Model):
     last_studied = models.DateTimeField(auto_now_add=True, blank=True)
     needs_review = models.BooleanField(default=True)
     unlock_date = models.DateTimeField(default=timezone.now, blank=True)
+    next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    burnt = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,

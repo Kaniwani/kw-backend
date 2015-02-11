@@ -1,5 +1,7 @@
 {% extends "kw_webapp/logged_in.html" %}
 {% load staticfiles %}
+{% load humanize %}
+
 {% block scripts %}
 {{ block.super }}
     <script src="{% static "js/home.js"%}"></script>
@@ -24,7 +26,7 @@
             {% if review_count > 0 %}
                 <a id="review-count" href="{% url "kw:review" %}" class="btn btn-primary btn-lg center-block col-xs-8" role="button" >{{ review_count }} Review{{ review_count|pluralize }} </a>
             {% else %}
-                <a id="review-count" href="{% url "kw:review" %}" class="btn btn-primary btn-lg disabled center-block col-xs-8" role="button" id="review-count"> No Reviews</a>
+                <a id="review-count" href="{% url "kw:review" %}" class="btn btn-primary btn-lg disabled center-block col-xs-8" role="button" id="review-count"> Next review: {{ next_review_date|naturaltime }}</a>
             {% endif %}
         </div>
         <div class="row">
