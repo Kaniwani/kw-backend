@@ -72,7 +72,7 @@ module.exports = function(grunt) {
       dist: {
         options: {
           bundleExec: true,
-          require: ['breakpoint', 'bootstrap-sass'],
+          require: ['breakpoint'],
           sassDir: 'source/scss',
           cssDir: 'dist/assets/css',
           environment: 'production'
@@ -81,7 +81,7 @@ module.exports = function(grunt) {
       dev: {
         options: {
           bundleExec: true,
-          require: ['breakpoint', 'bootstrap-sass'],
+          require: ['breakpoint'],
           sassDir: 'source/scss',
           cssDir: 'build/assets/css'
         }
