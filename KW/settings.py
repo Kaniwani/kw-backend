@@ -24,12 +24,15 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'formatters': {
-    'verbose': {
-        'format': '%(levelname)s---%(asctime)s---%(module)s : %(message)s',
-      },
+        'verbose': {
+            'format': '%(levelname)s---%(asctime)s---%(module)s : %(message)s',
+          },
         'simple': {
             'format': '%(levelname)s %(message)s'
         },
+        'time_only': {
+            'format': '%(asctime)s---%(message)s'
+        }
     },
     'handlers': {
         'sentry': {
@@ -38,33 +41,45 @@ LOGGING = {
         },
         'views': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "views.log"),
         },
         'models': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "models.log"),
         },
         'errors': {
             'level': 'ERROR',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "errors.log"),
         },
         'tasks': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "tasks.log"),
         },
         'sporadic_tasks': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
             'formatter': 'verbose',
             'filename': os.path.join(BASE_DIR, "logs", "sporadic_tasks.log"),
+        },
+        'review_data': {
+            'level': 'INFO',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'when': 'midnight',
+            'formatter': 'time_only',
+            'filename': os.path.join(BASE_DIR, "logs", "review_data.log"),
         }
     },
     'loggers': {
@@ -85,6 +100,11 @@ LOGGING = {
         },
         'kw.db_repopulator': {
             'handlers': ['sporadic_tasks', 'errors', 'sentry'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'kw.review_data': {
+            'handlers':['review_data'],
             'level': 'DEBUG',
             'propagate': True,
         },
@@ -125,7 +145,7 @@ RAVEN_CONFIG = {
 SECRET_KEY = secrets.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 TEMPLATE_DEBUG = True
 
@@ -151,7 +171,8 @@ INSTALLED_APPS = (
     'kw_webapp',
     'south',
     'crispy_forms',
-    'raven.contrib.django.raven_compat'
+    'raven.contrib.django.raven_compat',
+    'django.contrib.humanize',
 )
 
 MIDDLEWARE_CLASSES = (

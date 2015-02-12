@@ -3,9 +3,10 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
-from django.views.generic import TemplateView, ListView, FormView, View
+from django.views.generic import TemplateView, ListView, FormView, View, DetailView
+from kw_webapp import constants
 from kw_webapp.models import Profile, UserSpecific, Vocabulary, Announcement
-from kw_webapp.forms import UserCreateForm
+from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.core import serializers
 from django.utils import timezone
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level
@@ -13,6 +14,32 @@ from django.db.models import Min
 import logging
 
 logger = logging.getLogger("kw.views")
+data_logger = logging.getLogger("kw.review_data")
+
+class Settings(FormView):
+    template_name = "kw_webapp/settings.html"
+    form_class = SettingsForm
+
+    def get_context_data(self, **kwargs):
+        context = super(Settings, self).get_context_data()
+        form = SettingsForm(instance=self.request.user.profile)
+        context['form'] = form
+        return context
+
+    def form_valid(self, form):
+        print(form.cleaned_data)
+        data = form.cleaned_data
+        self.request.user.profile.api_key = data['api_key']
+        self.request.user.profile.save()
+        logger.info("Saved Settings changes for {}.".format(self.request.user.username))
+        return HttpResponseRedirect(reverse_lazy("kw:settings"))
+
+    def form_invalid(self, form):
+        print(form.cleaned_data)
+        print(form.errors)
+        return HttpResponseRedirect(reverse_lazy("kw:settings"))
+
+
 
 
 class About(TemplateView):
@@ -27,17 +54,17 @@ class Dashboard(TemplateView):
     template_name = "kw_webapp/home.html"
 
     def get_context_data(self, **kwargs):
-        logger.info("{} has navigated to dashboard".format(self.request.user.username))
         context = super(Dashboard, self).get_context_data()
         context['review_count'] = UserSpecific.objects.filter(user=self.request.user, needs_review=True).count()
         if context['review_count'] == 0:
-            next_review_timestamp = UserSpecific.objects.filter(user=self.request.user).exclude(next_review_date=None).annotate(Min('next_review_date')).order_by('next_review_date')[0].next_review_date
-            print(next_review_timestamp)
-            context['next_review_date'] = next_review_timestamp - timezone.now()
-            #TODO figure out how to show this on the main page.
+            reviews = UserSpecific.objects.filter(user=self.request.user).exclude(next_review_date=None).annotate(Min('next_review_date')).order_by('next_review_date')
+            if reviews:
+                next_review_timestamp = reviews[0].next_review_date
+                print(next_review_timestamp)
+                context['next_review_date'] = next_review_timestamp
+
         else:
             context['next_review_date'] = 0
-        print("NEXT REVIEW TIME IS: {}".format(context['next_review_date']))
         context['announcements'] = Announcement.objects.all().order_by('-pub_date')[:2]
         #context['recent_unlocks'] = UserSpecific.objects.filter(user=self.request.user).order_by("-unlock_date")[:100]
         return context
@@ -109,18 +136,8 @@ class RecordAnswer(View):
     Called via Ajax in reviews.js. Takes a UserSpecific object, and either True or False. Updates the DB in realtime
     so that if the session crashes the review at least gets partially done.
     """
-    #[4, 4, 8, 24, 72, 168, 336, 720, 2160]
-    srs_times = {
-        0: 4,
-        1: 4,
-        2: 8,
-        3: 24,
-        4: 72,
-        5: 168,
-        6: 336,
-        7: 720,
-        8: 2160,
-    }
+    srs_times = constants.SRS_TIMES
+
     def get(self, request, *args, **kwargs):
         logger.error("{} attempted to access RecordAnswer via a get!".format(request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:home"))
@@ -130,7 +147,7 @@ class RecordAnswer(View):
         user_correct = True if request.POST['user_correct'] == 'true' else False
         previously_wrong = True if request.POST['wrong_before'] == 'true' else False
         us = get_object_or_404(UserSpecific, pk=us_id)
-        logger.info("Recording Answer for vocab:{}.\tUser Correct?: {}".format(us.vocabulary.meaning, user_correct))
+        data_logger.info("{}|{}|{}|{}".format(us.user.username, us.vocabulary.meaning, user_correct, us.streak, us.synonyms))
         if user_correct:
             if not previously_wrong:
                 us.correct += 1
@@ -141,7 +158,6 @@ class RecordAnswer(View):
             us.last_studied = timezone.now()
             us.next_review_date = timezone.now() + timedelta(hours=RecordAnswer.srs_times[us.streak])
             us.save()
-            logger.info("user got a streak of {} for review at {}, next review is {}".format(us.streak, us.last_studied, us.next_review_date))
             return HttpResponse("Correct!")
         elif not user_correct:
             us.incorrect += 1
