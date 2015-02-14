@@ -15,37 +15,25 @@
 				"line_ending": "Unix",
 				"name": "My01kaniwani2password3!"
 			}
-		},
-		{
-			"file": "_static/source/index.html",
-			"settings":
-			{
-				"buffer_size": 4720,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "\n<body>\n  <div class=\"container\">\n    <div class=\"navbar navbar-default navbar-fixed-top\" role=\"navigation\">\n      <div class=\"container-fluid\">\n        <div class=\"navbar-header\">\n          <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\">\n            <span class=\"sr-only\">Toggle navigation</span>\n            <span class=\"icon-bar\"></span>\n            <span class=\"icon-bar\"></span>\n            <span class=\"icon-bar\"></span>\n          </button>\n          <a class=\"navbar-brand\" href=\"#\">KaniWani</a>\n        </div>\n        <div class=\"navbar-collapse collapse\">\n          <ul class=\"nav navbar-nav\">\n            <li id=\"home_tab\" class=\"active\">\n              <a href=\"/kw/\">\n                <span class=\"glyphicon glyphicon-home\"></span>\n              </a>\n            </li>\n            <li id=\"unlocks_tab\">\n              <a href=\"/kw/unlocks/\">\n                <span class=\"glyphicon glyphicon-lock\"></span>\n              </a>\n            </li>\n            <li id=\"about_tab\">\n              <a href=\"/kw/about/\">\n                <span class=\"glyphicon glyphicon-question-sign\"></span>\n              </a>\n            </li>\n            <li id=\"vocabulary_tab\">\n              <a href=\"/kw/vocabulary/\">\n                <span class=\"glyphicon glyphicon-briefcase\"></span>\n              </a>\n            </li>\n            <li id=\"contact_tab\">\n              <a href=\"/kw/contact/\">\n                <span class=\"glyphicon glyphicon-envelope\"></span>\n              </a>\n            </li>\n          </ul>\n          <a href=\"/kw/logout/\" id=\"logoutbtn\" class=\"btn btn-default navbar-btn navbar-nav navbar-right\" role=\"button\">Logout</a>\n        </div>\n        <!--/.nav-collapse -->\n      </div>\n    </div>\n  </div>\n\n  <div class=\"container-fluid\">\n    <div class=\"col-md-8 col-md-offset-2 col-lg-4 col-lg-offset-4\">\n      <div class=\"row\">\n        <h1 class=\"text-center\">evolutionxbox</h1>\n      </div>\n      <div class=\"row\">\n        <img src=\"http://www.gravatar.com/avatar/01e16ed8a3bc3246278001359f7a0257\" class=\"center-block img-circle\">\n      </div>\n      <div class=\"row\">\n        <p class=\"text-center\">WaniKani Level <strong>4</strong>\n        </p>\n      </div>\n      <div class=\"row\">\n        <button id=\"force-srs\" class=\"btn-success btn-lg col-xs-4\">\n          <span class=\"glyphicon glyphicon-refresh\"> </span>\n        </button>\n        <a id=\"review-count\" href=\"/kw/review/\" class=\"btn btn-primary btn-lg center-block col-xs-8\" role=\"button\">13 Reviews </a>\n      </div>\n      <div class=\"row\">\n      </div>\n    </div>\n    <div class=\" col-md-8 col-md-offset-2 col-lg-3 col-lg-offset-1\">\n      <h4 class=\"text-center\">Announcements</h4>\n      <div class=\"panel-group\" id=\"accordion\">\n      </div>\n    </div>\n  </div>\n\n  <script src=\"/assets/js/scripts.js\"></script>\n</body>\n</html>",
-			"settings":
-			{
-				"buffer_size": 2846,
-				"line_ending": "Unix"
-			}
 		}
 	],
 	"build_system": "",
 	"command_palette":
 	{
-		"height": 140.0,
+		"height": 374.0,
 		"selected_items":
 		[
 			[
-				"remo",
-				"Package Control: Remove Package"
-			],
-			[
 				"rein",
 				"Indentation: Reindent Lines"
+			],
+			[
+				"json",
+				"Set Syntax: JSON"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
 			],
 			[
 				"instal",
@@ -72,7 +60,7 @@
 				"Package Control: Install Package"
 			]
 		],
-		"width": 543.0
+		"width": 417.0
 	},
 	"console":
 	{
@@ -93,23 +81,17 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/build",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/build/assets",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/build/assets/css",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/fonts",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/scss",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/scss/helpers",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/scss/layout",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/scss/pages",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/scss/vendor",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/scss/vendor/bootstrap",
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/scss/vendor/bootstrap/bootstrap"
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com"
 	],
 	"file_history":
 	[
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kaniwani.sublime-workspace",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/templates/kw_webapp/reviewsummary.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/templates/kw_webapp/review.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/templates/kw_webapp/base.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/static/css/styles.css",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/static/css/review.css",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/index.html",
 		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/scss/layout/_layout.scss",
 		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/gruntfile.js",
 		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_static/source/scss/styles.scss",
@@ -174,7 +156,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 91.0,
 		"where_history":
 		[
 		]
@@ -184,6 +166,9 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			":\n	[",
+			":\n		[",
+			"[\n		]",
 			"> <",
 			"  </span>",
 			"</span>",
@@ -219,7 +204,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 0,
 			"sheets":
 			[
 				{
@@ -247,66 +232,7 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "_static/source/index.html",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 4720,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3079,
-								3079
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 1164.0,
-						"zoom_level": 1.0
-					},
 					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 2846,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2830,
-								2781
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/HTML/HTML.tmLanguage",
-							"tab_size": 2,
-							"translate_tabs_to_spaces": true
-						},
-						"translation.x": 0.0,
-						"translation.y": 236.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 1,
 					"type": "text"
 				}
 			]
