@@ -4,8 +4,8 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    //Copy html
     copy: {
+      //Copy Dev
       html: {
         expand: true,
         src: '**/*.html',
@@ -13,18 +13,40 @@ module.exports = function(grunt) {
         cwd: 'source'
       },
 
-      fontassets: {
+      fonts: {
         expand: true,
         src: '**/*',
-        dest: 'build/assets/fonts',
+        dest: 'build/static/fonts',
         cwd: 'source/fonts'
       },
 
-      imgassets: {
+      imgs: {
         expand: true,
         src: '**/*',
-        dest: 'build/assets/img',
+        dest: 'build/static/img',
         cwd: 'source/img'
+      },
+
+      //Copy dist
+      fontsDist: {
+        expand: true,
+        src: '**/*',
+        dest: 'dist/fonts',
+        cwd: 'source/fonts'
+      },
+
+      imgsDist: {
+        expand: true,
+        src: '**/*',
+        dest: 'dist/img',
+        cwd: 'source/img'
+      },
+
+      dist: {
+        expand: true,
+        src: '**/*',
+        dest: '../kw_webapp/static',
+        cwd: 'dist'
       }
     },
 
@@ -38,9 +60,15 @@ module.exports = function(grunt) {
 
     //Code Kit / PrePros script append/prepend processing
     codekit: {
-      jsinclude : {
+      dev: {
         files : {
-          'build/assets/js/scripts.js' : 'source/js/scripts.js'
+          'build/static/js/scripts.js' : 'source/js/scripts.js'
+        }
+      },
+
+      dist: {
+        files : {
+          'dist/js/scripts.js' : 'source/js/scripts.js'
         }
       }
     },
@@ -49,7 +77,7 @@ module.exports = function(grunt) {
     uglify: {
       scripts: {
         files: {
-          'build/assets/js/min/scripts.min.js' : ['build/assets/js/scripts.js']
+          '../kw_webapp/static/js/scripts.min.js' : ['dist/js/scripts.js']
         }
       }
     },
@@ -74,16 +102,17 @@ module.exports = function(grunt) {
           bundleExec: true,
           require: ['breakpoint'],
           sassDir: 'source/scss',
-          cssDir: 'dist/assets/css',
+          cssDir: 'dist/css',
           environment: 'production'
         }
       },
+
       dev: {
         options: {
           bundleExec: true,
           require: ['breakpoint'],
           sassDir: 'source/scss',
-          cssDir: 'build/assets/css'
+          cssDir: 'build/static/css'
         }
       }
     },
@@ -119,12 +148,12 @@ module.exports = function(grunt) {
 
       images: {
         files: ['source/img/**/*'],
-        tasks: ['copy:imgassets']
+        tasks: ['copy:imgs']
       },
 
       fonts: {
         files: ['source/fonts/**/*'],
-        tasks: ['copy:fontassets']
+        tasks: ['copy:fonts']
       },
 
       livereload: {
@@ -168,9 +197,11 @@ module.exports = function(grunt) {
 
   // Default task(s).
   grunt.registerTask('default', [
-    'copy',
+    'copy:html',
+    'copy:fonts',
+    'copy:imgs',
     'jshint',
-    'codekit',
+    'codekit:dev',
     'scsslint',
     'compass:dev',
     'connect:server',
@@ -179,11 +210,13 @@ module.exports = function(grunt) {
 
   // Production task
   grunt.registerTask('dist', [
-    'copy',
     'jshint',
-    'codekit',
-    'uglify',
+    'codekit:dist',
     'scsslint',
-    'compass:dist'
+    'compass:dist',
+    'copy:fontsDist',
+    'copy:imgsDist',
+    'copy:dist',
+    'uglify'
   ]);
 };
