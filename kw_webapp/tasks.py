@@ -232,7 +232,7 @@ def sync_all_users_to_wk():
     :return: the number of users successfully synced to WK.
     '''
     logger.info("Beginning Bi-daily Sync for all user!")
-    users = User.objects.all()
+    users = User.objects.all().exclude(profile_isnull=True)
     affected_count = 0
     for user in users:
         try:
