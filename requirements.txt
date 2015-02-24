@@ -4,7 +4,15 @@ amqp==1.4.6
 anyjson==0.3.3
 billiard==3.3.0.18
 celery==3.1.13
+certifi==14.05.14
 django-crispy-forms==1.4.0
+flower==0.7.3
+gunicorn==19.1.1
 kombu==3.0.21
+newrelic==2.28.0.26
+psycopg2==2.5.3
 pytz==2014.4
+raven==5.1.1
+redis==2.10.3
 requests==2.3.0
+tornado==4.1
