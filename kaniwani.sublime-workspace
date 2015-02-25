@@ -60,7 +60,7 @@
 				"Package Control: Install Package"
 			]
 		],
-		"width": 417.0
+		"width": 543.0
 	},
 	"console":
 	{
@@ -81,10 +81,30 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com"
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/build",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/build/static",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/templates",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/templates/kw_webapp"
 	],
 	"file_history":
 	[
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/scss/styles.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/scss/layout/_layout.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/scss/components/_components.scss",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/login.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/unlocks.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/vocab.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/reviews.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/contact.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/index.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/about.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/templates/kw_webapp/about.html",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/js/scripts.js",
+		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/_front-end/source/scss/components/_nav-top-bar.scss",
 		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kaniwani.sublime-workspace",
 		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/templates/kw_webapp/reviewsummary.html",
 		"/Users/jonathancousins/Dev/kaniwani/kaniwani.com/kw_webapp/templates/kw_webapp/review.html",
@@ -166,6 +186,21 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"list-group-item\">",
+			"><",
+			"</a>\n        \n        \n        \n        <a",
+			"><",
+			"> <",
+			"><",
+			"> <",
+			"><",
+			"addClass(\"active",
+			"ed_lev",
+			"_",
+			"csrf_token",
+			"list_item",
+			"_",
+			"==",
 			":\n	[",
 			":\n		[",
 			"[\n		]",
