@@ -102,7 +102,8 @@ class UnlockRequested(View):
         else:
             return HttpResponse(
                 "{} vocabulary unlocked.\nHowever, you still have {} vocabulary locked in WaniKani".format(ul_count,
-                                                                                                          l_count))
+                                                                                                           l_count))
+
 
 class UnlockLevels(TemplateView):
     template_name = "kw_webapp/unlocklevels.html"
@@ -121,14 +122,47 @@ class UnlockLevels(TemplateView):
         context["levels"] = level_status
         return context
 
-class UnlockedVocab(ListView):
-    template_name = "kw_webapp/vocab.html"
-    model = Vocabulary
+class AllLevels(TemplateView):
+    template_name = "kw_webapp/alllevels.html"
 
-    def get_queryset(self):
-        all_us = UserSpecific.objects.filter(user=self.request.user).select_related('vocabulary')
-        all_vocab = [u.vocabulary for u in all_us]
-        return all_vocab
+    def get_context_data(self, **kwargs):
+        user_profile = self.request.user.profile
+        context = super(AllLevels, self).get_context_data()
+        level_status = []
+        unlocked_levels = [item[0] for item in user_profile.unlocked_levels_list()]
+        for level in range(1, 51):
+            if level in unlocked_levels:
+                level_status.append([level, True])
+            else:
+                level_status.append([level, False])
+
+        context["levels"] = level_status
+        return context
+
+class LevelVocab(TemplateView):
+    template_name = "kw_webapp/levelvocab.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(LevelVocab, self).get_context_data()
+        level = self.kwargs['level']
+        user = self.request.user
+        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level)
+        context['reviews'] = level_vocab
+        return context
+
+
+class ToggleVocabLockStatus(View):
+    """
+    Ajax-only view that essentially flips the hidden status of a single vocabulary.
+    """
+
+    def post(self, request, *args, **kwargs):
+        review_id = request.POST["review_id"]
+        review = UserSpecific.objects.get(pk=review_id)
+        review.hidden = not review.hidden
+        review.save()
+        return HttpResponse("Hidden From Reviews." if review.hidden else "Added to Review Queue.")
+
 
 
 class RecordAnswer(View):

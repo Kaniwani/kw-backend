@@ -90,6 +90,7 @@ class UserSpecific(models.Model):
     unlock_date = models.DateTimeField(default=timezone.now, blank=True)
     next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
     burnt = models.BooleanField(default=False)
+    hidden = models.BooleanField(default=False)
 
     def __str__(self):
         return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,

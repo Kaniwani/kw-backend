@@ -3,7 +3,7 @@
 
 {% block scripts %}
 {{ block.super }}
-<script src="{% static "js/unlocklevels.js" %}"></script>
+<script src="{% static "js/alllevels.js" %}"></script>
 <script src="{% static "js/notify.min.js" %}"></script>
 <link rel="stylesheet" href="{% static "css/unlocklevels.css" %}">
 {% endblock %}
@@ -17,7 +17,7 @@
                     {% if level.0 > user.profile.level %}
                         <a href="" class="list-group-item list-group-item-danger text-center locked"><p>Level {{ level.0 }} Locked</p></a>
                     {% elif level.1 == True %}
-                        <a href="" class="list-group-item list-group-item-success text-center unlocked"><p>Level {{ level.0 }} Unlocked</p></a>
+                        <a href={% url "kw:vocab_level" level.0 %} class="list-group-item list-group-item-success text-center unlocked"><p>Level {{ level.0 }} Unlocked</p></a>
                     {% elif level.1 == False %}
                         <a href="" class="list-group-item list-group-item-warning text-center unlockable" id="{{ level.0 }}" style="position: relative;">
                             <p>Level {{ level.0 }} Unlockable</p>

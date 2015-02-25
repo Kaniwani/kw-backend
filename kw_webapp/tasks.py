@@ -145,7 +145,6 @@ def sync_user_profile_with_wk(user):
     '''
     Hits the WK api with user information in order to synchronize user metadata such as level and gravatar information.
 
-
     :param user: The user to sync their profile with WK.
     :return: boolean indicating the success of the API call.
     '''
@@ -174,8 +173,6 @@ def sync_with_wk(user):
     :return: None
     '''
     #We split this into two seperate API calls as we do not necessarily know the current level until
-    #TODO refactor this function.
-
     #For the love of god don't delete this next line
     sync_user_profile_with_wk(user)
     request_string = build_API_sync_string_for_user(user)
@@ -199,9 +196,7 @@ def sync_with_wk(user):
                 #Pull user synonyms if any
                 #TODO review code for this section before 0.2
                 if user_specific["user_synonyms"] is not None:
-                    print("FOUND SYNONYMS:{}".format(user_specific['user_synonyms']))
                     new_review.synonyms = ", ".join([synonym for synonym in user_specific["user_synonyms"]])
-                    print(new_review.synonyms)
                     new_review.save()
 
         #logger.info("{} recently unlocked: {}".format(user.username, recently_unlocked))
@@ -237,14 +232,11 @@ def sync_all_users_to_wk():
     :return: the number of users successfully synced to WK.
     '''
     logger.info("Beginning Bi-daily Sync for all user!")
-    users = User.objects.all()
+    users = User.objects.all().exclude(profile__isnull=True)
     affected_count = 0
     for user in users:
-        try:
-            sync_with_wk.delay(user)
-            affected_count += 1
-        except Profile.DoesNotExist:
-            logger.error("{} has no profile!".format(user.username))
+        sync_with_wk.delay(user)
+        affected_count += 1
     return affected_count
 
 @celery_app.task()
@@ -296,7 +288,6 @@ def correct_next_review_times():
     for review in us:
         review.next_review_date = review.last_studied + timedelta(hours=constants.SRS_TIMES[review.streak])
         #TODO dump this before the push.
-        print("****\nLR:\t{}\nS:\t{}\nNR:\t{}\n".format(review.last_studied, review.streak, review.next_review_date))
         review.save()
 
     return us.count()
@@ -312,7 +303,6 @@ def pull_user_synonyms_by_level(user, level):
     '''
     request_string = build_API_sync_string_for_user_for_level(user, level)
     r = requests.get(request_string)
-    print(request_string)
     if r.status_code == 200:
         json_data = r.json()
         try: 
@@ -327,13 +317,13 @@ def pull_user_synonyms_by_level(user, level):
                     except UserSpecific.DoesNotExist as e:
                         logger.error("Couldn't pull review during a synonym sync: {}".format(e))
                     except KeyError as e:
-                        print("No user_specific or synonyms?: {}".format(json_data))
+                        logger.error("No user_specific or synonyms?: {}".format(json_data))
                     except UserSpecific.MultipleObjectsReturned:
                         reviews = UserSpecific.objects.filter(user=user, vocabulary__meaning=meaning)
                         for review in reviews:
                             logger.error("Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(review))
         except KeyError:
-            print("NO requested info?: {}".format(json_data))
+            logger.error("NO requested info?: {}".format(json_data))
     else:
         logger.error("Status code returned from WaniKani API was not 200! It was {}".format(r.status_code))
 
