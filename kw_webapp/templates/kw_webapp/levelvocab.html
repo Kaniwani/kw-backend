@@ -1,0 +1,34 @@
+{% extends "kw_webapp/logged_in.html" %}
+{% load humanize %}
+{% load staticfiles %}
+{% block scripts %}
+    <script src="{% static "js/notify.min.js" %}"></script>
+    <script src="{% static "js/levelvocab.js" %}"></script>
+{% endblock %}
+{% block content %}
+<table class="table">
+<th>Meaning</th>
+<th>Needs Review</th>
+<th>readings</th>
+<th>Next Review</th>
+<th>Toggle Hidden</th>
+{% for review in reviews %}
+    <tr>
+        <td>{{ review.vocabulary.meaning }}</td>
+        <td>{{ review.needs_review }}</td>
+        <td>{% for reading in review.vocabulary.reading_set.all %}{{ reading.character }}, {% endfor %}</td>
+        <td>{{ review.next_review_date|naturaltime }}</td>
+        {% if review.hidden %}
+            <td><button type="button" class="btn btn-success togglehide" id={{ review.pk }}>Unlock</button></td>
+        {% else %}
+            <td><button type="button" class="btn btn-danger togglehide" id={{ review.pk }} >Lock</button></td>
+        {% endif %}
+    </tr>
+{% endfor %}
+</table>
+
+<form>
+    <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
+</form>
+
+{% endblock %}
