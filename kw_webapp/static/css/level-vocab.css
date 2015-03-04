@@ -14,23 +14,7 @@
   vertical-align: bottom;
 }
 
-.level-vocab .level-vocab__row {/*
-  background-color: #a000f1;
-  background-image: -moz-linear-gradient(top, #a0f, #9300dd);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#a0f), to(#9300dd));
-  background-image: -webkit-linear-gradient(top, #a0f, #9300dd);
-  background-image: -o-linear-gradient(top, #a0f, #9300dd);
-  background-image: linear-gradient(to bottom, #a0f, #9300dd);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFAA00FF, endColorstr=#FF9300DD, GradientType=0);
-  border-top: 1px solid #c655ff;
-  border-bottom: 1px solid #80c;
-  border-left: 1px solid #c655ff;
-*/}
-
-.level-vocab .level-vocab__row:nth-child(2n) {
-  /*background: rgba(0, 0, 0, .04);*/
-}
+.level-vocab .level-vocab__row {}
 
 .level-vocab .level-vocab__row td {
   padding: 2vw;
@@ -55,10 +39,6 @@
 .level-vocab .level-vocab__meaning {
   width: 50%;
 }
-
-/*.level-vocab .level-vocab__need-review {
-  width: 16.5%;
-}*/
 
 .level-vocab .level-vocab__readings {
   font-family: Meiryo, Hiragino Kaku Gothic Pro, ヒラギノ角ゴ Pro W3, メイリオ, Osaka, MS PGothic, ＭＳ Ｐゴシック, sans-serif;
