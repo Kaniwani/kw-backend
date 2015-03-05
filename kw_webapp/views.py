@@ -229,7 +229,7 @@ class Review(ListView):
     def get_queryset(self):
         user = self.request.user
         # ? randomizes the queryset.
-        res = UserSpecific.objects.filter(user=user, needs_review=True).order_by('?')
+        res = UserSpecific.objects.filter(user=user, needs_review=True, hidden=False).order_by('?')
         return res
 
 
