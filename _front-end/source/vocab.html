@@ -1,135 +1,123 @@
-<!DOCTYPE html>
-<html><head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
+<!doctype html>
+<html class="no-js" lang="en-gb">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Vocab</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="viewport" content="width=device-width, user-scalable=no">
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="/static/js/bootstrap.min.js"></script>
-    
-     
-    <link rel="stylesheet" href="/static/css/navbar_top.css">
+  <link rel="stylesheet" href="/static/css/styles.css">
 
-
+  <script src="/static/js/head-scripts.js"></script>
 </head>
+<body>
+  <header class="header">
+    <a href="/" class="logo logo--active">
+      <span class="logo__kanji">
+        <span>かにわに</span>
+        <span>蟹鰐</span>
+      </span>
+      <span class="logo__text">KaniWani</span>
+    </a>
 
+    <nav class="primary-nav">
+      <ul class="primary-nav__list">
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Reviews</span> <span class="primary-nav__reviews-num">(42+)</span></a>
+        </li>
+        <li class="primary-nav__item primary-nav__item--active">
+          <a href="#" class="primary-nav__link"><span>Vocabulary</span> <span class="fa fa-briefcase"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>About</span> <span class="fa fa-question"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Contact</span> <span class="fa fa-envelope"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Settings</span> <span class="fa fa-cog"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Logout</span> <span class="fa fa-sign-out"></span></a>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
+  <main role="main">
+    <header>
+      <h1>Vocabulary</h1>
+      <h2>Level 7</h2>
+    </header>
 
-
-    <body><div class="container">
-         <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-         <div class="container-fluid">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="#">KaniWani</a>
-            </div>
-            <div class="navbar-collapse collapse">
-              <ul class="nav navbar-nav">
-                <li id="home_tab"><a href="/kw/"><span class="glyphicon glyphicon-home"></span></a></li>
-                <li id="unlocks_tab"><a href="/kw/unlocks/"><span class="glyphicon glyphicon-lock"></span></a></li>
-                <li id="about_tab"><a href="/kw/about/"><span class="glyphicon glyphicon-question-sign"></span></a></li>
-                <li id="vocabulary_tab"><a href="/kw/vocabulary/"><span class="glyphicon glyphicon-briefcase"></span></a></li>
-                <li id="contact_tab"><a href="/kw/contact/"><span class="glyphicon glyphicon-envelope"></span></a></li>
-
-
-              </ul>
-              <a href="/kw/logout/" id="logoutbtn" class="btn btn-default navbar-btn navbar-nav navbar-right" role="button">Logout</a>
-            </div><!--/.nav-collapse -->
+    <ul class="vocab__list">
+      <li class="vocab__item vocab__item--locked">
+        <div class="vocab-upper">
+          <span class="vocab__kanji">お誕生日おめでとう</span>
+          <span class="vocab__reading">おたんじょうびおめでとう</span>
+          <span class="vocab__meaning">Happy Birthday</span>
+          <a href="#" class="fa fa-lock"><span class="visually-hidden">Locked</span></a>
         </div>
-    </div>
-    </div>
-    
+        <div class="vocab-lower">
+          <span class="icon icon-enlighten"></span>
 
-<ul class="list-group">
+          <div class="vocab-synonyms">
+            User synonyms: 
+            <ul class="vocab-synonyms__list">
+              <li class="vocab-synonyms__item" contentEditable="true">Birth anniversary</li>
+              <li class="vocab-synonyms__item" contentEditable="true">That day of the year</li>
+            </ul>
+          </div>
+          <a href="#" class="vocab-lower__toggle fa fa-ellipsis-v"></a>
+        </div>
+      </li>
+      <li class="vocab__item vocab__item--active">
+        <div class="vocab-upper">
+          <span class="vocab__kanji">お誕生日おめでとう</span>
+          <span class="vocab__reading">おたんじょうびおめでとう</span>
+          <span class="vocab__meaning">Happy Birthday</span>
+          <a href="#" class="fa fa-unlock"><span class="visually-hidden">Locked</span></a>
+        </div>
+        <div class="vocab-lower">
+          <span class="icon icon-enlighten"></span>
 
-    <li class="list-group-item">
-        
-           early, fast, quick -- 早い -- はやい <br>
-        
-    </li>
+          <div class="vocab-synonyms">
+            User synonyms: 
+            <ul class="vocab-synonyms__list">
+              <li class="vocab-synonyms__item" contentEditable="true">Birth anniversary</li>
+              <li class="vocab-synonyms__item" contentEditable="true">That day of the year</li>
+            </ul>
+          </div>
+          <a href="#" class="vocab-lower__toggle fa fa-ellipsis-v"></a>
+        </div>
+      </li>
+      <li class="vocab__item vocab__item--locked">
+        <div class="vocab-upper">
+          <span class="vocab__kanji">お誕生日おめでとう</span>
+          <span class="vocab__reading">おたんじょうびおめでとう</span>
+          <span class="vocab__meaning">Happy Birthday</span>
+          <a href="#" class="fa fa-lock"><span class="visually-hidden">Locked</span></a>
+        </div>
+        <div class="vocab-lower">
+          <span class="icon icon-burned"></span>
 
-    <li class="list-group-item">
-        
-           number, edition, model -- 号 -- ごう <br>
-        
-    </li>
+          <div class="vocab-synonyms">
+            User synonyms: 
+            <ul class="vocab-synonyms__list">
+              <li class="vocab-synonyms__item" contentEditable="true">Birth anniversary</li>
+              <li class="vocab-synonyms__item" contentEditable="true">That day of the year</li>
+            </ul>
+          </div>
+          <a href="#" class="vocab-lower__toggle fa fa-ellipsis-v"></a>
+        </div>
+      </li>
+    </ul>
+  </main>
 
-    <li class="list-group-item">
-        
-           shaved ice -- かき氷 -- かきごおり <br>
-        
-    </li>
+  <footer class="footer">
+  </footer>
 
-    <li class="list-group-item">
-        
-           the other day, a few days ago, other day -- 先日 -- せんじつ <br>
-        
-    </li>
-
-    <li class="list-group-item">
-        
-           last month, previous month -- 先月 -- せんげつ <br>
-        
-    </li>
-
-    <li class="list-group-item">
-        
-           teacher, master, doctor -- 先生 -- せんせい <br>
-        
-    </li>
-
-    <li class="list-group-item">
-        
-           ice -- 氷 -- こおり <br>
-        
-    </li>
-
-    <li class="list-group-item">
-        
-           man -- 男 -- おとこ <br>
-        
-           man -- 男の人 -- おとこのひと <br>
-        
-    </li>
-
-    <li class="list-group-item">
-        
-           calf, baby cow -- 子牛 -- こうし <br>
-        
-    </li>
-
-    <li class="list-group-item">
-        
-           tie, draw -- 引き分け -- ひきわけ <br>
-        
-    </li>
-
-    <li class="list-group-item">
-        
-           first of all, to start with, firstly, to begin with -- 先ず -- まず <br>
-        
-    </li>
-
-    <li class="list-group-item">
-        
-           previous, ahead, past, former -- 先 -- さき <br>
-        
-    </li>
-
-    <li class="list-group-item">
-        
-           postage stamp, stamp -- 切手 -- きって <br>
-        
-    </li>
-
-</ul>
-
-
-
-</body></html>
+  <script src="/static/js/scripts.js"></script>
+</body>
+</html>

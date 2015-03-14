@@ -62,13 +62,15 @@ module.exports = function(grunt) {
     codekit: {
       dev: {
         files : {
-          'build/static/js/scripts.js' : 'source/js/scripts.js'
+          'build/static/js/scripts.js' : 'source/js/scripts.js',
+          'build/static/js/head-scripts.js' : 'source/js/head-scripts.js'
         }
       },
 
       dist: {
         files : {
-          'dist/js/scripts.js' : 'source/js/scripts.js'
+          'dist/js/scripts.js' : 'source/js/scripts.js',
+          'dist/js/head-scripts.js' : 'source/js/head-scripts.js',
         }
       }
     },
@@ -77,7 +79,8 @@ module.exports = function(grunt) {
     uglify: {
       scripts: {
         files: {
-          '../kw_webapp/static/js/scripts.min.js' : ['dist/js/scripts.js']
+          '../kw_webapp/static/js/scripts.min.js' : ['dist/js/scripts.js'],
+          '../kw_webapp/static/js/min/head-scripts.min.js' : ['dist/js/head-scripts.js']
         }
       }
     },
@@ -143,7 +146,7 @@ module.exports = function(grunt) {
 
       styles: {
         files: 'source/scss/**/*.scss',
-        tasks: ['compass']
+        tasks: ['scsslint', 'compass']
       },
 
       images: {

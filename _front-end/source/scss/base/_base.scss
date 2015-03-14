@@ -1,3 +1,7 @@
+@import 'fonts';
+@import 'google-fonts';
+@import 'icons';
+
 // ---------
 // Variables
 // ---------
@@ -20,14 +24,26 @@ html {
 }
 
 body {
-  font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  background: #eee;
+  color: #333;
 }
 
-a {
-  text-decoration: none;
+/* button {
+  background: $blue1e;
+  border: 0;
+  color: $grey1d;
+  display: inline-block;
+  font-family: $helvetica-neue-reg;
+  font-size: 1.5rem;
+  padding: 1.9rem 12rem;
+  text-align: center;
+
+  @include breakpoint(max-width $mobile) {
+    padding: 1.9rem;
+    width: 100%;
+  }
 
   &:hover {
-    text-decoration: underline;
+    background: $blue1d;
   }
-}
+} */

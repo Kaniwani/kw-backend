@@ -1,136 +1,53 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-  <meta charset="UTF-8">
-  <title>
-  </title>
-  <meta name="viewport" content="width=device-width, user-scalable=no">
-  <link rel="stylesheet" href="/assets/css/styles.css">
+<!doctype html>
+<html class="no-js" lang="en-gb">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Home</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/static/css/styles.css">
+
+  <script src="/static/js/head-scripts.js"></script>
 </head>
-
 <body>
-  <div class="container">
-   <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-     <div class="container-fluid">
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">KaniWani</a>
-      </div>
-      <div class="navbar-collapse collapse">
-        <ul class="nav navbar-nav">
-          <li id="home_tab" class="active">
-            <a href="/kw/">
-              <span class="glyphicon glyphicon-home"></span>
-            </a>
-          </li>
-          <li id="unlocks_tab">
-            <a href="/kw/unlocks/">
-              <span class="glyphicon glyphicon-lock"></span>
-            </a>
-          </li>
-          <li id="about_tab">
-            <a href="/kw/about/">
-              <span class="glyphicon glyphicon-question-sign"></span>
-            </a>
-          </li>
-          <li id="vocabulary_tab">
-            <a href="/kw/vocabulary/">
-              <span class="glyphicon glyphicon-briefcase"></span>
-            </a>
-          </li>
-          <li id="contact_tab">
-            <a href="/kw/contact/">
-              <span class="glyphicon glyphicon-envelope"></span>
-            </a>
-          </li>
-        </ul>
-        <a href="/kw/logout/" id="logoutbtn" class="btn btn-default navbar-btn navbar-nav navbar-right" role="button">Logout</a>
-      </div>
-      <!--/.nav-collapse -->
-    </div>
-  </div>
-</div>
+  <header class="header">
+    <a href="/" class="logo logo--active">
+      <span class="logo__kanji">
+        <span>かにわに</span>
+        <span>蟹鰐</span>
+      </span>
+      <span class="logo__text">KaniWani</span>
+    </a>
 
+    <nav class="primary-nav">
+      <ul class="primary-nav__list">
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Reviews</span> <span class="primary-nav__reviews-num">(42+)</span></a>
+        </li>
+        <li class="primary-nav__item primary-nav__item--active">
+          <a href="#" class="primary-nav__link"><span>Vocabulary</span> <span class="fa fa-briefcase"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>About</span> <span class="fa fa-question"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Contact</span> <span class="fa fa-envelope"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Settings</span> <span class="fa fa-cog"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Logout</span> <span class="fa fa-sign-out"></span></a>
+        </li>
+      </ul>
+    </nav>
+  </header>
 
-<div class="container-fluid">
-  <div class="col-md-8 col-md-offset-2 col-lg-4 col-lg-offset-4">
-    <div class="row">
-      <h1 class="text-center">evolutionxbox</h1>
-    </div>
-    <div class="row">
-      <img src="http://www.gravatar.com/avatar/01e16ed8a3bc3246278001359f7a0257" class="center-block img-circle">
-    </div>
-    <div class="row">
-      <p class="text-center">WaniKani Level <strong>5</strong>
-      </p>
-    </div>
-    <div class="row">
-      <button id="force-srs" class="btn-success btn-lg col-xs-4">
-        <span class="glyphicon glyphicon-refresh"></span>
-      </button>
-      <a id="review-count" href="/kw/review/" class="btn btn-primary btn-lg center-block col-xs-8" role="button">275 Reviews </a>
-    </div>
-    <div class="row">
-    </div>
-  </div>
-  <div class=" col-md-8 col-md-offset-2 col-lg-3 col-lg-offset-1">
-    <h4 class="text-center">Announcements</h4>
-    <div class="panel-group" id="accordion">
+  <footer class="footer">
+  </footer>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#announce3">
-              Downtime 1/22/2015
-            </a>
-          </h4>
-        </div>
-        <div id="announce3" class="panel-collapse collapse">
-          <div class="panel-body">
-            Since I never expected to get this many users, some of my services cant keep up the pace given the machines theyre running on. Kaniwani will have approximately 15 minutes of downtime today at 2PM EST in order to upgrade the hardware. 
-
-            Thanks!
-
-            --Tadgh
-            <br>
-            -- <strong>Tadgh</strong>
-          </div>
-        </div>
-      </div>
-
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#announce1">
-              Patch 0.1
-            </a>
-          </h4>
-        </div>
-        <div id="announce1" class="panel-collapse collapse">
-          <div class="panel-body">
-           <p>Hey folks. Sorry for the delay. I pushed out a patch that should rectify a few things:</p>
-           <ul>
-            <li>Fixed the bug causing correct answers to come back up immediately</li>
-            <li>Fixed functionality of Unlock Levels. Previously, unlocking a level would unlock <strong>all</strong> the vocabulary in it, regardless of whether or not you had unlocked it in WaniKani. This has since been fixed. </li>
-            <li>added a bug report form to the contact page </li>
-            <li>Mild cosmetic changes to Unlock Levels</li>
-          </ul>
-
-          <br>
-          -- <strong>Tadgh</strong>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-</div>
-
-<script src="/assets/js/scripts.js"></script>
+  <script src="/static/js/scripts.js"></script>
 </body>
 </html>

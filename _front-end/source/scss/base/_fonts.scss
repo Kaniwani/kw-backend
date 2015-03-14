@@ -1,0 +1,112 @@
+// Variables
+$base-font-size: 1.6rem;
+$roboto-bold: 'Roboto Bold', sans-serif;
+$roboto-medium: 'Roboto Medium', sans-serif;
+$roboto-light: 'Roboto Light', sans-serif;
+$roboto-thin: 'Roboto Thin', sans-serif;
+$roboto: 'Roboto', sans-serif;
+$roboto-slab-bold: 'Roboto Slab Bold', serif;
+$roboto-slab-light: 'Roboto Slab Light', serif;
+$roboto-slab-thin: 'Roboto Slab Thin', serif;
+$roboto-slab: 'Roboto Slab', serif;
+$japanese: 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', Osaka, 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-family: $roboto;
+  font-size: $base-font-size;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #333;
+  font-family: $roboto-slab;
+  font-weight: normal;
+  margin: 0;
+}
+
+h1 {
+  font-size: 3.4rem;
+  line-height: 1;
+  margin: .5rem 0;
+}
+
+h2 {
+  font-family: $roboto-slab-light;
+  font-size: 3rem;
+  line-height: 1;
+  margin: .4em 0;
+}
+
+h3 {
+  font-size: 2.4rem;
+  line-height: 1;
+  margin: .625em 0;
+}
+
+h4 {
+  font-size: 2.2rem;
+  line-height: 1;
+  margin: .4em 0;
+}
+
+h5 {
+  font-size: 2rem;
+  line-height: 1;
+  margin: .4em 0;
+}
+
+h6 {
+  font-size: 1.6rem;
+  line-height: 1;
+  margin: .4em 0;
+}
+
+b,
+strong {
+  font-family: $roboto-bold;
+}
+
+a {
+  @include transition(color .2s ease);
+  color: #222;
+  text-decoration: none;
+
+  &:hover {
+    color: #444;
+    text-decoration: underline;
+  }
+}
+
+small {
+  font-size: 1.1rem;
+}
+
+p,
+ul,
+ol,
+dl,
+hr,
+pre {
+  margin: 0 0 1.7em;
+}
+
+ol {
+  list-style-position: inside;
+  padding: 0 0 0 .9rem;
+
+  li {
+    padding: 0 0 .4rem;
+  }
+}
+
+pre {
+  display: block;
+}
