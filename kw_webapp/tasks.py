@@ -132,10 +132,13 @@ def unlock_eligible_vocab_from_level(user, level):
 
         for vocabulary in vocab_info: #go through All vocab for the level
             if vocabulary['user_specific'] is not None: #if user has unlocked it in WK
-                vocab = get_vocab_by_meaning(vocabulary['meaning'])
-                if vocab:
-                    unlocked += 1
-                    associate_vocab_to_user(vocab, user) #gets or creates a review object. if created, set it to need review now.
+                try:
+                    vocab = get_vocab_by_meaning(vocabulary['meaning'])
+                except Vocabulary.DoesNotExist as e:
+                    logger.error(e)
+                    vocab = create_new_vocabulary(vocabulary)
+                unlocked += 1
+                associate_vocab_to_user(vocab, user) #gets or creates a review object. if created, set it to need review now.
             else:
                 locked += 1
         return unlocked, locked
