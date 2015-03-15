@@ -122,12 +122,12 @@ class UnlockLevels(TemplateView):
         context["levels"] = level_status
         return context
 
-class AllLevels(TemplateView):
-    template_name = "kw_webapp/alllevels.html"
+class Levels(TemplateView):
+    template_name = "kw_webapp/levels.html"
 
     def get_context_data(self, **kwargs):
         user_profile = self.request.user.profile
-        context = super(AllLevels, self).get_context_data()
+        context = super(Levels, self).get_context_data()
         level_status = []
         unlocked_levels = [item[0] for item in user_profile.unlocked_levels_list()]
         for level in range(1, 51):

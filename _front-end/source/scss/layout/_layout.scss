@@ -9,6 +9,7 @@ main {
   section {
     @include border-radius(3px);
     background: #fff;
+    margin-top: 24px;
     padding: 20px;
   }
 }

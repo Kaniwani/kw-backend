@@ -22,7 +22,7 @@
 
 .vocab-upper {
   @include border-radius(3px 3px 0 0);
-  background: #631a93;
+  background: $purple;
   border-bottom: 2px solid #c0c0c0;
   color: #fff;
   overflow: hidden;
@@ -30,8 +30,16 @@
   position: relative;
   z-index: 2;
 
-  .vocab__item--locked & {
+  .vocab__item--locked &:before {
     background-image: url('https://s3.amazonaws.com/s3.wanikani.com/assets/default-v2/stripes-c1de0a7da741b64f40f69665ad61ade0.png');
+    content: '';
+    height: 100%;
+    left: 0;
+    opacity: .6;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 0;
   }
 
   .fa {
@@ -50,7 +58,17 @@
   margin-top: -6px;
 }
 
-.vocab__reading ,
+.vocab__reading {
+  overflow: hidden;
+}
+
+.vocab__kana {
+  @include breakpoint(max-width 600px) {
+    margin: 16px 0 -4px;
+  }
+}
+
+.vocab__kana ,
 .vocab__meaning {
   @include text-shadow(0 1px 0 rgba(0, 0, 0, .3));
   clear: right;
@@ -60,7 +78,7 @@
 }
 
 .vocab__kanji,
-.vocab__reading,
+.vocab__kana,
 .vocab__meaning {
   font-family: $japanese;
 
@@ -79,7 +97,7 @@
   z-index: 1;
 
   @include breakpoint(max-width 600px) {
-    margin-top: -130px;
+    margin-top: -99px;
     text-align: center;
   }
 
@@ -93,7 +111,7 @@
     margin: 25px 0 25px 20px;
 
     @include breakpoint(max-width 600px) {
-      margin: 25px 20px;
+      margin: 15px 0;
     }
   }
 }
@@ -119,7 +137,7 @@
     border-left: 0;
     display: block;
     line-height: 1.5;
-    margin-left: 0;
+    margin: 15px 0;
     padding-left: 0;
   }
 }

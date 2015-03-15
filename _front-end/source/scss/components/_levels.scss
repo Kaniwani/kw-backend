@@ -45,7 +45,7 @@
 
 .level__link {
   @include transition(background-color .33s ease);
-  background: #631a93;
+  background: $purple;
   border-radius: 3px;
   color: #fff;
   display: block;
@@ -53,7 +53,7 @@
   padding: 18px;
 
   &:hover {
-    background: darken(#631a93, 10%);
+    background: darken($purple, 10%);
     color: #fff;
   }
 

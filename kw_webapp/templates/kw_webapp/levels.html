@@ -1,0 +1,112 @@
+{% extends "kw_webapp/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block scripts %}
+    {{ block.super }}
+{% endblock %}
+
+{% block title %}
+{{ block.super }}
+  <title>Vocabulary</title>
+{% endblock %}
+
+{% block header %}
+{{ block.super }}
+<header class="header">
+  <a href="/" class="logo logo--active">
+    <span class="logo__kanji">
+      <span>かにわに</span>
+      <span>蟹鰐</span>
+    </span>
+    <h1 class="logo__text">KaniWani</h1>
+  </a>
+
+  <nav class="primary-nav">
+    <ul class="primary-nav__list">
+      <li class="primary-nav__item">
+        <a href="{% url "kw:home" %}" class="primary-nav__link">
+          <span>Reviews</span>
+          {% if review_count > 0 %}
+            <span class="primary-nav__reviews-num">({{ review_count }})</span>
+          {% else %}
+            <span class="primary-nav__reviews-num">(in {{ next_review_date|naturaltime }})</span>
+          {% endif %}
+        </a>
+      </li>
+      <li class="primary-nav__item primary-nav__item--active">
+        <a href="{% url "kw:vocabulary" %}" class="primary-nav__link"><span>Vocabulary</span> <span class="fa fa-briefcase"></span></a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{% url "kw:about" %}" class="primary-nav__link"><span>About</span> <span class="fa fa-question"></span></a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{% url "kw:contact" %}" class="primary-nav__link"><span>Contact</span> <span class="fa fa-envelope"></span></a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{% url "kw:settings" %}" class="primary-nav__link"><span>Settings</span> <span class="fa fa-cog"></span></a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{%  url "kw:logout" %}" class="primary-nav__link"><span>Logout</span> <span class="fa fa-sign-out"></span></a>
+      </li>
+    </ul>
+  </nav>
+</header>
+{% endblock %}
+
+{% block main %}
+{{ block.super }}
+
+  <main role="main">
+    <header>
+      <h1>Vocabulary</h1>
+    </header>
+
+    <ul class="level__list">
+      {% for level in levels %}
+        {% if level.0 > user.profile.level %}
+          <li class="level__item level__item--locked" data-leve-id="{{ level.0 }}">
+            <a class="level__link" title="Locked">
+              <span class="level__number">{{ level.0 }}</span>
+              <span class="fa fa-lock"><span class="visually-hidden">Locked</span></span>
+            </a>
+          </li>
+        {% elif level.1 == True %}
+          <li class="level__item" data-leve-id="{{ level.0 }}">
+            <a href="{% url "kw:vocabulary" %}{{ level.0 }}" class="level__link" title="Unlocked">
+              <span class="level__number">{{ level.0 }}</span>
+              <span class="fa fa-unlock"><span class="visually-hidden">Unlocked</span></span>
+            </a>
+          </li>
+        {% elif level.1 == False %}
+          <li class="level__item level__item--locked" data-leve-id="{{ level.0 }}">
+            <a href="{% url "kw:vocabulary" %}{{ level.0 }}" class="level__link" title="Unlockable">
+              <span class="level__number">{{ level.0 }}</span>
+              <span class="fa fa-unlock-alt"><span class="visually-hidden">Unlockable</span></span>
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </main>
+
+<!--   {% for level in levels %}
+    {% if level.0 > user.profile.level %}
+      <a href="" class="list-group-item list-group-item-danger text-center locked"><p>Level {{ level.0 }} Locked</p></a>
+    {% elif level.1 == True %}
+      <a href="" class="list-group-item list-group-item-success text-center unlocked"><p>Level {{ level.0 }} Unlocked</p></a>
+    {% elif level.1 == False %}
+      <a href="" class="list-group-item list-group-item-warning text-center unlockable" id="{{ level.0 }}" style="position: relative;">
+        <p>Level {{ level.0 }} Unlockable</p>
+        <img src="{% static "images/ajax-loader.gif" %}" id="img_{{ level.0 }}" class="image">
+      </a>
+    {% endif %}
+  {% endfor %} -->
+
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<footer class="footer">
+</footer>
+{% endblock %}

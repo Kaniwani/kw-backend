@@ -4,8 +4,16 @@
 }
 
 .primary-nav__list {
-  margin: 0;
+  margin: 0 -10px 0 0;
   padding: 0;
+
+  @include breakpoint(max-width 670px) {
+    margin-right: -9px;
+  }
+
+  @include breakpoint(900px) {
+    margin-right: -20px;
+  }
 }
 
 .primary-nav__item {
@@ -13,7 +21,7 @@
   display: table-cell;
 
   &.primary-nav__item--active {
-    background: #333;
+    background-color: #333;
 
     .primary-nav__link {
       color: #ededed;
@@ -34,6 +42,9 @@
   }
 
   @include breakpoint(max-width 670px) {
+    font-size: 1.8rem;
+    padding: 0 9px;
+
     span:first-child {
       display: none;
     }

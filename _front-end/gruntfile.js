@@ -124,8 +124,8 @@ module.exports = function(grunt) {
     connect: {
       server: {
         options: {
-          hostname: '127.0.0.1',
-          port: 8888,
+          hostname: '0.0.0.0',
+          port: 8000,
           base: 'build',
           livereload: true
         }
@@ -209,6 +209,17 @@ module.exports = function(grunt) {
     'compass:dev',
     'connect:server',
     'watch'
+  ]);
+
+  // Do everything that default does, without the wact or server.
+  grunt.registerTask('build', [
+    'copy:html',
+    'copy:fonts',
+    'copy:imgs',
+    'jshint',
+    'codekit:dev',
+    'scsslint',
+    'compass:dev'
   ]);
 
   // Production task

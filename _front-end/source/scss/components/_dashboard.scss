@@ -1,0 +1,167 @@
+.user {
+  //
+}
+
+.user-overview {
+  background-color: #0078e7;
+  border-radius: 3px 3px 0 0;
+  margin: -20px -20px 0;
+  padding: 20px 20px 40px;
+  position: relative;
+  text-align: center;
+
+  &:after {
+    border-color: transparent transparent #333;
+    border-style: none solid solid;
+    border-width: 20px;
+    bottom: 0;
+    content: '';
+    height: 0;
+    left: 50%;
+    margin-left: -20px;
+    position: absolute;
+    width: 0;
+    z-index: 1;
+  }
+}
+
+.user-name {
+  @include text-shadow(0 2px 0 rgba(0, 0, 0, .3));
+  color: #fff;
+}
+
+.user-gravatar {
+  background: #fff;
+  border-radius: 100%;
+  display: inline-block;
+  height: 162px;
+  margin: 0 auto;
+  padding: 6px;
+  position: relative;
+  width: 162px;
+
+  &:before {
+    @include box-shadow(inset 3px 3px 8px 0 rgba(0, 0, 0, .26));
+    border-radius: 100%;
+    content: '';
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: 1;
+  }
+
+  img {
+    border-radius: 100%;
+    display: block;
+    height: auto;
+    width: 100%;
+  }
+}
+
+.dashboard-reviews {
+  margin-top: 20px;
+}
+
+.user-details {
+  background: #333;
+  border-radius: 0 0 3px 3px;
+  color: darken(#ededed, 40%);
+  font-family: $roboto-light;
+  font-size: .9em;
+  margin: 0 -20px -20px;
+  overflow: hidden;
+  padding: 20px;
+
+  @include breakpoint(671px) {
+    font-size: 1em;
+  }
+
+  .col {
+    float: none;
+    margin: 20px 0;
+    width: 100%;
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    @include breakpoint(489px) {
+      float: left;
+      margin: 0;
+      width: 48%;
+
+      &:last-child {
+        margin-left: 4%;
+      }
+    }
+  }
+
+  h3 {
+    @include text-shadow(0 2px 0 rgba(0, 0, 0, .3));
+    color: darken(#ededed, 40%);
+    font-size: em(14, 16);
+  }
+
+  p {
+    margin-bottom: .5em;
+  }
+
+  a {
+    color: #ededed;
+  }
+
+  strong {
+    color: #ededed;
+    font-family: $roboto;
+    font-weight: normal;
+  }
+}
+
+.user-details__list {
+  margin: 0;
+  padding: 0;
+}
+
+.user-details__item {
+  display: block;
+}
+
+.user-soical {
+  margin: 0;
+  padding: 0;
+}
+
+.user-soical__item {
+  display: block;
+  float: left;
+  margin-right: 2em;
+}
+
+.user-soical__link {
+  color: #ededed;
+
+  .fa {
+    display: inline-block;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+}
+
+.accordion__list {
+  //
+}
+
+.accordion__item {
+  //
+}
+
+.accordion__link {
+  //
+}
+
+.accordion__content {
+  //
+}

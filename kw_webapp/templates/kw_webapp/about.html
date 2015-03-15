@@ -1,31 +1,80 @@
-{% extends "kw_webapp/logged_in.html" %}
+{% extends "kw_webapp/base.html" %}
 {% load staticfiles %}
+{% load humanize %}
+
 {% block scripts %}
-{{ block.super }}
-    <script src="{% static "js/about.js"%}"></script>
-{% endblock %}
-{% block content %}
     {{ block.super }}
-    <div class="container">
-        <div class="jumbotron">
-            <h1>KaniWani</h1>
-            <p> Is a companion website to <a href="http://www.wanikani.com">WaniKani</a>, an SRS tool for kanji and vocabulary memorization. I found that WaniKani helped a lot with being able to recognize and read Kanji, but really didn't help that much in trying to recall words without the visual stimulation of the Kanji. KaniWani attempts to bridge that gap by using your WaniKani information and force you to do the opposite of what you normally do. </p>
-        </div>
+{% endblock %}
 
-            <div class="container">
-          <!-- Example row of columns -->
-          <div class="row">
-            <div class="col-md-6">
-              <h2>Moving Forward</h2>
-              <p>Kaniwani starts off at your current WK level, so you don't have to go through all the previous levels unless you want to. </p>
-            </div>
-            <div class="col-md-6">
-              <h2>Unlocking the past</h2>
-              <p>Manually <a href="{% url "kw:unlocks" %}">unlock previous levels</a> to add their vocabulary to your review schedule. </p>
+{% block title %}
+{{ block.super }}
+  <title>About KaniWani</title>
+{% endblock %}
 
-           </div>
+{% block header %}
+{{ block.super }}
+<header class="header">
+  <a href="/" class="logo logo--active">
+    <span class="logo__kanji">
+      <span>かにわに</span>
+      <span>蟹鰐</span>
+    </span>
+    <h1 class="logo__text">KaniWani</h1>
+  </a>
 
-          </div>
-        </div>
-    </div>
-{% endblock content %}
+  <nav class="primary-nav">
+    <ul class="primary-nav__list">
+      <li class="primary-nav__item">
+        <a href="{% url "kw:home" %}" class="primary-nav__link">
+          <span>Reviews</span>
+          {% if review_count > 0 %}
+            <span class="primary-nav__reviews-num">({{ review_count }})</span>
+          {% else %}
+            <span class="primary-nav__reviews-num">(in {{ next_review_date|naturaltime }})</span>
+          {% endif %}
+        </a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{% url "kw:vocabulary" %}" class="primary-nav__link"><span>Vocabulary</span> <span class="fa fa-briefcase"></span></a>
+      </li>
+      <li class="primary-nav__item primary-nav__item--active">
+        <a href="{% url "kw:about" %}" class="primary-nav__link"><span>About</span> <span class="fa fa-question"></span></a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{% url "kw:contact" %}" class="primary-nav__link"><span>Contact</span> <span class="fa fa-envelope"></span></a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{% url "kw:settings" %}" class="primary-nav__link"><span>Settings</span> <span class="fa fa-cog"></span></a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{%  url "kw:logout" %}" class="primary-nav__link"><span>Logout</span> <span class="fa fa-sign-out"></span></a>
+      </li>
+    </ul>
+  </nav>
+</header>
+{% endblock %}
+
+{% block main %}
+{{ block.super }}
+  <main role="main">
+    <header>
+      <h1>What is KaniWani?</h1>
+    </header>
+
+    <section>
+      <p>Is a companion website to <a href="//wanikani.com">WaniKani</a>, an SRS tool for kanji and vocabulary memorization. I found that WaniKani helped a lot with being able to recognize and read Kanji, but really didn't help that much in trying to recall words without the visual stimulation of the Kanji. KaniWani attempts to bridge that gap by using your WaniKani information and force you to do the opposite of what you normally do.</p>
+
+      <h3>Moving Forward</h3>
+      <p>Kaniwani starts off at your current WK level, so you don't have to go through all the previous levels unless you want to.</p>
+
+      <h3>Unlocking the past</h3>
+      <p>Manually <a href="/vocab.html">unlock previous levels</a> to add their vocabulary to your review schedule.</p>
+    </section>
+  </main>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<footer class="footer">
+</footer>
+{% endblock %}

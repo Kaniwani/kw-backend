@@ -1,12 +1,9 @@
-@import 'fonts';
-@import 'google-fonts';
-@import 'icons';
-
 // ---------
 // Variables
 // ---------
 
 //Colours
+$purple: #631a93;
 
 
 // -------------------
@@ -47,3 +44,19 @@ body {
     background: $blue1d;
   }
 } */
+
+[contenteditable="true"] {
+  overflow: hidden!important;
+
+  br {
+    display: none!important;
+  }
+
+  * {
+    display: inline!important;
+  }
+}
+
+@import 'fonts';
+@import 'google-fonts';
+@import 'icons';

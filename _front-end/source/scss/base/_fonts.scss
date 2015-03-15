@@ -27,46 +27,77 @@ h4,
 h5,
 h6 {
   color: #333;
-  font-family: $roboto-slab;
   font-weight: normal;
   margin: 0;
 }
 
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: $roboto-slab-light;
+}
+
 h1 {
+  font-family: $roboto-slab;
   font-size: 3.4rem;
   line-height: 1;
   margin: .5rem 0;
+
+  @include breakpoint(max-width 670px) {
+    font-size: 2.8rem;
+  }
 }
 
 h2 {
-  font-family: $roboto-slab-light;
   font-size: 3rem;
   line-height: 1;
   margin: .4em 0;
+
+  @include breakpoint(max-width 670px) {
+    font-size: 2.4rem;
+  }
 }
 
 h3 {
   font-size: 2.4rem;
   line-height: 1;
   margin: .625em 0;
+
+  @include breakpoint(max-width 670px) {
+    font-size: 1.8rem;
+  }
 }
 
 h4 {
   font-size: 2.2rem;
   line-height: 1;
   margin: .4em 0;
+
+  @include breakpoint(max-width 670px) {
+    font-size: 1.6rem;
+  }
 }
 
 h5 {
   font-size: 2rem;
   line-height: 1;
   margin: .4em 0;
+
+  @include breakpoint(max-width 670px) {
+    font-size: 1rem;
+  }
 }
 
 h6 {
   font-size: 1.6rem;
   line-height: 1;
   margin: .4em 0;
+
+  @include breakpoint(max-width 670px) {
+    font-size: 1rem;
+  }
 }
 
 b,
@@ -80,8 +111,15 @@ a {
   text-decoration: none;
 
   &:hover {
-    color: #444;
+    color: darken($purple, 80%);
     text-decoration: underline;
+  }
+
+  &[rel='external']:after {
+    @include fa-icon;
+    content: '\f08e';
+    font-size: 1.2rem;
+    margin-left: 3px;
   }
 }
 
@@ -109,4 +147,13 @@ ol {
 
 pre {
   display: block;
+}
+
+section a {
+  text-decoration: underline;
+}
+
+section h2 {
+  margin-bottom: 2rem;
+  margin-top: 0;
 }
