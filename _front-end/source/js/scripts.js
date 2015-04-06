@@ -14,6 +14,7 @@
 
 KaniWani.init = function() {
   KaniWani.Levels.init();
+  KaniWani.Vocab.init();
 };
 
 $(document).ready(KaniWani.init);

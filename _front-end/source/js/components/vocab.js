@@ -1,34 +1,38 @@
-if (typeof KaniWani.Example === 'undefined') {
-  KaniWani.Example = {};
+if (typeof KaniWani.Vocab === 'undefined') {
+  KaniWani.Vocab = {};
 }
 
-KaniWani.Example = {
+KaniWani.Vocab = {
   vars: {
+    initialised: false
   },
 
   DOM: {
+    $vocabItems: null
   },
 
   init: function() {
-    if($('body').length > 0) {
+    if($('.vocab__list').length > 0 && !KaniWani.Vocab.vars.initialised) {
       // Cache DOM elements
-      console.log('working!');
+      KaniWani.Vocab.DOM.$vocabItems = $('.vocab__item');
 
       // Attach events
-      $('body').on('click', 'a.not-yet', KaniWani.Example.events.linkClick);
+      KaniWani.Vocab.DOM.$vocabItems.on('click', '.vocab-lower__toggle', KaniWani.Vocab.events.vocabToggleClick);
+
+      KaniWani.Vocab.vars.initialised = true;
     }
   },
 
   events: {
-    linkClick: function(event) {
+    vocabToggleClick: function(event) {
       event.preventDefault();
-      KaniWani.Example.helpers.exampleHelper($(this));
+      KaniWani.Vocab.helpers.toggleVocabItem($(this));
     },
   },
 
   helpers: {
-    exampleHelper: function($this) {
-      console.log('woot');
+    toggleVocabItem: function($this) {
+      $this.closest('.vocab__item').toggleClass('vocab__item--active');
     },
   }
 };
