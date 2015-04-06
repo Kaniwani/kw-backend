@@ -1,21 +1,88 @@
-{% extends "kw_webapp/logged_in.html" %}
+{% extends "kw_webapp/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
 {% load crispy_forms_tags %}
 
 {% block scripts %}
-    {{ block.super }}
+{{ block.super }}
 {% endblock %}
 
-
-{% block content %}
+{% block title %}
 {{ block.super }}
-<div class="container col-md-12">
-  <div class="col-md-6 col-md-offset-3 vcenter" id="formdiv">
-      <div class="jumbotron text-center">
-          <h1>Settings</h1>
-          {% crispy form %}
-      </div>
-  </div>
-</div>
+  <title>Settings</title>
+{% endblock %}
 
+{% block header %}
+{{ block.super }}
+<header class="header">
+  <a href="/" class="logo logo--active">
+    <span class="logo__kanji">
+      <span>かにわに</span>
+      <span>蟹鰐</span>
+    </span>
+    <h1 class="logo__text">KaniWani</h1>
+  </a>
 
+  <nav class="primary-nav">
+    <ul class="primary-nav__list">
+      <li class="primary-nav__item">
+        <a href="{% url "kw:home" %}" class="primary-nav__link">
+          <span>Reviews</span>
+          {% if review_count > 0 %}
+            <span class="primary-nav__reviews-num">({{ review_count }})</span>
+          {% else %}
+            <span class="primary-nav__reviews-num">(in {{ next_review_date|naturaltime }})</span>
+          {% endif %}
+        </a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{% url "kw:vocabulary" %}" class="primary-nav__link"><span>Vocabulary</span> <span class="fa fa-briefcase"></span></a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{% url "kw:about" %}" class="primary-nav__link"><span>About</span> <span class="fa fa-question"></span></a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{% url "kw:contact" %}" class="primary-nav__link"><span>Contact</span> <span class="fa fa-envelope"></span></a>
+      </li>
+      <li class="primary-nav__item primary-nav__item--active">
+        <a href="{% url "kw:settings" %}" class="primary-nav__link"><span>Settings</span> <span class="fa fa-cog"></span></a>
+      </li>
+      <li class="primary-nav__item">
+        <a href="{%  url "kw:logout" %}" class="primary-nav__link"><span>Logout</span> <span class="fa fa-sign-out"></span></a>
+      </li>
+    </ul>
+  </nav>
+</header>
+{% endblock %}
+
+{% block main %}
+{{ block.super }}
+<main role="main">
+  <header>
+    <h1>Settings</h1>
+  </header>
+
+  <section>
+    {% crispy form %}
+    <!-- <form class="pure-form pure-form-stacked" method="post">
+      <input type="hidden" name="csrfmiddlewaretoken" value="WFFTVsR7H9k6XT7JHWupoHYcksOuMn9g">
+
+      <fieldset>
+        <label for="api">API Key <sup>*</sup></label>
+        <input id="api" class="required pure-input-1" type="email" placeholder="API Key" value="613514b652760f65b2665bd094cf89ec">
+
+        <label for="level">Level</label>
+        <input id="level" class="pure-input-1" type="text" placeholder="Leve" value="6" disabled="disabled">
+
+        <button type="submit" class="pure-button pure-button-primary">Save</button>
+      </fieldset>
+    </form> -->
+  </section>
+</main>
+{% endblock %}
+
+{% block footer %}
+{{ block.super }}
+<footer class="footer">
+</footer>
 {% endblock %}

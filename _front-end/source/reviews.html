@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>
+  </title>
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+
+<body>
+  <div class="container-full container-fluid">
+    <div class="row"style="height: 70px">
+     <a href="/kw/" class="home-button col-md-1 col-md-offset-0 col-xs-2 col-xs-offset-2 ">
+     <button class="btn btn-primary btn-lg">
+     <i class="glyphicon glyphicon-home">
+     </i>
+     </button>
+     </a>
+     <h1 id="reviews-left" class="col-xs-2 col-xs-offset-4 col-md-offset-10 col-md-1">1</h1>
+   </div>
+
+   <div class="row" style="height: 130px">
+    <h1 id="meaning" class="text-center hint">Meaning</h1>
+  </div>
+  <div class="row" style="height: 100px">
+    <!--<input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" class="col-md-12 text-center" id="user-answer" placeholder="答え" style="font-size: 44pt"> -->
+    <input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" class="col-sm-12 col-xs-10 text-center" id="user-answer" placeholder="答え" style="height:100%; font-size: 44pt" />
+    <button id="check-ans-btn" class=" btn btn-lg btn-primary col-xs-2 visible-xs-inline visible-xs-inline-block" style="height: 100%">
+    <span class="glyphicon glyphicon-chevron-right">
+    </span> </button>
+    <input type="hidden" id="us-id" value="Nothing!" />
+  </div>
+  <div class="row">
+    <div class="col-md-6 col-xs-6 col-sm-6">
+      <div class="row">
+        <a href="#"  id="button-reading" class="btn btn-primary disabled btn-lg col-md-12 col-xs-12 col-sm-12 ">Show <strong>P</strong>honetic</a>
+      </div>
+      <div class="row">
+        <div id="details-reading" class="jumbotron">
+          <h1 id="kana" class="text-center hint">Placeholder!</h1>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-xs-6 col-sm-6">
+      <div class="row">
+        <a href="#" id="button-character" class="btn btn-primary disabled btn-lg col-md-12 col-xs-12 col-sm-12">Show <strong>K</strong>anji</a>
+      </div>
+      <div class="row">
+        <div id="details-character" class="jumbotron">
+          <h1 id="character" class="text-center hint">Placeholder Kanji</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form>
+  <input type="hidden" id="csrf" value="xbdWvYidcSxsg4dQsOXC9z4bQ11Nd1ze" />
+</form>
+
+
+<script>
+  var vocabulary_list = [
+
+  {
+    'user_specific_id':'28546',
+    'meaning':'father',
+    'readings':  ['おとうさん',],
+    'characters':['お父さん',],
+  },
+
+  {
+    'user_specific_id':'28660',
+    'meaning':'woman, female',
+    'readings':  ['おんな',],
+    'characters':['女',],
+  },
+
+  {
+    'user_specific_id':'28604',
+    'meaning':'good at, skillful, skilled at, skilled',
+    'readings':  ['じょうず',],
+    'characters':['上手',],
+  },
+
+  {
+    'user_specific_id':'123524',
+    'meaning':'spirit, energy',
+    'readings':  ['き',],
+    'characters':['気',],
+  },
+
+  {
+    'user_specific_id':'168506',
+    'meaning':'year',
+    'readings':  ['とし',],
+    'characters':['年',],
+  },
+
+  {
+    'user_specific_id':'28624',
+    'meaning':'princess',
+    'readings':  ['おうじょ',],
+    'characters':['王女',],
+  },
+
+  {
+    'user_specific_id':'166387',
+    'meaning':'master, expert',
+    'readings':  ['めいじん',],
+    'characters':['名人',],
+  },
+
+  {
+    'user_specific_id':'28551',
+    'meaning':'to be cut',
+    'readings':  ['きれる',],
+    'characters':['切れる',],
+  },
+
+  {
+    'user_specific_id':'28630',
+    'meaning':'round, circular',
+    'readings':  ['まるい',],
+    'characters':['円い',],
+  },
+
+  {
+    'user_specific_id':'28659',
+    'meaning':'considerable, great, important, big deal',
+    'readings':  ['たいした',],
+    'characters':['大した',],
+  },
+
+  {
+    'user_specific_id':'28532',
+    'meaning':'to stop something, to stop',
+    'readings':  ['とめる',],
+    'characters':['止める',],
+  },
+
+  {
+    'user_specific_id':'118404',
+    'meaning':'to copy',
+    'readings':  ['うつす',],
+    'characters':['写す',],
+  },
+
+  {
+    'user_specific_id':'28563',
+    'meaning':'queen',
+    'readings':  ['じょおう',],
+    'characters':['女王',],
+  },
+
+  {
+    'user_specific_id':'28667',
+    'meaning':'seven things',
+    'readings':  ['ななつ',],
+    'characters':['七つ',],
+  },
+
+  {
+    'user_specific_id':'28609',
+    'meaning':'moon, month',
+    'readings':  ['つき',],
+    'characters':['月',],
+  },
+
+  {
+    'user_specific_id':'28575',
+    'meaning':'left direction, left',
+    'readings':  ['ひだり',],
+    'characters':['左',],
+  },
+
+  {
+    'user_specific_id':'96701',
+    'meaning':'to hit, to pound, to type',
+    'readings':  ['うつ',],
+    'characters':['打つ',],
+  },
+
+  {
+    'user_specific_id':'28545',
+    'meaning':'to get fat, to become fat, to grow fat',
+    'readings':  ['ふとる',],
+    'characters':['太る',],
+  },
+
+  {
+    'user_specific_id':'236724',
+    'meaning':'winter holiday, winter break, winter vacation',
+    'readings':  ['ふゆやすみ',],
+    'characters':['冬休み',],
+  },
+
+  {
+    'user_specific_id':'68488',
+    'meaning':'to be born',
+    'readings':  ['うまれる',],
+    'characters':['生まれる',],
+  },
+
+  {
+    'user_specific_id':'28566',
+    'meaning':'to stand',
+    'readings':  ['たつ',],
+    'characters':['立つ',],
+  },
+
+  {
+    'user_specific_id':'166396',
+    'meaning':'name, reputation',
+    'readings':  ['な',],
+    'characters':['名',],
+  },
+
+  {
+    'user_specific_id':'121000',
+    'meaning':'to rest',
+    'readings':  ['やすむ',],
+    'characters':['休む',],
+  },
+
+  {
+    'user_specific_id':'149438',
+    'meaning':'thanks, gratitude',
+    'readings':  ['おれい',],
+    'characters':['お礼',],
+  },
+
+  {
+    'user_specific_id':'91811',
+    'meaning':'previous, ahead, past, former',
+    'readings':  ['さき',],
+    'characters':['先',],
+  },
+
+  {
+    'user_specific_id':'28620',
+    'meaning':'marble',
+    'readings':  ['ビーだま','びーだま',],
+    'characters':['ビー玉','ビー玉',],
+  },
+
+  {
+    'user_specific_id':'120996',
+    'meaning':'calm, cool',
+    'readings':  ['へいき',],
+    'characters':['平気',],
+  },
+
+  {
+    'user_specific_id':'28613',
+    'meaning':'to correct',
+    'readings':  ['ただす',],
+    'characters':['正す',],
+  },
+
+  {
+    'user_specific_id':'28623',
+    'meaning':'money, yen',
+    'readings':  ['えん',],
+    'characters':['円',],
+  },
+
+  {
+    'user_specific_id':'28605',
+    'meaning':'unskillful, unskilled, bad at, not good at, not skilled',
+    'readings':  ['へた',],
+    'characters':['下手',],
+  },
+
+  {
+    'user_specific_id':'28580',
+    'meaning':'february',
+    'readings':  ['にがつ',],
+    'characters':['二月',],
+  },
+
+  {
+    'user_specific_id':'28617',
+    'meaning':'rice field, rice paddy',
+    'readings':  ['た',],
+    'characters':['田',],
+  },
+
+  {
+    'user_specific_id':'149447',
+    'meaning':'to say humbly, to say, to humbly say',
+    'readings':  ['もうす',],
+    'characters':['申す',],
+  },
+
+  {
+    'user_specific_id':'91803',
+    'meaning':'number, edition, model',
+    'readings':  ['ごう',],
+    'characters':['号',],
+  },
+
+  {
+    'user_specific_id':'28509',
+    'meaning':'minute, part',
+    'readings':  ['ふん','ぶん',],
+    'characters':['分','分',],
+  },
+
+  {
+    'user_specific_id':'28606',
+    'meaning':'writing, sentence',
+    'readings':  ['ぶん',],
+    'characters':['文',],
+  },
+
+  {
+    'user_specific_id':'28560',
+    'meaning':'may',
+    'readings':  ['ごがつ',],
+    'characters':['五月',],
+  },
+
+  {
+    'user_specific_id':'96703',
+    'meaning':'as soon as, just after, immediately after',
+    'readings':  ['そうそう',],
+    'characters':['早々',],
+  },
+
+  {
+    'user_specific_id':'28616',
+    'meaning':'onion, round onion',
+    'readings':  ['たまねぎ',],
+    'characters':['玉ねぎ',],
+  },
+
+  {
+    'user_specific_id':'28511',
+    'meaning':'cow',
+    'readings':  ['うし',],
+    'characters':['牛',],
+  },
+
+  {
+    'user_specific_id':'28514',
+    'meaning':'one machine',
+    'readings':  ['いちだい',],
+    'characters':['一台',],
+  },
+
+  {
+    'user_specific_id':'28651',
+    'meaning':'two things',
+    'readings':  ['ふたつ',],
+    'characters':['二つ',],
+  },
+
+  {
+    'user_specific_id':'28517',
+    'meaning':'doorway',
+    'readings':  ['とぐち',],
+    'characters':['戸口',],
+  },
+
+  {
+    'user_specific_id':'28538',
+    'meaning':'ten machines',
+    'readings':  ['じゅうだい',],
+    'characters':['十台',],
+  },
+
+  {
+    'user_specific_id':'28633',
+    'meaning':'correct, true',
+    'readings':  ['ただしい',],
+    'characters':['正しい',],
+  },
+
+  {
+    'user_specific_id':'149439',
+    'meaning':'method, way, way of doing',
+    'readings':  ['しかた',],
+    'characters':['仕方',],
+  },
+
+  {
+    'user_specific_id':'28598',
+    'meaning':'right hand',
+    'readings':  ['みぎて',],
+    'characters':['右手',],
+  },
+
+  {
+    'user_specific_id':'28591',
+    'meaning':'sixteen',
+    'readings':  ['じゅうろく',],
+    'characters':['十六',],
+  },
+
+  {
+    'user_specific_id':'28535',
+    'meaning':'dad, pa, papa',
+    'readings':  ['ちち',],
+    'characters':['父',],
+  },
+
+  {
+    'user_specific_id':'28536',
+    'meaning':'twenty thousand',
+    'readings':  ['にまん',],
+    'characters':['二万',],
+  },
+
+  {
+    'user_specific_id':'149440',
+    'meaning':'to replace, to substitute for, to substitute, to be replaced, to be substituted, to be substituted for',
+    'readings':  ['かわる',],
+    'characters':['代わる',],
+  },
+
+  {
+    'user_specific_id':'28665',
+    'meaning':'mountain',
+    'readings':  ['やま',],
+    'characters':['山',],
+  },
+
+  {
+    'user_specific_id':'28534',
+    'meaning':'fur, hair',
+    'readings':  ['け',],
+    'characters':['毛',],
+  },
+
+  {
+    'user_specific_id':'28593',
+    'meaning':'exit',
+    'readings':  ['でぐち',],
+    'characters':['出口',],
+  },
+
+  {
+    'user_specific_id':'28552',
+    'meaning':'to pull',
+    'readings':  ['ひく',],
+    'characters':['引く',],
+  },
+
+  {
+    'user_specific_id':'28574',
+    'meaning':'one thousand',
+    'readings':  ['いっせん',],
+    'characters':['一千',],
+  },
+
+  {
+    'user_specific_id':'28533',
+    'meaning':'mother',
+    'readings':  ['おかあさん',],
+    'characters':['お母さん',],
+  },
+
+  {
+    'user_specific_id':'96704',
+    'meaning':'young lady, little girl, virgin, maiden, daughter',
+    'readings':  ['おとめ','しょうじょ',],
+    'characters':['少女','少女',],
+  },
+
+  {
+    'user_specific_id':'91812',
+    'meaning':'talented person, clever person',
+    'readings':  ['さいじん',],
+    'characters':['才人',],
+  },
+
+  {
+    'user_specific_id':'149437',
+    'meaning':'flower',
+    'readings':  ['はな',],
+    'characters':['花',],
+  },
+
+  {
+    'user_specific_id':'28516',
+    'meaning':'one hundred thousand, hundred thousand, a hundred thousand',
+    'readings':  ['じゅうまん',],
+    'characters':['十万',],
+  },
+
+  {
+    'user_specific_id':'28573',
+    'meaning':'four things',
+    'readings':  ['よっつ',],
+    'characters':['四つ',],
+  },
+
+  {
+    'user_specific_id':'28611',
+    'meaning':'japan',
+    'readings':  ['にっぽん','にほん',],
+    'characters':['日本','日本',],
+  },
+
+  {
+    'user_specific_id':'28608',
+    'meaning':'years old, age',
+    'readings':  ['さい',],
+    'characters':['才',],
+  },
+
+  {
+    'user_specific_id':'28558',
+    'meaning':'five',
+    'readings':  ['ご',],
+    'characters':['五',],
+  },
+
+  {
+    'user_specific_id':'28531',
+    'meaning':'seattle, city of seattle',
+    'readings':  ['シアトルし','しあとるし',],
+    'characters':['シアトル市','シアトル市',],
+  },
+
+  {
+    'user_specific_id':'28543',
+    'meaning':'municipal, city',
+    'readings':  ['しりつ',],
+    'characters':['市立',],
+  },
+
+  {
+    'user_specific_id':'28589',
+    'meaning':'fifty',
+    'readings':  ['ごじゅう',],
+    'characters':['五十',],
+  },
+
+  {
+    'user_specific_id':'28632',
+    'meaning':'small, little',
+    'readings':  ['ちいさい',],
+    'characters':['小さい',],
+  },
+
+  {
+    'user_specific_id':'28581',
+    'meaning':'1000 yen, one thousand yen, a thousand yen, thousand yen',
+    'readings':  ['せんえん',],
+    'characters':['千円',],
+  },
+
+  {
+    'user_specific_id':'118401',
+    'meaning':'shell, shellfish, clam',
+    'readings':  ['かい',],
+    'characters':['貝',],
+  },
+
+  {
+    'user_specific_id':'28539',
+    'meaning':'two machines',
+    'readings':  ['にだい',],
+    'characters':['二台',],
+  },
+
+  {
+    'user_specific_id':'28615',
+    'meaning':'volcano',
+    'readings':  ['かざん',],
+    'characters':['火山',],
+  },
+
+  {
+    'user_specific_id':'28662',
+    'meaning':'river',
+    'readings':  ['かわ',],
+    'characters':['川',],
+  },
+
+  {
+    'user_specific_id':'241544',
+    'meaning':'until now, up to now, so far',
+    'readings':  ['いままで',],
+    'characters':['今まで',],
+  },
+
+  {
+    'user_specific_id':'28525',
+    'meaning':'older brother, big brother, elder brother',
+    'readings':  ['おにいさん','あに',],
+    'characters':['お兄さん','兄',],
+  },
+
+  {
+    'user_specific_id':'28567',
+    'meaning':'white',
+    'readings':  ['しろい','しろ',],
+    'characters':['白い','白',],
+  },
+
+  {
+    'user_specific_id':'28512',
+    'meaning':'now',
+    'readings':  ['いま',],
+    'characters':['今',],
+  },
+
+  {
+    'user_specific_id':'28666',
+    'meaning':'nine things',
+    'readings':  ['ここのつ',],
+    'characters':['九つ',],
+  },
+
+  {
+    'user_specific_id':'91805',
+    'meaning':'the other day, a few days ago, other day',
+    'readings':  ['せんじつ',],
+    'characters':['先日',],
+  },
+
+  {
+    'user_specific_id':'28544',
+    'meaning':'long time no see',
+    'readings':  ['ひさしぶり',],
+    'characters':['久しぶり',],
+  },
+
+  {
+    'user_specific_id':'28590',
+    'meaning':'six things',
+    'readings':  ['むっつ',],
+    'characters':['六つ',],
+  },
+
+  {
+    'user_specific_id':'28669',
+    'meaning':'to raise, to raise something',
+    'readings':  ['あげる',],
+    'characters':['上げる',],
+  },
+
+  {
+    'user_specific_id':'168507',
+    'meaning':'year round, all year, whole year, throughout the year, all year round',
+    'readings':  ['ねんじゅう',],
+    'characters':['年中',],
+  },
+
+  {
+    'user_specific_id':'28643',
+    'meaning':'adult',
+    'readings':  ['おとな',],
+    'characters':['大人',],
+  },
+
+  {
+    'user_specific_id':'180910',
+    'meaning':'caterpillar',
+    'readings':  ['けむし',],
+    'characters':['毛虫',],
+  },
+
+  {
+    'user_specific_id':'166394',
+    'meaning':'surname, last name, family name',
+    'readings':  ['みょうじ',],
+    'characters':['名字',],
+  },
+
+  {
+    'user_specific_id':'28530',
+    'meaning':'a little, a few, few',
+    'readings':  ['すこし',],
+    'characters':['少し',],
+  },
+
+  {
+    'user_specific_id':'151837',
+    'meaning':'four hundred',
+    'readings':  ['よんひゃく',],
+    'characters':['四百',],
+  },
+
+  {
+    'user_specific_id':'149441',
+    'meaning':'small plate, small dish, little plate, little dish',
+    'readings':  ['こざら',],
+    'characters':['小皿',],
+  },
+
+  {
+    'user_specific_id':'91808',
+    'meaning':'ice',
+    'readings':  ['こおり',],
+    'characters':['氷',],
+  },
+
+  {
+    'user_specific_id':'28618',
+    'meaning':'caucasian, white person, white people',
+    'readings':  ['はくじん',],
+    'characters':['白人',],
+  },
+
+  {
+    'user_specific_id':'168512',
+    'meaning':'young boy, juvenile, youth, boy',
+    'readings':  ['しょうねん',],
+    'characters':['少年',],
+  },
+
+  {
+    'user_specific_id':'28649',
+    'meaning':'nine',
+    'readings':  ['く','きゅう',],
+    'characters':['九','九',],
+  },
+
+  {
+    'user_specific_id':'241546',
+    'meaning':'moonlight, moonbeam',
+    'readings':  ['げっこう',],
+    'characters':['月光',],
+  },
+
+  {
+    'user_specific_id':'28595',
+    'meaning':'puppy',
+    'readings':  ['こいぬ',],
+    'characters':['子犬',],
+  },
+
+  {
+    'user_specific_id':'166393',
+    'meaning':'bold letter, bold, bold character, bold text, boldface',
+    'readings':  ['ふとじ',],
+    'characters':['太字',],
+  },
+
+  {
+    'user_specific_id':'123525',
+    'meaning':'bug, insect',
+    'readings':  ['むし',],
+    'characters':['虫',],
+  },
+
+  {
+    'user_specific_id':'28594',
+    'meaning':'forty two, the answer',
+    'readings':  ['よんじゅうに',],
+    'characters':['四十二',],
+  },
+
+  {
+    'user_specific_id':'28664',
+    'meaning':'three people',
+    'readings':  ['さんにん',],
+    'characters':['三人',],
+  },
+
+  {
+    'user_specific_id':'28515',
+    'meaning':'foreigner, outsider',
+    'readings':  ['がいじん',],
+    'characters':['外人',],
+  },
+
+  {
+    'user_specific_id':'28585',
+    'meaning':'very, considerably, quite',
+    'readings':  ['なかなか',],
+    'characters':['中々',],
+  },
+
+  {
+    'user_specific_id':'125092',
+    'meaning':'to be enough, to be sufficient, to suffice',
+    'readings':  ['たりる',],
+    'characters':['足りる',],
+  },
+
+  {
+    'user_specific_id':'28504',
+    'meaning':'wide',
+    'readings':  ['ひろい',],
+    'characters':['広い',],
+  },
+
+  {
+    'user_specific_id':'28621',
+    'meaning':'evening, last night',
+    'readings':  ['ゆうべ',],
+    'characters':['夕べ',],
+  },
+
+  {
+    'user_specific_id':'28569',
+    'meaning':'left hand',
+    'readings':  ['ひだりて',],
+    'characters':['左手',],
+  },
+
+  {
+    'user_specific_id':'166395',
+    'meaning':'to be photographed',
+    'readings':  ['うつる',],
+    'characters':['写る',],
+  },
+
+  {
+    'user_specific_id':'91813',
+    'meaning':'second day, day two, two days',
+    'readings':  ['ふつか',],
+    'characters':['二日',],
+  },
+
+  {
+    'user_specific_id':'28521',
+    'meaning':'ten thousand',
+    'readings':  ['まん','いちまん',],
+    'characters':['万','一万',],
+  },
+
+  {
+    'user_specific_id':'28537',
+    'meaning':'north',
+    'readings':  ['きた',],
+    'characters':['北',],
+  },
+
+  {
+    'user_specific_id':'28565',
+    'meaning':'eye',
+    'readings':  ['め',],
+    'characters':['目',],
+  },
+
+  {
+    'user_specific_id':'118403',
+    'meaning':'weekdays',
+    'readings':  ['へいじつ',],
+    'characters':['平日',],
+  },
+
+  {
+    'user_specific_id':'28600',
+    'meaning':'four thousand',
+    'readings':  ['よんせん',],
+    'characters':['四千',],
+  },
+
+  {
+    'user_specific_id':'28592',
+    'meaning':'to remove, to hand over, to take out, to reveal',
+    'readings':  ['だす',],
+    'characters':['出す',],
+  },
+
+  {
+    'user_specific_id':'168513',
+    'meaning':'year 2011, 2011, the year 2011',
+    'readings':  ['にせんじゅういちねん',],
+    'characters':['２０１１年',],
+  },
+
+  {
+    'user_specific_id':'118406',
+    'meaning':'baby',
+    'readings':  ['あかちゃん',],
+    'characters':['赤ちゃん',],
+  },
+
+  {
+    'user_specific_id':'28670',
+    'meaning':'eight things',
+    'readings':  ['やっつ',],
+    'characters':['八つ',],
+  },
+
+  {
+    'user_specific_id':'28549',
+    'meaning':'to cut',
+    'readings':  ['きる',],
+    'characters':['切る',],
+  },
+
+  {
+    'user_specific_id':'166392',
+    'meaning':'substitution',
+    'readings':  ['だいよう',],
+    'characters':['代用',],
+  },
+
+  {
+    'user_specific_id':'28673',
+    'meaning':'to hang down, to hang',
+    'readings':  ['さがる',],
+    'characters':['下がる',],
+  },
+
+  {
+    'user_specific_id':'76021',
+    'meaning':'outside',
+    'readings':  ['そと',],
+    'characters':['外',],
+  },
+
+  {
+    'user_specific_id':'125095',
+    'meaning':'inside the car, in the car, in a car, inside a car, within the car, within a car',
+    'readings':  ['しゃない',],
+    'characters':['車内',],
+  },
+
+  {
+    'user_specific_id':'166391',
+    'meaning':'million, one million, a million',
+    'readings':  ['ひゃくまん',],
+    'characters':['百万',],
+  },
+
+  {
+    'user_specific_id':'28671',
+    'meaning':'mouth',
+    'readings':  ['くち',],
+    'characters':['口',],
+  },
+
+  {
+    'user_specific_id':'28658',
+    'meaning':'size',
+    'readings':  ['おおきさ',],
+    'characters':['大きさ',],
+  },
+
+  {
+    'user_specific_id':'28640',
+    'meaning':'please',
+    'readings':  ['ください',],
+    'characters':['下さい',],
+  },
+
+  {
+    'user_specific_id':'28583',
+    'meaning':'eyeball',
+    'readings':  ['めだま',],
+    'characters':['目玉',],
+  },
+
+  {
+    'user_specific_id':'28568',
+    'meaning':'forty',
+    'readings':  ['よんじゅう',],
+    'characters':['四十',],
+  },
+
+  {
+    'user_specific_id':'28627',
+    'meaning':'fifth day, day five, five days',
+    'readings':  ['いつか',],
+    'characters':['五日',],
+  },
+
+  {
+    'user_specific_id':'28502',
+    'meaning':'arrow',
+    'readings':  ['や',],
+    'characters':['矢',],
+  },
+
+  {
+    'user_specific_id':'28518',
+    'meaning':'big machine, big device, machine, device, machine counter',
+    'readings':  ['だい',],
+    'characters':['〜台',],
+  },
+
+  {
+    'user_specific_id':'103667',
+    'meaning':'telephone hello, hello, hello on telephone',
+    'readings':  ['もしもし','もうしもうし',],
+    'characters':['申し申し','申し申し',],
+  },
+
+  {
+    'user_specific_id':'91814',
+    'meaning':'people, everybody, each person',
+    'readings':  ['ひとびと',],
+    'characters':['人々',],
+  },
+
+  {
+    'user_specific_id':'28547',
+    'meaning':'to utilize, to use, to utilise',
+    'readings':  ['もちいる',],
+    'characters':['用いる',],
+  },
+
+  {
+    'user_specific_id':'125093',
+    'meaning':'bamboo',
+    'readings':  ['たけ',],
+    'characters':['竹',],
+  },
+
+  {
+    'user_specific_id':'28668',
+    'meaning':'one thing',
+    'readings':  ['ひとつ',],
+    'characters':['一つ',],
+  },
+
+  {
+    'user_specific_id':'28553',
+    'meaning':'to stop',
+    'readings':  ['とまる',],
+    'characters':['止まる',],
+  },
+
+  {
+    'user_specific_id':'28576',
+    'meaning':'hand',
+    'readings':  ['て',],
+    'characters':['手',],
+  },
+
+  {
+    'user_specific_id':'120999',
+    'meaning':'fireworks',
+    'readings':  ['はなび',],
+    'characters':['花火',],
+  },
+
+  {
+    'user_specific_id':'28603',
+    'meaning':'young lady, young woman, young girl, girl',
+    'readings':  ['おんなのこ',],
+    'characters':['女の子',],
+  },
+
+  {
+    'user_specific_id':'28596',
+    'meaning':'to exit, to leave',
+    'readings':  ['でる',],
+    'characters':['出る',],
+  },
+
+  {
+    'user_specific_id':'28578',
+    'meaning':'october',
+    'readings':  ['じゅうがつ',],
+    'characters':['十月',],
+  },
+
+  {
+    'user_specific_id':'68489',
+    'meaning':'to give birth',
+    'readings':  ['うむ',],
+    'characters':['生む',],
+  },
+
+  {
+    'user_specific_id':'28513',
+    'meaning':'winter',
+    'readings':  ['ふゆ',],
+    'characters':['冬',],
+  },
+
+  {
+    'user_specific_id':'28519',
+    'meaning':'number of people, people, people counter',
+    'readings':  ['にん',],
+    'characters':['〜人',],
+  },
+
+  {
+    'user_specific_id':'28648',
+    'meaning':'down, below, under, beneath',
+    'readings':  ['した',],
+    'characters':['下',],
+  },
+
+  {
+    'user_specific_id':'28529',
+    'meaning':'fat',
+    'readings':  ['ふとい',],
+    'characters':['太い',],
+  },
+
+  {
+    'user_specific_id':'28652',
+    'meaning':'american, american person',
+    'readings':  ['アメリカじん','あめりかじん',],
+    'characters':['アメリカ人','アメリカ人',],
+  },
+
+  {
+    'user_specific_id':'28654',
+    'meaning':'to insert, to put in',
+    'readings':  ['いれる',],
+    'characters':['入れる',],
+  },
+
+  {
+    'user_specific_id':'28675',
+    'meaning':'alone, one person',
+    'readings':  ['ひとり',],
+    'characters':['一人',],
+  },
+
+  {
+    'user_specific_id':'28584',
+    'meaning':'circular, round, spherical',
+    'readings':  ['まるい',],
+    'characters':['丸い',],
+  },
+
+  {
+    'user_specific_id':'76025',
+    'meaning':'to live, to be alive, to exist',
+    'readings':  ['いきる',],
+    'characters':['生きる',],
+  },
+
+  {
+    'user_specific_id':'28650',
+    'meaning':'two people, pair, two persons',
+    'readings':  ['ふたり',],
+    'characters':['二人',],
+  },
+
+  {
+    'user_specific_id':'118400',
+    'meaning':'weather',
+    'readings':  ['てんき',],
+    'characters':['天気',],
+  },
+
+  {
+    'user_specific_id':'91802',
+    'meaning':'early, fast, quick',
+    'readings':  ['はやい',],
+    'characters':['早い',],
+  },
+
+  {
+    'user_specific_id':'149449',
+    'meaning':'one track mind, single mindedness',
+    'readings':  ['いっぽんぎ',],
+    'characters':['一本気',],
+  },
+
+  {
+    'user_specific_id':'149448',
+    'meaning':'flat',
+    'readings':  ['たいら',],
+    'characters':['平ら',],
+  },
+
+  {
+    'user_specific_id':'118405',
+    'meaning':'to be pleased with, to be satisfied with, to be happy with, to be pleased, to be satisfied, to be happy',
+    'readings':  ['きにいる',],
+    'characters':['気に入る',],
+  },
+
+  {
+    'user_specific_id':'28638',
+    'meaning':'frenchman, french person',
+    'readings':  ['フランスじん','ふらんすじん',],
+    'characters':['フランス人','フランス人',],
+  },
+
+  {
+    'user_specific_id':'28663',
+    'meaning':'seven',
+    'readings':  ['しち','なな',],
+    'characters':['七','七',],
+  },
+
+  {
+    'user_specific_id':'151836',
+    'meaning':'one breath, one go, one sitting',
+    'readings':  ['いっき',],
+    'characters':['一気',],
+  },
+
+  {
+    'user_specific_id':'28557',
+    'meaning':'stone',
+    'readings':  ['いし',],
+    'characters':['石',],
+  },
+
+  {
+    'user_specific_id':'28642',
+    'meaning':'to climb',
+    'readings':  ['のぼる',],
+    'characters':['上る',],
+  },
+
+  {
+    'user_specific_id':'28510',
+    'meaning':'city',
+    'readings':  ['し',],
+    'characters':['市',],
+  },
+
+  {
+    'user_specific_id':'28641',
+    'meaning':'big, large',
+    'readings':  ['おおきい',],
+    'characters':['大きい',],
+  },
+
+  {
+    'user_specific_id':'28599',
+    'meaning':'four',
+    'readings':  ['よん','し',],
+    'characters':['四','四',],
+  },
+
+  {
+    'user_specific_id':'96702',
+    'meaning':'center, central, centre',
+    'readings':  ['ちゅうおう',],
+    'characters':['中央',],
+  },
+
+  {
+    'user_specific_id':'28520',
+    'meaning':'mom, mum, ma',
+    'readings':  ['はは',],
+    'characters':['母',],
+  },
+
+  {
+    'user_specific_id':'168510',
+    'meaning':'first year student',
+    'readings':  ['いちねんせい',],
+    'characters':['一年生',],
+  },
+
+  {
+    'user_specific_id':'76023',
+    'meaning':'one&#39;s life, human life',
+    'readings':  ['じんせい',],
+    'characters':['人生',],
+  },
+
+  {
+    'user_specific_id':'28622',
+    'meaning':'sun, day',
+    'readings':  ['ひ',],
+    'characters':['日',],
+  },
+
+  {
+    'user_specific_id':'120998',
+    'meaning':'plate, dish',
+    'readings':  ['さら',],
+    'characters':['皿',],
+  },
+
+  {
+    'user_specific_id':'241545',
+    'meaning':'way of seeing, point of view, perspective, viewpoint',
+    'readings':  ['みかた',],
+    'characters':['見方',],
+  },
+
+  {
+    'user_specific_id':'166386',
+    'meaning':'another person, other people, stranger',
+    'readings':  ['たにん',],
+    'characters':['他人',],
+  },
+
+  {
+    'user_specific_id':'166398',
+    'meaning':'hundred, one hundred',
+    'readings':  ['ひゃく',],
+    'characters':['百',],
+  },
+
+  {
+    'user_specific_id':'125094',
+    'meaning':'whisper in ear, whisper in one&#39;s ear, whisper in someone&#39;s ear',
+    'readings':  ['みみうち',],
+    'characters':['耳打ち',],
+  },
+
+  {
+    'user_specific_id':'182766',
+    'meaning':'lowercase letter, lowercase character, lowercase, lowercase letters, lowercase characters',
+    'readings':  ['こもじ',],
+    'characters':['小文字',],
+  },
+
+  {
+    'user_specific_id':'28523',
+    'meaning':'long time',
+    'readings':  ['ひさしい',],
+    'characters':['久しい',],
+  },
+
+  {
+    'user_specific_id':'28631',
+    'meaning':'kid, child',
+    'readings':  ['こ',],
+    'characters':['子',],
+  },
+
+  {
+    'user_specific_id':'28548',
+    'meaning':'important, precious, valuable',
+    'readings':  ['たいせつ',],
+    'characters':['大切',],
+  },
+
+  {
+    'user_specific_id':'28571',
+    'meaning':'dog',
+    'readings':  ['いぬ',],
+    'characters':['犬',],
+  },
+
+  {
+    'user_specific_id':'91804',
+    'meaning':'shaved ice',
+    'readings':  ['かきごおり',],
+    'characters':['かき氷',],
+  },
+
+  {
+    'user_specific_id':'28562',
+    'meaning':'genius',
+    'readings':  ['てんさい',],
+    'characters':['天才',],
+  },
+
+  {
+    'user_specific_id':'120997',
+    'meaning':'five hundred',
+    'readings':  ['ごひゃく',],
+    'characters':['五百',],
+  },
+
+  {
+    'user_specific_id':'28629',
+    'meaning':'to stand up, to stand something up, to erect, to erect something',
+    'readings':  ['たてる',],
+    'characters':['立てる',],
+  },
+
+  {
+    'user_specific_id':'103668',
+    'meaning':'injustice, unfairness',
+    'readings':  ['ふせい',],
+    'characters':['不正',],
+  },
+
+  {
+    'user_specific_id':'28646',
+    'meaning':'one',
+    'readings':  ['いち',],
+    'characters':['一',],
+  },
+
+  {
+    'user_specific_id':'28607',
+    'meaning':'january',
+    'readings':  ['いちがつ',],
+    'characters':['一月',],
+  },
+
+  {
+    'user_specific_id':'28540',
+    'meaning':'this month, current month',
+    'readings':  ['こんげつ',],
+    'characters':['今月',],
+  },
+
+  {
+    'user_specific_id':'28588',
+    'meaning':'circle, round, circular',
+    'readings':  ['まる',],
+    'characters':['丸',],
+  },
+
+  {
+    'user_specific_id':'123526',
+    'meaning':'rest, break, vacation, holiday',
+    'readings':  ['やすみ',],
+    'characters':['休み',],
+  },
+
+  {
+    'user_specific_id':'166390',
+    'meaning':'skin, hide',
+    'readings':  ['かわ',],
+    'characters':['皮',],
+  },
+
+  {
+    'user_specific_id':'118402',
+    'meaning':'feeling, mood',
+    'readings':  ['きぶん',],
+    'characters':['気分',],
+  },
+
+  {
+    'user_specific_id':'96699',
+    'meaning':'month before last, the month before last',
+    'readings':  ['せんせんげつ',],
+    'characters':['先々月',],
+  },
+
+  {
+    'user_specific_id':'76026',
+    'meaning':'heart',
+    'readings':  ['こころ',],
+    'characters':['心',],
+  },
+
+  {
+    'user_specific_id':'28644',
+    'meaning':'three',
+    'readings':  ['さん',],
+    'characters':['三',],
+  },
+
+  {
+    'user_specific_id':'28625',
+    'meaning':'soil, earth, ground, dirt',
+    'readings':  ['つち',],
+    'characters':['土',],
+  },
+
+  {
+    'user_specific_id':'28635',
+    'meaning':'two',
+    'readings':  ['に',],
+    'characters':['二',],
+  },
+
+  {
+    'user_specific_id':'68490',
+    'meaning':'to be disconnected, to come off, to be out, to be off',
+    'readings':  ['はずれる',],
+    'characters':['外れる',],
+  },
+
+  {
+    'user_specific_id':'91809',
+    'meaning':'man',
+    'readings':  ['おとこのひと','おとこ',],
+    'characters':['男の人','男',],
+  },
+
+  {
+    'user_specific_id':'28636',
+    'meaning':'to enter',
+    'readings':  ['はいる',],
+    'characters':['入る',],
+  },
+
+  {
+    'user_specific_id':'28674',
+    'meaning':'to hang, to lower, to hang something, to lower something',
+    'readings':  ['さげる',],
+    'characters':['下げる',],
+  },
+
+  {
+    'user_specific_id':'91810',
+    'meaning':'first of all, to start with, firstly, to begin with',
+    'readings':  ['まず',],
+    'characters':['先ず',],
+  },
+
+  {
+    'user_specific_id':'28655',
+    'meaning':'power, strength',
+    'readings':  ['ちから',],
+    'characters':['力',],
+  },
+
+  {
+    'user_specific_id':'166388',
+    'meaning':'other',
+    'readings':  ['ほか',],
+    'characters':['他',],
+  },
+
+  {
+    'user_specific_id':'28614',
+    'meaning':'water',
+    'readings':  ['みず',],
+    'characters':['水',],
+  },
+
+  {
+    'user_specific_id':'149443',
+    'meaning':'holiday',
+    'readings':  ['きゅうじつ',],
+    'characters':['休日',],
+  },
+
+  {
+    'user_specific_id':'28634',
+    'meaning':'river mouth, estuary',
+    'readings':  ['かわぐち',],
+    'characters':['川口',],
+  },
+
+  {
+    'user_specific_id':'28550',
+    'meaning':'to separate, to divide, to part, to split',
+    'readings':  ['わける',],
+    'characters':['分ける',],
+  },
+
+  {
+    'user_specific_id':'149446',
+    'meaning':'capital letters, uppercase letters, capital letter, uppercase letter, uppercase, capital',
+    'readings':  ['おおもじ',],
+    'characters':['大文字',],
+  },
+
+  {
+    'user_specific_id':'28541',
+    'meaning':'half',
+    'readings':  ['はん','はんぶん',],
+    'characters':['半','半分',],
+  },
+
+  {
+    'user_specific_id':'96700',
+    'meaning':'strike, stroke, blow',
+    'readings':  ['いちだ',],
+    'characters':['一打',],
+  },
+
+  {
+    'user_specific_id':'118399',
+    'meaning':'red',
+    'readings':  ['あかい','あか',],
+    'characters':['赤い','赤',],
+  },
+
+  {
+    'user_specific_id':'28522',
+    'meaning':'a few, few, scarce',
+    'readings':  ['すくない',],
+    'characters':['少ない',],
+  },
+
+  {
+    'user_specific_id':'187605',
+    'meaning':'wool yarn, yarn',
+    'readings':  ['けいと',],
+    'characters':['毛糸',],
+  },
+
+  {
+    'user_specific_id':'28524',
+    'meaning':'today',
+    'readings':  ['きょう',],
+    'characters':['今日',],
+  },
+
+  {
+    'user_specific_id':'149436',
+    'meaning':'energy, spirit, health',
+    'readings':  ['げんき',],
+    'characters':['元気',],
+  },
+
+  {
+    'user_specific_id':'28645',
+    'meaning':'three things',
+    'readings':  ['みっつ',],
+    'characters':['三つ',],
+  },
+
+  {
+    'user_specific_id':'76024',
+    'meaning':'calf, baby cow',
+    'readings':  ['こうし',],
+    'characters':['子牛',],
+  },
+
+  {
+    'user_specific_id':'123527',
+    'meaning':'serious',
+    'readings':  ['ほんき',],
+    'characters':['本気',],
+  },
+
+  {
+    'user_specific_id':'28610',
+    'meaning':'tree, wood',
+    'readings':  ['き',],
+    'characters':['木',],
+  },
+
+  {
+    'user_specific_id':'28556',
+    'meaning':'six',
+    'readings':  ['ろく',],
+    'characters':['六',],
+  },
+
+  {
+    'user_specific_id':'149444',
+    'meaning':'character, kanji character, letter, symbol',
+    'readings':  ['じ',],
+    'characters':['字',],
+  },
+
+  {
+    'user_specific_id':'28586',
+    'meaning':'june',
+    'readings':  ['ろくがつ',],
+    'characters':['六月',],
+  },
+
+  {
+    'user_specific_id':'28657',
+    'meaning':'entrance',
+    'readings':  ['いりぐち',],
+    'characters':['入り口',],
+  },
+
+  {
+    'user_specific_id':'149442',
+    'meaning':'car',
+    'readings':  ['くるま',],
+    'characters':['車',],
+  },
+
+  {
+    'user_specific_id':'28639',
+    'meaning':'ten',
+    'readings':  ['じゅう',],
+    'characters':['十',],
+  },
+
+  {
+    'user_specific_id':'28661',
+    'meaning':'mt fuji, mount fuji, mt. fuji',
+    'readings':  ['ふじさん',],
+    'characters':['ふじ山',],
+  },
+
+  {
+    'user_specific_id':'28602',
+    'meaning':'heaven',
+    'readings':  ['てん',],
+    'characters':['天',],
+  },
+
+  {
+    'user_specific_id':'28561',
+    'meaning':'again',
+    'readings':  ['また',],
+    'characters':['又',],
+  },
+
+  {
+    'user_specific_id':'28570',
+    'meaning':'fire',
+    'readings':  ['ひ',],
+    'characters':['火',],
+  },
+
+  {
+    'user_specific_id':'28437',
+    'meaning':'tie, draw',
+    'readings':  ['ひきわけ',],
+    'characters':['引き分け',],
+  },
+
+  {
+    'user_specific_id':'28582',
+    'meaning':'sixth day, day six, six days',
+    'readings':  ['むいか',],
+    'characters':['六日',],
+  },
+
+  {
+    'user_specific_id':'28577',
+    'meaning':'thousand',
+    'readings':  ['せん',],
+    'characters':['千',],
+  },
+
+  {
+    'user_specific_id':'28507',
+    'meaning':'government business, official business',
+    'readings':  ['こうよう',],
+    'characters':['公用',],
+  },
+
+  {
+    'user_specific_id':'103666',
+    'meaning':'thread',
+    'readings':  ['いと',],
+    'characters':['糸',],
+  },
+
+  {
+    'user_specific_id':'166397',
+    'meaning':'letter (of the alphabet), character, letters, characters, letter',
+    'readings':  ['もじ',],
+    'characters':['文字',],
+  },
+
+  {
+    'user_specific_id':'28438',
+    'meaning':'postage stamp, stamp',
+    'readings':  ['きって',],
+    'characters':['切手',],
+  },
+
+  {
+    'user_specific_id':'28506',
+    'meaning':'five machines',
+    'readings':  ['ごだい',],
+    'characters':['五台',],
+  },
+
+  {
+    'user_specific_id':'28656',
+    'meaning':'population',
+    'readings':  ['じんこう',],
+    'characters':['人口',],
+  },
+
+  {
+    'user_specific_id':'125091',
+    'meaning':'bamboo shoots, bamboo sprouts',
+    'readings':  ['たけのこ',],
+    'characters':['竹の子',],
+  },
+
+  {
+    'user_specific_id':'76022',
+    'meaning':'fresh, raw',
+    'readings':  ['なま',],
+    'characters':['生',],
+  },
+
+  {
+    'user_specific_id':'91807',
+    'meaning':'teacher, master, doctor',
+    'readings':  ['せんせい',],
+    'characters':['先生',],
+  },
+
+  {
+    'user_specific_id':'28542',
+    'meaning':'suspension, stoppage, discontinuance, interruption',
+    'readings':  ['ちゅうし',],
+    'characters':['中止',],
+  },
+
+  {
+    'user_specific_id':'149445',
+    'meaning':'pause, rest, break',
+    'readings':  ['きゅうし',],
+    'characters':['休止',],
+  },
+
+  {
+    'user_specific_id':'28619',
+    'meaning':'girl',
+    'readings':  ['じょし',],
+    'characters':['女子',],
+  },
+
+  {
+    'user_specific_id':'28503',
+    'meaning':'friend',
+    'readings':  ['ゆうじん',],
+    'characters':['友人',],
+  },
+
+  {
+    'user_specific_id':'28579',
+    'meaning':'prince',
+    'readings':  ['おうじ',],
+    'characters':['王子',],
+  },
+
+  {
+    'user_specific_id':'28508',
+    'meaning':'origin',
+    'readings':  ['もと',],
+    'characters':['元',],
+  },
+
+  {
+    'user_specific_id':'28526',
+    'meaning':'to understand',
+    'readings':  ['わかる',],
+    'characters':['分かる',],
+  },
+
+  {
+    'user_specific_id':'103669',
+    'meaning':'shortage, physical shortage, insufficient, not sufficient, not enough',
+    'readings':  ['ふそく',],
+    'characters':['不足',],
+  },
+
+  {
+    'user_specific_id':'28628',
+    'meaning':'fourth day, day four, four days',
+    'readings':  ['よっか',],
+    'characters':['四日',],
+  },
+
+  {
+    'user_specific_id':'151834',
+    'meaning':'one lifetime',
+    'readings':  ['いちだい',],
+    'characters':['一代',],
+  },
+
+  {
+    'user_specific_id':'28505',
+    'meaning':'way, direction',
+    'readings':  ['ほう','かた',],
+    'characters':['方','方',],
+  },
+
+  {
+    'user_specific_id':'168508',
+    'meaning':'former years, formerly, a few years ago, previous years, past years, prior years',
+    'readings':  ['せんねん',],
+    'characters':['先年',],
+  },
+
+  {
+    'user_specific_id':'28572',
+    'meaning':'ball',
+    'readings':  ['たま',],
+    'characters':['玉',],
+  },
+
+  {
+    'user_specific_id':'28653',
+    'meaning':'person',
+    'readings':  ['ひと',],
+    'characters':['人',],
+  },
+
+  {
+    'user_specific_id':'28597',
+    'meaning':'right direction, right',
+    'readings':  ['みぎ',],
+    'characters':['右',],
+  },
+
+  {
+    'user_specific_id':'28559',
+    'meaning':'katana, sword',
+    'readings':  ['かたな',],
+    'characters':['刀',],
+  },
+
+  {
+    'user_specific_id':'28601',
+    'meaning':'april',
+    'readings':  ['しがつ',],
+    'characters':['四月',],
+  },
+
+  {
+    'user_specific_id':'28637',
+    'meaning':'eight',
+    'readings':  ['はち',],
+    'characters':['八',],
+  },
+
+  {
+    'user_specific_id':'241547',
+    'meaning':'maybe, perhaps, probably',
+    'readings':  ['たぶん',],
+    'characters':['多分',],
+  },
+
+  {
+    'user_specific_id':'28587',
+    'meaning':'middle, in, inside, center',
+    'readings':  ['なか',],
+    'characters':['中',],
+  },
+
+  {
+    'user_specific_id':'91806',
+    'meaning':'last month, previous month',
+    'readings':  ['せんげつ',],
+    'characters':['先月',],
+  },
+
+  {
+    'user_specific_id':'28554',
+    'meaning':'extremity, furthest point, end, outskirts, outer limits, edge, miss, failure',
+    'readings':  ['はずれ',],
+    'characters':['外れ',],
+  },
+
+  {
+    'user_specific_id':'28647',
+    'meaning':'to rise',
+    'readings':  ['あがる',],
+    'characters':['上がる',],
+  },
+
+  {
+    'user_specific_id':'103665',
+    'meaning':'town',
+    'readings':  ['まち',],
+    'characters':['町',],
+  },
+
+  {
+    'user_specific_id':'103664',
+    'meaning':'foot, leg',
+    'readings':  ['あし',],
+    'characters':['足',],
+  },
+
+  {
+    'user_specific_id':'151833',
+    'meaning':'popular',
+    'readings':  ['にんき',],
+    'characters':['人気',],
+  },
+
+  {
+    'user_specific_id':'118398',
+    'meaning':'ear',
+    'readings':  ['みみ',],
+    'characters':['耳',],
+  },
+
+  {
+    'user_specific_id':'28527',
+    'meaning':'second hand, used, secondhand',
+    'readings':  ['ちゅうこ',],
+    'characters':['中古',],
+  },
+
+  {
+    'user_specific_id':'28564',
+    'meaning':'king',
+    'readings':  ['おう',],
+    'characters':['王',],
+  },
+
+  {
+    'user_specific_id':'28612',
+    'meaning':'book, origin, real, main',
+    'readings':  ['ほん',],
+    'characters':['本',],
+  },
+
+  {
+    'user_specific_id':'168511',
+    'meaning':'within a year, within the year',
+    'readings':  ['ねんない',],
+    'characters':['年内',],
+  },
+
+  {
+    'user_specific_id':'166389',
+    'meaning':'straight line',
+    'readings':  ['いちもじ','いちもんじ',],
+    'characters':['一文字','一文字',],
+  },
+
+  {
+    'user_specific_id':'28672',
+    'meaning':'up, above',
+    'readings':  ['うえ',],
+    'characters':['上',],
+  },
+
+  {
+    'user_specific_id':'151835',
+    'meaning':'two hundred',
+    'readings':  ['にひゃく',],
+    'characters':['二百',],
+  },
+
+  {
+    'user_specific_id':'28626',
+    'meaning':'five things',
+    'readings':  ['いつつ',],
+    'characters':['五つ',],
+  },
+
+  {
+    'user_specific_id':'168509',
+    'meaning':'last year',
+    'readings':  ['きょねん',],
+    'characters':['去年',],
+  },
+
+  {
+    'user_specific_id':'28555',
+    'meaning':'inside, within',
+    'readings':  ['うち',],
+    'characters':['内',],
+  },
+
+  {
+    'user_specific_id':'28528',
+    'meaning':'old',
+    'readings':  ['ふるい',],
+    'characters':['古い',],
+  },
+
+  ];
+  console.log(vocabulary_list);
+  var current_vocab;
+  $("#reviews-left").html(vocabulary_list.length)
+  current_vocab = vocabulary_list.shift();
+  console.log(current_vocab.meaning);
+  $("#details-character").hide();
+  $("#details-reading").hide();
+  $("#meaning").html(current_vocab.meaning);
+  $("#us-id").val(current_vocab.user_specific_id);
+  $("#kana").html("");
+  for(i = 0; i < current_vocab.readings.length; i++){
+    $("#kana").append(current_vocab.readings[i] + "</br>");
+  }
+  $("#character").html("");
+  for(i = 0; i < current_vocab.characters.length; i++){
+    $("#character").append(current_vocab.characters[i] + "</br>");
+  }
+</script>
+<script src="/static/js/scripts.js"></script>
+</body>
+</html>

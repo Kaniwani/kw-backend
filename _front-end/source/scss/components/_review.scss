@@ -1,0 +1,148 @@
+.review-header {
+  color: #fff;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.review-home {
+  color: #fff;
+  float: left;
+  font-size: 1.6rem;
+  margin: 20px;
+}
+
+.review-stats__list {
+  float: right;
+  font-size: 1.4rem;
+  margin: 20px;
+}
+
+.review-stats__item {
+  display: inline-block;
+  margin-left: 1em;
+}
+
+/* .review-stats__correct-rate {
+  //
+}
+
+.review-stats__completed-count {
+  //
+}
+
+.review-stats__available-count {
+  //
+} */
+
+.review {
+  display: table;
+  height: 100vh;
+  padding: 0;
+  width: 100vw;
+}
+
+.review-upper,
+.review-lower {
+  display: table-row;
+  width: 100%;
+}
+
+.review-upper {
+  background: $purple;
+  color: #fff;
+  height: 50vh;
+  text-align: center;
+
+  // @include breakpoint((orientation portrait)) {
+  //   height: 35vh;
+  // }
+
+  @include breakpoint((max-width 670px) (orientation landscape)) {
+    height: 60vh;
+  }
+}
+
+.review__meaning {
+  @include text-shadow(0 2px 0 rgba(0, 0, 0, .3));
+  display: table-cell;
+  font-size: 4rem;
+  vertical-align: middle;
+
+  @include breakpoint(670px) {
+    font-size: 5rem;
+  }
+}
+
+.review-lower {
+  height: 50vh;
+
+  // @include breakpoint((orientation portrait)) {
+  //   height: 65vh;
+  // }
+
+  @include breakpoint((max-with 660px) (orientation landscape)) {
+    height: 40vh;
+  }
+
+  fieldset {
+    margin-top: -25px;
+    padding: 20px;
+    position: relative;
+
+    @include breakpoint(670px) {
+      margin-top: -40px;
+    }
+  }
+
+  .review__question {
+    background-color: #333;
+    color: #fff;
+    font-size: 1.4rem;
+    height: 50px;
+    line-height: 50px;
+    margin: -20px -20px 0;
+    text-align: center;
+
+    @include breakpoint(670px) {
+      font-size: 2rem;
+      height: 80px;
+      line-height: 80px;
+    }
+  }
+
+  // I don't usually put the tags with the classes, but I needed to overrride the pure css
+  input.review__response {
+    font-size: 1.4rem;
+    height: 40px;
+    line-height: 1.2;
+    margin: 20px 0;
+    text-align: center;
+
+    @include breakpoint(670px) {
+      font-size: 2rem;
+      height: 60px;
+    }
+  }
+
+  button.review__submit {
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    color: #333;
+    font-size: 1.4rem;
+    height: 40px;
+    padding: .5em .6em .5em 1.2em;
+    position: absolute;
+    right: 20px;
+    top: 70px;
+
+    @include breakpoint(670px) {
+      font-size: 2rem;
+      height: 60px;
+      top: 100px;
+    }
+  }
+}
+

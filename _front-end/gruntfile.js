@@ -62,13 +62,15 @@ module.exports = function(grunt) {
     codekit: {
       dev: {
         files : {
-          'build/static/js/scripts.js' : 'source/js/scripts.js'
+          'build/static/js/scripts.js' : 'source/js/scripts.js',
+          'build/static/js/head-scripts.js' : 'source/js/head-scripts.js'
         }
       },
 
       dist: {
         files : {
-          'dist/js/scripts.js' : 'source/js/scripts.js'
+          'dist/js/scripts.js' : 'source/js/scripts.js',
+          'dist/js/head-scripts.js' : 'source/js/head-scripts.js',
         }
       }
     },
@@ -77,7 +79,8 @@ module.exports = function(grunt) {
     uglify: {
       scripts: {
         files: {
-          '../kw_webapp/static/js/scripts.min.js' : ['dist/js/scripts.js']
+          '../kw_webapp/static/js/scripts.min.js' : ['dist/js/scripts.js'],
+          '../kw_webapp/static/js/min/head-scripts.min.js' : ['dist/js/head-scripts.js']
         }
       }
     },
@@ -121,8 +124,8 @@ module.exports = function(grunt) {
     connect: {
       server: {
         options: {
-          hostname: '127.0.0.1',
-          port: 8888,
+          hostname: '0.0.0.0',
+          port: 8000,
           base: 'build',
           livereload: true
         }
@@ -143,7 +146,7 @@ module.exports = function(grunt) {
 
       styles: {
         files: 'source/scss/**/*.scss',
-        tasks: ['compass']
+        tasks: ['scsslint', 'compass']
       },
 
       images: {
@@ -206,6 +209,17 @@ module.exports = function(grunt) {
     'compass:dev',
     'connect:server',
     'watch'
+  ]);
+
+  // Do everything that default does, without the wact or server.
+  grunt.registerTask('build', [
+    'copy:html',
+    'copy:fonts',
+    'copy:imgs',
+    'jshint',
+    'codekit:dev',
+    'scsslint',
+    'compass:dev'
   ]);
 
   // Production task

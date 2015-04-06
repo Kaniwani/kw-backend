@@ -113,8 +113,13 @@ LOGGING = {
 
 
 #CELERY SETTINGS
-CELERY_RESULT_BACKEND = 'amqp'
-BROKER_URL = broker = 'amqp://guest@localhost//'
+#CELERY_RESULT_BACKEND = 'amqp'
+CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
+#BROKER_URL = broker = 'amqp://guest@localhost//'
+BROKER_URL = 'redis://localhost:6379/0'
+#CELERY_ACCEPT_CONTENT = ['json']
+#CELERY_TASK_SERIALIZER = 'json'
+#CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'America/New_York'
 CELERYBEAT_SCHEDULE = {
     'all_user_srs_every_hour': {
@@ -145,7 +150,7 @@ RAVEN_CONFIG = {
 SECRET_KEY = secrets.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 TEMPLATE_DEBUG = True
 

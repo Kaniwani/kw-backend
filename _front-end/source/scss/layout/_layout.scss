@@ -1,5 +1,15 @@
-@include breakpoint(1920px) {
-  body {
-    background: #f00;
+main {
+  padding: 20px;
+
+  header {
+    margin-bottom: .5rem;
+    overflow: hidden;
+  }
+
+  section {
+    @include border-radius(3px);
+    background: #fff;
+    margin-top: 24px;
+    padding: 20px;
   }
 }

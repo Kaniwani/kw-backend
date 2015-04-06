@@ -1,0 +1,75 @@
+<!doctype html>
+<html class="no-js" lang="en-gb">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Settings</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/static/css/styles.css">
+
+  <script src="/static/js/head-scripts.js"></script>
+</head>
+<body>
+  <header class="header">
+    <a href="/" class="logo logo--active">
+      <span class="logo__kanji">
+        <span>かにわに</span>
+        <span>蟹鰐</span>
+      </span>
+      <span class="logo__text">KaniWani</span>
+    </a>
+
+    <nav class="primary-nav">
+      <ul class="primary-nav__list">
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Reviews</span> <span class="primary-nav__reviews-num">(42+)</span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Vocabulary</span> <span class="fa fa-briefcase"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>About</span> <span class="fa fa-question"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Contact</span> <span class="fa fa-envelope"></span></a>
+        </li>
+        <li class="primary-nav__item primary-nav__item--active">
+          <a href="#" class="primary-nav__link"><span>Settings</span> <span class="fa fa-cog"></span></a>
+        </li>
+        <li class="primary-nav__item">
+          <a href="#" class="primary-nav__link"><span>Logout</span> <span class="fa fa-sign-out"></span></a>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <main role="main">
+    <header>
+      <h1>Settings</h1>
+    </header>
+
+    <section>
+      <form class="pure-form pure-form-stacked" method="post">
+        <input type="hidden" name="csrfmiddlewaretoken" value="WFFTVsR7H9k6XT7JHWupoHYcksOuMn9g">
+
+        <fieldset>
+          <label for="api">API Key <sup>*</sup></label>
+          <input id="api" class="required pure-input-1" type="email" placeholder="API Key" value="613514b652760f65b2665bd094cf89ec">
+
+          <label for="level">Level</label>
+          <input id="level" class="pure-input-1" type="text" placeholder="Leve" value="6" disabled="disabled">
+
+          <button type="submit" class="pure-button pure-button-primary">Save</button>
+        </fieldset>
+      </form>
+    </section>
+  </main>
+
+  <footer class="footer">
+  </footer>
+
+  <script src="/static/js/scripts.js"></script>
+</body>
+</html>
