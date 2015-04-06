@@ -2,6 +2,7 @@
 //@prepros-prepend vendor/jquery-1.11.1.js
 //@prepros-prepend vendor/bootstrap.js
 //@prepros-prepend vendor/notify.js
+//@prepros-prepend vendor/wanakana.js
 
 // Components
 //@prepros-prepend helpers/helpers.js
