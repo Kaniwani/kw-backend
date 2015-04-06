@@ -9,7 +9,17 @@ KaniWani.utility = {
    */
   isHash: function (url) {
     var hasPathname = (url.indexOf(location.pathname) > 0) ? true : false,
-      hasHash = (url.indexOf("#") > 0) ? true : false;
+      hasHash = (url.indexOf('#') > 0) ? true : false;
     return (hasPathname && hasHash) ? true : false;
   }
+};
+
+
+KaniWani.vars = {
+  csrfToken: $('#csrf').val()
+};
+
+
+KaniWani.DOM = {
+  $body: $('body')
 };

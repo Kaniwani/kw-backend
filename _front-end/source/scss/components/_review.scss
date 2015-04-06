@@ -6,10 +6,13 @@
 }
 
 .review-home {
-  color: #fff;
   float: left;
   font-size: 1.6rem;
   margin: 20px;
+
+  a {
+    color: #fff;
+  }
 }
 
 .review-stats__list {

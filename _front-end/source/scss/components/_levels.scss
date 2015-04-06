@@ -58,7 +58,12 @@
   }
 
   .level__item--locked & {
-    background-image: url('https://s3.amazonaws.com/s3.wanikani.com/assets/default-v2/stripes-c1de0a7da741b64f40f69665ad61ade0.png');
+    $colour1: rgba(#fff, .3);
+    $colour2: transparent;
+
+    @include background-image(linear-gradient(-45deg, $colour1 25%, $colour2 25%, $colour2 50%, $colour1 50%, $colour1 75%, $colour2 75%, $colour2));
+    background-size: 6px 6px;
+    // background-image: url('https://s3.amazonaws.com/s3.wanikani.com/assets/default-v2/stripes-c1de0a7da741b64f40f69665ad61ade0.png');
   }
 }
 

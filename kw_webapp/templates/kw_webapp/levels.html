@@ -25,7 +25,7 @@
   <nav class="primary-nav">
     <ul class="primary-nav__list">
       <li class="primary-nav__item">
-        <a href="{% url "kw:home" %}" class="primary-nav__link">
+        <a href="{% url "kw:review" %}" class="primary-nav__link">
           <span>Reviews</span>
           {% if review_count > 0 %}
             <span class="primary-nav__reviews-num">({{ review_count }})</span>
@@ -65,24 +65,25 @@
     <ul class="level__list">
       {% for level in levels %}
         {% if level.0 > user.profile.level %}
-          <li class="level__item level__item--locked" data-leve-id="{{ level.0 }}">
+          <li class="level__item level__item--locked" data-level-id="{{ level.0 }}">
             <a class="level__link" title="Locked">
               <span class="level__number">{{ level.0 }}</span>
               <span class="fa fa-lock"><span class="visually-hidden">Locked</span></span>
             </a>
           </li>
         {% elif level.1 == True %}
-          <li class="level__item" data-leve-id="{{ level.0 }}">
+          <li class="level__item" data-level-id="{{ level.0 }}">
             <a href="{% url "kw:vocabulary" %}{{ level.0 }}" class="level__link" title="Unlocked">
               <span class="level__number">{{ level.0 }}</span>
               <span class="fa fa-unlock"><span class="visually-hidden">Unlocked</span></span>
             </a>
           </li>
         {% elif level.1 == False %}
-          <li class="level__item level__item--locked" data-leve-id="{{ level.0 }}">
+          <li class="level__item level__item--locked" data-level-id="{{ level.0 }}">
             <a href="{% url "kw:vocabulary" %}{{ level.0 }}" class="level__link" title="Unlockable">
               <span class="level__number">{{ level.0 }}</span>
-              <span class="fa fa-unlock-alt"><span class="visually-hidden">Unlockable</span></span>
+              <span class="level__unlock fa fa-unlock-alt"><span class="visually-hidden">Unlockable</span></span>
+              <span class="level__alert fa fa-exclamation-triangle"></span>
             </a>
           </li>
         {% endif %}
@@ -109,4 +110,8 @@
 {{ block.super }}
 <footer class="footer">
 </footer>
+
+<form>
+  <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
+</form>
 {% endblock %}
