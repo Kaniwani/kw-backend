@@ -6,7 +6,6 @@
 // Components
 //@prepros-prepend helpers/helpers.js
 //@prepros-prepend components/utilities.js
-//@prepros-prepend components/example.js
 
 
 KaniWani.init = function() {
