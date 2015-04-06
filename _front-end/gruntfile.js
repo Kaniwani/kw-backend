@@ -80,7 +80,7 @@ module.exports = function(grunt) {
       scripts: {
         files: {
           '../kw_webapp/static/js/scripts.min.js' : ['dist/js/scripts.js'],
-          '../kw_webapp/static/js/min/head-scripts.min.js' : ['dist/js/head-scripts.js']
+          '../kw_webapp/static/js/head-scripts.min.js' : ['dist/js/head-scripts.js']
         }
       }
     },
@@ -125,7 +125,7 @@ module.exports = function(grunt) {
       server: {
         options: {
           hostname: '0.0.0.0',
-          port: 8000,
+          port: 1337,
           base: 'build',
           livereload: true
         }
