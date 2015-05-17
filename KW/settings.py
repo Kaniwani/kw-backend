@@ -20,6 +20,10 @@ import KW.secrets as secrets
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+
+sentry_class = 'raven.contrib.django.raven_compat.handlers.SentryHandler' if secrets.DEPLOY else 'logging.StreamHandler'
+sentry_level = 'ERROR' if secrets.DEPLOY else 'DEBUG'
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -36,8 +40,8 @@ LOGGING = {
     },
     'handlers': {
         'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'level': sentry_level,
+            'class': sentry_class,
         },
         'views': {
             'level': 'DEBUG',
@@ -169,6 +173,7 @@ SOUTH_TESTS_MIGRATE = False
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.humanize',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -177,17 +182,23 @@ INSTALLED_APPS = (
     'south',
     'crispy_forms',
     'raven.contrib.django.raven_compat',
-    'django.contrib.humanize',
+
 )
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'KW.middleware.ReviewCountMiddleWare',#grabs review count for the user.
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+TEMPLATE_CONTEXT_PROCESSORS = {
+    'django.contrib.auth.context_processors.auth',
+    "KW.preprocessors.review_count_preprocessor",
+}
 
 ROOT_URLCONF = 'KW.urls'
 
