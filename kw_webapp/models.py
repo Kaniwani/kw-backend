@@ -34,6 +34,11 @@ class Profile(models.Model):
     user = models.OneToOneField(User)
     api_key = models.CharField(max_length=255)
     gravatar = models.CharField(max_length=255)
+    about = models.CharField(max_length=255, default="")
+    website = models.CharField(max_length=255, default="")
+    twitter = models.CharField(max_length=255, default="@Tadgh11")
+    topics_count = models.PositiveIntegerField(default=0)
+    posts_count = models.PositiveIntegerField(default=0)
     level = models.PositiveIntegerField(null=True, validators=[
         MinValueValidator(1),
         MaxValueValidator(50),

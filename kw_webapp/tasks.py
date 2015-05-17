@@ -157,6 +157,12 @@ def sync_user_profile_with_wk(user):
         json_data = r.json()
         user_info = json_data["user_information"]
         user.profile.level = user_info["level"]
+        user.profile.title = user_info["title"]
+        user.profile.topics_count = user_info["topics_count"]
+        user.profile.posts_count = user_info["posts_count"]
+        user.profile.about = user_info["about"]
+        user.profile.website = user_info["website"]
+        user.profile.twitter = user_info["twitter"]
         user.profile.unlocked_levels.get_or_create(level=user_info["level"])
         user.profile.gravatar = user_info["gravatar"]
         user.profile.save()
