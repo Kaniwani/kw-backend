@@ -1,58 +1,15 @@
-{% extends "kw_webapp/base.html" %}
+{% extends "kw_webapp/logged_in.html" %}
 {% load staticfiles %}
-{% load humanize %}
 
 {% block scripts %}
     {{ block.super }}
 {% endblock %}
-
 {% block title %}
 {{ block.super }}
   <title>Contact us</title>
 {% endblock %}
 
-{% block header %}
-{{ block.super }}
-<header class="header">
-  <a href="/" class="logo logo--active">
-    <span class="logo__kanji">
-      <span>かにわに</span>
-      <span>蟹鰐</span>
-    </span>
-    <h1 class="logo__text">KaniWani</h1>
-  </a>
 
-  <nav class="primary-nav">
-    <ul class="primary-nav__list">
-      <li class="primary-nav__item">
-        <a href="{% url "kw:review" %}" class="primary-nav__link">
-          <span>Reviews</span>
-          {% if review_count > 0 %}
-            <span class="primary-nav__reviews-num">({{ review_count }})</span>
-          {% else %}
-            <span class="primary-nav__reviews-num">(in {{ next_review_date|naturaltime }})</span>
-          {% endif %}
-        </a>
-      </li>
-      <li class="primary-nav__item">
-        <a href="{% url "kw:vocabulary" %}" class="primary-nav__link"><span>Vocabulary</span> <span class="fa fa-briefcase"></span></a>
-      </li>
-      <li class="primary-nav__item">
-        <a href="{% url "kw:about" %}" class="primary-nav__link"><span>About</span> <span class="fa fa-question"></span></a>
-      </li>
-      <li class="primary-nav__item primary-nav__item--active">
-        <a href="{% url "kw:contact" %}" class="primary-nav__link"><span>Contact</span> <span class="fa fa-envelope"></span></a>
-      </li>
-      <li class="primary-nav__item">
-        <a href="{% url "kw:settings" %}" class="primary-nav__link"><span>Settings</span> <span class="fa fa-cog"></span></a>
-      </li>
-      <li class="primary-nav__item">
-        <a href="{%  url "kw:logout" %}" class="primary-nav__link"><span>Logout</span> <span class="fa fa-sign-out"></span></a>
-      </li>
-    </ul>
-  </nav>
-</header>
-{% endblock %}
 
 {% block main %}
 {{ block.super }}

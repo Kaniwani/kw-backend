@@ -1,59 +1,5 @@
-{% extends "kw_webapp/base.html" %}
-{% load staticfiles %}
+{% extends 'kw_webapp/logged_in.html'%}
 {% load humanize %}
-
-{% block scripts %}
-    {{ block.super }}
-{% endblock %}
-
-{% block title %}
-{{ block.super }}
-  <title>Home</title>
-{% endblock %}
-
-{% block header %}
-{{ block.super }}
-<header class="header">
-  <a href="/" class="logo logo--active">
-    <span class="logo__kanji">
-      <span>かにわに</span>
-      <span>蟹鰐</span>
-    </span>
-    <h1 class="logo__text">KaniWani</h1>
-  </a>
-
-  <nav class="primary-nav">
-    <ul class="primary-nav__list">
-      <li class="primary-nav__item">
-        <a href="{% url "kw:review" %}" class="primary-nav__link">
-          <span>Reviews</span>
-          {% if review_count > 0 %}
-            <span class="primary-nav__reviews-num">({{ review_count }})</span>
-          {% else %}
-            <span class="primary-nav__reviews-num">(in {{ next_review_date|naturaltime }})</span>
-          {% endif %}
-        </a>
-      </li>
-      <li class="primary-nav__item">
-        <a href="{% url "kw:vocabulary" %}" class="primary-nav__link"><span>Vocabulary</span> <span class="fa fa-briefcase"></span></a>
-      </li>
-      <li class="primary-nav__item">
-        <a href="{% url "kw:about" %}" class="primary-nav__link"><span>About</span> <span class="fa fa-question"></span></a>
-      </li>
-      <li class="primary-nav__item">
-        <a href="{% url "kw:contact" %}" class="primary-nav__link"><span>Contact</span> <span class="fa fa-envelope"></span></a>
-      </li>
-      <li class="primary-nav__item">
-        <a href="{% url "kw:settings" %}" class="primary-nav__link"><span>Settings</span> <span class="fa fa-cog"></span></a>
-      </li>
-      <li class="primary-nav__item">
-        <a href="{%  url "kw:logout" %}" class="primary-nav__link"><span>Logout</span> <span class="fa fa-sign-out"></span></a>
-      </li>
-    </ul>
-  </nav>
-</header>
-{% endblock %}
-
 {% block main %}
 {{ block.super }}
 <main>
@@ -91,7 +37,7 @@
               <strong>Level <span class="level">{{ user.profile.level }}</span></strong> &lt;Apprentice&gt;
             </li>
             <li class="user-details__item">
-              Scribed <strong>&lt;<span class="topics-count">6</span>&gt; topics</strong> &amp; <strong>&lt;<span class="posts-count">78</span> posts&gt;</strong>
+              Scribed <strong>&lt;<span class="topics-count">{{ user.profile.topics_count }}</span>&gt; topics</strong> &amp; <strong>&lt;<span class="posts-count">{{ user.profile.posts_count }}</span> posts&gt;</strong>
             </li>
             <li class="user-details__item">
               Serving the Crabigator since <strong>&lt;<span class="join-date">May 26, 2012</span>&gt;</strong>
@@ -100,14 +46,14 @@
         </div>
 
         <div class="col">
-          <h3>About Evolutionxbox</h3>
-          <p>&lt;Experienced web developer from London. Currently works @radleyyeldar.&gt;</p>
+          <h3>About {{ user.username }}</h3>
+          <p>&lt;{{ user.profile.about }}&gt;</p>
           <ul class="user-soical">
             <li class="user-soical__item">
-              &lt;<a href="http://www.twitter.com/evolutionxbox" class="user-soical__link"><span class="fa fa-twitter"></span>@evolutionxbox</a>&gt;
+              &lt;<a href="http://www.twitter.com/{{ user.profile.twitter }}" class="user-soical__link"><span class="fa fa-twitter"></span>{{ user.profile.twitter}}</a>&gt;
             </li>
             <li class="user-soical__item">
-              &lt;<a href="http://jonweb.co.uk" class="user-soical__link"><span class="fa fa-link"></span>Website</a>&gt;
+              &lt;<a href="{{ user.profile.website}}" class="user-soical__link"><span class="fa fa-link"></span>{{ user.profile.website}}</a>&gt;
             </li>
           </ul>
         </div>
