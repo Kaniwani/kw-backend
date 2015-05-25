@@ -7,6 +7,11 @@
     <h1>Dashboard</h1>
   </header>
 
+{% if user.profile.api_valid %}
+    API IS VALID!!!
+{% else %}
+    API IS NOT VALID!!!
+{% endif %}
   <section>
     <div class="user">
       <div class="user-overview">

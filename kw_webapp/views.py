@@ -55,17 +55,7 @@ class Dashboard(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(Dashboard, self).get_context_data()
-        #context['review_count'] = UserSpecific.objects.filter(user=self.request.user, needs_review=True).count()
-        #print(context['review_count'])
-        #if context['review_count'] == 0:
-        #    reviews = UserSpecific.objects.filter(user=self.request.user).exclude(next_review_date=None).annotate(Min('next_review_date')).order_by('next_review_date')
-        #    if reviews:
-        #        next_review_timestamp = reviews[0].next_review_date
-        #        print(next_review_timestamp)
-        #        context['next_review_date'] = next_review_timestamp
 
-        #else:
-        #    context['next_review_date'] = 0
         context['announcements'] = Announcement.objects.all().order_by('-pub_date')[:2]
         return context
 

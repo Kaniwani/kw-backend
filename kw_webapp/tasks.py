@@ -155,19 +155,25 @@ def sync_user_profile_with_wk(user):
     r = requests.get(api_string)
     if r.status_code == 200:
         json_data = r.json()
-        user_info = json_data["user_information"]
-        user.profile.level = user_info["level"]
-        user.profile.title = user_info["title"]
-        user.profile.topics_count = user_info["topics_count"]
-        user.profile.posts_count = user_info["posts_count"]
-        user.profile.about = user_info["about"]
-        user.profile.website = user_info["website"]
-        user.profile.twitter = user_info["twitter"]
-        user.profile.unlocked_levels.get_or_create(level=user_info["level"])
-        user.profile.gravatar = user_info["gravatar"]
-        user.profile.save()
-        logger.info("Synced {}'s Profile.".format(user.username))
-        return True
+        try:
+            user_info = json_data["user_information"]
+            user.profile.level = user_info["level"]
+            user.profile.title = user_info["title"]
+            user.profile.topics_count = user_info["topics_count"]
+            user.profile.posts_count = user_info["posts_count"]
+            user.profile.about = user_info["about"]
+            user.profile.website = user_info["website"]
+            user.profile.twitter = user_info["twitter"]
+            user.profile.unlocked_levels.get_or_create(level=user_info["level"])
+            user.profile.gravatar = user_info["gravatar"]
+            user.profile.api_valid = True
+            user.profile.save()
+            logger.info("Synced {}'s Profile.".format(user.username))
+            return True
+        except KeyError as e:
+            user.profile.api_valid = False
+            user.profile.save()
+
     else:
         return False
 
@@ -184,6 +190,31 @@ def sync_with_wk(user):
     #We split this into two seperate API calls as we do not necessarily know the current level until
     #For the love of god don't delete this next line
     sync_user_profile_with_wk(user)
+    if user.profile.api_valid:
+        sync_unlocked_vocab_with_wk(user)
+    else:
+        logger.warn("Not attempting to sync, since API key is invalid. ")
+
+def create_new_vocabulary(vocabulary_json):
+    '''
+    Creates a new vocabulary based on a json object provided by Wanikani and returns this vocabulary.
+    :param vocabulary_json: A JSON object representing a single vocabulary, as provided by Wanikani.
+    :return: The newly created Vocabulary object.
+    '''
+
+    character = vocabulary_json["character"]
+    kana_list = [reading.strip() for reading in vocabulary_json["kana"].split(",")]#Splits out multiple readings for one vocab.
+    meaning = vocabulary_json["meaning"]
+    level = vocabulary_json["level"]
+    vocab = Vocabulary.objects.create(meaning=meaning)
+    for reading in kana_list:
+        vocab.reading_set.get_or_create(kana=reading, character=character, level=level)
+        logger.info("added reading to {}: {} ".format(vocab, reading))
+
+    logger.info("Created new vocabulary with meaning {} and legal readings {}".format(meaning, kana_list))
+    return vocab
+
+def sync_unlocked_vocab_with_wk(user):
     request_string = build_API_sync_string_for_user(user)
     r = requests.get(request_string)
     if r.status_code == 200:
@@ -212,26 +243,6 @@ def sync_with_wk(user):
         logger.info("Synced Vocabulary for {}".format(user.username))
     else:
         logger.error("{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
-
-def create_new_vocabulary(vocabulary_json):
-    '''
-    Creates a new vocabulary based on a json object provided by Wanikani and returns this vocabulary.
-    :param vocabulary_json: A JSON object representing a single vocabulary, as provided by Wanikani.
-    :return: The newly created Vocabulary object.
-    '''
-
-    character = vocabulary_json["character"]
-    kana_list = [reading.strip() for reading in vocabulary_json["kana"].split(",")]#Splits out multiple readings for one vocab.
-    meaning = vocabulary_json["meaning"]
-    level = vocabulary_json["level"]
-    vocab = Vocabulary.objects.create(meaning=meaning)
-    for reading in kana_list:
-        vocab.reading_set.get_or_create(kana=reading, character=character, level=level)
-        logger.info("added reading to {}: {} ".format(vocab, reading))
-
-    logger.info("Created new vocabulary with meaning {} and legal readings {}".format(meaning, kana_list))
-    return vocab
-
 
 @celery_app.task()
 def sync_all_users_to_wk():
