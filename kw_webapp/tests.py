@@ -6,7 +6,7 @@ from django.test import Client
 import kw_webapp.views
 
 # Create your tests here.
-from kw_webapp.models import Profile, Vocabulary, Reading, UserSpecific
+from kw_webapp.models import Profile, Vocabulary, Reading, UserSpecific, Synonym
 from kw_webapp.tasks import all_srs, past_time, get_vocab_by_meaning, associate_vocab_to_user, \
     build_API_sync_string_for_user
 
@@ -49,6 +49,33 @@ class TestModels(TestCase):
     def setUp(self):
         self.c = Client()
 
+
+    def test_adding_synonym_works(self):
+        u = create_user("Tadgh")
+        us = create_full_user_specific("cat", u)
+        us.synonym_set.get_or_create(text="une petite chatte")
+        print(us.synonym_set.all())
+        self.assertEqual(1, len(us.synonym_set.all()))
+
+    def test_removing_synonym_by_lookup_works(self):
+        u = create_user("Tadgh")
+        us = create_full_user_specific("cat", u)
+        us.synonym_set.get_or_create(text="une petite chatte")
+        us.synonym_set.get_or_create(text="minou")
+        remove_text = "minou"
+        syno = Synonym.objects.get(review=us, text=remove_text)
+        print(us.synonym_set.all())
+        us.synonym_set.remove(syno)
+        print(us.synonym_set.all())
+
+    def test_removing_synonym_by_object_works(self):
+        u = create_user("Tadgh")
+        us = create_full_user_specific("cat", u)
+        us.synonym_set.get_or_create(text="une petite chatte")
+        synonym, created = us.synonym_set.get_or_create(text="minou")
+        print(us.synonym_set.all())
+        us.synonym_set.remove(synonym)
+        print(us.synonym_set.all())
 
     def test_reading_clean_fails_with_invalid_levels_too_high(self):
         v = create_vocab("cat")

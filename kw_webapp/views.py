@@ -55,7 +55,6 @@ class Dashboard(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(Dashboard, self).get_context_data()
-
         context['announcements'] = Announcement.objects.all().order_by('-pub_date')[:2]
         return context
 
@@ -220,6 +219,11 @@ class Review(ListView):
         user = self.request.user
         # ? randomizes the queryset.
         res = UserSpecific.objects.filter(user=user, needs_review=True, hidden=False).order_by('?')
+        print("bojangle")
+        for re in res:
+            print(re.synonym_set.all())
+            print(re.synonyms_string())
+            print(re.synonyms_list())
         return res
 
 

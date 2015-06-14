@@ -236,8 +236,10 @@ def sync_unlocked_vocab_with_wk(user):
                 #Pull user synonyms if any
                 #TODO review code for this section before 0.2
                 if user_specific["user_synonyms"] is not None:
-                    new_review.synonyms = ", ".join([synonym for synonym in user_specific["user_synonyms"]])
-                    new_review.save()
+                    for synonym in user_specific["user_synonyms"]:
+                        new_review.synonym_set.get_or_create(text=synonym)
+
+                new_review.save()
 
         #logger.info("{} recently unlocked: {}".format(user.username, recently_unlocked))
         logger.info("Synced Vocabulary for {}".format(user.username))
@@ -332,7 +334,8 @@ def pull_user_synonyms_by_level(user, level):
                 if vocabulary['user_specific'] and vocabulary['user_specific']['user_synonyms']:
                     try:
                         review = UserSpecific.objects.get(user=user, vocabulary__meaning=meaning)
-                        review.synonyms = vocabulary['user_specific']['user_synonyms']
+                        for synonym in vocabulary['user_specific']['user_synonyms']:
+                            review.synonym_set.get_or_create(text=synonym)
                         review.save()
                     except UserSpecific.DoesNotExist as e:
                         logger.error("Couldn't pull review during a synonym sync: {}".format(e))
