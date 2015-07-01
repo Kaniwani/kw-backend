@@ -45,13 +45,13 @@ class Profile(models.Model):
         MaxValueValidator(50),
     ])
     unlocked_levels = models.ManyToManyField(Level)
+
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')
         return x
     
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
-
 
 
 class Vocabulary(models.Model):
@@ -98,6 +98,11 @@ class UserSpecific(models.Model):
     burnt = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
 
+    def synonyms_list(self):
+        return [synonym.text for synonym in self.synonym_set.all()]
+
+    def synonyms_string(self):
+        return ",".join([synonym.text for synonym in self.synonym_set.all()])
     def __str__(self):
         return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
                                                                      self.user.username,
@@ -109,3 +114,9 @@ class UserSpecific(models.Model):
                                                                      self.unlock_date)
 
 
+class Synonym(models.Model):
+    text = models.CharField(max_length=255, blank=False, null=False)
+    review = models.ForeignKey(UserSpecific, null=True)
+
+    def __str__(self):
+        return self.text
