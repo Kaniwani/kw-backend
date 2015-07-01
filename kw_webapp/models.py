@@ -100,6 +100,13 @@ class UserSpecific(models.Model):
     burnt = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
 
+    def synonyms_list(self):
+        return [synonym.text for synonym in self.synonym_set.all()]
+
+    def synonyms_string(self):
+        return ",".join([synonym.text for synonym in self.synonym_set.all()])
+
+
     def __str__(self):
         return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
                                                                      self.user.username,
@@ -112,6 +119,10 @@ class UserSpecific(models.Model):
 
 
 
-class Synonym(models.Model){
 
-}
+class Synonym(models.Model):
+    text = models.CharField(max_length=255, blank=False, null=False)
+    review = models.ForeignKey(UserSpecific, null=True)
+
+    def __str__(self):
+        return self.text
