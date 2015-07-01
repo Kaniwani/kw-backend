@@ -1,4 +1,4 @@
-from kw_webapp.models import UserSpecific, Vocabulary;
+from kw_webapp.models import UserSpecific, Vocabulary, Profile
 from kw_webapp.tasks import unlock_eligible_vocab_from_level
 def wipe_all_reviews_for_user(user):
     reviews = UserSpecific.objects.filter(user=user)
@@ -19,3 +19,12 @@ def flag_all_reviews_for_user(user, needed):
     reviews.update(needs_review=needed)
 
 
+def reset_unlocked_levels_for_user(user):
+    p = Profile.objects.get(user=user)
+    p.unlocked_levels.clear()
+    p.unlocked_levels.get_or_create(level=p.level)
+
+
+def reset_user(user):
+    wipe_all_reviews_for_user(user)
+    reset_unlocked_levels_for_user(user)
