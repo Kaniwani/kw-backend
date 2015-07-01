@@ -111,3 +111,7 @@ class UserSpecific(models.Model):
                                                                      self.unlock_date)
 
 
+
+class Synonym(models.Model){
+
+}
