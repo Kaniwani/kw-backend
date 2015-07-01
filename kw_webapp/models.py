@@ -45,6 +45,8 @@ class Profile(models.Model):
         MaxValueValidator(50),
     ])
     unlocked_levels = models.ManyToManyField(Level)
+    vacation_date = models.DateTimeField(default=None, null=True, blank=True)
+
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')
         return x
