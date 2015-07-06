@@ -57,7 +57,7 @@ class Profile(models.Model):
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
 
-    def num_options(self):
+    def reading_count(self):
         return self.reading_set.all().count()
 
     def available_readings(self, level):
@@ -103,6 +103,10 @@ class UserSpecific(models.Model):
 
     def synonyms_string(self):
         return ",".join([synonym.text for synonym in self.synonym_set.all()])
+
+    def remove_synonym(self, text):
+        self.synonym_set.remove(Synonym.objects.get(text=text))
+
     def __str__(self):
         return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
                                                                      self.user.username,
