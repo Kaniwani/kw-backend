@@ -235,11 +235,8 @@ def sync_all_users_to_wk():
     users = User.objects.all().exclude(profile__isnull=True)
     affected_count = 0
     for user in users:
-        try:
-            sync_with_wk.delay(user)
-            affected_count += 1
-        except Profile.DoesNotExist:
-            logger.error("{} has no profile!".format(user.username))
+        sync_with_wk.delay(user)
+        affected_count += 1
     return affected_count
 
 @celery_app.task()
