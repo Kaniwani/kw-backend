@@ -117,9 +117,9 @@ LOGGING = {
 CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
 #BROKER_URL = broker = 'amqp://guest@localhost//'
 BROKER_URL = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULTS_SERIALIZER = 'json'
+#CELERY_ACCEPT_CONTENT = ['json']
+#CELERY_TASK_SERIALIZER = 'json'
+#CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'America/New_York'
 CELERYBEAT_SCHEDULE = {
     'all_user_srs_every_hour': {

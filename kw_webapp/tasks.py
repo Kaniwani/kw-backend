@@ -232,7 +232,7 @@ def sync_all_users_to_wk():
     :return: the number of users successfully synced to WK.
     '''
     logger.info("Beginning Bi-daily Sync for all user!")
-    users = User.objects.all()
+    users = User.objects.all().exclude(profile__isnull=True)
     affected_count = 0
     for user in users:
         try:
@@ -251,7 +251,7 @@ def repopulate():
 
     :return:
     '''
-    url = "https://www.wanikani.com/api/user/50f4abec6b4afdecdb892938e1193edb/vocabulary/{}"
+    url = "https://www.wanikani.com/api/user/99c4bab4d2c59ad514e2a7105fbb3bf7/vocabulary/{}"
     logger.info("Staring DB Repopulation from WaniKani")
     for level in range(1, 51):
         r = requests.get(
