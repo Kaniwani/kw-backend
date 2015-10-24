@@ -9,7 +9,7 @@ module.exports = function(grunt) {
       html: {
         expand: true,
         src: '**/*.html',
-        dest: 'build', 
+        dest: 'build',
         cwd: 'source'
       },
 
@@ -92,7 +92,7 @@ module.exports = function(grunt) {
         reporterOutput: 'scss-lint-report.xml',
         colorizeOutput: true
       },
-        
+
       allFiles: [
         'source/scss/**/*.scss', '!source/scss/vendor/**/*.scss'
       ]
@@ -138,7 +138,7 @@ module.exports = function(grunt) {
         files: ['source/**/*.html'],
         tasks: ['copy:html']
       },
-      
+
       scripts: {
         files: ['source/js/**/*.js'],
         tasks: ['jshint','codekit']
@@ -166,7 +166,7 @@ module.exports = function(grunt) {
         }
       }
     }
-    
+
 
   });
 
@@ -187,7 +187,7 @@ module.exports = function(grunt) {
 
   //Serve up the pattern library
   grunt.loadNpmTasks('grunt-contrib-connect');
-  
+
   //SCSS lint
   grunt.loadNpmTasks('grunt-scss-lint');
 
