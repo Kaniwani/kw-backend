@@ -3,11 +3,11 @@
 language: python
 
 python:
-	- "3.4"
-	- "3.5"
-	- "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.3"
 
 install:
-	- pip install requirements_new.txt
+  - pip install -r requirements.txt
 
-script: manage.py test
+script: python manage.py test
