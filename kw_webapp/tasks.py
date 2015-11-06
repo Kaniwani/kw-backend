@@ -217,7 +217,7 @@ def create_new_vocabulary(vocabulary_json):
 def get_or_create_vocab_by_json(vocab_json):
     '''
     if lookup by meaning fails, create a new vocab object and return it. See JSON Example here https://www.wanikani.com/api
-    :param vocab_json: a dictionary holding the information needed to create new vocabulary.
+    :param: vocab_json: a dictionary holding the information needed to create new vocabulary.
     :return:
     '''
     try:
@@ -227,6 +227,9 @@ def get_or_create_vocab_by_json(vocab_json):
     return vocab
 
 def add_synonyms_from_api_call_to_review(review, user_specific_json):
+    if user_specific_json["user_synonyms"] is None:
+        return review
+
     for synonym in user_specific_json["user_synonyms"]:
         review.synonym_set.get_or_create(text=synonym)
     return review
