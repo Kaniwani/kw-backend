@@ -1,3 +1,6 @@
+![](https://travis-ci.org/tadgh/KW.svg)
+
+
 # KW
 KaniWani
 
