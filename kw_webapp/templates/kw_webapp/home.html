@@ -45,7 +45,7 @@
               Scribed <strong>&lt;<span class="topics-count">{{ user.profile.topics_count }}</span>&gt; topics</strong> &amp; <strong>&lt;<span class="posts-count">{{ user.profile.posts_count }}</span> posts&gt;</strong>
             </li>
             <li class="user-details__item">
-              Serving the Crabigator since <strong>&lt;<span class="join-date">May 26, 2012</span>&gt;</strong>
+              Serving the Crabigator since <strong>&lt;<span class="join-date">{{ user.date_joined }}</span>&gt;</strong>
             </li>
           </ul>
         </div>
@@ -78,7 +78,7 @@
         </li>
         {% endfor %}
       </ul>
-    </div>
+    </div>"#"
   </section>
 </main>
 {% endblock %}

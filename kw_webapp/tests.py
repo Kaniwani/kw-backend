@@ -79,30 +79,36 @@ class TestModels(TestCase):
     def test_reading_clean_fails_with_invalid_levels_too_high(self):
         v = create_vocab("cat")
         r = create_reading(v,  "ねこ", "ねこ", 51)
+
         self.assertRaises(ValidationError, r.clean_fields)
 
     def test_reading_clean_fails_with_invalid_levels_too_low(self):
         v = create_vocab("cat")
         r = create_reading(v,  "ねこ", "ねこ", 0)
+
         self.assertRaises(ValidationError, r.clean_fields)
 
     def test_vocab_num_options_is_correct(self):
         v = create_vocab("cat")
         r = create_reading(v,  "ねこ", "ねこ", 2)
         r = create_reading(v,  "ねこな", "猫", 1)
+
         self.assertEqual(v.num_options(), 2)
 
     def test_available_readings_returns_only_readings_youve_unlocked(self):
         v = create_vocab("cat")
         r = create_reading(v,  "ねこ", "ねこ", 5)
         r = create_reading(v,  "ねこな", "猫", 1)
+
         self.assertTrue(len(v.available_readings(2)) == 1)
 
     def test_synonym_adding(self):
         u = create_user("Tadgh")
         review = create_full_user_specific("cat", u)
-        review.synonym_set.get_or_create(text="kitty!")
-        self.assertEqual()
+
+        review.synonym_set.get_or_create(text="kitty")
+
+        self.assertIn("kitty", [synonym.text for synonym in review.synonym_set.all()])
 
 class TestCeleryTasks(TestCase):
     def setup(self):
