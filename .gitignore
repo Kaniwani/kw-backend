@@ -50,7 +50,8 @@ coverage.xml
 .ropeproject
 
 # Django stuff:
-*.log
+*.log*
+logs/*.log*
 *.pot
 KW/secrets.py
 celerybeat*
