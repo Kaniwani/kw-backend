@@ -1,0 +1,13 @@
+#travis-ci config file
+
+language: python
+
+python:
+	- "3.4"
+	- "3.5"
+	- "3.3"
+
+install:
+	- pip install requirements_new.txt
+
+script: manage.py test
