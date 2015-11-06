@@ -2,13 +2,13 @@ import requests
 import logging
 from kw_webapp.models import Vocabulary
 
-url = "https://www.wanikani.com/api/user/50f4abec6b4afdecdb892938e1193edb/vocabulary/{}"
+url = "https://www.wanikani.com/api/user/99c4bab4d2c59ad514e2a7105fbb3bf7/vocabulary/{}"
 
 logger = logging.getLogger("kw.db_repopulator")
 
 
 def repopulate():
-    logger.info("Staring DB Repopulation from WaniKani")
+    logger.info("Starting DB Repopulation from WaniKani")
     for level in range(1, 51):
         r = requests.get(
             url.format(level))
