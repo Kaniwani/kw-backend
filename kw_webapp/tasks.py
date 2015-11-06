@@ -214,34 +214,40 @@ def create_new_vocabulary(vocabulary_json):
     logger.info("Created new vocabulary with meaning {} and legal readings {}".format(meaning, kana_list))
     return vocab
 
+def get_or_create_vocab_by_json(vocab_json):
+    '''
+    if lookup by meaning fails, create a new vocab object and return it. See JSON Example here https://www.wanikani.com/api
+    :param: vocab_json: a dictionary holding the information needed to create new vocabulary.
+    :return:
+    '''
+    try:
+        vocab = get_vocab_by_meaning(vocab_json['meaning'])
+    except Vocabulary.DoesNotExist as e:
+        vocab = create_new_vocabulary(vocab_json)
+    return vocab
+
+def add_synonyms_from_api_call_to_review(review, user_specific_json):
+    if user_specific_json["user_synonyms"] is None:
+        return review
+
+    for synonym in user_specific_json["user_synonyms"]:
+        review.synonym_set.get_or_create(text=synonym)
+    return review
+
 def sync_unlocked_vocab_with_wk(user):
     request_string = build_API_sync_string_for_user(user)
     r = requests.get(request_string)
     if r.status_code == 200:
-        #parsing out the JSON data
         json_data = r.json()
-        vocab_info = json_data['requested_information']
-
-        for vocabulary_json in vocab_info:
+        vocab_list = json_data['requested_information']
+        vocab_list = [vocab_json for vocab_json in vocab_list if vocab_json['user_specific'] is not None] #filters out locked items.
+        for vocabulary_json in vocab_list:
             user_specific = vocabulary_json['user_specific']
-            if user_specific is not None: #if user has unlocked it in WK
-                try:
-                    vocab = get_vocab_by_meaning(vocabulary_json['meaning'])
-                except Vocabulary.DoesNotExist as e:
-                    logger.error(e)
-                    vocab = create_new_vocabulary(vocabulary_json)
+            vocab = get_or_create_vocab_by_json(vocabulary_json)
+            new_review = associate_vocab_to_user(vocab, user)
+            add_synonyms_from_api_call_to_review(new_review, user_specific)
+            new_review.save()
 
-                new_review = associate_vocab_to_user(vocab, user)
-
-                #Pull user synonyms if any
-                #TODO review code for this section before 0.2
-                if user_specific["user_synonyms"] is not None:
-                    for synonym in user_specific["user_synonyms"]:
-                        new_review.synonym_set.get_or_create(text=synonym)
-
-                new_review.save()
-
-        #logger.info("{} recently unlocked: {}".format(user.username, recently_unlocked))
         logger.info("Synced Vocabulary for {}".format(user.username))
     else:
         logger.error("{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
@@ -304,8 +310,6 @@ def correct_next_review_times():
 
     :return: The number of affected reviews
     '''
-
-
     us = UserSpecific.objects.filter(next_review_date=None, streak__lte=8)
     for review in us:
         review.next_review_date = review.last_studied + timedelta(hours=constants.SRS_TIMES[review.streak])
