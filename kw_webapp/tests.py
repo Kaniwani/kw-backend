@@ -14,16 +14,20 @@ from kw_webapp.tasks import all_srs, past_time, get_vocab_by_meaning, associate_
 def create_user(username):
     u = User.objects.create(username=username)
     return u
+
 def create_userspecific(vocabulary, user):
     u = UserSpecific.objects.create(vocabulary=vocabulary, user=user)
     u.save()
     return u
+
 def create_profile(user, api_key, level):
     p = Profile.objects.create(user=user, api_key=api_key, level=level)
     return p
+
 def create_vocab(meaning):
     v = Vocabulary.objects.create(meaning=meaning)
     return v
+
 def create_reading(vocab, reading, character, level):
     r = Reading.objects.create(vocabulary=vocab,
                                kana=reading, level=level, character=character)
@@ -57,11 +61,13 @@ class TestModels(TestCase):
     def test_reading_clean_fails_with_invalid_levels_too_high(self):
         v = create_vocab("cat")
         r = create_reading(v,  "ねこ", "ねこ", 51)
+
         self.assertRaises(ValidationError, r.clean_fields)
 
     def test_reading_clean_fails_with_invalid_levels_too_low(self):
         v = create_vocab("cat")
         r = create_reading(v,  "ねこ", "ねこ", 0)
+
         self.assertRaises(ValidationError, r.clean_fields)
 
     def test_vocab_number_readings_is_correct(self):
@@ -73,7 +79,16 @@ class TestModels(TestCase):
         v = create_vocab("cat")
         r = create_reading(v,  "ねこ", "ねこ", 5)
         r = create_reading(v,  "ねこな", "猫", 1)
+
         self.assertTrue(len(v.available_readings(2)) == 1)
+
+    def test_synonym_adding(self):
+
+        review = create_userspecific(self.vocabulary, self.user)
+
+        review.synonym_set.get_or_create(text="kitty")
+
+        self.assertIn("kitty", [synonym .text for synonym in review.synonym_set.all()])
 
 class TestCeleryTasks(TestCase):
     def setUp(self):

@@ -9,14 +9,21 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from collections import namedtuple
 from datetime import timedelta
 import os
 from django.core.urlresolvers import reverse_lazy
 import raven
 
-
-import KW.secrets as secrets
-
+try:
+    import KW.secrets as secrets
+except ImportError:
+    print("Couldn't find a secrets file. Defaulting")
+    secrets = namedtuple('secrets', ['DEPLOY', 'RAVEN_DSN', 'SECRET_KEY', 'DB_TYPE'])
+    secrets.DB_TYPE = "sqlite"
+    secrets.DEPLOY = False
+    secrets.SECRET_KEY = "samplekey"
+    secrets.RAVEN_DSN = "Whatever"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
