@@ -278,7 +278,7 @@ def repopulate():
     '''
     url = "https://www.wanikani.com/api/user/50f4abec6b4afdecdb892938e1193edb/vocabulary/{}"
     logger.info("Staring DB Repopulation from WaniKani")
-    for level in range(1, 51):
+    for level in range(1, 61):
         r = requests.get(
             url.format(level))
         if r.status_code == 200:

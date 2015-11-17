@@ -24,7 +24,7 @@ class Announcement(models.Model):
 class Level(models.Model):
     level = models.PositiveIntegerField(validators=[
         MinValueValidator(1),
-        MaxValueValidator(50),
+        MaxValueValidator(60),
     ])
     def __str__(self):
         return str(self.level)
@@ -42,7 +42,7 @@ class Profile(models.Model):
     posts_count = models.PositiveIntegerField(default=0)
     level = models.PositiveIntegerField(null=True, validators=[
         MinValueValidator(1),
-        MaxValueValidator(50),
+        MaxValueValidator(60),
     ])
     unlocked_levels = models.ManyToManyField(Level)
 
@@ -76,7 +76,7 @@ class Reading(models.Model):
     kana = models.CharField(max_length=255)
     level = models.PositiveIntegerField(validators=[
         MinValueValidator(1),
-        MaxValueValidator(50),
+        MaxValueValidator(60),
     ])
 
 
