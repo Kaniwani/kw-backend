@@ -60,7 +60,7 @@ class TestModels(TestCase):
 
     def test_reading_clean_fails_with_invalid_levels_too_high(self):
         v = create_vocab("cat")
-        r = create_reading(v,  "ねこ", "ねこ", 51)
+        r = create_reading(v,  "ねこ", "ねこ", 61)
 
         self.assertRaises(ValidationError, r.clean_fields)
 
@@ -197,4 +197,3 @@ class TestViews(TestCase):
    #     request.user = u
    #     returned_response = kw_webapp.views.UnlockedVocab.as_view()(request).render().content
    #     self.assertIn("cat", str(returned_response))
-
