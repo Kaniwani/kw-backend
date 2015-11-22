@@ -16,7 +16,7 @@ Since we're using Django, a fair bit of setup is required to get a development e
 7. After a bit, there should be a prompt to install a list of requirements, hit yes and let the installation go. It'll give you a popup when it is done.
 8. Delete the db.sqlite3 file 
 9. hit Ctrl + alt + r . This will open up a manage.py command window. 
-10. execute the command **syncdbc**
+10. execute the command **syncdb**
 11. It will prompt you to create a superuser, do so. 
 12. Ctrl + alt + r again. 
 13. This time execute **migrate**. The database is now built, but not yet populated. 
