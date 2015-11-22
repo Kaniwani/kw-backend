@@ -16,8 +16,8 @@ Since we're using Django, a fair bit of setup is required to get a development e
 7. After a bit, there should be a prompt to install a list of requirements, hit yes and let the installation go. It'll give you a popup when it is done.
 8. Delete the db.sqlite3 file 
 9. hit Ctrl + alt + r . This will open up a manage.py command window. 
-10. execute the command **syncdb**
-11. It will prompt you to create a superuser, do so. 
+10. execute the command **makemigrations**
+11. It may prompt you to create a superuser, do so.
 12. Ctrl + alt + r again. 
 13. This time execute **migrate**. The database is now built, but not yet populated. 
 14. Ctrl + alt + r again. 
@@ -31,6 +31,6 @@ repopulate()
 Chances are your system will spit a bunch of errors at you. Ignore them and wait. Eventually they will stop. 
 
 17. In the settings.py file, chances are you will fine `DEBUG = False`, change this to `DEBUG = True`
-18. Ctrl + alt + r one last time. Type in the command **runserver**
+18. Ctrl + alt + r one last time. Type in the command **runserver --noreload**
 
 If all went well, it will start a server at 127.0.0.1:8000

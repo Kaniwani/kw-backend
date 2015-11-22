@@ -200,6 +200,17 @@ class RecordAnswer(View):
         return HttpResponse("Error!")
 
 
+class ReviewJson(View):
+            # this may end up unnecessary. Not using it at trhe moment.
+        def get(self, request, *args, **kwargs):
+            user = request.user
+            all_reviews = UserSpecific.objects.filter(user=user, needs_review=True)
+
+            for review in all_reviews:
+                pass
+
+            return HttpResponse(all_reviews, content_type="application/json")
+
 class Review(ListView):
     template_name = "kw_webapp/review.html"
     model = UserSpecific
@@ -210,10 +221,6 @@ class Review(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(Review, self).get_context_data()
-        user = self.request.user
-        # this may end up unnecessary. Not using it at the moment.
-        context["json"] = serializers.serialize(
-            "json", UserSpecific.objects.filter(user=user, needs_review=True))
         return context
 
     def get_queryset(self):

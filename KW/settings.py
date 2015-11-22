@@ -175,7 +175,6 @@ LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-SOUTH_TESTS_MIGRATE = False
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -186,7 +185,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'kw_webapp',
-    'south',
     'crispy_forms',
     'raven.contrib.django.raven_compat',
 

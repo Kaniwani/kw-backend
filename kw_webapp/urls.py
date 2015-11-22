@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url, include
 from django.contrib.auth.forms import AdminPasswordChangeForm
 from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard, ReviewSummary, UnlockLevels, UnlockRequested, ForceSRSCheck, About, Contact, \
-    Settings, Levels, LevelVocab, ToggleVocabLockStatus
+    Settings, Levels, LevelVocab, ToggleVocabLockStatus, ReviewJson
 from django.contrib.auth.decorators import login_required
 from kw_webapp.forms import UserLoginForm
 
@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^register/$', Register.as_view(), name="register"),
     url(r'^logout/$', login_required(Logout.as_view()), name="logout"),
     url(r'^review/$', login_required(Review.as_view()), name="review"),
+    url(r'^api/review.json', login_required(ReviewJson.as_view()), name="review_json"),
     url(r'^summary/$', login_required(ReviewSummary.as_view()), name="summary"),
     url(r'^record_answer/$', login_required(RecordAnswer.as_view()), name="record_answer"),
     url(r'^unlocks/$', login_required(UnlockLevels.as_view()), name="unlocks"),
