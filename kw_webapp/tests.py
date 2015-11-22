@@ -186,6 +186,8 @@ class TestViews(TestCase):
 
         self.assertRaises(Http404, generic_view, request)
 
+    #TODO write tests for vocab page
+
    # def test_vocab_page_contains_only_unlocked_vocab(self):
    #     u = create_user("Tadgh")
    #     v1 = create_vocab("cat")

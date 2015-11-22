@@ -1,0 +1,9 @@
+#contactdiv {
+    position:fixed;
+    top: 40%;
+    left: 50%;
+    width:20em;
+    height:15em;
+    margin-top: -7.5em; /*set to a negative number 1/2 of your height*/
+    margin-left: -10em; /
+}

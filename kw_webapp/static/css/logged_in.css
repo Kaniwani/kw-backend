@@ -1,0 +1,7 @@
+.hidden-desktop .text {
+    display: none;
+}
+
+.hidden-desktop.collapse .text {
+    display: inline;
+}

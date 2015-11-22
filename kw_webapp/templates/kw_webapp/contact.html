@@ -1,31 +1,15 @@
 {% extends "kw_webapp/logged_in.html" %}
 {% load staticfiles %}
-
 {% block scripts %}
     {{ block.super }}
+    <link rel="stylesheet" href="{% static "css/contact.css" %}">
+    <script src="{% static "js/contact.js" %}"></script>
 {% endblock %}
-{% block title %}
-{{ block.super }}
-  <title>Contact us</title>
-{% endblock %}
+{% block content %}
+    {{ block.super }}
+     <div class="well"  id="contactdiv">
+          <h1 class="text-center">Contact me</h1>
+          <p>Sorry, no contact form setup yet. Please get a hold of me at <a href="mailto:tadgh@cs.toronto.edu">my email address.</a> If you find a bug in the site(and there will be plenty, I'm not a web developer), submit a bug report <a href="https://docs.google.com/forms/d/11y5CimRb7E1m-xCsRcPu-Ee5z1hddArCScy6s8XUGqA/viewform?usp=send_form"> here!</a></p>
+    </div>
 
-
-
-{% block main %}
-{{ block.super }}
-<main>
-  <header>
-    <h1>Contact</h1>
-  </header>
-
-  <section>
-    <p>Sorry, no contact form setup yet. Please get a hold of me at <a href="mailto:tadgh@cs.toronto.edu">my email address</a>. If you find a bug in the site (and there will be plenty, I'm not a web developer), <a href="https://docs.google.com/forms/d/11y5CimRb7E1m-xCsRcPu-Ee5z1hddArCScy6s8XUGqA/viewform?usp=send_form" rel="external">submit a bug report</a>.</p>
-  </section>
-</main>
-{% endblock %}
-
-{% block footer %}
-{{ block.super }}
-<footer class="footer">
-</footer>
 {% endblock %}

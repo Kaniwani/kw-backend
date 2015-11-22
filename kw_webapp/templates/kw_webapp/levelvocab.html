@@ -10,9 +10,8 @@
 {% endblock %}
 
 
-{% block main %}
+{% block content %}
 {{ block.super }}
-{{ selected_level }}
 <main role="main">
   <header>
     <h1><a href="{% url "kw:vocabulary" %}">Vocabulary</a> > <span>Level &lt;{{ selected_level }}&gt;</span></h1>

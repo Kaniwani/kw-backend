@@ -1,58 +1,88 @@
+
 {% extends "kw_webapp/base.html" %}
 {% load staticfiles %}
-{% load humanize %}
-{% load crispy_forms_tags %}
-
+<!--Load review scripts-->
 {% block scripts %}
-{{ block.super }}
-{% endblock %}
+    <script src="{% static "js/review.js"%}"></script>
+    <script src="{% static "js/wanakana.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "css/review.css"%}">
+{% endblock scripts %}
 
-{% block title %}
-{{ block.super }}
-  <title>Review</title>
-{% endblock %}
+{% block content %}
+<div class="container-full container-fluid">
+    <div class="row"style="height: 70px">
+       <a href="{% url "kw:home" %}" class="home-button col-md-1 col-md-offset-0 col-xs-2 col-xs-offset-2 "><button class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-home"></i></button></a>
+               <h1 id="reviews-left" class="col-xs-2 col-xs-offset-4 col-md-offset-10 col-md-1">1</h1>
+    </div>
 
-{% block header %}
-{{ block.super }}
-<header class="review-header">
-  <h1 class="review-home"><a href="/"><span class="fa fa-home"></span><span class="visually-hidden">KaniWani</span></a></h1>
-  <ul class="review-stats__list">
-    <li class="review-stats__item review-stats__correct-rate"><span class="fa fa-thumbs-up"></span> 100%</li>
-    <li class="review-stats__item review-stats__completed-count"><span class="fa fa-check"></span> 0</li>
-    <li class="review-stats__item review-stats__available-count"><span class="fa fa-inbox"></span> 104</li>
-  </ul>
-</header>
-{% endblock %}
-
-{% block main %}
-{{ block.super }}
-<main role="main" class="review">
-
-  <div class="review-upper">
-    <p class="review__meaning">Happy birthday</p>
-  </div>
-
-  <div class="review-lower">
-    <form class="pure-form pure-form-stacked" method="post">
-      <input type="hidden" name="csrfmiddlewaretoken" value="WFFTVsR7H9k6XT7JHWupoHYcksOuMn9g">
-
-      <fieldset>
-        <label for="response" class="review__question">Vocabulary <strong>reading</strong></label>
-        <input id="response" class="review__response pure-input-1" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" required>
-
-        <button type="submit" class="pure-button pure-button-primary review__submit"><span class="fa fa-chevron-right"></span><span class="visually-hidden">Submit</span></button>
-      </fieldset>
-    </form>
-  </div>
-</main>
-{% endblock %}
-
-{% block footer %}
-{{ block.super }}
-<footer class="footer">
-</footer>
+    <div class="row" style="height: 130px">
+        <h1 id="meaning" class="text-center hint">Meaning</h1>
+    </div>
+    <div class="row" style="height: 100px">
+        <!--<input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" class="col-md-12 text-center" id="user-answer" placeholder="答え" style="font-size: 44pt"> -->
+        <input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" class="col-sm-12 col-xs-10 text-center" id="user-answer" placeholder="答え" style="height:100%; font-size: 44pt">
+        <button id="check-ans-btn" class=" btn btn-lg btn-primary col-xs-2 visible-xs-inline visible-xs-inline-block" style="height: 100%"><span class="glyphicon glyphicon-chevron-right"></span> </button>
+        <input type="hidden" id="us-id" value="Nothing!">
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-xs-6 col-sm-6">
+            <div class="row">
+                <a href="#"  id="button-reading" class="btn btn-primary disabled btn-lg col-md-12 col-xs-12 col-sm-12 ">Show <strong>P</strong>honetic</a>
+            </div>
+            <div class="row">
+                <div id="details-reading" class="jumbotron">
+                    <h1 id="kana" class="text-center hint">Placeholder!</h1>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xs-6 col-sm-6">
+            <div class="row">
+                <a href="#" id="button-character" class="btn btn-primary disabled btn-lg col-md-12 col-xs-12 col-sm-12">Show <strong>K</strong>anji</a>
+            </div>
+            <div class="row">
+                <div id="details-character" class="jumbotron">
+                    <h1 id="character" class="text-center hint">Placeholder Kanji</h1>
+                 </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <form>
-  <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
+<input type="hidden" id="csrf" value="{{ csrf_token }}">
 </form>
+
+
+<script>
+    var vocabulary_list = [
+        {% for item in object_list %}
+        {
+            'user_specific_id':'{{ item.id }}',
+            'meaning':'{{ item.vocabulary.meaning }}{% if item.synonyms %}, {{ item.synonyms }}{% endif %}',
+            'readings':  [{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.kana }}',{% endif %}{% endfor %}],
+            'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
+        },
+        {% endfor %}
+    ];
+    console.log(vocabulary_list);
+    var current_vocab;
+    $("#reviews-left").html(vocabulary_list.length)
+    current_vocab = vocabulary_list.shift();
+    console.log(current_vocab.meaning);
+    $("#details-character").hide();
+    $("#details-reading").hide();
+    $("#meaning").html(current_vocab.meaning);
+    $("#us-id").val(current_vocab.user_specific_id);
+    $("#kana").html("");
+        for(i = 0; i < current_vocab.readings.length; i++){
+            $("#kana").append(current_vocab.readings[i] + "</br>");
+        }
+        $("#character").html("");
+        for(i = 0; i < current_vocab.characters.length; i++){
+            $("#character").append(current_vocab.characters[i] + "</br>");
+        }
+
+
+
+</script>
 {% endblock %}

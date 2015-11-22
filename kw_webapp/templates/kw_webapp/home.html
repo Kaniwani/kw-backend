@@ -1,90 +1,60 @@
-{% extends 'kw_webapp/logged_in.html'%}
+{% extends "kw_webapp/logged_in.html" %}
+{% load staticfiles %}
 {% load humanize %}
-{% block main %}
+
+{% block scripts %}
 {{ block.super }}
-<main>
-  <header>
-    <h1>Dashboard</h1>
-  </header>
-
-{% if user.profile.api_valid %}
-    API IS VALID!!!
-{% else %}
-    API IS NOT VALID!!!
-{% endif %}
-  <section>
-    <div class="user">
-      <div class="user-overview">
-        <h2 class="user-name">{{ user.username }}</h2>
-        <div class="user-gravatar gravatar">
-          <img title="Gravatar" alt="Gravatar" src="//www.gravatar.com/avatar/{{ user.profile.gravatar }}.jpg?s=300">
-        </div>
-
-        <div class="dashboard-reviews">
-          <h2 class="visually-hidden">Reviews</h2>
-          <button class="pure-button dashboard-reviews__refresh"><span class="visually-hidden">Refresh</span><span class="fa fa-refresh"></span></button>
-          {% if review_count > 0 %}
-            <button class="pure-button dashboard-reivews__count">{{ review_count }} Review{{ review_count|pluralize }}</button>
-          {% else %}
-            <button class="pure-button dashboard-reivews__count">Next review: {{ next_review_date|naturaltime }}</button>
-          {% endif %}
-        </div>
-      </div>
-
-      <div class="user-details">
-        <div class="col">
-          <h3>Crabigator Apprentice Info</h3>
-          <ul class="user-details__list">
-            <li class="user-details__item">
-              <strong><span class="username">{{ user.username }}</span></strong> of <strong>&lt;Sect <span class="title">Turtles</span>&gt;</strong>
-            </li>
-            <li class="user-details__item">
-              <strong>Level <span class="level">{{ user.profile.level }}</span></strong> &lt;Apprentice&gt;
-            </li>
-            <li class="user-details__item">
-              Scribed <strong>&lt;<span class="topics-count">{{ user.profile.topics_count }}</span>&gt; topics</strong> &amp; <strong>&lt;<span class="posts-count">{{ user.profile.posts_count }}</span> posts&gt;</strong>
-            </li>
-            <li class="user-details__item">
-              Serving the Crabigator since <strong>&lt;<span class="join-date">{{ user.date_joined }}</span>&gt;</strong>
-            </li>
-          </ul>
-        </div>
-
-        <div class="col">
-          <h3>About {{ user.username }}</h3>
-          <p>&lt;{{ user.profile.about }}&gt;</p>
-          <ul class="user-soical">
-            <li class="user-soical__item">
-              &lt;<a href="http://www.twitter.com/{{ user.profile.twitter }}" class="user-soical__link"><span class="fa fa-twitter"></span>{{ user.profile.twitter}}</a>&gt;
-            </li>
-            <li class="user-soical__item">
-              &lt;<a href="{{ user.profile.website}}" class="user-soical__link"><span class="fa fa-link"></span>{{ user.profile.website}}</a>&gt;
-            </li>
-          </ul>
-        </div>
-      </div>
-      <!-- <p class="user-level">WaniKani Level <strong>6</strong></p> -->
-    </div>
-  </section>
-
-  <section>
-    <div>
-      <h2>Announcements</h2>
-      <ul class="accordion__list">
-        {% for item in announcements %}
-        <li class="accordion__item">
-          <a href="#" class="accordion__link">{{ item.title }}</a>
-          <div class="accordion__content">{{ item.body|safe }}<br> -- <strong>{{ item.creator.username }}</strong></div>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>"#"
-  </section>
-</main>
+    <script src="{% static "js/home.js"%}"></script>
 {% endblock %}
 
-{% block footer %}
+{% block content %}
 {{ block.super }}
-<footer class="footer">
-</footer>
+<div class="container-fluid">
+
+    <div class="col-md-8 col-md-offset-2 col-lg-4 col-lg-offset-4">
+        <div class="row">
+            <h1 class="text-center">{{ user.username }}</h1>
+        </div>
+        <div class="row">
+            <img src="http://www.gravatar.com/avatar/{{ user.profile.gravatar }}" class="center-block img-circle">
+        </div>
+        <div class="row">
+            <p class="text-center">WaniKani Level <strong>{{ user.profile.level }}</strong></p>
+        </div>
+        <div class="row">
+            <button id="force-srs" class="btn-success btn-lg col-xs-4"><span class="glyphicon glyphicon-refresh"></span> </button>
+            {% if review_count > 0 %}
+                <a id="review-count" href="{% url "kw:review" %}" class="btn btn-primary btn-lg center-block col-xs-8" role="button" >{{ review_count }} Review{{ review_count|pluralize }} </a>
+            {% else %}
+                <a id="review-count" href="{% url "kw:review" %}" class="btn btn-primary btn-lg disabled center-block col-xs-8" role="button" id="review-count"> Next review: {{ next_review_date|naturaltime }}</a>
+            {% endif %}
+        </div>
+        <div class="row">
+
+        </div>
+    </div>
+    <div class=" col-md-8 col-md-offset-2 col-lg-3 col-lg-offset-1">
+      <h4 class="text-center">Announcements</h4>
+      <div class="panel-group" id="accordion">
+          {% for item in announcements %}
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#announce{{ item.id }}">
+                  {{ item.title }}
+                </a>
+              </h4>
+            </div>
+            <div id="announce{{ item.id }}" class="panel-collapse collapse">
+              <div class="panel-body">
+                  {{ item.body|safe }}
+                  <br>
+                  -- <strong>{{ item.creator.username }}</strong>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+    </div>
+</div>
 {% endblock %}
