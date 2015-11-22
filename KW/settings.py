@@ -187,7 +187,7 @@ INSTALLED_APPS = (
     'kw_webapp',
     'crispy_forms',
     'raven.contrib.django.raven_compat',
-
+    'rest_framework'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -202,6 +202,13 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = {
     'django.contrib.auth.context_processors.auth',
     "KW.preprocessors.review_count_preprocessor",
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ],
+    'PAGE_SIZE': 10
 }
 
 ROOT_URLCONF = 'KW.urls'

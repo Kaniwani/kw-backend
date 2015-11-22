@@ -1,20 +1,26 @@
 from datetime import timedelta
+from django.contrib.auth.models import User, Group
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
 from django.views.generic import TemplateView, ListView, FormView, View, DetailView
+from rest_framework import viewsets
+from rest_framework.decorators import list_route
+from rest_framework.response import Response
+
 from kw_webapp import constants
 from kw_webapp.models import Profile, UserSpecific, Vocabulary, Announcement
 from kw_webapp.forms import UserCreateForm, SettingsForm
-from django.core import serializers
+from rest_framework.renderers import JSONRenderer
 from django.utils import timezone
+from kw_webapp.serializers import UserSerializer, GroupSerializer, ReviewSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level
-from django.db.models import Min
 import logging
 
 logger = logging.getLogger("kw.views")
 data_logger = logging.getLogger("kw.review_data")
+
 
 class Settings(FormView):
     template_name = "kw_webapp/settings.html"
@@ -40,6 +46,25 @@ class Settings(FormView):
         return HttpResponseRedirect(reverse_lazy("kw:settings"))
 
 
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = UserSpecific.objects.all()
+    serializer_class = ReviewSerializer
+
+    @list_route()
+    def get_queue(self, request):
+        queryset = UserSpecific.objects.filter(user=request.user, needs_review=True)
+        serializer = ReviewSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class About(TemplateView):
@@ -64,6 +89,7 @@ class ForceSRSCheck(View):
     temporary view that allows users to force an SRS update check on their account. Any thing that needs reviewing will
     added to the review queue.
     """
+
     def get(self, request, *args, **kwargs):
         user = request.user
         number_of_reviews = all_srs(user)
@@ -111,6 +137,7 @@ class UnlockLevels(TemplateView):
         context["levels"] = level_status
         return context
 
+
 class Levels(TemplateView):
     template_name = "kw_webapp/levels.html"
 
@@ -127,6 +154,7 @@ class Levels(TemplateView):
 
         context["levels"] = level_status
         return context
+
 
 class LevelVocab(TemplateView):
     template_name = "kw_webapp/levelvocab.html"
@@ -154,7 +182,6 @@ class ToggleVocabLockStatus(View):
         return HttpResponse("Hidden From Reviews." if review.hidden else "Added to Review Queue.")
 
 
-
 class RecordAnswer(View):
     """
     Called via Ajax in reviews.js. Takes a UserSpecific object, and either True or False. Updates the DB in realtime
@@ -171,7 +198,8 @@ class RecordAnswer(View):
         user_correct = True if request.POST['user_correct'] == 'true' else False
         previously_wrong = True if request.POST['wrong_before'] == 'true' else False
         us = get_object_or_404(UserSpecific, pk=us_id)
-        data_logger.info("{}|{}|{}|{}".format(us.user.username, us.vocabulary.meaning, user_correct, us.streak, us.synonyms))
+        data_logger.info(
+            "{}|{}|{}|{}".format(us.user.username, us.vocabulary.meaning, user_correct, us.streak, us.synonyms))
         if user_correct:
             if not previously_wrong:
                 us.correct += 1
@@ -200,16 +228,16 @@ class RecordAnswer(View):
         return HttpResponse("Error!")
 
 
+
+
 class ReviewJson(View):
-            # this may end up unnecessary. Not using it at trhe moment.
-        def get(self, request, *args, **kwargs):
-            user = request.user
-            all_reviews = UserSpecific.objects.filter(user=user, needs_review=True)
+    # this may end up unnecessary. Not using it at trhe moment.
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        all_reviews = UserSpecific.objects.filter(user=user, needs_review=True)
+        serializer = ReviewSerializer(all_reviews, many=True)
+        return Response(serializer.data)
 
-            for review in all_reviews:
-                pass
-
-            return HttpResponse(all_reviews, content_type="application/json")
 
 class Review(ListView):
     template_name = "kw_webapp/review.html"
