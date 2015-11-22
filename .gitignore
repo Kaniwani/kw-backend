@@ -110,10 +110,7 @@ $RECYCLE.BIN/
 node_modules
 .sass-cache
 .DS_Store
-build
-build/
-*-generated.*
-scss-lint-report.xml
+dist
 
 # Ignore all local backup files
 *.bak

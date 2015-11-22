@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{{title}}</title>
+
+  <!-- toolkit styles -->
+  <link rel="stylesheet" href="{{baseurl}}/assets/toolkit/styles/toolkit.css">
+  <!-- /toolkit styles -->
+
+  <!-- google fonts -->
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu:700|Open+Sans:300,700,400'
+        rel='stylesheet' type='text/css'>
+
+  <!-- blocking but cached after login page-->
+  <!-- TODO: if only using a small handful, just inline the svgs instead -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+</head>
+<body>
+
+  {{> site-header }}
+
+  <main role="main">
+
+    {{> section-header }}
+
+    {% body %}
+
+  </main>
+
+  {{> site-footer }}
+
+
+  <!-- toolkit scripts -->
+  <script src="{{baseurl}}/assets/toolkit/scripts/toolkit.js"></script>
+  <!-- /toolkit scripts -->
+
+</body>
+</html>
+
