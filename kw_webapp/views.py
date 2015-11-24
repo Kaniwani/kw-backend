@@ -1,5 +1,5 @@
 from datetime import timedelta
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User, Group, AnonymousUser
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse_lazy
@@ -8,13 +8,12 @@ from django.views.generic import TemplateView, ListView, FormView, View, DetailV
 from rest_framework import viewsets
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
-
 from kw_webapp import constants
 from kw_webapp.models import Profile, UserSpecific, Vocabulary, Announcement
 from kw_webapp.forms import UserCreateForm, SettingsForm
 from rest_framework.renderers import JSONRenderer
 from django.utils import timezone
-from kw_webapp.serializers import UserSerializer, GroupSerializer, ReviewSerializer
+from kw_webapp.serializers import UserSerializer, GroupSerializer, ReviewSerializer, ProfileSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level
 import logging
 
@@ -59,12 +58,22 @@ class GroupViewSet(viewsets.ModelViewSet):
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = UserSpecific.objects.all()
     serializer_class = ReviewSerializer
+    pagination_class = None
 
-    @list_route()
-    def get_queue(self, request):
-        queryset = UserSpecific.objects.filter(user=request.user, needs_review=True)
-        serializer = ReviewSerializer(queryset, many=True)
-        return Response(serializer.data)
+    def get_queryset(self):
+        user = self.request.user
+        queryset = UserSpecific.objects.filter(user=user, needs_review=True)
+        return queryset
+
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Profile.objects.filter(user=user)
+        return queryset
 
 
 class About(TemplateView):
@@ -228,8 +237,6 @@ class RecordAnswer(View):
         return HttpResponse("Error!")
 
 
-
-
 class ReviewJson(View):
     # this may end up unnecessary. Not using it at trhe moment.
     def get(self, request, *args, **kwargs):
@@ -318,3 +325,5 @@ class Register(FormView):
 
 def home(request):
     return HttpResponseRedirect(reverse_lazy('kw:home'))
+
+

@@ -1,7 +1,6 @@
 from django.conf.urls import patterns, include, url
 
 from django.contrib import admin
-#from kw_webapp.models import Announcement
 from rest_framework import routers
 
 import kw_webapp
@@ -9,9 +8,10 @@ import kw_webapp
 admin.autodiscover()
 
 router = routers.DefaultRouter()
-router.register(r'users', kw_webapp.views.UserViewSet)
-router.register(r'groups', kw_webapp.views.GroupViewSet)
-router.register(r'reviews', kw_webapp.views.ReviewViewSet)
+router.register(r'user', kw_webapp.views.UserViewSet)
+router.register(r'group', kw_webapp.views.GroupViewSet)
+router.register(r'review', kw_webapp.views.ReviewViewSet)
+router.register(r'profile', kw_webapp.views.ProfileViewSet)
 
 
 urlpatterns = patterns('',

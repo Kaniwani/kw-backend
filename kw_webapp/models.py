@@ -26,6 +26,7 @@ class Level(models.Model):
         MinValueValidator(1),
         MaxValueValidator(60),
     ])
+
     def __str__(self):
         return str(self.level)
 
