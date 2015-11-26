@@ -3,7 +3,6 @@ import logging
 from django.contrib.auth.models import User
 import requests
 
-from KW import secrets
 from KW.celery import app as celery_app
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Vocabulary, Profile
@@ -294,7 +293,7 @@ def repopulate():
 
     :return:
     '''
-    url = "https://www.wanikani.com/api/user/" + secrets.API_KEY + "/vocabulary/{}"
+    url = "https://www.wanikani.com/api/user/" + constants.API_KEY + "/vocabulary/{}"
     logger.info("Staring DB Repopulation from WaniKani")
     for level in range(constants.LEVEL_MIN, constants.LEVEL_MAX + 1):
         r = requests.get(url.format(level))
