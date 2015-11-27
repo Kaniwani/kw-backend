@@ -1,8 +1,8 @@
 {% extends "kw_webapp/logged_in.html" %}
 {% load staticfiles %}
 {% block scripts %}
-{{ block.super }}
     {{ block.super }}
+    <script src="{% static "js/levelvocab.js" %}"></script>
 {% endblock %}
 
 {% block title %}
@@ -34,9 +34,9 @@
             {% endfor %}
 
             {% if review.hidden == False %}
-              <a href="#" class="fa fa-unlock" title="Unlocked"><span class="visually-hidden">Unlocked</span></a>
+              <a href="#" class="fa fa-unlock" title="Unlocked" data-pk="{{ review.id }}"><span class="visually-hidden">Unlocked</span></a>
             {% else %}
-              <a href="#" class="fa fa-unlock-alt" title="Unlockable"><span class="visually-hidden">Unlockable</span></a>
+              <a href="#" class="fa fa-lock" title="Unlockable" data-pk="{{ review.id }}"><span class="visually-hidden">Unlockable</span></a>
             {% endif %}
           </div>
           <div class="vocab-lower">
@@ -59,7 +59,7 @@
             {% endif %}
 
             <div class="vocab-synonyms">
-              User synonyms: <span contentEditable="true">{{ review.synonyms }}</span><!-- 
+              User synonyms: <span contentEditable="true">{{ review.synonyms_string }}</span><!--
               <ul class="vocab-synonyms__list">
                 <li class="vocab-synonyms__item" contentEditable="true">Birth anniversary</li>
                 <li class="vocab-synonyms__item" contentEditable="true">That day of the year</li>
@@ -142,6 +142,9 @@
   </ul>
 </main>
 
+<form>
+<input type="hidden" id="csrf" value="{{ csrf_token }}">
+</form>
 {% endblock %}
 
 {% block footer %}

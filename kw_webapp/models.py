@@ -96,6 +96,9 @@ class UserSpecific(models.Model):
     burnt = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
 
+    def can_be_managed_by(self, user):
+        return self.user == user or user.is_superuser
+
     def synonyms_list(self):
         return [synonym.text for synonym in self.synonym_set.all()]
 

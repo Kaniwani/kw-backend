@@ -1,20 +1,42 @@
 from django.core.exceptions import ValidationError
+from django.http import HttpResponseForbidden
 from django.test import Client, TestCase
 
-from kw_webapp.models import Synonym
-from kw_webapp.tests.utils import create_user, create_userspecific, create_reading
+from kw_webapp.models import Synonym, UserSpecific
+from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
 
 
 class TestModels(TestCase):
     def setUp(self):
-        self.c = Client()
+        self.client = Client()
         self.user = create_user("Tadgh")
+        self.user.set_password("password")
+        create_profile(self.user, "any key", 1)
+        self.user.save()
         self.vocabulary = create_vocab("cat")
         self.review = create_userspecific(self.vocabulary, self.user)
         self.review.synonym_set.get_or_create(text="minou")
 
         #default state of a test is a user that has a single review, and the review has a single synonym added.
+
+    def test_toggling_review_hidden_ownershp_fails_on_wrong_user(self):
+        user2 = create_user("eve")
+        user2.set_password("im_a_hacker")
+        create_profile(user2, "any_key", 1)
+        user2.save()
+        relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id
+        if self.client.login(username="eve", password="im_a_hacker"):
+            response = self.client.post(path="/kw/togglevocab/", data={"review_id": relevant_review_id})
+            self.assertIsInstance(response, HttpResponseForbidden)
+
+
+    def test_toggling_review_hidden_ownership_works(self):
+        relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id
+
+        if self.client.login(username=self.user.username, password="password"):
+            response = self.client.post(path="/kw/togglevocab/", data={"review_id": relevant_review_id})
+            print(response.content)
 
     def test_adding_synonym_works(self):
         self.review.synonym_set.get_or_create(text="une petite chatte")

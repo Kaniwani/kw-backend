@@ -1,6 +1,6 @@
 from datetime import timedelta
 from django.contrib.auth.models import User, Group, AnonymousUser
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
@@ -102,7 +102,7 @@ class ForceSRSCheck(View):
     def get(self, request, *args, **kwargs):
         user = request.user
         number_of_reviews = all_srs(user)
-        new_review_count = UserSpecific.objects.filter(user=request.user, needs_review=True).count()
+        new_review_count = UserSpecific.objects.filter(user=request.user, needs_review=True, hidden=False).count()
         logger.info("{} has requested an SRS update. {} reviews added. {} reviews total.".format(user.username,
                                                                                                  number_of_reviews or 0,
                                                                                                  new_review_count or 0))
@@ -186,9 +186,12 @@ class ToggleVocabLockStatus(View):
     def post(self, request, *args, **kwargs):
         review_id = request.POST["review_id"]
         review = UserSpecific.objects.get(pk=review_id)
-        review.hidden = not review.hidden
-        review.save()
-        return HttpResponse("Hidden From Reviews." if review.hidden else "Added to Review Queue.")
+        if review.can_be_managed_by(self.request.user):
+            review.hidden = not review.hidden
+            review.save()
+            return HttpResponse("Hidden From Reviews." if review.hidden else "Added to Review Queue.")
+        else:
+            return HttpResponseForbidden()
 
 
 class RecordAnswer(View):
