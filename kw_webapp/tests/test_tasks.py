@@ -1,14 +1,16 @@
 from django.test import TestCase, RequestFactory
-
-from kw_webapp.models import Vocabulary, UserSpecific
+import responses
+from kw_webapp.models import Vocabulary, UserSpecific, Profile
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
-    build_API_sync_string_for_user
+    build_API_sync_string_for_user, add_synonyms_from_api_call_to_review, sync_unlocked_vocab_with_wk
+from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile
 
 
 class TestCeleryTasks(TestCase):
     def setUp(self):
         self.user = create_user("Tadgh")
+        create_profile(self.user, "any_key", 5)
         self.vocabulary = create_vocab("cat")
         self.review = create_userspecific(self.vocabulary, self.user)
 
@@ -33,14 +35,13 @@ class TestCeleryTasks(TestCase):
         self.assertTrue(review.needs_review is True)
 
     def test_building_api_string_adds_correct_levels(self):
-        p = create_profile(self.user, "any_api_key", 5)
-        p.unlocked_levels.create(level=5)
-        p.unlocked_levels.create(level=3)
-        p.unlocked_levels.create(level=1)
-        p.save()
+        self.user.profile.unlocked_levels.create(level=5)
+        self.user.profile.unlocked_levels.create(level=3)
+        self.user.profile.unlocked_levels.create(level=1)
+        self.user.profile.save()
 
         api_call = build_API_sync_string_for_user(self.user)
-        correct_string = "https://www.wanikani.com/api/user/any_api_key/vocabulary/5,3,"
+        correct_string = "https://www.wanikani.com/api/user/any_key/vocabulary/5,3,"
 
         self.assertEqual(correct_string, api_call)
 
@@ -54,3 +55,17 @@ class TestCeleryTasks(TestCase):
                                         "user_synonyms": None, "reading_note": None}}
         vocab = create_new_vocabulary(vocab_json)
         self.assertIsInstance(vocab, Vocabulary)
+
+    @responses.activate
+    def test_creating_new_synonyms_on_sync(self):
+        resp_body = sample_api_responses.single_vocab_response
+        resp_body["user_synonyms"] = ["kitten", "large rat"]
+        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+                      json=resp_body,
+                      status=200,
+                      content_type='application/json')
+
+        sync_unlocked_vocab_with_wk(self.user)
+        self.assertListEqual(self.review.synonyms_list(), ["kitten", "large rat"])
+
+        print()

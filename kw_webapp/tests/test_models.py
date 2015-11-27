@@ -14,6 +14,8 @@ class TestModels(TestCase):
         self.review = create_userspecific(self.vocabulary, self.user)
         self.review.synonym_set.get_or_create(text="minou")
 
+        #default state of a test is a user that has a single review, and the review has a single synonym added.
+
     def test_adding_synonym_works(self):
         self.review.synonym_set.get_or_create(text="une petite chatte")
         self.assertEqual(2, len(self.review.synonym_set.all()))
