@@ -30,13 +30,18 @@ class TestModels(TestCase):
             response = self.client.post(path="/kw/togglevocab/", data={"review_id": relevant_review_id})
             self.assertIsInstance(response, HttpResponseForbidden)
 
-
     def test_toggling_review_hidden_ownership_works(self):
         relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id
+        before_toggle_hidden = UserSpecific.objects.get(id=relevant_review_id).hidden
 
         if self.client.login(username=self.user.username, password="password"):
             response = self.client.post(path="/kw/togglevocab/", data={"review_id": relevant_review_id})
             print(response.content)
+        else:
+            self.fail("Couldn't log in!?")
+
+        after_toggle_hidden = UserSpecific.objects.get(id=relevant_review_id)
+        self.assertNotEqual(before_toggle_hidden, after_toggle_hidden)
 
     def test_adding_synonym_works(self):
         self.review.synonym_set.get_or_create(text="une petite chatte")
