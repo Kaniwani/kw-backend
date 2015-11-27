@@ -238,7 +238,6 @@ class RecordAnswer(View):
 
 
 class ReviewJson(View):
-
     def get(self, request, *args, **kwargs):
         user = request.user
         all_reviews = UserSpecific.objects.filter(user=user, needs_review=True)
@@ -252,11 +251,13 @@ class Review(ListView):
 
     def get(self, request, *args, **kwargs):
         logger.info("{} has started a review session.".format(request.user.username))
-        return super(Review, self).get(request)
+        if UserSpecific.objects.filter(user=self.request.user, needs_review=True, hidden=False).count() < 1:
+            return HttpResponseRedirect(reverse_lazy("kw:home"))
+        else:
+            return super(Review, self).get(request)
 
     def get_queryset(self):
         user = self.request.user
-        # ? randomizes the queryset.
         res = UserSpecific.objects.filter(user=user, needs_review=True, hidden=False).order_by('?')
         return res
 
@@ -317,5 +318,3 @@ class Register(FormView):
 
 def home(request):
     return HttpResponseRedirect(reverse_lazy('kw:home'))
-
-

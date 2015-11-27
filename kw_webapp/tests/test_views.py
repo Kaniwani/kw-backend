@@ -11,8 +11,9 @@ from kw_webapp.tests.utils import create_vocab
 class TestViews(TestCase):
     def setUp(self):
         self.user = create_user("user1")
+        self.user.set_password("password")
+        self.user.save()
         create_profile(self.user, "some_key", 5)
-
         #create a piece of vocab with one reading.
         self.cat_vocab = create_vocab("cat")
         self.cat_reading = create_reading(self.cat_vocab, "kana", "kanji", 5)
@@ -21,7 +22,7 @@ class TestViews(TestCase):
         self.review = create_userspecific(self.cat_vocab, self.user)
 
 
-        self.c = Client()
+        self.client = Client()
         self.factory = RequestFactory()
 
     def test_review_requires_login(self):
@@ -30,6 +31,15 @@ class TestViews(TestCase):
         generic_view = kw_webapp.views.RecordAnswer.as_view()
         response = generic_view(request)
         self.assertEqual(response.status_code, 302)
+
+    def test_accessing_review_page_when_empty_redirects_home(self):
+        self.review.needs_review = False
+        self.review.save()
+
+        self.client.login(username="user1", password="password")
+        response = self.client.get("/kw/review/", follow=True)
+
+        self.assertRedirects(response, expected_url="/kw/")
 
     def test_review_page_populates_synonyms_next_to_meaning(self):
         self.review.synonym_set.create(text="minou")
