@@ -1,6 +1,18 @@
 
 single_vocab_response = {
-    "user_information": {},
+    "user_information": {
+        "username": "Tadgh11",
+        "gravatar": "a9453be85d2e722fd7e3b3424a38be30",
+        "level": 16,
+        "title": "Turtles",
+        "about": "",
+        "website": "http://www.kaniwani.com",
+        "twitter": "@Tadgh11",
+        "topics_count": 1,
+        "posts_count": 81,
+        "creation_date": 1373371374,
+        "vacation_date": None
+    },
     "requested_information": [{
                         "character": "猫",
                         "kana": "ねこ",
@@ -13,19 +25,16 @@ single_vocab_response = {
                             "available_date": 1448586000,
                             "burned": "false",
                             "burned_date": 0,
-                            "meaning_correct": 2,
+                            "meaning_correct": 0,
                             "meaning_incorrect": 0,
-                            "meaning_max_streak": 2,
-                            "meaning_current_streak": 2,
-                            "reading_correct": 2,
+                            "meaning_max_streak": 0,
+                            "meaning_current_streak": 0,
+                            "reading_correct": 0,
                             "reading_incorrect": 0,
-                            "reading_max_streak": 2,
-                            "reading_current_streak": 2,
+                            "reading_max_streak": 0,
+                            "reading_current_streak": 0,
                             "meaning_note": None,
-                            "user_synonyms": [
-                                "kitten",
-                                "large rat"
-                            ],
+                            "user_synonyms": [],
                             "reading_note": None
                         }
                     }]

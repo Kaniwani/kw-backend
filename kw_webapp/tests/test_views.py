@@ -4,16 +4,25 @@ from django.test import TestCase, RequestFactory, Client
 
 import kw_webapp
 from kw_webapp.models import UserSpecific
-from kw_webapp.tests.utils import create_user, create_userspecific
+from kw_webapp.tests.utils import create_user, create_userspecific, create_profile, create_reading
 from kw_webapp.tests.utils import create_vocab
 
 
 class TestViews(TestCase):
     def setUp(self):
-        self.c = Client()
         self.user = create_user("user1")
-        self.factory = RequestFactory()
+        create_profile(self.user, "some_key", 5)
+
+        #create a piece of vocab with one reading.
         self.cat_vocab = create_vocab("cat")
+        self.cat_reading = create_reading(self.cat_vocab, "kana", "kanji", 5)
+
+        #setup a review with two synonyms
+        self.review = create_userspecific(self.cat_vocab, self.user)
+
+
+        self.c = Client()
+        self.factory = RequestFactory()
 
     def test_review_requires_login(self):
         request = self.factory.get('/kw/review/')
@@ -21,6 +30,17 @@ class TestViews(TestCase):
         generic_view = kw_webapp.views.RecordAnswer.as_view()
         response = generic_view(request)
         self.assertEqual(response.status_code, 302)
+
+    def test_review_page_populates_synonyms_next_to_meaning(self):
+        self.review.synonym_set.create(text="minou")
+        self.review.synonym_set.create(text="chatte!")
+
+        request = self.factory.get('/kw/review/')
+        request.user = self.user
+        generic_view = kw_webapp.views.Review.as_view()
+        response = generic_view(request)
+
+        self.assertContains(response, "cat, minou, chatte!")
 
     def test_recording_answer_works_on_correct_answer(self):
         us = create_userspecific(self.cat_vocab, self.user)

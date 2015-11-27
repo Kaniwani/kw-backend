@@ -35,9 +35,9 @@ class TestCeleryTasks(TestCase):
         self.assertTrue(review.needs_review is True)
 
     def test_building_api_string_adds_correct_levels(self):
-        self.user.profile.unlocked_levels.create(level=5)
-        self.user.profile.unlocked_levels.create(level=3)
-        self.user.profile.unlocked_levels.create(level=1)
+        self.user.profile.unlocked_levels.get_or_create(level=5)
+        self.user.profile.unlocked_levels.get_or_create(level=3)
+        self.user.profile.unlocked_levels.get_or_create(level=1)
         self.user.profile.save()
 
         api_call = build_API_sync_string_for_user(self.user)
@@ -59,7 +59,7 @@ class TestCeleryTasks(TestCase):
     @responses.activate
     def test_creating_new_synonyms_on_sync(self):
         resp_body = sample_api_responses.single_vocab_response
-        resp_body["user_synonyms"] = ["kitten", "large rat"]
+        resp_body["requested_information"][0]["user_specific"]["user_synonyms"] = ["kitten", "large rat"]
         responses.add(responses.GET, build_API_sync_string_for_user(self.user),
                       json=resp_body,
                       status=200,
@@ -67,5 +67,3 @@ class TestCeleryTasks(TestCase):
 
         sync_unlocked_vocab_with_wk(self.user)
         self.assertListEqual(self.review.synonyms_list(), ["kitten", "large rat"])
-
-        print()

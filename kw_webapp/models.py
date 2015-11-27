@@ -2,10 +2,7 @@ import logging
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
-from django.utils.encoding import smart_str
-import requests
 
 
 logger = logging.getLogger("kw.models")
@@ -103,7 +100,7 @@ class UserSpecific(models.Model):
         return [synonym.text for synonym in self.synonym_set.all()]
 
     def synonyms_string(self):
-        return ",".join([synonym.text for synonym in self.synonym_set.all()])
+        return ", ".join([synonym.text for synonym in self.synonym_set.all()])
 
     def remove_synonym(self, text):
         self.synonym_set.remove(Synonym.objects.get(text=text))

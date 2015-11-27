@@ -58,7 +58,7 @@
         {% for item in object_list %}
         {
             'user_specific_id':'{{ item.id }}',
-            'meaning':'{{ item.vocabulary.meaning }}{% if item.synonyms %}, {{ item.synonyms }}{% endif %}',
+            'meaning':'{{ item.vocabulary.meaning }}{% if item.synonyms_string %}, {{ item.synonyms_string }}{% endif %}',
             'readings':  [{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.kana }}',{% endif %}{% endfor %}],
             'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
         },
@@ -71,7 +71,7 @@
     console.log(current_vocab.meaning);
     $("#details-character").hide();
     $("#details-reading").hide();
-    $("#meaning").html(current_vocab.meaning);
+    $("#meaning").html(current_vocab.meaning + current_vocab.synonym_set.all);
     $("#us-id").val(current_vocab.user_specific_id);
     $("#kana").html("");
         for(i = 0; i < current_vocab.readings.length; i++){

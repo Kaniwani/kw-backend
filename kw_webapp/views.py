@@ -238,7 +238,7 @@ class RecordAnswer(View):
 
 
 class ReviewJson(View):
-    # this may end up unnecessary. Not using it at trhe moment.
+
     def get(self, request, *args, **kwargs):
         user = request.user
         all_reviews = UserSpecific.objects.filter(user=user, needs_review=True)
@@ -254,18 +254,10 @@ class Review(ListView):
         logger.info("{} has started a review session.".format(request.user.username))
         return super(Review, self).get(request)
 
-    def get_context_data(self, **kwargs):
-        context = super(Review, self).get_context_data()
-        return context
-
     def get_queryset(self):
         user = self.request.user
         # ? randomizes the queryset.
         res = UserSpecific.objects.filter(user=user, needs_review=True, hidden=False).order_by('?')
-        for re in res:
-            print(re.synonym_set.all())
-            print(re.synonyms_string())
-            print(re.synonyms_list())
         return res
 
 

@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+
 from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile
 
 
@@ -15,7 +16,10 @@ def create_userspecific(vocabulary, user):
 
 def create_profile(user, api_key, level):
     p = Profile.objects.create(user=user, api_key=api_key, level=level)
+    p.unlocked_levels.create(level=level)
     return p
+
+
 
 
 def create_vocab(meaning):
