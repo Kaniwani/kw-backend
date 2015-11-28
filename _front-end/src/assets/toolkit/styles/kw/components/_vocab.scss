@@ -21,7 +21,7 @@
 }
 
 .vocab-upper {
-  @include border-radius(3px 3px 0 0);
+  border-radius: 3px 3px 0 0;
   background: $purple;
   border-bottom: 2px solid #c0c0c0;
   color: #fff;
@@ -52,7 +52,7 @@
 }
 
 .vocab__kanji {
-  @include text-shadow(0 2px 0 rgba(0, 0, 0, .3));
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
   float: left;
   font-size: 2.9rem;
   margin-top: -6px;
@@ -70,7 +70,7 @@
 
 .vocab__kana ,
 .vocab__meaning {
-  @include text-shadow(0 1px 0 rgba(0, 0, 0, .3));
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
   clear: right;
   float: right;
   font-size: 1.8rem;
@@ -90,7 +90,7 @@
 }
 
 .vocab-lower {
-  @include transition(margin-top .33s ease);
+  transition: margin-top .33s ease;
   margin-top: -62px;
   overflow: hidden;
   position: relative;
@@ -102,7 +102,7 @@
   }
 
   *:not(.vocab-lower__toggle) {
-    @include transition(opacity .33s ease);
+    transition: opacity .33s ease;
     opacity: 0;
   }
 

@@ -16,11 +16,13 @@ var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 var sourcemaps = require('gulp-sourcemaps');
 var webpack = require('webpack');
+var rucksack = require('gulp-rucksack');
 
 
 // configuration
 var config = {
 	dev: gutil.env.dev,
+	prod: gutil.env.prod,
 	src: {
 		scripts: {
 			fabricator: './src/assets/fabricator/scripts/fabricator.js',
@@ -54,22 +56,23 @@ gulp.task('styles:fabricator', function () {
 		.pipe(sourcemaps.init())
 		.pipe(sass().on('error', sass.logError))
 		.pipe(prefix('last 1 version'))
-		.pipe(gulpif(!config.dev, csso()))
+		.pipe(gulpif(config.prod, csso()))
 		.pipe(rename('f.css'))
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(config.dest + '/assets/fabricator/styles'))
-		.pipe(gulpif(config.dev, reload({stream:true})));
+		.pipe(gulpif(!config.prod, reload({stream:true})));
 });
 
 gulp.task('styles:toolkit', function () {
 	gulp.src(config.src.styles.toolkit)
-		.pipe(gulpif(config.dev, sourcemaps.init()))
+		.pipe(gulpif(!config.prod, sourcemaps.init()))
 		.pipe(sass().on('error', sass.logError))
+    .pipe(rucksack())
 		.pipe(prefix('last 1 version'))
-		.pipe(gulpif(!config.dev, csso()))
-		.pipe(gulpif(config.dev, sourcemaps.write()))
+		.pipe(gulpif(config.prod, csso()))
+		.pipe(gulpif(!config.prod, sourcemaps.write()))
 		.pipe(gulp.dest(config.dest + '/assets/toolkit/styles'))
-		.pipe(gulpif(config.dev, reload({stream:true})));
+		.pipe(gulpif(!config.prod, reload({stream:true})));
 });
 
 gulp.task('styles', ['styles:fabricator', 'styles:toolkit']);
@@ -108,7 +111,7 @@ gulp.task('favicon', function () {
 // assemble
 gulp.task('assemble', function (done) {
 	assemble({
-		logErrors: config.dev
+		logErrors: config.prod
 	});
 	done();
 });
@@ -175,7 +178,7 @@ gulp.task('default', ['clean'], function () {
 
 	// run build
 	runSequence(tasks, function () {
-		if (config.dev) {
+		if (!config.prod) {
 			gulp.start('serve');
 		}
 	});

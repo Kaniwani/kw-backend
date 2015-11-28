@@ -67,7 +67,7 @@
 }
 
 .review__meaning {
-  @include text-shadow(0 2px 0 rgba(0, 0, 0, .3));
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
   display: table-cell;
   font-size: 4rem;
   vertical-align: middle;
@@ -84,7 +84,7 @@
   //   height: 65vh;
   // }
 
-  @include breakpoint((max-with 660px) (orientation landscape)) {
+  @include breakpoint((max-width 660px) (orientation landscape)) {
     height: 40vh;
   }
 

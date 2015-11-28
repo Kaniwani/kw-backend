@@ -4,10 +4,12 @@
  * Class selectors are namespaced with "f-"
  */
 
+
+// NOTE: default menu-width is 14rem, bumped up for now because of old KW html {font-size: 65%} bs
 $settings: (
 	theme: light,
 	accent: hsl(209, 100%, 45%),
-	menu-width: 14rem
+	menu-width: 20rem
 );
 
 @import 'partials/variables';

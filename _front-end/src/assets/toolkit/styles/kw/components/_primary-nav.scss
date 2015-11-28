@@ -4,20 +4,12 @@
 }
 
 .primary-nav__list {
-  margin: 0 -10px 0 0;
+  margin: 0;
   padding: 0;
-
-  @include breakpoint(max-width 670px) {
-    margin-right: -9px;
-  }
-
-  @include breakpoint(900px) {
-    margin-right: -20px;
-  }
 }
 
 .primary-nav__item {
-  @include transition(background-color .25s ease);
+  transition: background-color .25s ease;
   display: table-cell;
 
   &.primary-nav__item--active {

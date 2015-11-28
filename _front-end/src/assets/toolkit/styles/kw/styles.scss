@@ -1,15 +1,12 @@
-@import 'compass';
-@import 'breakpoint';
+@import 'vendor/breakpoint';
 
 @import 'vendor/vendor';
 @import 'helpers/helpers';
 @import 'base/base';
-@import 'base/fonts';
 @import 'layout/layout';
 @import 'pages/pages';
 @import 'components/components';
 @import 'themes/themes';
-
 
 // Styles to SORT
 .home-button {

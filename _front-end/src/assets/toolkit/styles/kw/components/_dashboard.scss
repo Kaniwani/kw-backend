@@ -26,7 +26,7 @@
 }
 
 .user-name {
-  @include text-shadow(0 2px 0 rgba(0, 0, 0, .3));
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
   color: #fff;
 }
 
@@ -41,7 +41,7 @@
   width: 162px;
 
   &:before {
-    @include box-shadow(inset 3px 3px 8px 0 rgba(0, 0, 0, .26));
+    box-shadow: inset 3px 3px 8px 0 rgba(0, 0, 0, .26);
     border-radius: 100%;
     content: '';
     display: block;
@@ -100,7 +100,7 @@
   }
 
   h3 {
-    @include text-shadow(0 2px 0 rgba(0, 0, 0, .3));
+    text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
     color: darken(#ededed, 40%);
     font-size: em(14, 16);
   }

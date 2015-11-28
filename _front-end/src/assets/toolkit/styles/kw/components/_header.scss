@@ -1,15 +1,13 @@
 .header {
-  @include box-shadow(1px 1px 8px 0 rgba(0, 0, 0, .26));
+  box-shadow: 1px 1px 8px 0 rgba(0, 0, 0, .26);
   background: #e0e0e0;
   overflow: hidden;
-  padding: 0 20px;
 }
 
 .logo {
-  float: left;
+  display: inline-block;
   font-family: $roboto-slab-bold;
   font-size: 2rem;
-  line-height: 7rem;
   margin: 10px 0;
 
   &:hover {
@@ -27,9 +25,9 @@
 }
 
 .logo__kanji {
-  @include border-radius(100%);
-  @include box-shadow(inset 3px 3px 8px 0 rgba(#000, .26));
-  @include transition(background-color .25s ease);
+  border-radius: 100%;
+  box-shadow: inset 3px 3px 8px 0 rgba(#000, .26);
+  transition: background-color .25s ease-out;
   background: #515151;
   display: table-cell;
   font-family: $japanese;

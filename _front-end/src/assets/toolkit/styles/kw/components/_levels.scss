@@ -44,7 +44,7 @@
 }
 
 .level__link {
-  @include transition(background-color .33s ease);
+  transition: background-color .33s ease;
   background: $purple;
   border-radius: 3px;
   color: #fff;
@@ -61,14 +61,14 @@
     $colour1: rgba(#fff, .3);
     $colour2: transparent;
 
-    @include background-image(linear-gradient(-45deg, $colour1 25%, $colour2 25%, $colour2 50%, $colour1 50%, $colour1 75%, $colour2 75%, $colour2));
+    background-image: linear-gradient(-45deg, $colour1 25%, $colour2 25%, $colour2 50%, $colour1 50%, $colour1 75%, $colour2 75%, $colour2);
     background-size: 6px 6px;
     // background-image: url('https://s3.amazonaws.com/s3.wanikani.com/assets/default-v2/stripes-c1de0a7da741b64f40f69665ad61ade0.png');
   }
 }
 
 .level__number {
-  @include text-shadow(0 2px 0 rgba(0, 0, 0, .3));
+  text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
   float: left;
   font-size: 2.9rem;
   margin: -6px 0 26px;
