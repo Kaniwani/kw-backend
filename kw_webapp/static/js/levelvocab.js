@@ -1,6 +1,6 @@
 $(document).ready(function() {
     var csrf_token = $("#csrf").val();
-    $('body').click(".fa-unlock", function(event) {
+    $('body').on("click", ".fa-unlock", function(event) {
         event.preventDefault();
         var $this = $(event.target);
         var review_pk = $this.data("pk");
@@ -12,7 +12,7 @@ $(document).ready(function() {
         });
     });
 
-    $("body").click(".fa-lock", function(event) {
+    $("body").on("click", ".fa-lock", function(event) {
         event.preventDefault();
         var $this = $(event.target);
         var review_pk = $this.data("pk");
