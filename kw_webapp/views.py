@@ -259,29 +259,33 @@ class RecordAnswer(View):
         us_id = request.POST["user_specific_id"]
         user_correct = True if request.POST['user_correct'] == 'true' else False
         previously_wrong = True if request.POST['wrong_before'] == 'true' else False
-        us = get_object_or_404(UserSpecific, pk=us_id)
+        review = get_object_or_404(UserSpecific, pk=us_id)
+
+        if not review.can_be_managed_by(self.request.user):
+            return HttpResponseForbidden("You can't modify that object!")
+
         data_logger.info(
-            "{}|{}|{}|{}".format(us.user.username, us.vocabulary.meaning, user_correct, us.streak, us.synonyms))
+            "{}|{}|{}|{}".format(review.user.username, review.vocabulary.meaning, user_correct, review.streak, review.synonyms))
         if user_correct:
             if not previously_wrong:
-                us.correct += 1
-                us.streak += 1
-                if us.streak >= 9:
-                    us.burnt = True
-            us.needs_review = False
-            us.last_studied = timezone.now()
-            us.next_review_date = timezone.now() + timedelta(hours=RecordAnswer.srs_times[us.streak])
-            us.save()
+                review.correct += 1
+                review.streak += 1
+                if review.streak >= 9:
+                    review.burnt = True
+            review.needs_review = False
+            review.last_studied = timezone.now()
+            review.next_review_date = timezone.now() + timedelta(hours=RecordAnswer.srs_times[review.streak])
+            review.save()
             return HttpResponse("Correct!")
         elif not user_correct:
-            us.incorrect += 1
-            if us.streak == 7:
-                us.streak -= 2
+            review.incorrect += 1
+            if review.streak == 7:
+                review.streak -= 2
             else:
-                us.streak -= 1
-            if us.streak < 0:
-                us.streak = 0
-            us.save()
+                review.streak -= 1
+            if review.streak < 0:
+                review.streak = 0
+            review.save()
             return HttpResponse("Incorrect!")
         else:
             logger.error(
