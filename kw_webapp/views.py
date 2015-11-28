@@ -1,17 +1,18 @@
 from datetime import timedelta
-from django.contrib.auth.models import User, Group, AnonymousUser
-from django.http import HttpResponseRedirect, HttpResponse, Http404, HttpResponseForbidden
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
-from django.views.generic import TemplateView, ListView, FormView, View, DetailView
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView, ListView, FormView, View
 from rest_framework import viewsets
-from rest_framework.response import Response
 from kw_webapp import constants
-from kw_webapp.models import Profile, UserSpecific, Vocabulary, Announcement
+from kw_webapp.models import Profile, UserSpecific, Announcement
 from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
-from kw_webapp.serializers import UserSerializer, GroupSerializer, ReviewSerializer, ProfileSerializer
+from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level
 import logging
 
@@ -37,20 +38,24 @@ class Settings(FormView):
         logger.info("Saved Settings changes for {}.".format(self.request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:settings"))
 
-    def form_invalid(self, form):
-        print(form.cleaned_data)
+    def form_invalid(self, form, **kwargs):
+        context = self.get_context_data(**kwargs)
         print(form.errors)
-        return HttpResponseRedirect(reverse_lazy("kw:settings"))
+        context['form'] = form
+        return self.render_to_response(context)
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(Settings, self).dispatch(*args, **kwargs)
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
-
-class GroupViewSet(viewsets.ModelViewSet):
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(UserViewSet, self).dispatch(*args, **kwargs)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -63,6 +68,10 @@ class ReviewViewSet(viewsets.ModelViewSet):
         queryset = UserSpecific.objects.filter(user=user, needs_review=True)
         return queryset
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ReviewViewSet, self).dispatch(*args, **kwargs)
+
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
@@ -73,13 +82,25 @@ class ProfileViewSet(viewsets.ModelViewSet):
         queryset = Profile.objects.filter(user=user)
         return queryset
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ProfileViewSet, self).dispatch(*args, **kwargs)
+
 
 class About(TemplateView):
     template_name = "kw_webapp/about.html"
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(About, self).dispatch(*args, **kwargs)
+
 
 class Contact(TemplateView):
     template_name = "kw_webapp/contact.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(Contact, self).dispatch(*args, **kwargs)
 
 
 class Dashboard(TemplateView):
@@ -89,6 +110,10 @@ class Dashboard(TemplateView):
         context = super(Dashboard, self).get_context_data()
         context['announcements'] = Announcement.objects.all().order_by('-pub_date')[:2]
         return context
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(Dashboard, self).dispatch(*args, **kwargs)
 
 
 class ForceSRSCheck(View):
@@ -105,6 +130,10 @@ class ForceSRSCheck(View):
                                                                                                  number_of_reviews or 0,
                                                                                                  new_review_count or 0))
         return HttpResponse(new_review_count)
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ForceSRSCheck, self).dispatch(*args, **kwargs)
 
 
 class UnlockRequested(View):
@@ -129,6 +158,10 @@ class UnlockRequested(View):
                 "{} vocabulary unlocked.\nHowever, you still have {} vocabulary locked in WaniKani".format(ul_count,
                                                                                                            l_count))
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(UnlockRequested, self).dispatch(*args, **kwargs)
+
 
 class UnlockLevels(TemplateView):
     template_name = "kw_webapp/unlocklevels.html"
@@ -146,6 +179,10 @@ class UnlockLevels(TemplateView):
 
         context["levels"] = level_status
         return context
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(UnlockLevels, self).dispatch(*args, **kwargs)
 
 
 class Levels(TemplateView):
@@ -165,6 +202,10 @@ class Levels(TemplateView):
         context["levels"] = level_status
         return context
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(Levels, self).dispatch(*args, **kwargs)
+
 
 class LevelVocab(TemplateView):
     template_name = "kw_webapp/levelvocab.html"
@@ -177,6 +218,10 @@ class LevelVocab(TemplateView):
         context['reviews'] = level_vocab
         context['selected_level'] = level
         return context
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LevelVocab, self).dispatch(*args, **kwargs)
 
 
 class ToggleVocabLockStatus(View):
@@ -194,6 +239,10 @@ class ToggleVocabLockStatus(View):
         else:
             return HttpResponseForbidden()
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ToggleVocabLockStatus, self).dispatch(*args, **kwargs)
+
 
 class RecordAnswer(View):
     """
@@ -210,29 +259,33 @@ class RecordAnswer(View):
         us_id = request.POST["user_specific_id"]
         user_correct = True if request.POST['user_correct'] == 'true' else False
         previously_wrong = True if request.POST['wrong_before'] == 'true' else False
-        us = get_object_or_404(UserSpecific, pk=us_id)
+        review = get_object_or_404(UserSpecific, pk=us_id)
+
+        if not review.can_be_managed_by(self.request.user):
+            return HttpResponseForbidden("You can't modify that object!")
+
         data_logger.info(
-            "{}|{}|{}|{}".format(us.user.username, us.vocabulary.meaning, user_correct, us.streak, us.synonyms))
+            "{}|{}|{}|{}".format(review.user.username, review.vocabulary.meaning, user_correct, review.streak, review.synonyms))
         if user_correct:
             if not previously_wrong:
-                us.correct += 1
-                us.streak += 1
-                if us.streak >= 9:
-                    us.burnt = True
-            us.needs_review = False
-            us.last_studied = timezone.now()
-            us.next_review_date = timezone.now() + timedelta(hours=RecordAnswer.srs_times[us.streak])
-            us.save()
+                review.correct += 1
+                review.streak += 1
+                if review.streak >= 9:
+                    review.burnt = True
+            review.needs_review = False
+            review.last_studied = timezone.now()
+            review.next_review_date = timezone.now() + timedelta(hours=RecordAnswer.srs_times[review.streak])
+            review.save()
             return HttpResponse("Correct!")
         elif not user_correct:
-            us.incorrect += 1
-            if us.streak == 7:
-                us.streak -= 2
+            review.incorrect += 1
+            if review.streak == 7:
+                review.streak -= 2
             else:
-                us.streak -= 1
-            if us.streak < 0:
-                us.streak = 0
-            us.save()
+                review.streak -= 1
+            if review.streak < 0:
+                review.streak = 0
+            review.save()
             return HttpResponse("Incorrect!")
         else:
             logger.error(
@@ -240,13 +293,9 @@ class RecordAnswer(View):
             return HttpResponse("Error!")
         return HttpResponse("Error!")
 
-
-class ReviewJson(View):
-    def get(self, request, *args, **kwargs):
-        user = request.user
-        all_reviews = UserSpecific.objects.filter(user=user, needs_review=True)
-        serializer = ReviewSerializer(all_reviews, many=True)
-        return Response(serializer.data)
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(RecordAnswer, self).dispatch(*args, **kwargs)
 
 
 class Review(ListView):
@@ -261,9 +310,14 @@ class Review(ListView):
             return super(Review, self).get(request)
 
     def get_queryset(self):
+
         user = self.request.user
         res = UserSpecific.objects.filter(user=user, needs_review=True, hidden=False).order_by('?')
         return res
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(Review, self).dispatch(*args, **kwargs)
 
 
 class ReviewSummary(TemplateView):
@@ -299,12 +353,20 @@ class ReviewSummary(TemplateView):
                                                        "incorrect_count": len(incorrect),
                                                        "review_count": len(correct) + len(incorrect)})
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ReviewSummary, self).dispatch(*args, **kwargs)
+
 
 class Logout(TemplateView):
     def get(self, request, *args, **kwargs):
         logger.info("{} has requested a logout.".format(request.user.username))
         logout(request=request)
         return HttpResponseRedirect(reverse_lazy("kw:home"))
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(Logout, self).dispatch(*args, **kwargs)
 
 
 class Register(FormView):
@@ -320,5 +382,6 @@ class Register(FormView):
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
 
+@login_required()
 def home(request):
     return HttpResponseRedirect(reverse_lazy('kw:home'))

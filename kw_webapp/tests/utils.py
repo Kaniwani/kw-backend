@@ -13,19 +13,14 @@ def create_userspecific(vocabulary, user):
     u.save()
     return u
 
-
 def create_profile(user, api_key, level):
     p = Profile.objects.create(user=user, api_key=api_key, level=level)
     p.unlocked_levels.create(level=level)
     return p
 
-
-
-
 def create_vocab(meaning):
     v = Vocabulary.objects.create(meaning=meaning)
     return v
-
 
 def create_reading(vocab, reading, character, level):
     r = Reading.objects.create(vocabulary=vocab,

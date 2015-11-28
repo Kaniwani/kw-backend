@@ -59,7 +59,7 @@ class TestViews(TestCase):
         # Generate and pass off the request
         request = self.factory.post('/kw/record_answer/',
                                     {'user_correct': "true", 'user_specific_id': us.id, 'wrong_before': 'false'})
-        request.user = AnonymousUser()
+        request.user = self.user
         generic_view = kw_webapp.views.RecordAnswer.as_view()
         generic_view(request)
 
@@ -74,7 +74,7 @@ class TestViews(TestCase):
         # Generate and pass off the request
         request = self.factory.post('/kw/record_answer/',
                                     {'user_correct': "false", 'user_specific_id': us.id, 'wrong_before': 'false'})
-        request.user = AnonymousUser()
+        request.user = self.user
         generic_view = kw_webapp.views.RecordAnswer.as_view()
         response = generic_view(request)
 
@@ -87,7 +87,7 @@ class TestViews(TestCase):
         # Generate and pass off the request
         request = self.factory.post('/kw/record_answer/',
                                     {'user_correct': "true", 'user_specific_id': 150, 'wrong_before': 'false'})
-        request.user = AnonymousUser()
+        request.user = self.user
         generic_view = kw_webapp.views.RecordAnswer.as_view()
 
         self.assertRaises(Http404, generic_view, request)

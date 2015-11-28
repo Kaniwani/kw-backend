@@ -1,4 +1,4 @@
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from kw_webapp.models import Vocabulary, Synonym, UserSpecific, Reading, Profile
@@ -15,12 +15,6 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-
-
-class GroupSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Group
-        fields = ('url', 'name')
 
 
 class ReadingSerializer(serializers.ModelSerializer):
