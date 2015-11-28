@@ -3,7 +3,6 @@ $(document).ready(function() {
     $('body').click(".fa-unlock", function(event) {
         event.preventDefault();
         var $this = $(event.target);
-        console.log($this);
         var review_pk = $this.data("pk");
         var item = $this;
          $.post("/kw/togglevocab/", {"review_id": review_pk, csrfmiddlewaretoken:csrf_token}).done(function(data) {
