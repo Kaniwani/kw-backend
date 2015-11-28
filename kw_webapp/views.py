@@ -6,12 +6,10 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
 from django.views.generic import TemplateView, ListView, FormView, View, DetailView
 from rest_framework import viewsets
-from rest_framework.decorators import list_route
 from rest_framework.response import Response
 from kw_webapp import constants
 from kw_webapp.models import Profile, UserSpecific, Vocabulary, Announcement
 from kw_webapp.forms import UserCreateForm, SettingsForm
-from rest_framework.renderers import JSONRenderer
 from django.utils import timezone
 from kw_webapp.serializers import UserSerializer, GroupSerializer, ReviewSerializer, ProfileSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level
@@ -117,6 +115,9 @@ class UnlockRequested(View):
     def post(self, request, *args, **kwargs):
         user = self.request.user
         requested_level = request.POST["level"]
+
+        if int(requested_level) > user.profile.level:
+            return HttpResponseForbidden()
 
         ul_count, l_count = unlock_eligible_vocab_from_level(user, requested_level)
         user.profile.unlocked_levels.get_or_create(level=requested_level)

@@ -89,4 +89,4 @@ class TestModels(TestCase):
 
         review.synonym_set.get_or_create(text="kitty")
 
-        self.assertIn("kitty", [synonym.text for synonym in review.synonym_set.all()])
+        self.assertIn("kitty", review.synonyms_string())

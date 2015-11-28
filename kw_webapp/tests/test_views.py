@@ -1,12 +1,13 @@
+from unittest import mock
+
 from django.contrib.auth.models import AnonymousUser
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden
 from django.test import TestCase, RequestFactory, Client
 
 import kw_webapp
 from kw_webapp.models import UserSpecific
 from kw_webapp.tests.utils import create_user, create_userspecific, create_profile, create_reading
 from kw_webapp.tests.utils import create_vocab
-
 
 class TestViews(TestCase):
     def setUp(self):
@@ -90,6 +91,28 @@ class TestViews(TestCase):
         generic_view = kw_webapp.views.RecordAnswer.as_view()
 
         self.assertRaises(Http404, generic_view, request)
+
+
+    @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_level", side_effect=lambda x, y: [1, 0])
+    def test_unlocking_a_level_unlocks_all_vocab(self, unlock_call):
+        self.client.login(username="user1", password="password")
+
+        response = self.client.post("/kw/levelunlock/", data={"level": 5})
+
+        self.assertContains(response, "1 vocabulary unlocked")
+
+
+    def test_user_unlocking_too_high_level_fails(self):
+        self.user.profile.level = 5
+        self.user.save()
+        level_too_high = 20
+        self.client.login(username="user1", password="password")
+
+        response = self.client.post("/kw/levelunlock/", data={"level": level_too_high})
+
+        self.assertIsInstance(response, HttpResponseForbidden)
+
+
 
         # TODO write tests for vocab page
 

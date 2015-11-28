@@ -3,6 +3,7 @@
 
 {% block scripts %}
     {{ block.super }}
+    <script src="{% static "js/levels.js" %}"></script>
 {% endblock %}
 
 {% block title %}
@@ -60,7 +61,9 @@
       </a>
     {% endif %}
   {% endfor %} -->
-
+<form>
+  <input type="hidden" id="csrf" value="{{ csrf_token }}">
+</form>
 {% endblock %}
 
 {% block footer %}
@@ -68,7 +71,5 @@
 <footer class="footer">
 </footer>
 
-<form>
-  <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
-</form>
+
 {% endblock %}
