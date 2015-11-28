@@ -9,7 +9,6 @@ admin.autodiscover()
 
 router = routers.DefaultRouter()
 router.register(r'user', kw_webapp.views.UserViewSet)
-router.register(r'group', kw_webapp.views.GroupViewSet)
 router.register(r'review', kw_webapp.views.ReviewViewSet)
 router.register(r'profile', kw_webapp.views.ProfileViewSet)
 
