@@ -13,7 +13,7 @@ from kw_webapp.models import Profile, UserSpecific, Announcement
 from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
 from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
-from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level
+from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level, lock_level_for_user
 import logging
 
 logger = logging.getLogger("kw.views")
@@ -135,6 +135,24 @@ class ForceSRSCheck(View):
     def dispatch(self, *args, **kwargs):
         return super(ForceSRSCheck, self).dispatch(*args, **kwargs)
 
+
+class LockRequested(View):
+    """
+    AJAX-only view for locking an entire level at a time. Blows away the user's review information for every
+    """
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        requested_level = request.POST['level']
+
+        if int(requested_level) == user.profile.level:
+            pass
+            # TODO this is here so that I can set the user to non-following mode when i get around
+            # to implementing that.
+
+        removed_count = lock_level_for_user(requested_level, user)
+
+        return HttpResponse("Removed {} items from your study queue.".format(removed_count))
 
 class UnlockRequested(View):
     """

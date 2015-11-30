@@ -2,7 +2,6 @@ from __future__ import absolute_import
 import logging
 from django.contrib.auth.models import User
 import requests
-
 from KW.celery import app as celery_app
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Vocabulary, Profile
@@ -119,6 +118,13 @@ def build_API_sync_string_for_user_for_level(user, level):
 
     api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(user.profile.api_key, level[0])
     return api_call
+
+
+def lock_level_for_user(requested_level, user):
+    reviews = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level)
+    count = reviews.count()
+    reviews.delete()
+    return count
 
 
 @celery_app.task()
