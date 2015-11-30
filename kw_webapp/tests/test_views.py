@@ -93,12 +93,9 @@ class TestViews(TestCase):
         self.assertRaises(Http404, generic_view, request)
 
     def test_locking_a_level_locks_successfully(self):
-        self.vocabulary.reading_set.create(level=5, kana="猫", character="whatever")
-        self.vocabulary.reading_set.create(level=2, kana="猫二", character="whatever2")
-        # We now have three readings on our one vocab.
-
         self.client.login(username="user1", password="password")
-        response = self.client.post("/kw/levellock", data={"level": 5})
+
+        response = self.client.post("/kw/levellock/", data={"level": 5})
 
         self.assertContains(response, "Removed 1 items from your study queue.")
 
@@ -107,7 +104,6 @@ class TestViews(TestCase):
         self.client.login(username="user1", password="password")
 
         response = self.client.post("/kw/levelunlock/", data={"level": 5})
-
         self.assertContains(response, "1 vocabulary unlocked")
 
 
