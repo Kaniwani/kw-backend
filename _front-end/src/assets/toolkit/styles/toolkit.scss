@@ -2,20 +2,20 @@
  * Toolkit styles
  */
 
+// legacy style
 @import "kw/styles";
 
 // theme
 // @import "normalize";
-// @import "helpers";
-// @import "colors";
+@import "helpers";
+@import "colors";
 // @import "fonts";
 // @import "typography";
-// @import "layout";
-
-// components
-
-
+@import "layout";
 
 // sections
+@import "sections/login";
 
+// components
+@import "components/login-form";
 

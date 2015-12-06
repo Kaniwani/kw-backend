@@ -1,22 +1,37 @@
-<!-- NOTE: style ideas http://codepen.io/Lewitje/pen/BNNJjo -->
-<section class="login">
-  <h3>Login</h3>
-  <form method="post" class="login pure-form pure-form-stacked">
-    <input type='hidden' name='csrfmiddlewaretoken' value='01cfjIeaBU3XYyAN9VNfy3CoxfChtmL6' />
-    <div id="div_id_username" class="form-group pure-control-group">
-      <div class="controls ">
-        <input class="textinput textInput form-control" id="id_username" maxlength="254" name="username" placeholder="Username" type="text" />
-      </div>
-    </div>
-    <div id="div_id_password" class="form-group pure-control-group">
-      <div class="controls ">
-        <input class="textinput textInput form-control" id="id_password" name="password" placeholder="Password" type="password" />
-      </div>
-    </div>
-    <div class="form-actions">
-      <input type="submit" name="submit" value="Sign In" class="pure-button pure-button-primary" id="submit-id-submit" />
-    </div>
-  </form>
+---
+notes: |
+  Form input ids have been changed, need to test that it doesn't interfere with backend. I assume that the form only cared about the values in the post though.
+---
 
-  <a href="/kw/register/" class="link -register">Register</a>
-</section>
+<!-- TODO: change turtle pngs to svgs with pink/purple etc colors -->
+<div class="login">
+  <a href="/kw/register/" class="link -register">Not a member? Register here</a>
+  <div class="container">
+    <h1 class="title">Welcome</h1>
+
+    <form class="login-form" action="post">
+      <input type='hidden' name='csrfmiddlewaretoken' value='01cfjIeaBU3XYyAN9VNfy3CoxfChtmL6' />
+      <label class="_visuallyhidden" for="login_username">Username</label>
+      <input type="text" id="login_username" maxlength="254" name="username" placeholder="Username" required />
+      <label class="_visuallyhidden" for="login_password">Password</label>
+      <input type="password" id="login_password" name="password" placeholder="Password" required />
+      <button class="button -submit" type="submit" name="submit">Sign In</button>
+    </form>
+
+  </div>
+
+  <ul class="bg-icons" aria-hidden="true" role="presentation">
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+    <li><span class="icon-turtle"></span></li>
+  </ul>
+</div>
