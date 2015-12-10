@@ -1,0 +1,84 @@
+.login-form {
+  padding: 20px 0;
+  position: relative;
+  z-index: 2;
+
+  ::-webkit-input-placeholder { /* WebKit browsers */
+    font-family: 'Source Sans Pro', sans-serif;
+    color: $white;
+    font-weight: 300;
+  }
+
+  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    font-family: 'Source Sans Pro', sans-serif;
+    color: $white;
+    opacity:  1;
+    font-weight: 300;
+  }
+  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    font-family: 'Source Sans Pro', sans-serif;
+    color: $white;
+    opacity:  1;
+    font-weight: 300;
+  }
+  :-ms-input-placeholder { /* Internet Explorer 10+ */
+    font-family: 'Source Sans Pro', sans-serif;
+    color: $white;
+    font-weight: 300;
+  }
+
+  > input {
+    display: block;
+    appearance: none;
+    outline: 0;
+    border: 1px solid transparentize($white, .6);
+    background-color: transparentize($white, .8);
+    width: 250px;
+
+    border-radius: 3px;
+    padding: 10px 15px;
+    margin: 0 auto 10px auto;
+    display: block;
+    text-align: center;
+    font-size: 18px;
+
+    color: $white;
+
+    transition-duration: 0.25s;
+    font-weight: 300;
+
+    &:hover {
+      background-color: transparentize($white, .6);
+    }
+
+    &:focus {
+      background-color: $white;
+      width: 300px;
+      color: $blue-dark;
+    }
+  }
+
+  > .button {
+    &.-submit {
+      appearance: none;
+      outline: 0;
+      background-color: $white;
+      border: 0;
+      padding: 10px 15px;
+      color: $blue-dark;
+      border-radius: 3px;
+      width: 250px;
+      cursor: pointer;
+      font-size: 18px;
+      transition-duration: 0.25s;
+
+      &:focus {
+        width: 270px;
+      }
+
+      &:hover {
+        background-color: transparentize($white, .10);
+      }
+    }
+  }
+}
