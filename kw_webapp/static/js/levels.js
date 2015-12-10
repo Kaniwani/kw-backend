@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var csrf_token = $("#csrf").val();
 
-    $(document).on("click", ".level__item--locked", function(event) {
+    $('body').on("click", ".level__item--locked", function(event) {
         event.preventDefault();
         var item = $(this);
         var child_icon_span = item.find(".fa-unlock-alt");
