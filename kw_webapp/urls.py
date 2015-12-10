@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard, ReviewSummary, UnlockLevels, \
     UnlockRequested, ForceSRSCheck, About, Contact, \
-    Settings, Levels, LevelVocab, ToggleVocabLockStatus
+    Settings, Levels, LevelVocab, ToggleVocabLockStatus, LockRequested
 from kw_webapp.forms import UserLoginForm
 
 urlpatterns = patterns('',
@@ -16,6 +16,7 @@ urlpatterns = patterns('',
                        url(r'^record_answer/$', RecordAnswer.as_view(), name="record_answer"),
                        url(r'^unlocks/$', UnlockLevels.as_view(), name="unlocks"),
                        url(r'^levelunlock/$', UnlockRequested.as_view(), name="do_unlock"),
+                       url(r'^levellock/$', LockRequested.as_view(), name="do_lock"),
                        url(r'^force_srs/$', ForceSRSCheck.as_view(), name="force_srs"),
                        url(r'^about/$', About.as_view(), name='about'),
                        url(r'^contact/$', Contact.as_view(), name='contact'),

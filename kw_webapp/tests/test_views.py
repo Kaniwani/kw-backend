@@ -16,11 +16,11 @@ class TestViews(TestCase):
         self.user.save()
         create_profile(self.user, "some_key", 5)
         #create a piece of vocab with one reading.
-        self.cat_vocab = create_vocab("cat")
-        self.cat_reading = create_reading(self.cat_vocab, "kana", "kanji", 5)
+        self.vocabulary = create_vocab("cat")
+        self.cat_reading = create_reading(self.vocabulary, "kana", "kanji", 5)
 
         #setup a review with two synonyms
-        self.review = create_userspecific(self.cat_vocab, self.user)
+        self.review = create_userspecific(self.vocabulary, self.user)
 
 
         self.client = Client()
@@ -54,7 +54,7 @@ class TestViews(TestCase):
         self.assertContains(response, "cat, minou, chatte!")
 
     def test_recording_answer_works_on_correct_answer(self):
-        us = create_userspecific(self.cat_vocab, self.user)
+        us = create_userspecific(self.vocabulary, self.user)
 
         # Generate and pass off the request
         request = self.factory.post('/kw/record_answer/',
@@ -92,13 +92,18 @@ class TestViews(TestCase):
 
         self.assertRaises(Http404, generic_view, request)
 
+    def test_locking_a_level_locks_successfully(self):
+        self.client.login(username="user1", password="password")
+
+        response = self.client.post("/kw/levellock/", data={"level": 5})
+
+        self.assertContains(response, "Removed 1 items from your study queue.")
 
     @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_level", side_effect=lambda x, y: [1, 0])
     def test_unlocking_a_level_unlocks_all_vocab(self, unlock_call):
         self.client.login(username="user1", password="password")
 
         response = self.client.post("/kw/levelunlock/", data={"level": 5})
-
         self.assertContains(response, "1 vocabulary unlocked")
 
 

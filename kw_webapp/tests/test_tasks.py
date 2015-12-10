@@ -2,7 +2,8 @@ from django.test import TestCase, RequestFactory
 import responses
 from kw_webapp.models import Vocabulary, UserSpecific, Profile
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
-    build_API_sync_string_for_user, add_synonyms_from_api_call_to_review, sync_unlocked_vocab_with_wk
+    build_API_sync_string_for_user, add_synonyms_from_api_call_to_review, sync_unlocked_vocab_with_wk, \
+    lock_level_for_user
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile
 
@@ -44,6 +45,18 @@ class TestCeleryTasks(TestCase):
         correct_string = "https://www.wanikani.com/api/user/any_key/vocabulary/5,3,"
 
         self.assertEqual(correct_string, api_call)
+
+    def test_locking_level_removes_all_reviews_at_that_level(self):
+        self.vocabulary.reading_set.create(level=5, kana="猫", character="whatever")
+        self.vocabulary.reading_set.create(level=5, kana="猫二", character="whatever2")
+
+        lock_level_for_user(5, self.user)
+
+        available_reviews = UserSpecific.objects.filter(user=self.user, vocabulary__reading__level=5).all()
+        self.assertFalse(available_reviews)
+
+
+
 
     def test_create_new_vocab_based_on_json_works(self):
         vocab_json = {"character": "bleh", "kana": "bleh", "meaning": "two", "level": 1,
