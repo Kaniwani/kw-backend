@@ -2,11 +2,11 @@
 $ff-body: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 // 400 only
 $ff-heading: "Ubuntu", Helvetica, Arial, sans-serif;
-$ff-ja: "Hiragino Kaku Gothic Pro", "Meiryo", "Yu Gothic", "ヒラギノ角ゴ Pro W3", "メイリオ", "Osaka", "MS PGothic", "ＭＳ Ｐゴシック", sans-serif;
+$ff-japanese: "Hiragino Kaku Gothic Pro", "Meiryo", "Yu Gothic", "ヒラギノ角ゴ Pro W3", "メイリオ", "Osaka", "MS PGothic", "ＭＳ Ｐゴシック", sans-serif;
 
 body {
   font-family: $ff-body;
-  font-size: responsive 16px 22px;
+  font-size: responsive 15px 20px;
 }
 
 h1,
@@ -17,7 +17,8 @@ h5,
 h6 {
   color: $grey-dark;
   font-weight: normal;
-  margin: 0;
+  margin-top: 0;
+  margin-bottom: 0.5em;
 }
 
 h2,
@@ -31,9 +32,28 @@ h6 {
 h1 {
   font-family: $ff-heading;
   font-size: 30px;
-  font-size: responsive 20px 40px;
+  font-size: responsive 22px 40px;
   font-range: 600px 1600px;
-  font-weight: 700;
+}
+
+h2 {
+  font-size: responsive 20px 34px;
+}
+
+h3 {
+  font-size: responsive 18px 30px;
+}
+
+h4 {
+  font-size: responsive 17px 26px;
+}
+
+h5 {
+  font-size: responsive 16px 25px;
+}
+
+h6 {
+  font-size: responsive 16px 23px;
 }
 
 b,
@@ -42,10 +62,18 @@ strong {
 }
 
 a {
-  @include linx($blue-light,mix($blue-light, $white, 5%),$blue-dark, mix($blue-dark, $black, 5%));
   text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
+  transition: all .3s ease-out;
+  color: $grey;
+  &:hover,
+  &:visited:hover {
+    color: $black-light;
+  }
+  &:focus,
+  &:active {
+    color: $grey-light;
+  }
+  &:visited {
+    color: $grey;
   }
 }

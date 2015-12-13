@@ -1,20 +1,3 @@
-@mixin linx ($base, $visited, $hover, $active) {
-  a {
-    transition: color .3s ease-out;
-    color: $base;
-    &:visited {
-      color: $visited;
-    }
-    &:hover {
-      color: $hover;
-    }
-    &:focus,
-    &:active {
-      color: $active;
-    }
-  }
-}
-
 %plainlist {
   margin: 0;
   padding: 0;

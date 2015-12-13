@@ -22,6 +22,19 @@ body {
   background: $white;
 }
 
+[contenteditable="true"] {
+  overflow: hidden!important;
+
+  br {
+    display: none!important;
+  }
+
+  * {
+    display: inline!important;
+  }
+}
+
+
 .main {
 
   .section {
