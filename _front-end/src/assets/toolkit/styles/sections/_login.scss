@@ -1,6 +1,7 @@
 .login {
   position: relative;
   display: block;
+  // TODO: W 100% H 100% instead when body/html min-height setup correctly
   width: 100vw;
   height: 100vh;
   background: $blue-light;

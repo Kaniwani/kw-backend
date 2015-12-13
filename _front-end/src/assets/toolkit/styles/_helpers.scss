@@ -1,34 +1,35 @@
-@mixin linx ($link, $visit, $hover, $active) {
+@mixin linx ($base, $visited, $hover, $active) {
   a {
-    color: $link;
+    color: $base;
     &:visited {
-      color: $visit;
+      color: $visited;
     }
     &:hover {
       color: $hover;
     }
+    &:focus,
     &:active {
       color: $active;
     }
   }
 }
 
-@mixin plain-list {
+%plainlist {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-@mixin visually-hidden {
+%visuallyhidden {
+  position: absolute;
   clip: rect(0 0 0 1px);
+  width: 1px;
   height: 1px;
   margin: -1px;
-  overflow: hidden;
   padding: 0;
-  position: absolute;
-  width: 1px;
+  overflow: hidden;
 }
 
 ._visuallyhidden {
-  @include visually-hidden;
+  @extend %visuallyhidden;
 }

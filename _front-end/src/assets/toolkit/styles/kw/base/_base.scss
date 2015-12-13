@@ -25,26 +25,6 @@ body {
   color: #333;
 }
 
-/* button {
-  background: $blue1e;
-  border: 0;
-  color: $grey1d;
-  display: inline-block;
-  font-family: $helvetica-neue-reg;
-  font-size: 1.5rem;
-  padding: 1.9rem 12rem;
-  text-align: center;
-
-  @include breakpoint(max-width $mobile) {
-    padding: 1.9rem;
-    width: 100%;
-  }
-
-  &:hover {
-    background: $blue1d;
-  }
-} */
-
 [contenteditable="true"] {
   overflow: hidden!important;
 
@@ -58,5 +38,4 @@ body {
 }
 
 @import 'fonts';
-@import 'google-fonts';
 @import 'icons';

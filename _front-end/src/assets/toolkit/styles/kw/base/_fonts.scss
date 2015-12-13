@@ -14,10 +14,6 @@ $roboto-slab-light: $ff-heading;
 $roboto-slab-thin: $ff-heading;
 $roboto-slab: $ff-heading;
 $japanese: $ff-ja;
-/*
-'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', Osaka, 'メイリオ', Meiryo, 'ＭＳ Ｐゴシック', 'MS PGothic', sans-serif;
- */
-
 
 html {
   font-size: 62.5%;
@@ -120,19 +116,12 @@ strong {
 
 a {
   transition: color .2s ease-out;
-  color: #222;
+  color: $black;
   text-decoration: none;
 
   &:hover {
-    color: darken($purple, 80%);
-    text-decoration: underline;
-  }
-
-  &[rel='external']:after {
-    @include fa-icon;
-    content: '\f08e';
-    font-size: 1.2rem;
-    margin-left: 3px;
+    text-decoration: none;
+    color: darken($purple, 50%);
   }
 }
 
