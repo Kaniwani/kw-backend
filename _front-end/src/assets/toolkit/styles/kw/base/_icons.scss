@@ -12,8 +12,7 @@ $icon-font-path: '/static/fonts/icons';
 }
 
 [class^='icon-'],
-[class*=' icon-'],
-.icon {
+[class*=' icon-'] {
   font-family: 'icomoon';
   // Better Font Rendering
   -moz-osx-font-smoothing: grayscale;

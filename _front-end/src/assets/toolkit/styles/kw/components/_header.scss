@@ -1,12 +1,12 @@
 .header {
   box-shadow: 1px 1px 8px 0 rgba(0, 0, 0, .26);
-  background: #e0e0e0;
+  background: $silver;
   overflow: hidden;
 }
 
 .logo {
   display: inline-block;
-  font-family: $roboto-slab-bold;
+  font-family: $ff-heading;
   font-size: 2rem;
   margin: 10px 0;
 
@@ -30,7 +30,7 @@
   transition: background-color .25s ease-out;
   background: #515151;
   display: table-cell;
-  font-family: $japanese;
+  font-family: $ff-japanese;
   height: 70px;
   text-align: center;
   vertical-align: middle;

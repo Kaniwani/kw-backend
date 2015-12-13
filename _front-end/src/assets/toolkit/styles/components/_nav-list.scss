@@ -1,0 +1,37 @@
+.nav-list {
+  @extend %plainlist;
+  display: none;
+  flex-wrap: wrap;
+  text-transform: uppercase;
+  text-align: center;
+
+  &.-open {
+    display: flex;
+  }
+
+  @include media('>=500px') {
+    display: flex;
+  }
+
+  > .item {
+    flex: 1 1 100%;
+    transition: background-color .25s ease;
+
+    @include media('>=500px') {
+      flex-basis: 50%;
+    }
+
+    @include media('>=850px') {
+      flex-basis: auto;
+    }
+
+    &.-active {
+      background-color: $black;
+      > .nav-link { color: $white; }
+    }
+    &:hover {
+      background-color: $black-light;
+      > .nav-link { color: $white; }
+    }
+  }
+}

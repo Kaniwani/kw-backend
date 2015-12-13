@@ -2,25 +2,20 @@
  * Toolkit styles
  */
 
+// explicitly ordered to control cascade
+@import "base/normalize";
+@import "base/colors";
+@import "base/units";
+@import "base/include-media";
+@import "base/grid";
+@import "base/helpers";
+@import "base/fonts";
+@import "base/layout";
 
-// theme
-@import 'normalize';
-@import 'colors';
-@import 'units';
-@import 'include-media';
-@import 'helpers';
-@import 'gridly';
-
-
-// @import "fonts";
-// @import "typography";
-@import 'layout';
-
-// legacy style (will need to explicitly load updated sections/components below)
+// legacy styles (slowly move into sections/components below)
 @import "kw/styles";
 
-// sections
-@import 'sections/login';
+// glob import is alphabetical, use _01-stylesheet to order explicitly if needed
+@import "sections/*";
+@import "components/*";
 
-// components
-@import 'components/login-form';

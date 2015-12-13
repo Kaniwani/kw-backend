@@ -1,0 +1,51 @@
+// 300, 400, 700 weights available
+$ff-body: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+// 400 only
+$ff-heading: "Ubuntu", Helvetica, Arial, sans-serif;
+$ff-ja: "Hiragino Kaku Gothic Pro", "Meiryo", "Yu Gothic", "ヒラギノ角ゴ Pro W3", "メイリオ", "Osaka", "MS PGothic", "ＭＳ Ｐゴシック", sans-serif;
+
+body {
+  font-family: $ff-body;
+  font-size: responsive 16px 22px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: $grey-dark;
+  font-weight: normal;
+  margin: 0;
+}
+
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: $ff-heading;
+}
+
+h1 {
+  font-family: $ff-heading;
+  font-size: 30px;
+  font-size: responsive 20px 40px;
+  font-range: 600px 1600px;
+  font-weight: 700;
+}
+
+b,
+strong {
+  font-family: $ff-heading;
+}
+
+a {
+  @include linx($blue-light,mix($blue-light, $white, 5%),$blue-dark, mix($blue-dark, $black, 5%));
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

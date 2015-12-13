@@ -14,6 +14,7 @@ var rename = require('gulp-rename');
 var reload = browserSync.reload;
 var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
+var sassGlob = require('gulp-sass-glob');
 var sourcemaps = require('gulp-sourcemaps');
 var webpack = require('webpack');
 var rucksack = require('gulp-rucksack');
@@ -66,6 +67,7 @@ gulp.task('styles:fabricator', function () {
 gulp.task('styles:toolkit', function () {
 	gulp.src(config.src.styles.toolkit)
 		.pipe(gulpif(!config.prod, sourcemaps.init()))
+    .pipe(sassGlob())
 		.pipe(sass().on('error', sass.logError))
     .pipe(rucksack())
 		.pipe(prefix('last 1 version'))

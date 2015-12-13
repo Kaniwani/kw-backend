@@ -1,32 +1,12 @@
-$ff-heading: "Ubuntu", Helvetica, Arial, sans-serif;
+// 300, 400, 700 weights available
 $ff-body: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-$ff-ja: "Hiragino Kaku Gothic Pro", "Meiryo", "Yu Gothic", "ヒラギノ角ゴ Pro W3", "メイリオ", "Osaka", "MS PGothic", "ＭＳ Ｐゴシック", sans-serif;
-
-// Variables
-$base-font-size: 1.6rem;
-$roboto-bold: $ff-heading;
-$roboto-medium: $ff-heading;
-$roboto-light: $ff-heading;
-$roboto-thin: $ff-heading;
-$roboto: $ff-heading;
-$roboto-slab-bold: $ff-heading;
-$roboto-slab-light: $ff-heading;
-$roboto-slab-thin: $ff-heading;
-$roboto-slab: $ff-heading;
-$japanese: $ff-ja;
-
-html {
-  font-size: 62.5%;
-}
+// 400 only
+$ff-heading: "Ubuntu", Helvetica, Arial, sans-serif;
+$ff-japanese: "Hiragino Kaku Gothic Pro", "Meiryo", "Yu Gothic", "ヒラギノ角ゴ Pro W3", "メイリオ", "Osaka", "MS PGothic", "ＭＳ Ｐゴシック", sans-serif;
 
 body {
   font-family: $ff-body;
-  font-size: responsive;
-}
-
-header, footer {
-  clear: fix;
-  text-align: center;
+  font-size: responsive 15px 20px;
 }
 
 h1,
@@ -35,9 +15,10 @@ h3,
 h4,
 h5,
 h6 {
-  color: #333;
+  color: $grey-dark;
   font-weight: normal;
-  margin: 0;
+  margin-top: 0;
+  margin-bottom: 0.5em;
 }
 
 h2,
@@ -45,117 +26,47 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: $roboto-slab-light;
+  font-family: $ff-heading;
 }
 
 h1 {
-  font-family: $roboto-slab;
-  font-size: 3.4rem;
-  line-height: 1;
-  margin: .5rem 0;
-
-  @include breakpoint(max-width 670px) {
-    font-size: 2.8rem;
-  }
+  font-family: $ff-heading;
+  font-size: 30px;
+  font-size: responsive 22px 40px;
+  font-range: 600px 1600px;
 }
 
 h2 {
-  font-size: 3rem;
-  line-height: 1;
-  margin: .4em 0;
-
-  @include breakpoint(max-width 670px) {
-    font-size: 2.4rem;
-  }
+  font-size: responsive 20px 34px;
 }
 
 h3 {
-  font-size: 2.4rem;
-  line-height: 1;
-  margin: .625em 0;
-
-  @include breakpoint(max-width 670px) {
-    font-size: 1.8rem;
-  }
+  font-size: responsive 18px 30px;
 }
 
 h4 {
-  font-size: 2.2rem;
-  line-height: 1;
-  margin: .4em 0;
-
-  @include breakpoint(max-width 670px) {
-    font-size: 1.6rem;
-  }
+  font-size: responsive 17px 26px;
 }
 
 h5 {
-  font-size: 2rem;
-  line-height: 1;
-  margin: .4em 0;
-
-  @include breakpoint(max-width 670px) {
-    font-size: 1rem;
-  }
+  font-size: responsive 16px 25px;
 }
 
 h6 {
-  font-size: 1.6rem;
-  line-height: 1;
-  margin: .4em 0;
-
-  @include breakpoint(max-width 670px) {
-    font-size: 1rem;
-  }
+  font-size: responsive 16px 23px;
 }
 
 b,
 strong {
-  font-family: $roboto-bold;
+  font-family: $ff-heading;
 }
 
 a {
-  transition: color .2s ease-out;
-  color: $black;
   text-decoration: none;
-
-  &:hover {
-    text-decoration: none;
-    color: darken($purple, 50%);
-  }
-}
-
-small {
-  font-size: 1.1rem;
-}
-
-p,
-ul,
-ol,
-dl,
-hr,
-pre {
-  margin: 0 0 1.7em;
-}
-
-ol {
-  list-style-position: inside;
-  padding: 0 0 0 .9rem;
-
-  li {
-    padding: 0 0 .4rem;
-  }
-}
-
-pre {
-  display: block;
-}
-
-section a {
-  text-decoration: underline;
-}
-
-section h2 {
-  margin-bottom: 2rem;
-  margin-top: 0;
+  @include linx(
+    $grey, // base color
+    $grey-dark, // visited
+    $grey-light, // hover
+    $grey-light // focus/active
+  );
 }

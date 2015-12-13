@@ -80,7 +80,7 @@
 .vocab__kanji,
 .vocab__kana,
 .vocab__meaning {
-  font-family: $japanese;
+  font-family: $ff-japanese;
 
   @include breakpoint(max-width 600px) {
     display: block;

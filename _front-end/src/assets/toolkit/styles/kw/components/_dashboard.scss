@@ -69,7 +69,7 @@
   background: #333;
   border-radius: 0 0 3px 3px;
   color: darken(#ededed, 40%);
-  font-family: $roboto-light;
+  font-family: $ff-heading;
   font-size: .9em;
   margin: 0 -20px -20px;
   overflow: hidden;
@@ -115,7 +115,7 @@
 
   strong {
     color: #ededed;
-    font-family: $roboto;
+    font-family: $ff-heading;
     font-weight: normal;
   }
 }

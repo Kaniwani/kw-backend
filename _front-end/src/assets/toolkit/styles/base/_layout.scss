@@ -1,13 +1,5 @@
 html {
   box-sizing: border-box;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-body {
-  display: flex;
-  flex: 1 0 auto;
 }
 
 *,
@@ -16,18 +8,27 @@ body {
   box-sizing: inherit;
 }
 
-.main {
+html {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
 
-  .header {
-    margin-bottom: .5rem;
-    overflow: hidden;
-  }
+body {
+  min-height: 100%;
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  background: $white;
+}
+
+.main {
 
   .section {
     border-radius: 3px;
-    background: #fff;
     margin-top: 24px;
     padding: 20px;
   }
+
 }
 

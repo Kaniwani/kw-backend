@@ -1,5 +1,6 @@
 @mixin linx ($base, $visited, $hover, $active) {
   a {
+    transition: color .3s ease-out;
     color: $base;
     &:visited {
       color: $visited;

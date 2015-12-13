@@ -1,0 +1,26 @@
+.nav-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #333;
+  padding: 8px 14px;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+  > .text {
+    &:not(:only-child) {
+      padding-right: $sm-pad;
+    }
+  }
+
+  > .icon {
+
+  }
+
+  > .count {
+
+  }
+}
