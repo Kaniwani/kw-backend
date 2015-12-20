@@ -6,5 +6,6 @@
 #reviews-left {
   float: right;
   margin-right: 0;
-  width: 52px;
+  width: 75px;
+  text-align: right;
 }
