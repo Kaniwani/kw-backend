@@ -5,7 +5,7 @@
 
 #reviews-left {
   float: right;
-  margin-right: 0;
+  margin-right: 10px;
   width: 75px;
   text-align: right;
 }
