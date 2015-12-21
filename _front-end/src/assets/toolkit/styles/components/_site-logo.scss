@@ -1,0 +1,56 @@
+.site-logo {
+  display: inline-block;
+  font-family: $ff-heading;
+
+  &:hover {
+    color: $black;
+    text-decoration: none;
+
+    > .text {
+      background: $purple-dark;
+    }
+  }
+
+  > .text {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    font-family: $ff-japanese;
+    border-radius: 100%;
+    box-shadow: inset 3px 3px 8px 0 rgba($black, .25), 0 0 25px -5px rgba($black, .25);
+    transition: background-color .3s ease-out;
+    background: $black-light;
+    height: 78px;
+    width: 78px;
+
+    @include media($bp-nav-1) {
+      height: 92px;
+      width: 92px;
+    }
+
+    .kana,
+    .kanji {
+      display: block;
+      color: $white;
+      line-height: 1;
+    }
+
+    .kana {
+      display: none;
+      font-size: 16px;
+
+      @include media($bp-nav-1) {
+        display: block;
+      }
+    }
+
+    .kanji {
+      margin-top: 2px;
+      font-size: 30px;
+
+      @include media($bp-nav-1) {
+        font-size: 34px;
+      }
+    }
+  }
+}

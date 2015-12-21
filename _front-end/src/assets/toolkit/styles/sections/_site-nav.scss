@@ -1,0 +1,27 @@
+.site-nav {
+  > .expandToggle {
+    display: block;
+    text-decoration: none;
+    text-align: right;
+    padding: 15px 10px;
+
+    @include media($bp-nav-1) {
+      display: none;
+    }
+  }
+
+  > .nav-list {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s linear;
+
+    @include media($bp-nav-1) {
+      max-height: initial;
+    }
+
+    &.-open {
+      display: flex;
+      max-height: 260px;
+    }
+  }
+}

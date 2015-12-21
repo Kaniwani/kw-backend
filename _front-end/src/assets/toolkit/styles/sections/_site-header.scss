@@ -1,0 +1,29 @@
+.site-header {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  > .site-logo {
+    margin: 5px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    @include media($bp-nav-1) {
+      align-self: center;
+    }
+  }
+
+  > .site-nav {
+    align-self: flex-start;
+    font-size: 14px;
+    @include media($bp-nav-1) {
+      font-size: 16px;
+      align-self: center;
+    }
+    @include media($bp-nav-2) {
+      align-self: flex-start;
+      padding-top: 5px;
+    }
+  }
+}
