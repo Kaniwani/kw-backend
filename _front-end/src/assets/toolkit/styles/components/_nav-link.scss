@@ -5,7 +5,7 @@
   align-items: center;
   color: $black-light;
 
-  // larger tap target
+  // larger tap/click target
   &:after {
     position: absolute;
     content: '';
@@ -34,7 +34,7 @@
       left: 0;
       width: 100%;
       height: 4px;
-      background: $purple-dark;
+      background: $purple;
       content: '';
       transition: transform .3s ease-out;
       transform: translate3d(0, 150%, 0);

@@ -1,9 +1,14 @@
 .review-header {
-  color: #fff;
-  position: absolute;
-  top: 0;
-  width: 100%;
+  position: relative;
+  color: $grey-dark;
+
+  > .inner {
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
 }
+
 
 .review-home {
   float: left;
@@ -11,7 +16,7 @@
   margin: 20px;
 
   a {
-    color: #fff;
+    color: $white;
   }
 }
 
@@ -53,7 +58,7 @@
 
 .review-upper {
   background: $purple;
-  color: #fff;
+  color: $white;
   height: 50vh;
   text-align: center;
 
@@ -100,7 +105,7 @@
 
   .review__question {
     background-color: #333;
-    color: #fff;
+    color: $white;
     font-size: 1.4rem;
     height: 50px;
     line-height: 50px;

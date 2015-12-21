@@ -1,32 +1,36 @@
-// Breakpoints
+/* Site Breakpoints - see _include-media.scss for usage */
 $bp-md: '>=md'; // 768px in include-media
 $bp-lg: '>=lg'; // 1024px in include-media
 $bp-xl: '>=xl'; // 1200px in include-media
+/* Custom Component Breakpoints */
 $bp-nav-1: '>=590px';
 $bp-nav-2: '>=850px';
 
-// Units
+/* Units */
 $unit-sm: 15px;
 $unit-md: 25px;
 $unit-lg: 30px;
 $unit-xl: 40px;
 
-// Gray Scale
+/* Grayscale */
 $white-light: #fff;
 $white:  hsl(0, 0%, 95%);
 $silver: hsl(0, 0%, 87%);
-$grey-light:   hsl(0, 0%, 67%);
-$grey: hsl(0, 0%, 52%);
+$grey-light: hsl(0, 0%, 67%);
+$grey: hsl(0, 0%, 55%);
 $grey-dark: hsl(0, 0%, 33%);
 $black-light: hsl(0, 0%, 26%);
 $black: hsl(0, 0%, 16%);
 $black-dark: #000;
 
-// KaniWani
+/* KaniWani colors */
 $blue-light: hsl(200, 100%, 43%);
-$blue-dark: hsl(228, 71%, 51%);
+$blue: hsl(208, 100%, 45%);
+$blue-dark: hsl(228, 71%, 52%);
 $pink: hsl(320, 100%, 50%);
-$purple: hsl(280, 100%, 47%);
-$purple-dark: hsl(280, 100%, 40%);
+$purple: hsl(280, 100%, 46%);
 $red: hsl(348, 100%, 50%);
 $green: hsl(80, 100%, 40%);
+
+/* Shadows */
+$shadow-text-light: 0 2px 0 rgba($black, .3);

@@ -1,14 +1,11 @@
-.user {
-  //
-}
-
 .user-overview {
-  background-color: #0078e7;
+  @extend %sitebackground;
   border-radius: 3px 3px 0 0;
   padding: 20px 20px 40px;
   position: relative;
   text-align: center;
 
+  // triangle
   &:after {
     border-color: transparent transparent #333;
     border-style: none solid solid;
@@ -25,12 +22,12 @@
 }
 
 .user-name {
-  text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
-  color: #fff;
+  text-shadow: $shadow-text-light;
+  color: $white;
 }
 
 .user-gravatar {
-  background: #fff;
+  background: $white;
   border-radius: 100%;
   display: inline-block;
   height: 162px;
@@ -61,105 +58,90 @@
 }
 
 .dashboard-reviews {
-  margin-top: 20px;
+  margin-top: $unit-md;
 }
 
+
+$user-details-bp: '>=550px';
+
 .user-details {
-  clear: fix;
-  background: #333;
-  border-radius: 0 0 3px 3px;
-  color: darken(#ededed, 40%);
+  display: flex;
+  flex-direction: column;
+  background: $black-light;
+  color: $white;
   font-family: $ff-heading;
-  font-size: .9em;
-  padding: 20px;
+  border-radius: 0 0 3px 3px;
+  line-height: 1.3;
 
-  @include breakpoint(671px) {
-    font-size: 1em;
+  @include media($user-details-bp) {
+    flex-direction: row;
   }
 
-  .col {
-    float: none;
-    margin: 20px 0;
-    width: 100%;
-
-    &:first-child {
-      margin-top: 0;
-    }
-
-    @include breakpoint(489px) {
-      float: left;
-      margin: 0;
-      width: 48%;
-
-      &:last-child {
-        margin-left: 4%;
-      }
-    }
-  }
-
-  h3 {
-    text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
-    color: darken(#ededed, 40%);
-    font-size: em(14, 16);
-  }
-
-  p {
-    margin-bottom: .5em;
-  }
-
-  a {
-    color: #ededed;
+  .title {
+    text-shadow: $shadow-text-light;
+    color: $grey;
   }
 
   strong {
-    color: #ededed;
+    color: $white;
     font-family: $ff-heading;
     font-weight: normal;
   }
 }
 
-.user-details__list {
-  margin: 0;
-  padding: 0;
-}
-
-.user-details__item {
-  display: block;
-}
-
-.user-soical {
-  margin: 0;
-  padding: 0;
-}
-
-.user-soical__item {
-  display: block;
-  float: left;
-  margin-right: 2em;
-}
-
-.user-soical__link {
-  color: #ededed;
-
-  .fa {
-    display: inline-block;
-    margin-right: 6px;
-    vertical-align: middle;
+.wkinfo, .userinfo {
+  flex: 0 0 100%;
+  @include media($user-details-bp) {
+    flex: 1;
   }
 }
 
-.accordion__list {
-  //
+.wkinfo {
+  padding: $unit-md;
+
+  .list {
+    @extend %plainlist;
+  }
+
+  .item {
+    color: $grey-light;
+  }
 }
 
-.accordion__item {
-  //
-}
 
-.accordion__link {
-  //
-}
+.userinfo {
+  padding: $unit-md;
+  padding-top: 0;
 
-.accordion__content {
-  //
+  @include media($user-details-bp) {
+    padding: $unit-md;
+  }
+
+  > p {
+    margin: 0;
+  }
+
+  > .list {
+    @extend %plainlist;
+    clear: fix;
+    margin-top: 10px;
+    > .item {
+      display: block;
+      float: left;
+      margin-right: 15px;
+    }
+  }
+
+  > .list > .item > .link {
+    color: $white;
+    &:hover {
+      color: $grey-light;
+    }
+
+    .fa {
+      display: inline-block;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+  }
 }
