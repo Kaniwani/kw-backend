@@ -9,17 +9,15 @@ html {
 }
 
 html {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+  height: 100vh;
 }
 
 body {
-  min-height: 100%;
+  background: $white;
+  height: 100%;
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
-  background: $white;
 }
 
 [contenteditable="true"] {
@@ -34,14 +32,12 @@ body {
   }
 }
 
-
-.main {
-
-  .section {
-    border-radius: 3px;
-    margin-top: 24px;
-    padding: 20px;
+.section {
+  margin-bottom: $unit-md;
+  > .inner {
+    padding-left: 10px;
+    padding-right: 10px;
   }
-
 }
+
 

@@ -1,37 +1,41 @@
 .nav-list {
   @extend %plainlist;
-  display: none;
+  display: flex;
+  max-height: auto;
   flex-wrap: wrap;
-  text-transform: uppercase;
-  text-align: center;
+  text-align: right;
+  justify-content: flex-end;
 
-  &.-open {
+  @include media($bp-nav-1) {
+    text-align: center;
+  }
+
+  @include media($bp-nav-1) {
     display: flex;
   }
 
-  @include media('>=500px') {
-    display: flex;
+  @include media($bp-nav-2) {
+    justify-content: center;
   }
 
   > .item {
+    padding: 8px 16px;
     flex: 1 1 100%;
-    transition: background-color .25s ease;
 
-    @include media('>=500px') {
-      flex-basis: 50%;
-    }
-
-    @include media('>=850px') {
-      flex-basis: auto;
-    }
-
+    &:hover,
     &.-active {
-      background-color: $black;
-      > .nav-link { color: $white; }
+      > .nav-link .text:after {
+        // underline nav-link text
+        transform: translate3d(0,0,0);
+      }
     }
-    &:hover {
-      background-color: $black-light;
-      > .nav-link { color: $white; }
+
+    @include media($bp-nav-1) {
+      flex: 0 0 150px;
+    }
+
+    @include media($bp-nav-2) {
+      flex: 1 1 auto;
     }
   }
 }

@@ -65,15 +65,11 @@ a {
   text-decoration: none;
   transition: all .3s ease-out;
   color: $grey;
-  &:hover,
-  &:visited:hover {
+  &:hover {
     color: $black-light;
   }
   &:focus,
   &:active {
     color: $grey-light;
-  }
-  &:visited {
-    color: $grey;
   }
 }
