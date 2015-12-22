@@ -1,0 +1,95 @@
+$bp-user-details: '>=650px';
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  background: $black-light;
+  color: $white;
+  font-family: $ff-heading;
+  border-radius: 0 0 3px 3px;
+  line-height: 1.3;
+
+  @include media($bp-user-details) {
+    flex-direction: row;
+  }
+
+  .title {
+    text-shadow: $shadow-text-light;
+    color: $grey;
+  }
+
+  strong {
+    color: $white;
+    font-family: $ff-heading;
+    font-weight: normal;
+  }
+
+  .wkinfo, .userinfo {
+    flex: 0 0 100%;
+    @include media($bp-user-details) {
+      flex: 1;
+    }
+  }
+
+  .wkinfo {
+    padding: $unit-md $unit-sm;
+
+    @include media($bp-user-details) {
+      text-align: right;
+    }
+
+    @include media($bp-lg) {
+      padding: $unit-md;
+    }
+
+    .list {
+      @extend %plainlist;
+    }
+
+    .item {
+      color: $grey-light;
+    }
+  }
+
+
+  .userinfo {
+    padding: $unit-md $unit-sm;
+    padding-top: 0;
+
+    @include media($bp-user-details) {
+      padding-top: $unit-md;
+      text-align: left;
+    }
+
+    @include media($bp-lg) {
+      padding: $unit-md;
+    }
+
+    > p {
+      margin: 0;
+    }
+
+    > .list {
+      @extend %plainlist;
+      clear: fix;
+      margin-top: 10px;
+      > .item {
+        display: inline-block;
+        margin-right: 15px;
+      }
+    }
+
+    > .list > .item > .link {
+      color: $white;
+      &:hover {
+        color: $grey-light;
+      }
+
+      .fa {
+        display: inline-block;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+    }
+  }
+}

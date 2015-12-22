@@ -1,3 +1,8 @@
+$bp-levels-1: '<500px';
+$bp-levels-1-2: '>=500px','<680px';
+$bp-levels-2: '>=680px';
+
+
 .level__list {
   margin: 0;
   padding: 0;
@@ -10,7 +15,7 @@
   position: relative;
   z-index: 2;
 
-  @include breakpoint(max-width 500px) {
+  @include media($bp-levels-1) {
     width: 47%;
 
     &:nth-child(2n-1) {
@@ -18,7 +23,7 @@
     }
   }
 
-  @include breakpoint((min-width 500px) (max-width 679px)) {
+  @include media($bp-levels-1-2...) {
     width: 30%;
 
     &:nth-child(3n-2) {
@@ -26,7 +31,7 @@
     }
   }
 
-  @include breakpoint(min-width 680px) {
+  @include media($bp-levels-2) {
     width: 22%;
 
     &:nth-child(4n-3) {

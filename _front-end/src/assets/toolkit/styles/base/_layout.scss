@@ -13,31 +13,31 @@ html {
 }
 
 body {
-  background: $white;
+  background: $white-light;
   height: 100%;
-  display: flex;
-  flex: 1 0 auto;
-  flex-direction: column;
 }
 
 [contenteditable="true"] {
-  overflow: hidden!important;
+  overflow: hidden !important;
 
   br {
-    display: none!important;
+    display: none !important;
   }
 
   * {
-    display: inline!important;
+    display: inline !important;
   }
 }
 
 .section {
   margin-bottom: $unit-md;
+
+  &:not(.-fullwidth) {
+    @include container($site-max-width);
+  }
+
   > .inner {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: $unit-sm;
+    padding-right: $unit-sm;
   }
 }
-
-

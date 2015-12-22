@@ -1,3 +1,6 @@
+$bp-reviews-1: '<670px', 'landscape';
+$bp-reviews-2: '>=670px';
+
 .review-header {
   position: relative;
   color: $grey-dark;
@@ -31,7 +34,7 @@
   margin-left: 1em;
 }
 
-/* .review-stats__correct-rate {
+.review-stats__correct-rate {
   //
 }
 
@@ -41,7 +44,7 @@
 
 .review-stats__available-count {
   //
-} */
+}
 
 .review {
   display: table;
@@ -62,11 +65,11 @@
   height: 50vh;
   text-align: center;
 
-  // @include breakpoint((orientation portrait)) {
+  // @include media('portrait') {
   //   height: 35vh;
   // }
 
-  @include breakpoint((max-width 670px) (orientation landscape)) {
+  @include media($bp-reviews-1...) {
     height: 60vh;
   }
 }
@@ -77,7 +80,7 @@
   font-size: 4rem;
   vertical-align: middle;
 
-  @include breakpoint(670px) {
+  @include media($bp-reviews-2) {
     font-size: 5rem;
   }
 }
@@ -85,11 +88,11 @@
 .review-lower {
   height: 50vh;
 
-  // @include breakpoint((orientation portrait)) {
+  // @include media((orientation portrait)) {
   //   height: 65vh;
   // }
 
-  @include breakpoint((max-width 660px) (orientation landscape)) {
+  @include media($bp-reviews-1...) {
     height: 40vh;
   }
 
@@ -98,7 +101,7 @@
     padding: 20px;
     position: relative;
 
-    @include breakpoint(670px) {
+    @include media($bp-reviews-2) {
       margin-top: -40px;
     }
   }
@@ -111,7 +114,7 @@
     line-height: 50px;
     text-align: center;
 
-    @include breakpoint(670px) {
+    @include media($bp-reviews-2) {
       font-size: 2rem;
       height: 80px;
       line-height: 80px;
@@ -126,7 +129,7 @@
     margin: 20px 0;
     text-align: center;
 
-    @include breakpoint(670px) {
+    @include media($bp-reviews-2) {
       font-size: 2rem;
       height: 60px;
     }
@@ -145,11 +148,10 @@
     right: 20px;
     top: 70px;
 
-    @include breakpoint(670px) {
+    @include media($bp-reviews-2) {
       font-size: 2rem;
       height: 60px;
       top: 100px;
     }
   }
 }
-

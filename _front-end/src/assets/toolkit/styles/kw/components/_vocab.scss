@@ -1,10 +1,13 @@
+// only thing changed, rest is evo's
+$bp-vocab: '<=600px';
+
 .vocab__list {
   margin: 0;
   padding: 0;
 }
 
 .vocab__item {
-  background: #fff;
+  background: $white-light;
   border-radius: 3px;
   display: block;
   margin: 12px 0 16px;
@@ -24,7 +27,7 @@
   border-radius: 3px 3px 0 0;
   background: $purple;
   border-bottom: 2px solid #c0c0c0;
-  color: #fff;
+  color: $white-light;
   overflow: hidden;
   padding: 18px;
   position: relative;
@@ -44,7 +47,7 @@
 
   .fa {
     bottom: 8px;
-    color: #fff;
+    color: $white-light;
     left: 15px;
     padding: 5px;
     position: absolute;
@@ -63,7 +66,7 @@
 }
 
 .vocab__kana {
-  @include breakpoint(max-width 600px) {
+  @include media($bp-vocab) {
     margin: 16px 0 -4px;
   }
 }
@@ -82,7 +85,7 @@
 .vocab__meaning {
   font-family: $ff-japanese;
 
-  @include breakpoint(max-width 600px) {
+  @include media($bp-vocab) {
     display: block;
     float: none;
     text-align: center;
@@ -96,7 +99,7 @@
   position: relative;
   z-index: 1;
 
-  @include breakpoint(max-width 600px) {
+  @include media($bp-vocab) {
     margin-top: -99px;
     text-align: center;
   }
@@ -110,7 +113,7 @@
     font-size: 3.6rem;
     margin: 25px 0 25px 20px;
 
-    @include breakpoint(max-width 600px) {
+    @include media($bp-vocab) {
       margin: 15px 0;
     }
   }
@@ -121,7 +124,7 @@
   display: inline-block;
   vertical-align: middle;
 
-  @include breakpoint(max-width 600px) {
+  @include media($bp-vocab) {
     display: block;
   }
 }
@@ -133,7 +136,7 @@
   margin: 25px 0 25px 25px;
   padding-left: 25px;
 
-  @include breakpoint(max-width 600px) {
+  @include media($bp-vocab) {
     border-left: 0;
     display: block;
     line-height: 1.5;
@@ -147,7 +150,7 @@
   margin: 0;
   padding: 0;
 
-  @include breakpoint(max-width 600px) {
+  @include media($bp-vocab) {
     display: block;
   }
 }

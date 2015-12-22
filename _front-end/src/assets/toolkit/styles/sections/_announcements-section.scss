@@ -1,12 +1,8 @@
 .announcements-section {
   text-align: left;
 
-  @include media('>=500px') {
+  // same as $bp-user-details in user-details
+  @include media('>=670px') {
     text-align: center;
-  }
-
-  > .inner {
-    margin: 0 auto;
-    max-width: 1000px;
   }
 }

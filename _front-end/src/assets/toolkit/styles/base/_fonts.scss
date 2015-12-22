@@ -17,18 +17,15 @@ h3,
 h4,
 h5,
 h6 {
+  font-family: $ff-heading;
   color: $grey-dark;
   font-weight: normal;
   margin-top: 0;
-  margin-bottom: 0.5em;
-}
+  margin-bottom: .4em;
 
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: $ff-heading;
+  &:first-child {
+    margin-top: .5em;
+  }
 }
 
 h1 {
@@ -64,7 +61,20 @@ strong {
 }
 
 p {
-  margin: .75em 0;
+  max-width: 800px;
+  margin: 0;
+  margin-bottom: .6em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  > a {
+    color: $blue-light;
+    &:hover {
+      color: $blue-dark;
+    }
+  }
 }
 
 a {

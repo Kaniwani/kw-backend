@@ -7,6 +7,7 @@
   }
 
   > .item > .content {
+    @include container(800px);
     position: relative;
     font-size: .95em;
     overflow: hidden;
@@ -19,6 +20,11 @@
   > .item > .toggle:checked {
     & ~ .label:after {
       content: '–';
+
+      @include media($bp-lg) {
+        // stupid - & + not being centered in fonts...
+        transform: translateY(-2px);
+      }
     }
 
     & ~ .content {
@@ -34,6 +40,7 @@
 
     time {
       font-size: .9em;
+      padding: 0 0.1em;
       color: $grey-dark;
     }
 
