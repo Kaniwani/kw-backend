@@ -1,0 +1,224 @@
+.login-box {
+  @extend %sitebackground;
+  position: relative;
+  display: block;
+  min-height: 100vh;
+  width: 100%;
+  height: 100%;
+  color: $white;
+  overflow: hidden;
+
+  > .container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 600px;
+    height: 400px;
+    text-align: center;
+    z-index: 2;
+
+    > .title {
+      position: relative;
+      z-index: 2;
+      color: $white;
+      font-size: 40px;
+      transition-duration: 1s;
+      transition-timing-function: ease-in-out;
+      font-weight: 200;
+    }
+
+    &.-pending {
+      > .title {
+        transform: translateY(185px);
+      }
+    }
+  }
+
+  > .link.-register {
+    position: absolute;
+    padding: 2px 4px;
+    top: 4px;
+    right: 8px;
+    font-size: 16px;
+    font-weight: 400;
+    text-decoration: none;
+    color: $white;
+    z-index: 2;
+    opacity: .8;
+    transition: opacity .2s ease;
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.bg-icons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+
+  > .icon {
+    position: absolute;
+    list-style: none;
+    display: block;
+    width: 40px;
+    height: 40px;
+    bottom: -160px;
+    opacity: .5;
+    animation-duration: 12s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+
+    &:nth-child(even) {
+      animation-name: rotate-left;
+    }
+
+    &:nth-child(odd) {
+      animation-name: rotate-right;
+    }
+
+    &:nth-child(1){
+      left: 4%;
+      width: 70px;
+      height: 70px;
+    }
+
+    &:nth-child(2){
+      left: 22%;
+
+      width: 85px;
+      height: 84px;
+
+      animation-delay: 6s;
+      animation-duration: 28s;
+    }
+
+    &:nth-child(3){
+      left: 74%;
+
+      animation-name: rotate-left-fast;
+      animation-duration: 14s;
+      animation-timing-function: ease-out;
+    }
+
+    &:nth-child(4){
+      left: 33%;
+      width: 66px;
+      height: 66px;
+      opacity: .7;
+
+      animation-name: rotate-right-fast;
+      animation-duration: 11s;
+    }
+
+    &:nth-child(5){
+      left: 70%;
+      height: 35px;
+      width: 35px;
+
+      animation-name: rotate-left;
+      animation-timing-function: ease-in-out;
+    }
+
+    &:nth-child(6){
+      left: 80%;
+      width: 120px;
+      height: 120px;
+
+      animation-duration: 22s;
+    }
+
+    &:nth-child(7){
+      left: 32%;
+      width: 160px;
+      height: 160px;
+      opacity: .25;
+
+      animation-name: rotate-right;
+      animation-duration: 37s;
+    }
+
+    &:nth-child(8){
+      left: 55%;
+      width: 20px;
+      height: 20px;
+
+      animation-delay: 4s;
+      animation-timing-function: linear;
+    }
+
+    &:nth-child(9){
+      left: 42%;
+      width: 44px;
+      height: 44px;
+      opacity: .8;
+
+      animation-name: rotate-left-fast;
+      animation-duration: 19s;
+    }
+
+    &:nth-child(10){
+      left: 90%;
+      width: 160px;
+      height: 160px;
+      opacity: .3;
+
+      animation-name: rotate-right;
+      animation-delay: 3s;
+      animation-duration: 25s;
+      animation-timing-function: ease-in;
+    }
+
+   &:nth-child(11){
+      left: 10%;
+      width: 190px;
+      height: 190px;
+      opacity: .2;
+
+      animation-name: rotate-left;
+      animation-duration: 31s;
+    }
+
+  &:nth-child(12){
+      left: 66%;
+      width: 110px;
+      height: 110px;
+      opacity: .33;
+
+      animation-timing-function: ease-in;
+      animation-duration: 34s;
+    }
+  }
+}
+
+@keyframes rotate-left {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(calc(-100vh - 180px)) rotate(600deg); }
+}
+
+@keyframes rotate-right {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(calc(-100vh - 180px)) rotate(-600deg); }
+}
+
+@keyframes rotate-left-fast {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(calc(-100vh - 180px)) rotate(900deg); }
+}
+
+@keyframes rotate-right-fast {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(calc(-100vh - 180px)) rotate(-900deg); }
+}
+
+.icon-turtle {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: no-repeat center url('../images/turtle.png');
+  background-size: cover;
+}

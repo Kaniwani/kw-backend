@@ -1,0 +1,64 @@
+.accordion-list {
+  @extend %plainlist;
+
+  > .item {
+    padding-bottom: 10px;
+    font-size: 1.1em;
+  }
+
+  > .item > .content {
+    position: relative;
+    font-size: .95em;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: all .4s ease-out;
+    transform: translateZ(0);
+  }
+
+  > .item > .toggle:checked {
+    & ~ .label:after {
+      content: '–';
+    }
+
+    & ~ .content {
+      max-height: 500px;
+      opacity: 1;
+    }
+  }
+
+  > .item > .label {
+    position: relative;
+    cursor: pointer;
+    transition: color .3s ease-out;
+
+    time {
+      font-size: .9em;
+      color: $grey-dark;
+    }
+
+    // larger tap target
+    &:before {
+      position: absolute;
+      content: '';
+      top: -5px;
+      bottom: -5px;
+      left: -5px;
+      right: -5px;
+    }
+
+    &:after {
+      content: '+';
+      position: absolute;
+      top: 0;
+      font-size: 1.15em;
+      right: -20px;
+      font-weight: 700;
+      color: $grey-dark;
+    }
+
+    &:hover {
+      color: $grey-dark;
+    }
+  }
+}
