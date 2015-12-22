@@ -6,7 +6,9 @@ $ff-japanese: "Hiragino Kaku Gothic Pro", "Meiryo", "Yu Gothic", "ヒラギノ�
 
 body {
   font-family: $ff-body;
-  font-size: responsive 15px 20px;
+  font-size: responsive 14px 18px;
+  font-range: 400px 1600px;
+  line-height: 1.4;
 }
 
 h1,
@@ -32,28 +34,28 @@ h6 {
 h1 {
   font-family: $ff-heading;
   font-size: 30px;
-  font-size: responsive 22px 40px;
-  font-range: 600px 1600px;
+  font-size: responsive 22px 36px;
+  font-range: 600px 1300px;
 }
 
 h2 {
-  font-size: responsive 20px 34px;
+  font-size: responsive 20px 30px;
 }
 
 h3 {
-  font-size: responsive 18px 30px;
+  font-size: responsive 18px 25px;
 }
 
 h4 {
-  font-size: responsive 17px 26px;
+  font-size: responsive 17px 24px;
 }
 
 h5 {
-  font-size: responsive 16px 25px;
+  font-size: responsive 16px 23px;
 }
 
 h6 {
-  font-size: responsive 16px 23px;
+  font-size: responsive 16px 21px;
 }
 
 b,
@@ -61,12 +63,16 @@ strong {
   font-family: $ff-heading;
 }
 
+p {
+  margin: .75em;
+}
+
 a {
   text-decoration: none;
   transition: all .3s ease-out;
-  color: $grey;
+  color: $grey-dark;
   &:hover {
-    color: $black-light;
+    color: $grey;
   }
   &:focus,
   &:active {

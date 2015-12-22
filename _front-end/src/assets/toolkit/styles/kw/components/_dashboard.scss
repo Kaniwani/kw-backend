@@ -7,7 +7,7 @@
 
   // triangle
   &:after {
-    border-color: transparent transparent #333;
+    border-color: transparent transparent $black-light;
     border-style: none solid solid;
     border-width: 20px;
     bottom: 0;
@@ -98,6 +98,11 @@ $user-details-bp: '>=550px';
 
 .wkinfo {
   padding: $unit-md;
+  text-align: center;
+
+  @include media($user-details-bp) {
+    text-align: right;
+  }
 
   .list {
     @extend %plainlist;
@@ -112,9 +117,11 @@ $user-details-bp: '>=550px';
 .userinfo {
   padding: $unit-md;
   padding-top: 0;
+  text-align: center;
 
   @include media($user-details-bp) {
     padding: $unit-md;
+    text-align: left;
   }
 
   > p {
@@ -126,8 +133,7 @@ $user-details-bp: '>=550px';
     clear: fix;
     margin-top: 10px;
     > .item {
-      display: block;
-      float: left;
+      display: inline-block;
       margin-right: 15px;
     }
   }

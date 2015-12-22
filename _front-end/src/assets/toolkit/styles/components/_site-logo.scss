@@ -20,12 +20,12 @@
     box-shadow: inset 3px 3px 8px 0 rgba($black, .25), 0 0 25px -5px rgba($black, .25);
     transition: background-color .3s ease-out;
     background: $black-light;
-    height: 78px;
-    width: 78px;
+    height: 60px;
+    width: 60px;
 
     @include media($bp-nav-1) {
-      height: 92px;
-      width: 92px;
+      height: 75px;
+      width: 75px;
     }
 
     .kana,
@@ -37,7 +37,7 @@
 
     .kana {
       display: none;
-      font-size: 16px;
+      font-size: 13px;
 
       @include media($bp-nav-1) {
         display: block;
@@ -46,10 +46,10 @@
 
     .kanji {
       margin-top: 2px;
-      font-size: 30px;
+      font-size: 22px;
 
       @include media($bp-nav-1) {
-        font-size: 34px;
+        font-size: 28px;
       }
     }
   }
