@@ -1,12 +1,12 @@
 .announcements-section {
-    text-align: left;
+  text-align: left;
 
-    @include media('>=500px') {
-      text-align: center;
-    }
+  @include media('>=500px') {
+    text-align: center;
+  }
 
-    > .inner {
-      margin: 0 auto;
-      max-width: 1000px;
+  > .inner {
+    margin: 0 auto;
+    max-width: 1000px;
   }
 }

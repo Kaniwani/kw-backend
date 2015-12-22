@@ -9,7 +9,6 @@
     color: $black-light;
   }
 
-
   // larger tap/click target
   &:after {
     position: absolute;
@@ -24,10 +23,15 @@
     justify-content: center;
   }
 
-  > .text{
+  > .text {
     position: relative;
     overflow: hidden;
     padding-bottom: 4px;
+
+    .count {
+      margin-left: 3px;
+      color: $blue-light;
+    }
 
     &:not(:only-child) {
       padding-right: $unit-sm;
