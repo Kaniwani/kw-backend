@@ -20,8 +20,8 @@ h6 {
   font-family: $ff-heading;
   color: $grey-dark;
   font-weight: normal;
-  margin-top: 0;
-  margin-bottom: .4em;
+  margin: 0;
+  line-height: 1.6;
 
   &:first-child {
     margin-top: .5em;

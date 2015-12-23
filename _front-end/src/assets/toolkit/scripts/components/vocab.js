@@ -1,38 +1,28 @@
-if (typeof KaniWani.Vocab === 'undefined') {
-  KaniWani.Vocab = {};
+import $ from 'jquery';
+
+let initialised = false;
+let $vocabItems = null;
+
+const toggleClick = (ev) => {
+  ev.preventDefault();
+  toggleVocabItem($(ev.target));
 }
 
-KaniWani.Vocab = {
-  vars: {
-    initialised: false
-  },
+const toggleVocabItem = ($el) => {
+  $el.closest('.vocab__item').toggleClass('vocab__item--active');
+};
 
-  DOM: {
-    $vocabItems: null
-  },
-
-  init: function() {
-    if($('.vocab__list').length > 0 && !KaniWani.Vocab.vars.initialised) {
+const api = {
+  init() {
+    if($('.vocab__list').length > 0 && !initialised) {
       // Cache DOM elements
-      KaniWani.Vocab.DOM.$vocabItems = $('.vocab__item');
+      $vocabItems = $('.vocab__item');
 
       // Attach events
-      KaniWani.Vocab.DOM.$vocabItems.on('click', '.vocab-lower__toggle', KaniWani.Vocab.events.vocabToggleClick);
-
-      KaniWani.Vocab.vars.initialised = true;
+      $vocabItems.on('click', '.vocab-lower__toggle', toggleClick);
+      initialised = true;
     }
-  },
-
-  events: {
-    vocabToggleClick: function(event) {
-      event.preventDefault();
-      KaniWani.Vocab.helpers.toggleVocabItem($(this));
-    },
-  },
-
-  helpers: {
-    toggleVocabItem: function($this) {
-      $this.closest('.vocab__item').toggleClass('vocab__item--active');
-    },
   }
 };
+
+export default api;

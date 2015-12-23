@@ -1,16 +1,55 @@
-// only thing changed, rest is evo's
 $bp-vocab: '<=600px';
 
+@keyframes wobble {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(8deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
 .vocab__list {
-  margin: 0;
+  @include container($site-max-width - 300px);
+  margin-top: 0;
+  margin-bottom: 0;
   padding: 0;
+  @include media($bp-xl) {
+    @include container($site-max-width);
+    clear: fix;
+  }
 }
 
 .vocab__item {
   background: $white-light;
   border-radius: 3px;
   display: block;
-  margin: 12px 0 16px;
+  margin: 0 0 $unit-sm;
+
+  &:first-child {
+    margin-top: $unit-md;
+  }
+
+  @include media($bp-xl) {
+    width: calc(50% - #{$unit-sm});
+    float: left;
+    margin-top: $unit-sm;
+    margin-bottom: $unit-sm;
+    margin-right: $unit-sm * 2;
+
+    &:nth-child(even) {
+      margin-right: 0;
+    }
+    &:first-child {
+      margin-top: $unit-sm;
+    }
+  }
 
   &.vocab__item--active {
     .vocab-lower {
@@ -24,17 +63,19 @@ $bp-vocab: '<=600px';
 }
 
 .vocab-upper {
-  border-radius: 3px 3px 0 0;
-  background: $purple;
-  border-bottom: 2px solid #c0c0c0;
+  position: relative;
+  clear: fix;
   color: $white-light;
   overflow: hidden;
-  padding: 18px;
-  position: relative;
   z-index: 2;
+  padding: 18px $unit-sm;
+  border-radius: 3px;
+  background: $purple;
+  box-shadow: 0 4px 14px -4px rgba($black, .25);
 
   .vocab__item--locked &:before {
-    background-image: url('https://s3.amazonaws.com/s3.wanikani.com/assets/default-v2/stripes-c1de0a7da741b64f40f69665ad61ade0.png');
+    // stripes
+    background-image: url('./stripes.png');
     content: '';
     height: 100%;
     left: 0;
@@ -45,30 +86,32 @@ $bp-vocab: '<=600px';
     z-index: 0;
   }
 
+  .-unlockable &:hover {
+    .fa-unlock-alt {
+      animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
+    }
+  }
+
   .fa {
-    bottom: 8px;
-    color: $white-light;
-    left: 15px;
-    padding: 5px;
     position: absolute;
+    bottom: 0;
+    color: #fff;
+    left: 5px;
+    padding: 10px 15px;
+    font-size: 20px;
   }
 }
-
 .vocab__kanji {
   text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
   float: left;
-  font-size: 2.9rem;
+  font-size: 29px;
   margin-top: -6px;
-}
-
-.vocab__reading {
-  overflow: hidden;
+  padding-bottom: $unit-xs;
 }
 
 .vocab__kana {
-  @include media($bp-vocab) {
-    margin: 16px 0 -4px;
-  }
+  overflow: hidden;
+  padding: 2px 0 12px;
 }
 
 .vocab__kana ,
@@ -76,8 +119,16 @@ $bp-vocab: '<=600px';
   text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
   clear: right;
   float: right;
-  font-size: 1.8rem;
-  margin-bottom: 4px;
+  font-size: 18px;
+}
+
+.vocab__meaning {
+  // leave space on left for lock icon
+  max-width: calc(100% - 50px);
+  margin: auto;
+  @include media($bp-vocab) {
+    max-width: calc(100% - 75px);
+  }
 }
 
 .vocab__kanji,
@@ -94,7 +145,7 @@ $bp-vocab: '<=600px';
 
 .vocab-lower {
   transition: margin-top .33s ease;
-  margin-top: -62px;
+  margin-top: -56px;
   overflow: hidden;
   position: relative;
   z-index: 1;
@@ -110,7 +161,7 @@ $bp-vocab: '<=600px';
   }
 
   .icon {
-    font-size: 3.6rem;
+    font-size: 36px;
     margin: 25px 0 25px 20px;
 
     @include media($bp-vocab) {
@@ -123,7 +174,6 @@ $bp-vocab: '<=600px';
 .vocab-synonyms {
   display: inline-block;
   vertical-align: middle;
-
   @include media($bp-vocab) {
     display: block;
   }
@@ -131,10 +181,14 @@ $bp-vocab: '<=600px';
 
 .vocab-synonyms {
   border-left: 1px solid #c0c0c0;
-  font-size: 1.4rem;
-  line-height: 3.6rem;
+  font-size: 14px;
+  line-height: 36px;
   margin: 25px 0 25px 25px;
   padding-left: 25px;
+
+  .text {
+    vertical-align: middle;
+  }
 
   @include media($bp-vocab) {
     border-left: 0;
@@ -157,6 +211,7 @@ $bp-vocab: '<=600px';
 
 .vocab-synonyms__item {
   display: inline-block;
+  vertical-align: middle;
 
   &:after {
     content: ', ';
@@ -168,6 +223,7 @@ $bp-vocab: '<=600px';
 }
 
 .vocab-lower__toggle {
+  @include tap-target;
   bottom: 0;
   padding: 4px 7px;
   position: absolute;

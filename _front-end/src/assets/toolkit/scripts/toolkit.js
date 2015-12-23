@@ -7,9 +7,9 @@
 
 import $ from 'jquery';
 
-import expandToggle from './components/expand-toggle';
-
 import login from './sections/login';
+import expandToggle from './components/expand-toggle';
+import vocabToggle from './components/vocab';
 
 $(document).ready(() => {
   // TODO: remove when/if using modernizr instead
@@ -17,4 +17,5 @@ $(document).ready(() => {
 
   login.init();
   expandToggle.init();
+  vocabToggle.init();
 })

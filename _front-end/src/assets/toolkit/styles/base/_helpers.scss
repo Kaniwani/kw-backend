@@ -1,7 +1,26 @@
+@mixin tap-target($Y: .5em, $X: 1em) {
+  &:after {
+    position: absolute;
+    content: '';
+    top: -$Y;
+    bottom: -$Y;
+    right: -$X;
+    left: -$X;
+  }
+}
+
+// limits width and centers item
 @mixin container($width: 1260px) {
   max-width: $width;
   margin-left: auto;
   margin-right: auto;
+}
+
+// allows background to be 100% width whilst content is contained and centered.
+@mixin full-bg($maxwidth: 1260px) {
+  $maxwidth: $maxwidth / 2;
+  padding-left: calc(50% - #{$maxwidth});
+  padding-right: calc(50% - #{$maxwidth});
 }
 
 // %placeholderclasses are used in other places as @extend %placeholderclass

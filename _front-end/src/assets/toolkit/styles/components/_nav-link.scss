@@ -9,15 +9,7 @@
     color: $black-light;
   }
 
-  // larger tap/click target
-  &:after {
-    position: absolute;
-    content: '';
-    top: -8px;
-    bottom: -8px;
-    right: -18px;
-    left: -18px;
-  }
+  @include tap-target(8px, 18px);
 
   @include media($bp-nav-1) {
     justify-content: center;

@@ -1,14 +1,17 @@
 colors:
   grayscale:
-    white: "hsl(0, 0%, 100%)"
+    white-light: "hsl(0, 0%, 98%)"
+    white:  "hsl(0, 0%, 96%)"
     silver: "hsl(0, 0%, 87%)"
     grey-light: "hsl(0, 0%, 67%)"
-    grey-mid: "hsl(0, 0%, 52%)"
+    grey: "hsl(0, 0%, 55%)"
     grey-dark: "hsl(0, 0%, 33%)"
     black-light: "hsl(0, 0%, 26%)"
     black: "hsl(0, 0%, 16%)"
-  colors:
+    black-dark: "hsl(0, 0%, 0%)"
+  kaniwani:
     blue-dark: "hsl(228, 71%, 51%)"
+    blue: "hsl(208, 100%, 45%)"
     blue-light: "hsl(200, 100%, 43%)"
     pink: "hsl(320, 100%, 50%)"
     purple: "hsl(280, 100%, 47%)"
