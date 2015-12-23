@@ -34,6 +34,7 @@ var config = {
 			toolkit: 'src/assets/toolkit/styles/toolkit.scss'
 		},
 		images: 'src/assets/toolkit/images/**/*',
+		fonts: 'src/assets/toolkit/fonts/**/*',
 		views: 'src/toolkit/views/*.html'
 	},
 	dest: 'dist'
@@ -97,12 +98,25 @@ gulp.task('scripts', function (done) {
 });
 
 
+// fonts
+gulp.task('fonts', function () {
+	return gulp.src(config.src.fonts)
+		.pipe(gulp.dest(config.dest + '/assets/toolkit/fonts'));
+});
+
+
 // images
 gulp.task('images', ['favicon'], function () {
 	return gulp.src(config.src.images)
 		.pipe(imagemin())
 		.pipe(gulp.dest(config.dest + '/assets/toolkit/images'));
 });
+
+gulp.task('favicon', function () {
+	return gulp.src('./src/favicon.ico')
+		.pipe(gulp.dest(config.dest));
+});
+
 
 gulp.task('favicon', function () {
 	return gulp.src('./src/favicon.ico')
@@ -175,6 +189,7 @@ gulp.task('default', ['clean'], function () {
 		'styles',
 		'scripts',
 		'images',
+		'fonts',
 		'assemble'
 	];
 

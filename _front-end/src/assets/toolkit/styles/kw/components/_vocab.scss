@@ -74,7 +74,7 @@ $bp-vocab: '<=600px';
   box-shadow: 0 4px 14px -4px rgba($black, .25);
 
   .vocab__item--locked &:before {
-    background-image: url('../images/stripes.png');
+    background-image: image('stripes.png');
     content: '';
     height: 100%;
     left: 0;
@@ -184,6 +184,7 @@ $bp-vocab: '<=600px';
   line-height: 36px;
   margin: 25px 0 25px 25px;
   padding-left: 25px;
+  max-width: calc(100% - 90px);
 
   .text {
     vertical-align: middle;
