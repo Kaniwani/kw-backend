@@ -1,0 +1,13 @@
+.section-heading {
+  margin-bottom: .5em;
+  color: $black-light;
+
+  > .breadcrumb {
+    color: $grey-dark;
+    &:before {
+      display: inline-block;
+      content: ' > ';
+      padding: 0 10px;
+    }
+  }
+}

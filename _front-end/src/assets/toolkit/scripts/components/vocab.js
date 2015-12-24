@@ -3,12 +3,12 @@ import $ from 'jquery';
 let initialised = false;
 let $vocabItems = null;
 
-const toggleClick = (ev) => {
-  ev.preventDefault();
-  toggleVocabItem($(ev.target));
+const toggleClick = (event) => {
+  event.prevententDefault();
+  toggleventocabItem($(event.target));
 }
 
-const toggleVocabItem = ($el) => {
+const toggleventocabItem = ($el) => {
   $el.closest('.vocab__item').toggleClass('vocab__item--active');
 };
 

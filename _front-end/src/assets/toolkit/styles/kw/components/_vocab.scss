@@ -1,20 +1,5 @@
 $bp-vocab: '<=600px';
 
-@keyframes wobble {
-  0% {
-    transform: rotate(0deg);
-  }
-  25% {
-    transform: rotate(-8deg);
-  }
-  75% {
-    transform: rotate(8deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
-}
-
 .vocab__list {
   @include container($site-max-width - 300px);
   margin-top: 0;
@@ -32,9 +17,6 @@ $bp-vocab: '<=600px';
   display: block;
   margin: 0 0 $unit-sm;
 
-  &:first-child {
-    margin-top: $unit-md;
-  }
 
   @include media($bp-xl) {
     width: calc(50% - #{$unit-sm});
@@ -45,9 +27,6 @@ $bp-vocab: '<=600px';
 
     &:nth-child(even) {
       margin-right: 0;
-    }
-    &:first-child {
-      margin-top: $unit-sm;
     }
   }
 
@@ -86,6 +65,7 @@ $bp-vocab: '<=600px';
   }
 
   .-unlockable &:hover {
+      background-color: darken($purple, 7%);
     .fa-unlock-alt {
       animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
     }
@@ -99,6 +79,11 @@ $bp-vocab: '<=600px';
     padding: 10px 15px;
     font-size: 20px;
   }
+
+  .fa-lock {
+    color: $grey-dark;
+  }
+
 }
 .vocab__kanji {
   text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
@@ -191,6 +176,7 @@ $bp-vocab: '<=600px';
   }
 
   @include media($bp-vocab) {
+    max-width: calc(100% - 10px);
     border-left: 0;
     display: block;
     line-height: 1.5;

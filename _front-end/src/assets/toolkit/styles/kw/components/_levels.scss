@@ -2,49 +2,39 @@ $bp-levels-1: '<500px';
 $bp-levels-1-2: '>=500px','<680px';
 $bp-levels-2: '>=680px';
 
+.levels > .inner,
+.levels > .inner .section-heading {
+  padding-left: $unit-xs / 2;
+  padding-right: $unit-xs / 2;
+}
 
 .level__list {
-  margin: 0;
-  padding: 0;
+  @extend %plainlist;
+  @include media($bp-xl) {
+    @include container($site-max-width);
+  }
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .level__item {
-  display: block;
-  float: left;
-  margin: 12px 1.5% 4px;
   position: relative;
   z-index: 2;
-
-  @include media($bp-levels-1) {
-    width: 47%;
-
-    &:nth-child(2n-1) {
-      margin-left: 0;
-    }
-  }
-
-  @include media($bp-levels-1-2...) {
-    width: 30%;
-
-    &:nth-child(3n-2) {
-      margin-left: 0;
-    }
-  }
-
-  @include media($bp-levels-2) {
-    width: 22%;
-
-    &:nth-child(4n-3) {
-      margin-left: 0;
-    }
-  }
+  flex: 1 1 180px;
+  border-radius: 3px;
+  margin: $unit-xs / 2;
 
   .fa {
+    position: absolute;
     bottom: 8px;
-    color: #fff;
+    font-size: 1.1em;
     left: 15px;
     padding: 5px;
-    position: absolute;
+  }
+
+  .fa-lock {
+    color: $grey-dark;
   }
 }
 
@@ -58,8 +48,16 @@ $bp-levels-2: '>=680px';
   padding: 18px;
 
   &:hover {
-    background: darken($purple, 10%);
     color: #fff;
+    background: $purple;
+  }
+
+  .-unlockable &:hover {
+    background-color: darken($purple, 7%);
+
+    .fa-unlock-alt {
+      animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
+    }
   }
 
   .level__item--locked & {
@@ -68,13 +66,13 @@ $bp-levels-2: '>=680px';
 
     background-image: linear-gradient(-45deg, $colour1 25%, $colour2 25%, $colour2 50%, $colour1 50%, $colour1 75%, $colour2 75%, $colour2);
     background-size: 6px 6px;
-    // background-image: url('https://s3.amazonaws.com/s3.wanikani.com/assets/default-v2/stripes-c1de0a7da741b64f40f69665ad61ade0.png');
   }
+
 }
 
 .level__number {
   text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
   float: left;
-  font-size: 2.9rem;
+  font-size: responsive 26px 36px;
   margin: -6px 0 26px;
 }

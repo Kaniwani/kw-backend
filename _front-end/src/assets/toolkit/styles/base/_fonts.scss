@@ -11,6 +11,10 @@ body {
   line-height: 1.4;
 }
 
+*:focus {
+  outline: none;
+}
+
 h1,
 h2,
 h3,
@@ -81,11 +85,8 @@ a {
   text-decoration: none;
   transition: all .3s ease-out;
   color: $grey-dark;
+
   &:hover {
     color: $grey;
-  }
-  &:focus,
-  &:active {
-    color: $grey-light;
   }
 }

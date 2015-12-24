@@ -195,26 +195,6 @@
   }
 }
 
-@keyframes rotate-left {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(calc(-100vh - 180px)) rotate(600deg); }
-}
-
-@keyframes rotate-right {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(calc(-100vh - 180px)) rotate(-600deg); }
-}
-
-@keyframes rotate-left-fast {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(calc(-100vh - 180px)) rotate(900deg); }
-}
-
-@keyframes rotate-right-fast {
-  0%   { transform: translateY(0); }
-  100% { transform: translateY(calc(-100vh - 180px)) rotate(-900deg); }
-}
-
 .icon-turtle {
   display: block;
   width: 100%;

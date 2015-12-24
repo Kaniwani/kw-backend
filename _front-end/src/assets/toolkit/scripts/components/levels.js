@@ -1,37 +1,26 @@
-if (typeof KaniWani.Levels === 'undefined') {
-  KaniWani.Levels = {};
+import $ from 'jquery';
+
+let $levels = null;
+
+const levelClick = (event) => {
+  event.preventDefault();
+  levelLockToggle($(event.target))
 }
 
-KaniWani.Levels = {
-  vars: {
-  },
+// TODO: functionality
+const levelLockToggle = ($el) => {
+  console.log('data-level-id was ', $el.closest('.level__item').attr('data-level-id'));
+}
 
-  DOM: {
-    $levels: null
-  },
-
-  init: function() {
+const api = {
+  init() {
     if($('.level__list').length > 0) {
       // Cache DOM elements
-      KaniWani.Levels.DOM.$levels = $('.level__link');
-
+      $levels = $('.level__link');
       // Attach events
-      KaniWani.Levels.DOM.$levels.on('click.levels', KaniWani.Levels.events.levelClick);
+      $levels.on('click', levelClick);
     }
-  },
-
-  events: {
-    levelClick: function(event) {
-      if(!$(event.target).hasClass('level__link')) {
-        event.preventDefault();
-        KaniWani.Levels.helpers.levelLockToggle($(this));
-      }
-    },
-  },
-
-  helpers: {
-    levelLockToggle: function($this) {
-      console.log($this.closest('.level__item').attr('data-level-id'));
-    },
   }
 };
+
+export default api;

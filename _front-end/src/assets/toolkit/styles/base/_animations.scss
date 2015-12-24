@@ -1,0 +1,34 @@
+@keyframes wobble {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(8deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes rotate-left {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(calc(-100vh - 180px)) rotate(600deg); }
+}
+
+@keyframes rotate-right {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(calc(-100vh - 180px)) rotate(-600deg); }
+}
+
+@keyframes rotate-left-fast {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(calc(-100vh - 180px)) rotate(1000deg); }
+}
+
+@keyframes rotate-right-fast {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(calc(-100vh - 180px)) rotate(-1000deg); }
+}
