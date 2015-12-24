@@ -4,7 +4,7 @@ let initialised = false;
 let $vocabItems = null;
 
 const toggleClick = (event) => {
-  event.prevententDefault();
+  event.preventDefault();
   toggleventocabItem($(event.target));
 }
 

@@ -19,11 +19,10 @@ $bp-vocab: '<=600px';
 
 
   @include media($bp-xl) {
-    width: calc(50% - #{$unit-sm});
+    width: calc(50% - #{$unit-xs} / 2);
     float: left;
-    margin-top: $unit-sm;
     margin-bottom: $unit-sm;
-    margin-right: $unit-sm * 2;
+    margin-right: $unit-xs;
 
     &:nth-child(even) {
       margin-right: 0;

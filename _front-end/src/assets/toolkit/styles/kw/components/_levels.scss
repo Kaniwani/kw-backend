@@ -2,7 +2,11 @@ $bp-levels-1: '<500px';
 $bp-levels-1-2: '>=500px','<680px';
 $bp-levels-2: '>=680px';
 
-.levels > .inner,
+.levels > .inner {
+  padding-left: $unit-xs;
+  padding-right: $unit-xs;
+}
+
 .levels > .inner .section-heading {
   padding-left: $unit-xs / 2;
   padding-right: $unit-xs / 2;
@@ -68,11 +72,15 @@ $bp-levels-2: '>=680px';
     background-size: 6px 6px;
   }
 
+  .level__item--locked:not(.-unlockable) & {
+    cursor: not-allowed;
+  }
+
 }
 
 .level__number {
   text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
   float: left;
-  font-size: responsive 26px 36px;
+  font-size: responsive 24px 30px;
   margin: -6px 0 26px;
 }
