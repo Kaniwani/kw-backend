@@ -6,7 +6,7 @@ Fabricator is a tool for building website UI toolkits - _think ["Tiny Bootstraps
 
 ## Quick Start
 
-Ensure you have *node.js* and *npm* installed. Node v4.2.2 and NPM 2.14.7 are known to work fine.
+Ensure you have *node.js* and *npm* installed. Node >4.2.2 and NPM >2.14.7 are known to work fine.
 
 ```shell
 $ npm start
