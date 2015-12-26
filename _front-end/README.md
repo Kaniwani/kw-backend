@@ -6,13 +6,19 @@ Fabricator is a tool for building website UI toolkits - _think ["Tiny Bootstraps
 
 ## Quick Start
 
-Ensure you have node and npm installed. Node v4.2.2 and NPM 2.14.7 are known to work fine.
+Ensure you have *node.js* and *npm* installed. Node v4.2.2 and NPM 2.14.7 are known to work fine.
 
 ```shell
 $ npm start
 ```
 
-This will install dependencies into node_modules, then run gulp as a build tool which will run a local server & watch for any changes to files in /src/
+This will install dependencies into /node_modules. 
+
+Once completed successfully. Run gulp as a build tool which will run a local server & watch for any changes to files in /src (compiling changes into /dist)
+
+```shell
+$ gulp 
+```
 
 ## Documentation
 
