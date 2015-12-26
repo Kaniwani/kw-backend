@@ -4,7 +4,8 @@
 # KW
 KaniWani
 
-Getting started:
+### Getting started:
+#### Backend
 Since we're using Django, a fair bit of setup is required to get a development environment up and running. Here are all the tools you need. 
 
 1. Python 3. [You can get it from activestate](http://www.activestate.com/activepython/downloads)
@@ -34,3 +35,14 @@ Chances are your system will spit a bunch of errors at you. Ignore them and wait
 18. Ctrl + alt + r one last time. Type in the command **runserver --noreload**
 
 If all went well, it will start a server at 127.0.0.1:8000
+
+
+#### Frontend
+Since we're using Node, life is wonderful. Here are all the tools you need. 
+
+1. Node.js [Get it here] (https://nodejs.org/en/)
+2. NPM (installed with Node, huzzah) (does this step even count?)
+3. Open a terminal, navigate to the frontend folder, and run `npm install`
+4. Once deps installed, run `gulp` to start dev server + styleguide
+
+More detailed information in /_front-end/README.MD
