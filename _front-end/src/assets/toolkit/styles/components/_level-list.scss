@@ -1,0 +1,16 @@
+.level-list {
+  @extend %plainlist;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  @include media($bp-xl) {
+    @include container($site-max-width);
+  }
+
+  > .level-card {
+    flex: 1 1 180px;
+    z-index: 2;
+    margin: $unit-xs / 2;
+  }
+}

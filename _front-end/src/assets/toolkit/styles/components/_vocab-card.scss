@@ -1,35 +1,14 @@
+// NOTE: only half-converted from evo's original styling
+// naming format etc is a bit inconsistent here
+
 $bp-vocab: '<=600px';
 
-.vocab__list {
-  @include container($site-max-width - 300px);
-  margin-top: 0;
-  margin-bottom: 0;
-  padding: 0;
-  @include media($bp-xl) {
-    @include container($site-max-width);
-    clear: fix;
-  }
-}
-
-.vocab__item {
+.vocab-card {
+  list-style-type: none;
   background: $white-light;
   border-radius: 3px;
-  display: block;
-  margin: 0 0 $unit-sm;
 
-
-  @include media($bp-xl) {
-    width: calc(50% - #{$unit-xs} / 2);
-    float: left;
-    margin-bottom: $unit-sm;
-    margin-right: $unit-xs;
-
-    &:nth-child(even) {
-      margin-right: 0;
-    }
-  }
-
-  &.vocab__item--active {
+  &.-expanded {
     .vocab-lower {
       margin-top: 0;
 
@@ -38,20 +17,8 @@ $bp-vocab: '<=600px';
       }
     }
   }
-}
 
-.vocab-upper {
-  position: relative;
-  clear: fix;
-  color: $white-light;
-  overflow: hidden;
-  z-index: 2;
-  padding: 18px $unit-sm;
-  border-radius: 3px;
-  background: $purple;
-  box-shadow: 0 4px 14px -4px rgba($black, .25);
-
-  .vocab__item--locked &:before {
+  &.-locked > .vocab-upper:before {
     background-image: image('stripes.png');
     content: '';
     height: 100%;
@@ -63,27 +30,44 @@ $bp-vocab: '<=600px';
     z-index: 0;
   }
 
-  .-unlockable &:hover {
+  &.-unlockable > .vocab-upper:hover {
       background-color: darken($purple, 7%);
+      cursor: pointer;
     .fa-unlock-alt {
       animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
     }
   }
 
-  .fa {
-    position: absolute;
-    bottom: 0;
-    color: #fff;
-    left: 5px;
-    padding: 10px 15px;
-    font-size: 20px;
+  &.-locked:not(.-unlockable) > .vocab-upper:hover {
+    cursor: not-allowed;
   }
 
-  .fa-lock {
-    color: $grey-dark;
-  }
+  > .vocab-upper {
+    position: relative;
+    clear: fix;
+    color: $white-light;
+    overflow: hidden;
+    z-index: 2;
+    padding: 18px $unit-sm;
+    border-radius: 3px;
+    background: $purple;
+    box-shadow: 0 4px 14px -4px rgba($black, .25);
 
+    > .fa {
+      position: absolute;
+      bottom: 0;
+      color: #fff;
+      left: 5px;
+      padding: 10px 15px;
+      font-size: 20px;
+    }
+
+    > .fa-lock {
+      color: $grey-dark;
+    }
+  }
 }
+
 .vocab__kanji {
   text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
   float: left;
@@ -126,6 +110,8 @@ $bp-vocab: '<=600px';
   }
 }
 
+// TODO: margin-top hard-coded...
+// what if user has loads of synonyms resulting in greater height?
 .vocab-lower {
   transition: margin-top .33s ease;
   margin-top: -56px;

@@ -1,7 +1,7 @@
 .announcements-section {
   text-align: left;
 
-  // same as $bp-user-details in user-details
+  // should match $bp-user-details in user-details
   @include media('>=670px') {
     text-align: center;
   }

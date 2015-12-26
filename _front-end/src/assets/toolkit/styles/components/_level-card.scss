@@ -1,0 +1,62 @@
+$bp-level-card-1: '<500px';
+$bp-level-card-1-2: '>=500px','<680px';
+$bp-level-card-2: '>=680px';
+
+.level-card {
+  position: relative;
+  border-radius: 3px;
+
+  > .link {
+    transition: background-color .33s ease;
+    background: $purple;
+    border-radius: 3px;
+    color: #fff;
+    display: block;
+    overflow: hidden;
+    padding: 18px;
+
+    &:hover {
+      color: #fff;
+      background: $purple;
+    }
+
+    > .levelnum {
+      text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
+      float: left;
+      font-size: responsive 24px 30px;
+      margin: -6px 0 26px;
+    }
+
+    > .fa {
+      position: absolute;
+      bottom: 8px;
+      font-size: 1.1em;
+      left: 15px;
+      padding: 5px;
+
+      &.fa-lock {
+        color: $grey-dark;
+      }
+    }
+  }
+
+  &.-unlockable > .link:hover {
+    background-color: darken($purple, 7%);
+
+    .fa-unlock-alt {
+      animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
+    }
+  }
+
+  &.-locked > .link {
+    background-size: 6px 6px;
+    $colour1: rgba(#fff, .3); $colour2: transparent;
+    background-image: linear-gradient(-45deg, $colour1 25%, $colour2 25%,
+                                              $colour2 50%, $colour1 50%,
+                                              $colour1 75%, $colour2 75%, $colour2);
+  }
+
+  &.-locked:not(.-unlockable) > .link {
+    cursor: not-allowed;
+  }
+}

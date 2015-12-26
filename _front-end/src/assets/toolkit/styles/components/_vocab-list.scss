@@ -1,0 +1,27 @@
+.vocab-list {
+  @include container($site-max-width - 300px);
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+
+  @include media($bp-xl) {
+    @include container($site-max-width);
+    clear: fix;
+  }
+
+  > .vocab-card {
+    margin: 0 0 $unit-sm;
+    display: block;
+
+    @include media($bp-xl) {
+      width: calc(50% - #{$unit-xs} / 2);
+      float: left;
+      margin-bottom: $unit-sm;
+      margin-right: $unit-xs;
+
+      &:nth-child(even) {
+        margin-right: 0;
+      }
+    }
+  }
+}
