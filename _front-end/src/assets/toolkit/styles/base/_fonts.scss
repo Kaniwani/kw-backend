@@ -9,6 +9,7 @@ body {
   font-size: responsive 14px 18px;
   font-range: 400px 1400px;
   line-height: 1.4;
+  color: $black-light;
 }
 
 *:focus {
@@ -25,6 +26,7 @@ h6 {
   color: $grey-dark;
   font-weight: normal;
   margin: 0;
+  margin-bottom: $unit-xs;
   line-height: 1.6;
 
   &:first-child {

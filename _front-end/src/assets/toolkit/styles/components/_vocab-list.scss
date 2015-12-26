@@ -16,12 +16,20 @@
     @include media($bp-xl) {
       width: calc(50% - #{$unit-xs} / 2);
       float: left;
-      margin-bottom: $unit-sm;
+      margin-bottom: $unit-xs;
       margin-right: $unit-xs;
 
       &:nth-child(even) {
         margin-right: 0;
       }
     }
+  }
+
+  &.-correct > .vocab-card > .vocab-base {
+      background-color: $green;
+    }
+
+  &.-incorrect > .vocab-card > .vocab-base {
+      background-color: $red;
   }
 }

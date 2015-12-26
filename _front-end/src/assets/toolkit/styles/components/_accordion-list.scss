@@ -1,15 +1,11 @@
 .accordion-list {
   @extend %plainlist;
 
-  > .item {
-    padding-bottom: 10px;
-    font-size: 1.1em;
-  }
-
   > .item > .content {
-    @include container(800px);
     position: relative;
-    font-size: .95em;
+    padding-left: $unit-sm;
+    padding-top: $unit-xs / 2;
+    padding-bottom: $unit-xs / 2;
     overflow: hidden;
     max-height: 0;
     opacity: 0;
@@ -34,7 +30,11 @@
   }
 
   > .item > .label {
+    font-family: $ff-heading;
+    font-weight: 400;
+    color: $grey-dark;
     position: relative;
+    font-size: 1.2em;
     cursor: pointer;
     transition: color .3s ease-out;
 
@@ -56,12 +56,9 @@
 
     &:after {
       content: '+';
-      position: absolute;
-      top: 0;
-      font-size: 1.15em;
-      right: -20px;
-      font-weight: 700;
-      color: $grey-dark;
+      display: inline-block;
+      line-height: 1.6;
+      color: $black-light;
     }
 
     &:hover {

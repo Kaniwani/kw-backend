@@ -5,21 +5,21 @@ let $vocabItems = null;
 
 const toggleClick = (event) => {
   event.preventDefault();
-  toggleventocabItem($(event.target));
+  toggleVocabExpand($(event.target));
 }
 
-const toggleventocabItem = ($el) => {
-  $el.closest('.vocab__item').toggleClass('vocab__item--active');
+const toggleVocabExpand = ($el) => {
+  $el.closest('.vocab-card').toggleClass('-expanded');
 };
 
 const api = {
   init() {
-    if($('.vocab__list').length > 0 && !initialised) {
+    if($('.vocab-list').length > 0 && !initialised) {
       // Cache DOM elements
-      $vocabItems = $('.vocab__item');
+      $vocabItems = $('.vocab-card');
 
       // Attach events
-      $vocabItems.on('click', '.vocab-lower__toggle', toggleClick);
+      $vocabItems.on('click', '.extratoggle', toggleClick);
       initialised = true;
     }
   }

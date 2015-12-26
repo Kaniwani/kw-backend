@@ -1,0 +1,61 @@
+.vocab-block {
+  $bp-vocab: '<=600px';
+
+  list-style-type: none;
+  background: $white-light;
+  border-radius: 3px;
+
+  > .vocab-base {
+    position: relative;
+    clear: fix;
+    color: $white-light;
+    overflow: hidden;
+    z-index: 2;
+    padding: 18px $unit-sm;
+    border-radius: 3px;
+    background: $purple;
+    box-shadow: 0 4px 14px -4px rgba($black, .25);
+
+    > .kanji {
+      text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
+      float: left;
+      font-size: 29px;
+      margin-top: -6px;
+      padding-bottom: $unit-xs;
+    }
+
+    > .kana {
+      overflow: hidden;
+      padding: 2px 0 12px;
+    }
+
+    > .kana,
+    > .meaning {
+      text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+      clear: right;
+      float: right;
+      font-size: 18px;
+    }
+
+    > .meaning {
+      // leave space on left for lock icon
+      max-width: calc(100% - 50px);
+      margin: auto;
+      @include media($bp-vocab) {
+        max-width: calc(100% - 75px);
+      }
+    }
+
+    > .kanji,
+    > .kana,
+    > .meaning {
+      font-family: $ff-japanese;
+
+      @include media($bp-vocab) {
+        display: block;
+        float: none;
+        text-align: center;
+      }
+    }
+  }
+}

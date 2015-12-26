@@ -1,0 +1,25 @@
+.site-footer {
+  padding-top: $unit-sm;
+  background-color: $black;
+
+  .title {
+    color: $white;
+  }
+
+  .site-logo {
+    > .text {
+      background-color: $pink;
+      color: $black-light;
+    }
+
+    &:hover {
+      color: $black-light;
+      text-decoration: none;
+
+      > .text {
+        background: $purple;
+      }
+    }
+  }
+
+}
