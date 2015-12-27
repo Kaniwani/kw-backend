@@ -1,8 +1,15 @@
 $bp-reviews-1: '<670px', 'landscape';
 $bp-reviews-2: '>=670px';
 
+.review-layout {
+
+  > .review-header {
+    color: $white;
+  }
+
+}
+
 .review-header {
-  color: $white;
   overflow: visible;
   max-height: 0;
 
@@ -20,16 +27,17 @@ $bp-reviews-2: '>=670px';
 
 .review-home {
   float: left;
-  font-size: 1.6rem;
+  font-size: responsive 18px 22px;
 
   .fa {
-    color: $white;
+    color: inherit;
   }
 }
 
 .review-stats__list {
+  @extend %plainlist;
   float: right;
-  font-size: 1.4rem;
+  font-size: responsive 18px 22px;
 }
 
 .review-stats__item {
@@ -49,7 +57,7 @@ $bp-reviews-2: '>=670px';
   //
 }
 
-.review {
+.review-block {
   display: table;
   padding: 0;
   width: 100%;
@@ -79,17 +87,14 @@ $bp-reviews-2: '>=670px';
 
 .review__meaning {
   text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
+  padding: $unit-md $unit-sm $unit-xs;
   display: table-cell;
-  font-size: 4rem;
+  font-size: responsive 30px 50px;
   vertical-align: middle;
-
-  @include media($bp-reviews-2) {
-    font-size: 5rem;
-  }
 }
 
 .review-lower {
-  height: 50vh;
+  height: 49vh;
 
   // @include media((orientation portrait)) {
   //   height: 65vh;
@@ -100,61 +105,39 @@ $bp-reviews-2: '>=670px';
   }
 
   fieldset {
-    margin-top: -25px;
-    padding: 20px;
     position: relative;
-
-    @include media($bp-reviews-2) {
-      margin-top: -40px;
-    }
+    padding: 0;
+    margin: 0;
+    outline: none;
+    border: 1px solid rgba($grey-light, .3);
   }
 
-  .review__question {
-    background-color: #333;
-    color: $white;
-    font-size: 1.4rem;
-    height: 50px;
-    line-height: 50px;
+  .review__response {
+    display: block;
+    width: 100%;
+    outline: none;
+    border: 0;
+    margin: 0;
+    padding: 20px 0;
+    // FIXME: better to have 2-3 set sizes so submit bottom distance can be properly set
+    // unless you use similar calc() to responsive formula.
+    font-size: responsive 30px 40px;
     text-align: center;
-
-    @include media($bp-reviews-2) {
-      font-size: 2rem;
-      height: 80px;
-      line-height: 80px;
-    }
+    box-shadow: inset 0 3px 20px -3px rgba(0,0,0,.3);
   }
 
-  // I don't usually put the tags with the classes, but I needed to overrride the pure css
-  input.review__response {
-    font-size: 1.4rem;
-    height: 40px;
-    line-height: 1.2;
-    margin: 20px 0;
-    text-align: center;
-
-    @include media($bp-reviews-2) {
-      font-size: 2rem;
-      height: 60px;
-    }
-  }
-
-  button.review__submit {
+  .review__submit {
+    position: absolute;
+    // FIXME: better to have 2-3 set sizes so submit bottom distance can be properly set
+    font-size: responsive 20px 30px;
+    bottom: .75em;
+    right: 20px;
+    padding: 0;
+    color: $grey-dark;
+    -webkit-appearance: none;
     background: none;
     border: 0;
     border-radius: 0;
     box-shadow: none;
-    color: #333;
-    font-size: 1.4rem;
-    height: 40px;
-    padding: .5em .6em .5em 1.2em;
-    position: absolute;
-    right: 20px;
-    top: 70px;
-
-    @include media($bp-reviews-2) {
-      font-size: 2rem;
-      height: 60px;
-      top: 100px;
-    }
   }
 }
