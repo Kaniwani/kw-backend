@@ -1,0 +1,40 @@
+.review-header {
+
+  > .inner {
+
+    > .homelink,
+    > .statslist {
+      opacity: .95;
+      margin: $unit-xs $unit-sm;
+    }
+
+    > .statslist {
+      @extend %plainlist;
+      float: right;
+      font-size: responsive 18px 22px;
+
+      > .item {
+        display: inline-block;
+        margin-left: 1em;
+      }
+    }
+
+    > .homelink {
+      display: block;
+      float: left;
+      font-size: responsive 18px 22px;
+      transition: opacity .3s ease-out;
+
+      > .fa {
+        height: auto;
+        color: $white;
+      }
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+  }
+}
+

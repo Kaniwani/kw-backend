@@ -42,11 +42,6 @@
   padding: 0;
 }
 
-%sitebackground {
-  background: $blue-light;
-  background: linear-gradient(to bottom right, $blue-light 33%, $blue 77%);
-}
-
 // an underscore _ denotes a utility class for use in markup
 // it's intentionally ugly to discourage use
 ._visuallyhidden {

@@ -9,49 +9,15 @@
 {% endblock scripts %}
 
 {% block content %}
-<div class="container-full container-fluid">
-    <div class="row"style="height: 70px">
-       <a href="{% url "kw:home" %}" class="home-button col-md-1 col-md-offset-0 col-xs-2 col-xs-offset-2 "><button class="btn btn-primary btn-lg"><i class="glyphicon glyphicon-home"></i></button></a>
-               <h1 id="reviews-left" class="col-xs-2 col-xs-offset-4 col-md-offset-10 col-md-1">1</h1>
-    </div>
 
-    <div class="row" style="height: 130px">
-        <h1 id="meaning" class="text-center hint">Meaning</h1>
-    </div>
-    <div class="row" style="height: 100px">
-        <!--<input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" class="col-md-12 text-center" id="user-answer" placeholder="答え" style="font-size: 44pt"> -->
-        <input type="text" autocapitalize="off" autocorrect="off" spellcheck="false" class="col-sm-12 col-xs-10 text-center" id="user-answer" placeholder="答え" style="height:100%; font-size: 44pt">
-        <button id="check-ans-btn" class=" btn btn-lg btn-primary col-xs-2 visible-xs-inline visible-xs-inline-block" style="height: 100%"><span class="glyphicon glyphicon-chevron-right"></span> </button>
-        <input type="hidden" id="us-id" value="Nothing!">
-    </div>
-    <div class="row">
-        <div class="col-md-6 col-xs-6 col-sm-6">
-            <div class="row">
-                <a href="#"  id="button-reading" class="btn btn-primary disabled btn-lg col-md-12 col-xs-12 col-sm-12 ">Show <strong>P</strong>honetic</a>
-            </div>
-            <div class="row">
-                <div id="details-reading" class="jumbotron">
-                    <h1 id="kana" class="text-center hint">Placeholder!</h1>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-xs-6 col-sm-6">
-            <div class="row">
-                <a href="#" id="button-character" class="btn btn-primary disabled btn-lg col-md-12 col-xs-12 col-sm-12">Show <strong>K</strong>anji</a>
-            </div>
-            <div class="row">
-                <div id="details-character" class="jumbotron">
-                    <h1 id="character" class="text-center hint">Placeholder Kanji</h1>
-                 </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<form>
-<input type="hidden" id="csrf" value="{{ csrf_token }}">
-</form>
+<section class="review-section -fullwidth">
+  {% include 'partials/review-header.html' %}
+  {% include 'partials/review-quiz.html' %}
+</section>
 
+<!-- does this need to be in a form?  -->
+<form class="_visuallyhidden"><input type="hidden" id="csrf" value="{{ csrf_token }}"></form>
 
 <script>
     var vocabulary_list = [
@@ -66,11 +32,11 @@
     ];
     console.log(vocabulary_list);
     var current_vocab;
-    $("#reviews-left").html(vocabulary_list.length)
+    $("#reviewsLeft").html(vocabulary_list.length)
     current_vocab = vocabulary_list.shift();
     console.log(current_vocab.meaning);
-    $("#details-character").hide();
-    $("#details-reading").hide();
+    $("#detailsCharacter").hide();
+    $("#detailsReading").hide();
     $("#meaning").html(current_vocab.meaning);
     $("#us-id").val(current_vocab.user_specific_id);
     $("#kana").html("");
