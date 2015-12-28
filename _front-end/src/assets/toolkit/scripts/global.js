@@ -13,11 +13,10 @@ import vocabToggle from './components/vocab';
 import levels from './components/levels';
 
 $(document).ready(() => {
-  // TODO: remove when/if using modernizr instead
-  $('html').removeClass('no-js').addClass('js');
 
   login.init();
   expandToggle.init();
   vocabToggle.init();
   levels.init();
+
 })

@@ -20,12 +20,12 @@ Once completed successfully. Run gulp as a build tool which will run a local ser
 $ gulp 
 ```
 
-However, *to compile assets for the webapp* ensure you run 
+However, *to compile minified assets for the webapp* ensure you run 
 ```shell
 gulp --prod
-```
+``` 
+after finished with development!!
 
-This will copy images, fonts, css, scripts to `kw_webapp/static/`
 
 ## Documentation
 

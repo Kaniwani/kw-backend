@@ -8,7 +8,7 @@ module.exports = function(fabricatorConfig) {
 	var config = {
 		entry: {
 			'fabricator/scripts/f': fabricatorConfig.src.scripts.fabricator,
-			'toolkit/scripts/toolkit': fabricatorConfig.src.scripts.toolkit
+			'scripts/global': fabricatorConfig.src.scripts.toolkit
 		},
 		output: {
 			path: path.resolve(__dirname, fabricatorConfig.dest, 'assets'),
@@ -29,6 +29,7 @@ module.exports = function(fabricatorConfig) {
 
 	if (!fabricatorConfig.dev) {
 		config.plugins.push(
+			new webpack.optimize.DedupePlugin(),
 			new webpack.optimize.UglifyJsPlugin()
 		);
 	}

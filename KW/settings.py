@@ -257,6 +257,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = "/opt/venvs/KaniWaniEnv/KW/kw_webapp/static"
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(BASE_DIR, "../_front-end/dist/assets/toolkit")
+)
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
 )

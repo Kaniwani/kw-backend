@@ -27,18 +27,17 @@ var config = {
 	src: {
 		scripts: {
 			fabricator: './src/assets/fabricator/scripts/fabricator.js',
-			toolkit: './src/assets/toolkit/scripts/toolkit.js'
+			toolkit: './src/assets/toolkit/scripts/global.js'
 		},
 		styles: {
 			fabricator: 'src/assets/fabricator/styles/fabricator.scss',
-			toolkit: 'src/assets/toolkit/styles/toolkit.scss'
+			toolkit: 'src/assets/toolkit/styles/main.scss'
 		},
 		images: 'src/assets/toolkit/images/**/*',
 		fonts: 'src/assets/toolkit/fonts/**/*',
-		views: 'src/toolkit/views/*.html'
+		views: 'src/views/*.html'
 	},
-	dest: 'dist',
-	static: '../kw_webapp/static/temp'
+	dest: 'dist'
 };
 
 
@@ -75,9 +74,7 @@ gulp.task('styles:toolkit', function () {
 		.pipe(prefix('last 1 version'))
 		.pipe(gulpif(config.prod, csso()))
 		.pipe(gulpif(!config.prod, sourcemaps.write()))
-		.pipe(gulp.dest(config.dest + '/assets/toolkit/styles'))
-		.pipe(gulpif(config.prod, rename('styles.min.css')))
-		.pipe(gulpif(config.prod, gulp.dest(config.static + '/styles')))
+		.pipe(gulp.dest(config.dest + '/assets/styles'))
 		.pipe(gulpif(!config.prod, reload({stream:true})));
 });
 
@@ -96,12 +93,6 @@ gulp.task('scripts', function (done) {
 				gutil.log(gutil.colors.red(error));
 			});
 		}
-		if (config.prod) {
-			// copy to webapp/static
-			gulp.src(config.dest + '/assets/toolkit/scripts/toolkit.js')
-   			  .pipe(rename('scripts.min.js'))
-	  			.pipe(gulp.dest(config.static + '/scripts'));
-		}
 		done();
 	});
 });
@@ -110,17 +101,15 @@ gulp.task('scripts', function (done) {
 // fonts
 gulp.task('fonts', function () {
 	return gulp.src(config.src.fonts)
-		.pipe(gulp.dest(config.dest + '/assets/toolkit/fonts'))
-		.pipe(gulpif(config.prod, gulp.dest(config.static + '/fonts')));
+		.pipe(gulp.dest(config.dest + '/assets/fonts'));
 });
 
 
 // images
 gulp.task('images', function () {
 	return gulp.src(config.src.images)
-		.pipe(imagemin())
-		.pipe(gulp.dest(config.dest + '/assets/toolkit/images'))
-		.pipe(gulpif(config.prod, gulp.dest(config.static + '/images')));
+		.pipe(gulpif(gulp.env.prod, imagemin()))
+		.pipe(gulp.dest(config.dest + '/assets/images'));
 });
 
 // assemble
