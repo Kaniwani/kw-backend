@@ -1,19 +1,41 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google" content="notranslate">
 
-    <meta name="viewport" content="width=device-width, user-scalable=no">
-    <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
-    <link rel="stylesheet" href="{% static "css/styles.css" %}">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="{% static "js/bootstrap.min.js"%}"></script>
-    {% block scripts %} {% endblock scripts %}
+  <title>{% block title %}{% endblock title %}</title>
+
+<!-- old stuff
+  <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+  <link rel="stylesheet" href="{% static "css/styles.css" %}">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  <script src="{% static "js/bootstrap.min.js"%}"></script>
+-->
+
+  <link rel="stylesheet" href="{% static "styles/main.css" %}">
+
+  <!-- google fonts -->
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu:700|Open+Sans:300,700,400'
+        rel='stylesheet' type='text/css'>
+
+  <!-- favicons -->
+  <link href="{% static "images/favicon/favicon.ico" %}" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+  <link href="{% static "images/favicon/favicon-128.png" %}" rel="shortcut icon" sizes="128x128" type="image/png" />
+  <link href="{% static "images/favicon/favicon-128.png" %}" rel="apple-touch-icon" sizes="128x128" type="image/png" />
+  <link href="{% static "images/favicon/favicon-128.png" %}" rel="apple-touch-icon-precomposed" sizes="128x128" type="image/png" />
 
 </head>
+<body>
 
-{% block content %}{% endblock content %}
+  {% block content %}{% endblock content %}
 
+  <script src="{% static "scripts/global.js" %}"></script>
+  <!-- NOTE: this used to be in the head and would include css -->
+  <!-- {% block scripts %} {% endblock scripts %} -->
+
+</body>
 </html>

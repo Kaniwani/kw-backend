@@ -108,7 +108,7 @@ gulp.task('fonts', function () {
 // images
 gulp.task('images', function () {
 	return gulp.src(config.src.images)
-		.pipe(gulpif(gulp.env.prod, imagemin()))
+		.pipe(gulpif(config.prod, imagemin()))
 		.pipe(gulp.dest(config.dest + '/assets/images'));
 });
 
