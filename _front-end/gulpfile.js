@@ -37,7 +37,8 @@ var config = {
 		fonts: 'src/assets/toolkit/fonts/**/*',
 		views: 'src/views/*.html'
 	},
-	dest: 'dist'
+	dest: 'dist',
+	kwstatic: '../kw_webapp/static/'
 };
 
 
@@ -183,6 +184,11 @@ gulp.task('default', ['clean'], function () {
 
 	// run build
 	runSequence(tasks, function () {
+		if (config.prod) {
+			gulp.src(config.dest + '/assets/**/*')
+			.pipe(gulp.dest(config.kwstatic));
+		}
+
 		if (!config.prod) {
 			gulp.start('serve');
 		}
