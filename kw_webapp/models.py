@@ -34,8 +34,8 @@ class Profile(models.Model):
     api_valid = models.BooleanField(default=False)
     gravatar = models.CharField(max_length=255)
     about = models.CharField(max_length=255, default="")
-    website = models.CharField(max_length=255, default="")
-    twitter = models.CharField(max_length=255, default="@Tadgh11")
+    website = models.CharField(max_length=255, default="N/A")
+    twitter = models.CharField(max_length=255, default="N/A")
     topics_count = models.PositiveIntegerField(default=0)
     posts_count = models.PositiveIntegerField(default=0)
     level = models.PositiveIntegerField(null=True, validators=[
@@ -47,7 +47,7 @@ class Profile(models.Model):
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')
         return x
-    
+
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
 

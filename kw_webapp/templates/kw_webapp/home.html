@@ -1,14 +1,16 @@
 {% extends "kw_webapp/logged_in.html" %}
 {% load staticfiles %}
-{% load humanize %}
-
-{% block scripts %}
-{{ block.super }}
-    <script src="{% static "js/home.js"%}"></script>
-{% endblock %}
 
 {% block content %}
-{{ block.super }}
+  {{ block.super }}
+
+  {% include 'partials/user.html' %}
+  {% include 'partials/announcements.html' %}
+
+{% endblock %}
+
+{% comment 'old template' %}
+
 <div class="container-fluid">
 
     <div class="col-md-8 col-md-offset-2 col-lg-4 col-lg-offset-4">
@@ -57,4 +59,5 @@
         </div>
     </div>
 </div>
-{% endblock %}
+
+{% endcomment %}

@@ -1,5 +1,4 @@
 {% extends "kw_webapp/logged_in.html" %}
-{% load staticfiles %}
 {% block content %}
 {{ block.super }}
 <form class="_visuallyhidden"><input type="hidden" id="csrf" value="{{ csrf_token }}"></input></form>
