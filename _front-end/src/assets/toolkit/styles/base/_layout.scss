@@ -19,10 +19,9 @@ body {
 
 // matches .whatever-section, .something-section
 [class*="-section"] {
-  margin-bottom: $unit-md;
-
   &:not(.-fullwidth) {
     @include container($site-max-width);
+    margin-bottom: $unit-md;
   }
 
   > .inner {

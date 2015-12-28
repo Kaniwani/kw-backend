@@ -1,4 +1,5 @@
 .floating-icons {
+  @extend %plainlist;
   position: relative;
   overflow: hidden;
   width: 100%;

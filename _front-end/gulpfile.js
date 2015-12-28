@@ -185,8 +185,9 @@ gulp.task('default', ['clean'], function () {
 	// run build
 	runSequence(tasks, function () {
 		if (config.prod) {
-			gulp.src(config.dest + '/assets/**/*')
-			.pipe(gulp.dest(config.kwstatic));
+			// copy assets to webapp static folder for django
+			gulp.src([config.dest + '/assets/**/*',  '!' + config.dest + '/assets/fabricator{,/**}'])
+	  			.pipe(gulp.dest(config.kwstatic));
 		}
 
 		if (!config.prod) {
