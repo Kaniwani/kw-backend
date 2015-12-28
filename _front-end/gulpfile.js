@@ -37,7 +37,8 @@ var config = {
 		fonts: 'src/assets/toolkit/fonts/**/*',
 		views: 'src/toolkit/views/*.html'
 	},
-	dest: 'dist'
+	dest: 'dist',
+	static: '../kw_webapp/static/temp'
 };
 
 
@@ -75,6 +76,8 @@ gulp.task('styles:toolkit', function () {
 		.pipe(gulpif(config.prod, csso()))
 		.pipe(gulpif(!config.prod, sourcemaps.write()))
 		.pipe(gulp.dest(config.dest + '/assets/toolkit/styles'))
+		.pipe(gulpif(config.prod, rename('styles.min.css')))
+		.pipe(gulpif(config.prod, gulp.dest(config.static + '/styles')))
 		.pipe(gulpif(!config.prod, reload({stream:true})));
 });
 
@@ -93,6 +96,12 @@ gulp.task('scripts', function (done) {
 				gutil.log(gutil.colors.red(error));
 			});
 		}
+		if (config.prod) {
+			// copy to webapp/static
+			gulp.src(config.dest + '/assets/toolkit/scripts/toolkit.js')
+   			  .pipe(rename('scripts.min.js'))
+	  			.pipe(gulp.dest(config.static + '/scripts'));
+		}
 		done();
 	});
 });
@@ -101,28 +110,18 @@ gulp.task('scripts', function (done) {
 // fonts
 gulp.task('fonts', function () {
 	return gulp.src(config.src.fonts)
-		.pipe(gulp.dest(config.dest + '/assets/toolkit/fonts'));
+		.pipe(gulp.dest(config.dest + '/assets/toolkit/fonts'))
+		.pipe(gulpif(config.prod, gulp.dest(config.static + '/fonts')));
 });
 
 
 // images
-gulp.task('images', ['favicon'], function () {
+gulp.task('images', function () {
 	return gulp.src(config.src.images)
 		.pipe(imagemin())
-		.pipe(gulp.dest(config.dest + '/assets/toolkit/images'));
+		.pipe(gulp.dest(config.dest + '/assets/toolkit/images'))
+		.pipe(gulpif(config.prod, gulp.dest(config.static + '/images')));
 });
-
-gulp.task('favicon', function () {
-	return gulp.src('./src/favicon.ico')
-		.pipe(gulp.dest(config.dest));
-});
-
-
-gulp.task('favicon', function () {
-	return gulp.src('./src/favicon.ico')
-		.pipe(gulp.dest(config.dest));
-});
-
 
 // assemble
 gulp.task('assemble', function (done) {

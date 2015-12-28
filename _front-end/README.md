@@ -20,6 +20,13 @@ Once completed successfully. Run gulp as a build tool which will run a local ser
 $ gulp 
 ```
 
+However, *to compile assets for the webapp* ensure you run 
+```shell
+gulp --prod
+```
+
+This will copy images, fonts, css, scripts to `kw_webapp/static/`
+
 ## Documentation
 
 #### [Read the docs →](http://fbrctr.github.io/docs)

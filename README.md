@@ -46,4 +46,6 @@ Since we're using Node, life is wonderful. Here are all the tools you need.
 
 This will start a server at 127.0.0.1:3000 & open your browser to the styleguide.
 
+However, *to compile assets for the webapp* ensure you run `gulp --prod` after finished with development!! This will copy images, fonts, css, scripts to `kw_webapp/static/`
+
 More detailed information in `/_front-end/README.MD`
