@@ -9,12 +9,12 @@
 
   <title>{% block title %}{% endblock title %}</title>
 
-<!-- old stuff
-  <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
-  <link rel="stylesheet" href="{% static "css/styles.css" %}">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="{% static "js/bootstrap.min.js"%}"></script>
--->
+  {% comment "old stuff" %}
+    <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/styles.css" %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="{% static "js/bootstrap.min.js"%}"></script>
+  {% endcomment %}
 
   <link rel="stylesheet" href="{% static "styles/main.css" %}">
 
@@ -34,8 +34,10 @@
   {% block content %}{% endblock content %}
 
   <script src="{% static "scripts/global.js" %}"></script>
-  <!-- NOTE: this used to be in the head and would include css -->
-  <!-- {% block scripts %} {% endblock scripts %} -->
 
+  {% comment "old stuff" %}
+  <!-- NOTE: this used to be in the head and would include css -->
+  {% block scripts %} {% endblock scripts %}
+  {% endcomment %}
 </body>
 </html>

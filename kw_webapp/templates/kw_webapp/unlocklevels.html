@@ -1,15 +1,49 @@
 {% extends "kw_webapp/logged_in.html" %}
 {% load staticfiles %}
-
-{% block scripts %}
-{{ block.super }}
-<script src="{% static "js/unlocklevels.js" %}"></script>
-<script src="{% static "js/notify.min.js" %}"></script>
-<link rel="stylesheet" href="{% static "css/unlocklevels.css" %}">
-{% endblock %}
-
 {% block content %}
 {{ block.super }}
+<form class="_visuallyhidden"><input type="hidden" id="csrf" value="{{ csrf_token }}"></input></form>
+
+<section class="levels-section">
+  <div class="inner">
+    <h1 class="section-heading">
+      Vocabulary<span class="breadcrumb">Levels</span>
+    </h1>
+
+    <ul class="level-list">
+      {% for level in levels %}
+        {% if level.0 > user.profile.level %}
+          <li class="level-card -locked" data-level-id="{{ level.0 }}">
+            <a href="#" class="link" title="Locked">
+              <span class="levelnum">{{ level.0 }}</span>
+              <span class="fa fa-lock" title="Locked"</span>
+            </a>
+          </li>
+        {% elif level.1 == True %}
+          <li class="level-card" data-level-id="{{ level.0 }}">
+            <a href="{% url "kw:vocabulary" %}{{ level.0 }}" class="link" title="Unlocked">
+              <span class="levelnum">{{ level.0 }}</span>
+              <span class="fa fa-unlock" title="Unlocked"</span>
+            </a>
+          </li>
+        {% elif level.1 == False %}
+        <li class="level-card -locked -unlockable" data-level-id="{{ level.0 }}">
+            <a href="{% url "kw:vocabulary" %}{{ level.0 }}" class="link" title="Unlockable">
+              <span class="levelnum">{{ level.0 }}</span>
+              <span class="fa fa-unlock-alt" title="Unlockable"</span>
+            </a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{% endblock %}
+
+{% comment "old template" %}
+
+
 <div class="container">
     <div class="col-md-6 col-md-offset-3">
         <ul class="list-group">
@@ -35,4 +69,4 @@
     <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
 </form>
 
-{% endblock %}
+{% endcomment %}

@@ -35,7 +35,8 @@ $bp-level-card-2: '>=680px';
       padding: 5px;
 
       &.fa-lock {
-        color: $grey-dark;
+        color: $black-light;
+        cursor: not-allowed;
       }
     }
   }
