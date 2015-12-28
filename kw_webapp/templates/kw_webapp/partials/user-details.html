@@ -1,0 +1,43 @@
+{% comment '@tadgh' %}
+  TODO: Can you add user.title & user.creation_date (normalised to a real date) to models.py/backend please?
+{% endcomment %}
+
+<div class="user-details">
+
+  <div class="wkinfo">
+    <h3 class="title">Crabigator Apprentice Info</h3>
+    <ul class="list">
+      <li class="item">
+        <strong><span class="username">{{ user.username }}</span></strong> of <strong>Sect {{ user.title }}</strong>
+      </li>
+      <li class="item">
+        <strong>Level <span class="level">{{ user.profile.level }}</span></strong>
+        {% if user.profile.level > 59 %} Master {% else %} Apprentice {% endif %}
+      </li>
+      <li class="item">
+        Scribed <strong><span class="topics-count">{{ user.profile.topics_count }}</span> topics</strong> &amp; <strong><span class="posts-count">{{ user.profile.posts_count }}</span> posts</strong>
+      </li>
+      <li class="item">
+        Serving the Crabigator since <strong><span class="join-date"> {{ user.join_date }}</span></strong>
+      </li>
+    </ul>
+  </div>
+
+  <div class="userinfo">
+    <h3 class="title">About {{ user.username }}</h3>
+      <p class="text">{{ user.about }}</p>
+    <ul class="list">
+      <li class="item">
+        <a href="//www.twitter.com/{{ user.twitter }}" class="link">
+          <span class="fa fa-twitter"></span> {{ user.twitter }}
+        </a>
+      </li>
+      <li class="item">
+        <a href="{{ user.website }}" class="link">
+        <span class="fa fa-link"></span> {{ user.website }}
+        </a>
+      </li>
+    </ul>
+  </div>
+
+</div>
