@@ -53,6 +53,7 @@ $bp-user-details: '>=650px';
 
 
   .userinfo {
+    position: relative;
     padding: $unit-md $unit-sm;
     padding-top: 0;
 
@@ -63,31 +64,47 @@ $bp-user-details: '>=650px';
 
     @include media($bp-lg) {
       padding: $unit-md;
+      // .list is positioned absolutely at bottom, this allows space for them
+      padding-bottom: $unit-md * 2;
     }
 
-    > p {
+    > .text {
       margin: 0;
+
+      @include media($bp-lg) {
+        max-width: 600px;
+      }
     }
 
     > .list {
       @extend %plainlist;
       clear: fix;
-      margin-top: 10px;
+
+      @include media($bp-lg) {
+        position: absolute;
+        margin-top: 0;
+        bottom: 25px;
+        left: 25px;
+      }
+
       > .item {
         display: inline-block;
+        margin-top: 10px;
         margin-right: 15px;
       }
     }
 
     > .list > .item > .link {
-      color: $white;
+      color: $grey-light;
+
       &:hover {
-        color: $grey-light;
+        color: $white;
       }
 
       .fa {
+        color: $white;
         display: inline-block;
-        margin-right: 6px;
+        margin-right: 3px;
         vertical-align: middle;
       }
     }

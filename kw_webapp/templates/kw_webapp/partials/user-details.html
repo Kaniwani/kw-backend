@@ -8,7 +8,7 @@
     <h3 class="title">Crabigator Apprentice Info</h3>
     <ul class="list">
       <li class="item">
-        <strong><span class="username">{{ user.username }}</span></strong> of <strong>Sect {{ user.title }}</strong>
+        <strong><span class="username">{{ user.username }}</span></strong> of <strong>Sect {{ user.profile.title }}</strong>
       </li>
       <li class="item">
         <strong>Level <span class="level">{{ user.profile.level }}</span></strong>
@@ -24,7 +24,7 @@
   </div>
 
   <div class="userinfo">
-    <h3 class="title">About {{ user.profile.username }}</h3>
+    <h3 class="title">About {{ user.username }}</h3>
       <p class="text">{{ user.profile.about }}</p>
     <ul class="list">
       <li class="item">
