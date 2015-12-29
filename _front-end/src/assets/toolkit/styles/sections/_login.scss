@@ -21,26 +21,36 @@
 
     > .title {
       position: relative;
+      margin-top: 0;
+      line-height: 1.2;
+      opacity: .9;
       z-index: 2;
       color: $white;
-      font-size: 40px;
-      transition-duration: 1s;
-      transition-timing-function: ease-in-out;
+      font-size: responsive 40px 60px;
+      transition-duration: 8s;
+      transition-timing-function: ease-in;
       font-weight: 200;
     }
 
+    > .login-form {
+      transition: opacity 1s ease;
+    }
+
     &.-pending {
+      > .login-form {
+        opacity: 0;
+      }
       > .title {
-        transform: translateY(185px);
+        transform: translateY(100vh);
       }
     }
   }
 
   > .link.-register {
     position: absolute;
-    padding: 12px 18px;
     top: 0;
     right: 0;
+    padding: 12px 18px;
     font-size: 16px;
     font-weight: 400;
     text-decoration: none;

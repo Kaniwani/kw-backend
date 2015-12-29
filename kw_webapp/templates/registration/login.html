@@ -1,14 +1,43 @@
 {% extends "kw_webapp/base.html" %}
-{% load staticfiles %}
 {% load crispy_forms_tags %}
 
-{% block scripts %}
+{% block content %}
+
+<div class="login-section -fullwidth">
+  <a href="{% url "kw:register" %}" class="link -register">Not a member? Register here</a>
+  <div class="container">
+    <h1 class="title">Welcome</h1>
+
+    {% crispy form %}
+
+  </div>
+
+  <ul class="floating-icons" aria-hidden="true" role="presentation">
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+    <li class="icon"><span class="icon-turtle"></span></li>
+  </ul>
+
+</div>
+
 {% endblock %}
 
-{% block content %}
-<div class="well well-lg"  id="formdiv">
-  <h1 class="text-center">Login</h1>
-  {% crispy form %}
-  <a href="{% url "kw:register" %}" class="pull-right">Register</a>
-</div>
-{% endblock %}
+
+{% comment 'old template' %}
+  <div class="well well-lg"  id="formdiv">
+    <h1 class="text-center">Login</h1>
+    {% crispy form %}
+    <a href="{% url "kw:register" %}" class="pull-right">Register</a>
+  </div>
+{% endcomment %}
+

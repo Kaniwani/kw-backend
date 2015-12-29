@@ -23,7 +23,7 @@
       width: 66px;
       height: 66px;
 
-      animation-name: rotate-left;
+      animation-name: float-up-right;
     }
 
     &:nth-child(2){
@@ -33,7 +33,7 @@
       opacity: .84;
 
       animation-name: rotate-right;
-      animation-delay: 1s;
+      animation-delay: 2s;
       animation-duration: 21s;
     }
 
@@ -56,6 +56,7 @@
 
       animation-name: float-up-left;
       animation-duration: 11s;
+      animation-delay: 5s;
     }
 
     &:nth-child(5){
@@ -66,6 +67,8 @@
 
       animation-name: float-up-right;
       animation-timing-function: ease-in-out;
+      animation-delay: 6s;
+
     }
 
     &:nth-child(6){
@@ -84,7 +87,7 @@
       height: 114px;
       opacity: .55;
 
-      animation-name: rotate-left;
+      animation-name: rotate-right;
       animation-duration: 47s;
     }
 
@@ -94,7 +97,7 @@
       height: 20px;
       opacity: .8;
 
-      animation-name: rotate-right;
+      animation-name: float-up-left;
       animation-delay: 4s;
       animation-timing-function: linear;
     }
@@ -134,15 +137,16 @@
       left: 69%;
       width: 86px;
       height: 86px;
-      opacity: .7;
+      opacity: .75;
 
       animation-name: float-up-right;
       animation-timing-function: ease-in;
-      animation-duration: 34s;
+      animation-duration: 24s;
     }
 
     &:nth-child(13){
       left: calc(50% - 140px);
+      bottom: -220px;
       width: 280px;
       height: 280px;
       opacity: .1;

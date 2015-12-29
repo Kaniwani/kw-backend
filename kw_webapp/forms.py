@@ -20,8 +20,8 @@ class UserLoginForm(AuthenticationForm):
         self.fields['password'].widget.attrs['placeholder'] = "Password"
         self.fields['password'].label = False
         self.helper = FormHelper()
-        self.helper.add_input(Submit("submit", "Sign In", css_class='pure-button pure-button-primary'))
-        self.helper.form_class = 'login pure-form pure-form-stacked'
+        self.helper.add_input(Submit("submit", "Sign In", css_class='button -submit'))
+        self.helper.form_class = 'login-form'
         self.helper.form_method = 'post'
         self.helper.form_action = ''
 

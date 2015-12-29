@@ -1,15 +1,15 @@
 import $ from 'jquery';
 
 const api = {
-  init() {
-    $(".login-form > .button.-submit").click(function(event){
-      event.preventDefault();
 
-      $('.login-form').fadeOut(500);
-      $('.login > .container').addClass('-pending');
-      setTimeout(() => $('login-form').submit(), 600);
+  init() {
+    $(".login-form .button.-submit").click(function(event){
+      $(this).val('Signing in...');
+      // give user impression of things happening
+      setTimeout(() => $(this).closest('.container').addClass('-pending'), 750);
     });
   }
+
 };
 
 export default api;
