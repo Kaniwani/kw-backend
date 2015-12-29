@@ -1,14 +1,19 @@
+---
+notes: |
+  `data-en` and `data-ja` are for use in mouseover tooltip (not yet implemented!)
+---
+
 <ul>
   <li class="vocabulary" data-en="Promise" data-ja="やくそく">
-    <a lang="ja" href="/vocabulary/約束">約束</a>
+    <a lang="ja" href="{% url "kw:vocabulary" %}{{ reading.level }}">約束</a>
   </li>
   <li class="vocabulary" data-en="Reservation" data-ja="よやく">
-    <a lang="ja" href="/vocabulary/予約">予約</a>
+    <a lang="ja" href="{% url "kw:vocabulary" %}{{ reading.level }}">予約</a>
   </li>
   <li class="vocabulary" data-en="Promise" data-ja="やく">
-    <a lang="ja" href="/vocabulary/約">約</a>
+    <a lang="ja" href="{% url "kw:vocabulary" %}{{ reading.level }}">約</a>
   </li>
   <li class="vocabulary" data-en="To Promise" data-ja="やくする">
-    <a lang="ja" href="/vocabulary/約する">約する</a>
+    <a lang="ja" href="{% url "kw:vocabulary" %}{{ reading.level }}">約する</a>
   </li>
 </ul>
