@@ -5,7 +5,7 @@ import requests
 from KW.celery import app as celery_app
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Vocabulary, Profile
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.utils import timezone
 
 logger = logging.getLogger('kw.tasks')
@@ -174,6 +174,7 @@ def sync_user_profile_with_wk(user):
             user_info = json_data["user_information"]
             user.profile.level = user_info["level"]
             user.profile.title = user_info["title"]
+            user.profile.join_date = datetime.fromtimestamp(user_info["creation_date"])
             user.profile.topics_count = user_info["topics_count"]
             user.profile.posts_count = user_info["posts_count"]
             user.profile.about = user_info["about"]
@@ -183,6 +184,7 @@ def sync_user_profile_with_wk(user):
             user.profile.gravatar = user_info["gravatar"]
             user.profile.api_valid = True
             user.profile.save()
+
             logger.info("Synced {}'s Profile.".format(user.username))
             return True
         except KeyError as e:
