@@ -1,5 +1,5 @@
 {% comment '@tadgh' %}
-  TODO: Can you add user.title & user.creation_date (normalised to a real date) to models.py/backend please?
+  TODO: Can you add user.title & user.join_date (normalised to a real date) to models.py/backend please?
 {% endcomment %}
 
 <div class="user-details">
@@ -18,23 +18,23 @@
         Scribed <strong><span class="topics-count">{{ user.profile.topics_count }}</span> topics</strong> &amp; <strong><span class="posts-count">{{ user.profile.posts_count }}</span> posts</strong>
       </li>
       <li class="item">
-        Serving the Crabigator since <strong><span class="join-date"> {{ user.join_date }}</span></strong>
+        Serving the Crabigator since <strong><span class="join-date"> {{ user.profile.join_date }}</span></strong>
       </li>
     </ul>
   </div>
 
   <div class="userinfo">
-    <h3 class="title">About {{ user.username }}</h3>
-      <p class="text">{{ user.about }}</p>
+    <h3 class="title">About {{ user.profile.username }}</h3>
+      <p class="text">{{ user.profile.about }}</p>
     <ul class="list">
       <li class="item">
         <a href="//www.twitter.com/{{ user.twitter }}" class="link">
-          <span class="fa fa-twitter"></span> {{ user.twitter }}
+          <span class="fa fa-twitter"></span> {{ user.profile.twitter }}
         </a>
       </li>
       <li class="item">
         <a href="{{ user.website }}" class="link">
-        <span class="fa fa-link"></span> {{ user.website }}
+        <span class="fa fa-link"></span> {{ user.profile.website }}
         </a>
       </li>
     </ul>
