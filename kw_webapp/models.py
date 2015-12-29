@@ -38,6 +38,8 @@ class Profile(models.Model):
     twitter = models.CharField(max_length=255, default="N/A")
     topics_count = models.PositiveIntegerField(default=0)
     posts_count = models.PositiveIntegerField(default=0)
+    title = models.CharField(max_length=255, default="Turtles")
+    join_date = models.DateTimeField(default=timezone.now())
     level = models.PositiveIntegerField(null=True, validators=[
         MinValueValidator(1),
         MaxValueValidator(60),
