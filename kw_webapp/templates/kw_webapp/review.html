@@ -10,14 +10,12 @@
 
 {% block content %}
 
+<input type="hidden" id="csrf" value="{{ csrf_token }}">
 
 <section class="review-section -fullwidth">
   {% include 'partials/review-header.html' %}
   {% include 'partials/review-quiz.html' %}
 </section>
-
-<!-- does this need to be in a form?  -->
-<form class="_visuallyhidden"><input type="hidden" id="csrf" value="{{ csrf_token }}"></form>
 
 <script>
     var vocabulary_list = [

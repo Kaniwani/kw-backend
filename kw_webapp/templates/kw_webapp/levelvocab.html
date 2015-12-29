@@ -1,17 +1,90 @@
 {% extends "kw_webapp/logged_in.html" %}
 {% load staticfiles %}
 {% block scripts %}
-    {{ block.super }}
-    <script src="{% static "js/levelvocab.js" %}"></script>
+  {{ block.super }}
+  <script src="{% static "js/levelvocab.js" %}"></script>
 {% endblock %}
-
-{% block title %}
-  <title>Vocabulary</title>
-{% endblock %}
-
 
 {% block content %}
-{{ block.super }}
+  {{ block.super }}
+
+<input type="hidden" id="csrf" value="{{ csrf_token }}">
+
+<section class="vocab-section">
+  <div class="inner">
+    <h1 class="section-heading">
+      <a href="{% url "kw:vocabulary" %}">Vocabulary</a><span class="breadcrumb">Level {{ selected_level }}</span>
+    </h1>
+
+    <ul class="vocab-list">
+      {% for review in reviews %}
+        {% if review.hidden == False %}
+          <li class="vocab-card">
+        {% else %}
+          <li class="vocab-card -locked -unlockable">
+        {% endif %}
+
+        <div class="vocab-base">
+          <!-- TODO: maybe wrap reading in a styled div/class to allow for multiple entries vertically stacked -->
+          <!-- TODO: prefer only multiple kana entries but only ONE kanji / meaning -->
+          {% for reading in review.vocabulary.reading_set.all %}
+          <div class="readingset">
+            <span class="kanji">{{ reading.character }}</span>
+            <span class="kana">{{ reading.kana }}</span>
+            <span class="meaning">{{ reading.vocabulary.meaning }}</span>
+          </div>
+          {% endfor %}
+
+          {% if review.hidden == False %}
+            <span class="fa fa-unlock" title="Relock" data-pk="{{ review.id }}"></span>
+          {% else %}
+            <span class="fa fa-lock" title="Unlockable" data-pk="{{ review.id }}"></span>
+          {% endif %}
+
+        </div>
+
+        <div class="vocab-extra">
+          {% if review.streak > 8 %}
+            <span class="icon icon-burned" title="KaniWani Level - Burned"></span>
+          {% elif review.streak > 7 %}
+              <span class="icon icon-enlightened" title="KaniWani Level - Enlightened"></span>
+          {% elif review.streak > 5 %}
+            <span class="icon icon-guru" title="KaniWani Level - Guru"></span>
+          {% elif review.streak > 2 %}
+            <span class="icon icon-master" title="KaniWani Level - Master"></span>
+          {% else %}
+            <span class="icon icon-apprentice" title="KaniWani Level - Apprentice"></span>
+          {% endif %}
+
+          <div class="synonyms">
+            <span class="text">User synonyms:</span>
+
+            {% comment 'possible approach using separate contentEditable <li>s ' %}
+              http://codepen.io/chriscoyier/pen/LVEdJg
+            {% endcomment %}
+
+            <ul class="list">
+              <li class="item">Implementing</li>
+              <li class="item">Soon but not yet!</li>
+            </ul>
+          </div>
+          <a href="#" class="extratoggle fa fa-ellipsis-v"></a>
+        </div>
+      </li>
+    {% endfor %}
+    </ul>
+
+  </div>
+</section>
+
+{% endblock %}
+
+
+
+{% comment 'old template' %}
+
+<input type="hidden" id="csrf" value="{{ csrf_token }}">
+
 <main role="main">
   <header>
     <h1><a href="{% url "kw:vocabulary" %}">Vocabulary</a> > <span>Level &lt;{{ selected_level }}&gt;</span></h1>
@@ -70,85 +143,6 @@
         </li>
       {% endfor %}
     </ul>
+  </main>
 
-  <h3>For demo purposes:</h3>
-  <ul class="vocab__list">
-    <li class="vocab__item vocab__item--locked">
-      <div class="vocab-upper">
-        <div class="vocab__reading">
-          <span class="vocab__kanji">お誕生日おめでとう</span>
-          <span class="vocab__kana">おたんじょうびおめでとう</span>
-          <span class="vocab__meaning">Happy Birthday</span>
-        </div>
-        <a href="#" class="fa fa-unlock-alt" title="Unlockable"><span class="visually-hidden">Unlockable</span></a>
-      </div>
-      <div class="vocab-lower">
-        <span class="icon icon-enlighten"></span>
-
-        <div class="vocab-synonyms">
-          User synonyms: 
-          <ul class="vocab-synonyms__list">
-            <li class="vocab-synonyms__item" contentEditable="true">Birth anniversary</li>
-            <li class="vocab-synonyms__item" contentEditable="true">That day of the year</li>
-          </ul>
-        </div>
-        <a href="#" class="vocab-lower__toggle fa fa-ellipsis-v"></a>
-      </div>
-    </li>
-    <li class="vocab__item vocab__item--active">
-      <div class="vocab-upper">
-        <div class="vocab__reading">
-          <span class="vocab__kanji">お誕生日おめでとう</span>
-          <span class="vocab__kana">おたんじょうびおめでとう</span>
-          <span class="vocab__meaning">Happy Birthday</span>
-        </div>
-        <a href="#" class="fa fa-unlock" title="Unlocked"><span class="visually-hidden">Unlocked</span></a>
-      </div>
-      <div class="vocab-lower">
-        <span class="icon icon-enlighten"></span>
-
-        <div class="vocab-synonyms">
-          User synonyms: 
-          <ul class="vocab-synonyms__list">
-            <li class="vocab-synonyms__item" contentEditable="true">Birth anniversary</li>
-            <li class="vocab-synonyms__item" contentEditable="true">That day of the year</li>
-          </ul>
-        </div>
-        <a href="#" class="vocab-lower__toggle fa fa-ellipsis-v"></a>
-      </div>
-    </li>
-    <li class="vocab__item vocab__item--locked">
-      <div class="vocab-upper">
-        <div class="vocab__reading">
-          <span class="vocab__kanji">お誕生日おめでとう</span>
-          <span class="vocab__kana">おたんじょうびおめでとう</span>
-          <span class="vocab__meaning">Happy Birthday</span>
-        </div>
-        <a href="#" class="fa fa-lock" title="Locked"><span class="visually-hidden">Locked</span></a>
-      </div>
-      <div class="vocab-lower">
-        <span class="icon icon-burned"></span>
-
-        <div class="vocab-synonyms">
-          User synonyms: 
-          <ul class="vocab-synonyms__list">
-            <li class="vocab-synonyms__item" contentEditable="true">Birth anniversary</li>
-            <li class="vocab-synonyms__item" contentEditable="true">That day of the year</li>
-          </ul>
-        </div>
-        <a href="#" class="vocab-lower__toggle fa fa-ellipsis-v"></a>
-      </div>
-    </li>
-  </ul>
-</main>
-
-<form>
-<input type="hidden" id="csrf" value="{{ csrf_token }}">
-</form>
-{% endblock %}
-
-{% block footer %}
-{{ block.super }}
-<footer class="footer">
-</footer>
-{% endblock %}
+  {% endcomment %}

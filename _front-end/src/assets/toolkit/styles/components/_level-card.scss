@@ -8,7 +8,7 @@ $bp-level-card-2: '>=680px';
 
   > .link {
     transition: background-color .33s ease;
-    background: $purple;
+    background-color: $purple-light;
     border-radius: 3px;
     color: #fff;
     display: block;
@@ -17,7 +17,7 @@ $bp-level-card-2: '>=680px';
 
     &:hover {
       color: #fff;
-      background: $purple;
+      background-color: $purple-light;
     }
 
     > .levelnum {
@@ -41,15 +41,8 @@ $bp-level-card-2: '>=680px';
     }
   }
 
-  &.-unlockable > .link:hover {
-    background-color: darken($purple, 7%);
-
-    .fa-unlock-alt {
-      animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
-    }
-  }
-
   &.-locked > .link {
+    background-color: $purple-dark;
     background-size: 6px 6px;
     $colour1: rgba(#fff, .3); $colour2: transparent;
     background-image: linear-gradient(-45deg, $colour1 25%, $colour2 25%,
@@ -59,5 +52,17 @@ $bp-level-card-2: '>=680px';
 
   &.-locked:not(.-unlockable) > .link {
     cursor: not-allowed;
+  }
+
+  &.-unlockable > .link {
+    background-color: $purple;
+  }
+
+  &.-unlockable > .link:hover {
+    background-color: $purple-light;
+
+    .fa-unlock-alt {
+      animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
+    }
   }
 }

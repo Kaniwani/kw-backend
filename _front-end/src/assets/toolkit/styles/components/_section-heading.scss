@@ -2,6 +2,10 @@
   margin-bottom: .5em;
   color: $black-light;
 
+  > a {
+    color: $black-light;
+  }
+
   > .breadcrumb {
     color: $grey-dark;
     &:before {

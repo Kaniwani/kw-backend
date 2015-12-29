@@ -1,17 +1,12 @@
 {% extends "kw_webapp/logged_in.html" %}
 {% load crispy_forms_tags %}
 
-{% block scripts %}
-    {{ block.super }}
-{% endblock %}
-
-
 {% block content %}
   {{ block.super }}
 
   <section class="settings-section">
     <div class="inner">
-      <h1>Settings</h1>
+      <h1 class="section-heading">Settings</h1>
         {% crispy form %}
     </div>
   </section>

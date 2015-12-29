@@ -1,12 +1,12 @@
 {% extends "kw_webapp/logged_in.html" %}
 {% block content %}
 {{ block.super }}
-<form class="_visuallyhidden"><input type="hidden" id="csrf" value="{{ csrf_token }}"></input></form>
+<input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
 
 <section class="levels-section">
   <div class="inner">
     <h1 class="section-heading">
-      Vocabulary<span class="breadcrumb">Levels</span>
+      Unlocks
     </h1>
 
     <ul class="level-list">
@@ -41,7 +41,6 @@
 {% endblock %}
 
 {% comment "old template" %}
-
 
 <div class="container">
     <div class="col-md-6 col-md-offset-3">

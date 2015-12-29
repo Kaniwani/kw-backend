@@ -16,7 +16,14 @@
     background: $purple;
     box-shadow: 0 4px 14px -4px rgba($black, .25);
 
-    > .kanji {
+    .readingset {
+      clear: fix;
+      & + .readingset {
+        margin-top: $unit-sm;
+      }
+    }
+
+    .kanji {
       text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
       float: left;
       font-size: 29px;
@@ -24,31 +31,32 @@
       padding-bottom: $unit-xs;
     }
 
-    > .kana {
+    .kana {
       overflow: hidden;
       padding: 2px 0 12px;
     }
 
-    > .kana,
-    > .meaning {
+    .kana,
+    .meaning {
       text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
       clear: right;
       float: right;
       font-size: 18px;
     }
 
-    > .meaning {
+    .meaning {
       // leave space on left for lock icon
       max-width: calc(100% - 50px);
       margin: auto;
+      text-align: right;
       @include media($bp-vocab) {
         max-width: calc(100% - 75px);
       }
     }
 
-    > .kanji,
-    > .kana,
-    > .meaning {
+    .kanji,
+    .kana,
+    .meaning {
       font-family: $ff-japanese;
 
       @include media($bp-vocab) {
