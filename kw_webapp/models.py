@@ -39,7 +39,7 @@ class Profile(models.Model):
     topics_count = models.PositiveIntegerField(default=0)
     posts_count = models.PositiveIntegerField(default=0)
     title = models.CharField(max_length=255, default="Turtles")
-    join_date = models.DateField(default=timezone.now())
+    join_date = models.DateField(auto_now_add=True)
     level = models.PositiveIntegerField(null=True, validators=[
         MinValueValidator(1),
         MaxValueValidator(60),
