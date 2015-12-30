@@ -19,11 +19,15 @@
     animation-timing-function: linear;
 
     &:nth-child(1){
-      left: 4%;
-      width: 66px;
-      height: 66px;
+      left: calc(50% - 140px);
+      bottom: -220px;
+      width: 280px;
+      height: 280px;
+      opacity: .1;
 
-      animation-name: float-up-right;
+      animation-name: rotate-left-slow;
+      animation-timing-function: ease-out;
+      animation-duration: 54s;
     }
 
     &:nth-child(2){
@@ -145,15 +149,11 @@
     }
 
     &:nth-child(13){
-      left: calc(50% - 140px);
-      bottom: -220px;
-      width: 280px;
-      height: 280px;
-      opacity: .1;
+      left: 4%;
+      width: 66px;
+      height: 66px;
 
-      animation-name: rotate-left-slow;
-      animation-timing-function: ease-out;
-      animation-duration: 54s;
+      animation-name: float-up-right;
     }
   }
 

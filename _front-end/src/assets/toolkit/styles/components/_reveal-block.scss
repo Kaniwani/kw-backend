@@ -1,0 +1,71 @@
+// TODO: half of this isn't relevant to reveal blocks, but to review-extra ones
+// should refactor/extract non-base portions
+
+.reveal-block {
+
+  &:not(:only-child) {
+    &:last-child > .button {
+      border-left: none;
+    }
+  }
+
+  > .button {
+    border: 1px solid $grey-light;
+    width: 100%;
+    padding-top: .75em;
+    padding-bottom: .75em;
+    border-radius: 0;
+    transition: all .1s ease-out;
+    background-color: rgba($grey-dark, .75);
+    color: $white;
+
+    &.-disabled {
+      overflow: hidden;
+      transition: all .1s ease-in;
+      filter: blur(1px);
+      color: mix($white, $black, 70);
+      cursor: not-allowed;
+    }
+
+    &:not(.-disabled):hover,
+    &:not(.-disabled):active {
+      cursor: pointer;
+      color: $white;
+      background-color: $grey-dark;
+    }
+  }
+
+  > .reveal {
+    transition: all .1s ease;
+    overflow-y: hidden;
+    max-height: 300px;
+
+    &.-hidden {
+      transition: all .1s ease;
+      max-height: 0;
+    }
+
+    > .text {
+      background-color: $white;
+      text-align: center;
+      padding: $unit-md $unit-sm;
+      max-width: 100%;
+      font-size: 2em;
+
+      &.-kanji {
+        box-shadow: inset 2px 0 10px -2px rgba($black-light, .15);
+      }
+
+      &.-kana {
+        box-shadow: inset -2px 0 10px -2px rgba($black-light, .15);
+      }
+
+      &.-synonyms {
+        box-shadow: inset 0 0 8px -2px rgba($black-light, .15);
+      }
+
+    }
+
+  }
+
+}

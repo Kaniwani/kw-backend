@@ -2,10 +2,10 @@
   <div class="inner">
     <a href="{% url "kw:home" %}" class="homelink"><span class="fa fa-home"></span></a>
     <ul class="statslist">
-      <!-- TODO: javascriptin -->
-      <li id="reviewsCorrect" class="item"><span class="fa fa-thumbs-up"></span> 100%</li>
-      <li id="reviewsDone" class="item"><span class="fa fa-check"></span> 0</li>
-      <li id="reviewsLeft" class="item"><span class="fa fa-inbox"></span> 0</li>
+      <!-- TODO: need localstorage for these probably -->
+      <li class="item"><span class="fa fa-thumbs-up"></span><span id="reviewsCorrect">0</span>%</li>
+      <li class="item"><span class="fa fa-check"></span><span id="reviewsDone">0</span></li>
+      <li class="item"><span class="fa fa-inbox"></span><span id="reviewsLeft"></span></li>
     </ul>
   </div>
 </div>

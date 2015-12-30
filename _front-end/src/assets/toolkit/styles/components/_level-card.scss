@@ -43,11 +43,7 @@ $bp-level-card-2: '>=680px';
 
   &.-locked > .link {
     background-color: $purple-dark;
-    background-size: 6px 6px;
-    $colour1: rgba(#fff, .3); $colour2: transparent;
-    background-image: linear-gradient(-45deg, $colour1 25%, $colour2 25%,
-                                              $colour2 50%, $colour1 50%,
-                                              $colour1 75%, $colour2 75%, $colour2);
+    @include bg-stripes;
   }
 
   &.-locked:not(.-unlockable) > .link {

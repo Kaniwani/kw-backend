@@ -4,25 +4,30 @@
 
     > .homelink,
     > .statslist {
-      opacity: .95;
-      margin: $unit-xs $unit-sm;
+      margin: .3em .6em;
     }
 
     > .statslist {
       @extend %plainlist;
       float: right;
-      font-size: responsive 18px 22px;
+      font-size: responsive 16px 20px;
+      opacity: .95;
 
       > .item {
         display: inline-block;
         margin-left: 1em;
+
+        span + span {
+          margin-left: 4px;
+        }
       }
     }
 
     > .homelink {
+      opacity: .8;
       display: block;
       float: left;
-      font-size: responsive 18px 22px;
+      font-size: responsive 16px 20px;
       transition: opacity .3s ease-out;
 
       > .fa {

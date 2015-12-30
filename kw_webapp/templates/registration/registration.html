@@ -2,13 +2,20 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container col-md-12">
-  <div class="col-md-6 col-md-offset-3 vcenter" id="formdiv">
-      <div class="jumbotron text-center">
-          <h1>Register</h1>
-          {% crispy form %}
-          <a href="{% url "kw:login" %}">login</a>
-      </div>
+
+<div class="login-section -fullwidth">
+
+  <div class="container">
+    <h1 class="title">Register</h1>
+    {% crispy form %}
   </div>
+
+  <a href="{% url "kw:login" %}" class="link">Already a member? Sign In here</a>
+
+  <ul class="floating-icons" aria-hidden="true" role="presentation">
+    <li class="icon"><span class="icon-turtle"></span></li>
+  </ul>
+
 </div>
+
 {% endblock %}

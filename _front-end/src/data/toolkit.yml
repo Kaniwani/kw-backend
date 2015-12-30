@@ -12,11 +12,11 @@ colors:
   kaniwani:
     blue-dark: "hsl(228, 71%, 51%)"
     blue: "hsl(208, 100%, 45%)"
-    blue-light: "hsl(200, 100%, 43%)"
+    blue-light: "hsl(200, 100%, 41%)"
     purple-dark: "hsl(280, 80%, 36%)"
     purple: "hsl(280, 100%, 46%)"
     purple-light: " hsl(280, 100%, 50%)"
     pink: "hsl(320, 100%, 50%)"
     red: "hsl(348, 100%, 50%)"
-    green: "hsl(80, 100%, 40%)"
-
+    green: "hsl(80, 95%, 55%)"
+    yellow: "hsl(58, 95%, 48%)"

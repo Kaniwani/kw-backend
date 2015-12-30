@@ -1,43 +1,21 @@
 <div class="review-quiz">
-  <div class="review-upper">
-    <h1 id="meaning" class="review__meaning">Meaning</h1>
+  <div class="upper">
+    <h1 id="meaning" class="meaning">Meaning</h1>
   </div>
 
-  <div class="review-lower">
+  <div class="lower">
 
     <form>
       <fieldset>
-        <label for="response" class="review__question _visuallyhidden">Vocabulary <strong>reading</strong></label>
-        <input id="response" class="review__response" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" required>
+        <label for="userAnswer" class="question _visuallyhidden">Vocabulary <strong>reading</strong></label>
+        <input id="userAnswer" class="answer" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" required>
 
-        <button id="submitResponse" type="submit" class="review__submit"><span class="fa fa-chevron-right"></span><span class="_visuallyhidden">Submit</span></button>
+        <button id="submitAnswer" type="submit" class="submit"><span class="fa fa-chevron-right"></span><span class="_visuallyhidden">Submit</span></button>
         <input type="hidden" id="us-id" value="Nothing!">
       </fieldset>
     </form>
 
-    <!-- TODO: styling/functionality -->
-    <div class="row">
-      <div class="col-md-6 col-xs-6 col-sm-6">
-        <div class="row">
-          <a href="#"  id="buttonReading" class="btn btn-primary disabled btn-lg col-md-12 col-xs-12 col-sm-12 ">Show <strong>P</strong>honetic</a>
-        </div>
-        <div class="row">
-          <div id="detailsReading" class="jumbotron">
-            <h1 id="kana" class="text-center hint">Placeholder!</h1>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-6 col-xs-6 col-sm-6">
-        <div class="row">
-          <a href="#" id="buttonCharacter" class="btn btn-primary disabled btn-lg col-md-12 col-xs-12 col-sm-12">Show <strong>K</strong>anji</a>
-        </div>
-        <div class="row">
-          <div id="detailsCharacter" class="jumbotron">
-            <h1 id="character" class="text-center hint">Placeholder Kanji</h1>
-           </div>
-        </div>
-      </div>
-    </div>
+    {{> review-extra }}
 
   </div>
 </div>

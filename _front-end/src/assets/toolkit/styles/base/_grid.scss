@@ -1,32 +1,21 @@
 /* https://github.com/IonicaBizau/gridly/ */
 
-$unstack-bp: 768px;
+$unstack-bp: 500px;
 
 .row {
   display: flex;
-  padding-bottom: $unit-sm;
 }
 
 .col {
   flex: 1;
-  padding-left: $unit-sm;
-  padding-right: $unit-sm;
 }
 
 @media(max-width: $unstack-bp) {
   .row {
     flex-direction: column;
-    padding-top: 0;
-    padding-bottom: 0;
-    padding-left: $unit-sm;
-    padding-right: $unit-sm;
   }
   .col {
     flex: 0 0 100%;
-    padding-top: $unit-sm;
-    padding-bottom: $unit-sm;
-    padding-left: 0;
-    padding-right: 0;
   }
 }
 

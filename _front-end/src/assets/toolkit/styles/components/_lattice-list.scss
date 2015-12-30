@@ -1,0 +1,22 @@
+.lattice-list {
+  @extend %plainlist;
+
+  > .item {
+    display: inline-block;
+    margin-bottom: 4px;
+  }
+
+  > .item > .link {
+    padding: 3px 7px;
+    font-size: 1.1em;
+    border-radius: 2px;
+    text-shadow: 1px 1px 3px $purple-dark;
+    background: $purple;
+    color: $white;
+    transition: background-color .3s ease-out;
+
+    &:hover {
+      background-color: $purple-dark;
+    }
+  }
+}

@@ -3,9 +3,7 @@
 {% load staticfiles %}
 <!--Load review scripts-->
 {% block scripts %}
-    <script src="{% static "js/review.js"%}"></script>
-    <script src="{% static "js/wanakana.min.js" %}"></script>
-    <link rel="stylesheet" href="{% static "css/review.css"%}">
+    <script src="{% static "js/jquery.js"%}"></script>
 {% endblock scripts %}
 
 {% block content %}
@@ -30,23 +28,20 @@
     ];
     console.log(vocabulary_list);
     var current_vocab;
-    $("#reviewsLeft").html(vocabulary_list.length)
+    $("#reviewsLeft").text(vocabulary_list.length)
     current_vocab = vocabulary_list.shift();
     console.log(current_vocab.meaning);
-    $("#detailsCharacter").hide();
-    $("#detailsReading").hide();
     $("#meaning").html(current_vocab.meaning);
     $("#us-id").val(current_vocab.user_specific_id);
-    $("#kana").html("");
-        for(i = 0; i < current_vocab.readings.length; i++){
-            $("#kana").append(current_vocab.readings[i] + "</br>");
-        }
-        $("#character").html("");
-        for(i = 0; i < current_vocab.characters.length; i++){
-            $("#character").append(current_vocab.characters[i] + "</br>");
-        }
 
-
+    $("#detailKana .-kana").text("");
+      for (var i = 0; i < current_vocab.readings.length; i++) {
+        $("#detailKana .-kana").append(current_vocab.readings[i] + "</br>");
+      }
+    $("#detailKanji .-kanji").text("");
+      for (var i = 0; i < current_vocab.characters.length; i++) {
+        $("#detailKanji .-kanji").append(current_vocab.characters[i] + "</br>");
+      }
 
 </script>
 {% endblock %}

@@ -39,10 +39,8 @@ class UserCreateForm(UserCreationForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = ''
-        self.helper.add_input(Submit("submit", "Submit"))
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-lg-3'
-        self.helper.field_class = 'col-lg-9'
+        self.helper.add_input(Submit("submit", "Submit", css_class='button -submit'))
+        self.helper.form_class = 'login-form'
         self.helper.form_style = "default"
         self.helper.help_text_inline = True
         self.helper.error_text_inline = False

@@ -4,13 +4,14 @@
 {% block content %}
 
 <div class="login-section -fullwidth">
-  <a href="{% url "kw:register" %}" class="link -register">Not a member? Register here</a>
   <div class="container">
     <h1 class="title">Welcome</h1>
 
     {% crispy form %}
 
   </div>
+
+  <a href="{% url "kw:register" %}" class="link">Not a member? Register here</a>
 
   <ul class="floating-icons" aria-hidden="true" role="presentation">
     <li class="icon"><span class="icon-turtle"></span></li>
