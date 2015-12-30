@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import wanakana from '../vendor/wanakana.js';
 
-// TODO: CACHE $els
+// TODO: CACHE more $elements
 
 const api = {
 
@@ -168,7 +168,9 @@ const api = {
       $("#reviewsLeft").html(vocabulary_list.length);
       $("#reviewsDone").html(correctTotal);
       $("#reviewsCorrect").html(Math.floor((correctTotal / answeredTotal) * 100));
+
       current_vocab = vocabulary_list.shift();
+
       $(".reveal").addClass('-hidden');
       disableButtons();
       $("#meaning").html(current_vocab.meaning);
@@ -197,22 +199,6 @@ const api = {
         compareAnswer();
       }
     }
-    //Binding Enter, P, and K.
-    //$(document).keypress(function(e){
-    //   e.preventDefault();
-    //   if (e.which == 13) {
-    //       enter_pressed();
-    //   }
-    //   if($userAnswer.hasClass("-marked")) {
-    //       //expansion of phonetic and and char readings via keyboard.
-    //       if (e.which == 80 || e.which == 112) {
-    //           $("#button-reading").click();
-    //       }
-    //       else if (e.which == 75 || e.which == 107) {
-    //           $("#button-character").click();
-    //       }
-    //   }
-    //});
 
     function keyboard_shortcuts(event) {
       if (event.which == 13) {
