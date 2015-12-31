@@ -15,9 +15,8 @@
         {% for level in levels %}
           {% if level.1 == True %}
             <li class="level-card" data-level-id="{{ level.0 }}">
-              <a href="{% url "kw:vocabulary" %}{{ level.0 }}" class="link" title="View Level Vocab">
+              <a href="{% url "kw:vocabulary" %}{{ level.0 }}" class="wrap">
                 <span class="levelnum">{{ level.0 }}</span>
-                <span class="fa fa-unlock" title="Unlocked"</span>
               </a>
             </li>
           {% endif %}

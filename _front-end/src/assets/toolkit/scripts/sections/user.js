@@ -4,6 +4,7 @@ const api = {
 
     init() {
         var $refresh = $("#forceSrs");
+
         if ($refresh.length > 0) {
 
             $refresh.click(function() {
@@ -16,7 +17,9 @@ const api = {
             });
 
             // start with a refresh on load
-            $refresh.click();
+            // though maybe not because too many api calls?
+            // I feel everyone is going to click this out of habit regardless
+            // $refresh.click();
 
 
             //Binding R/S/H/U/C to refresh/start reviews/about/unlocks/contact

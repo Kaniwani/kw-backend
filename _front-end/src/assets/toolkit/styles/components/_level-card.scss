@@ -6,7 +6,7 @@ $bp-level-card-2: '>=680px';
   position: relative;
   border-radius: 3px;
 
-  > .link {
+  > .wrap {
     transition: background-color .33s ease;
     background-color: $purple-light;
     border-radius: 3px;
@@ -15,13 +15,8 @@ $bp-level-card-2: '>=680px';
     overflow: hidden;
     padding: 18px;
 
-    &:hover {
-      color: #fff;
-      background-color: $purple-light;
-    }
-
     > .levelnum {
-      text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
+      text-shadow: 1px 2px 2px rgba($purple-dark, .7);
       float: left;
       font-size: responsive 24px 30px;
       margin: -6px 0 26px;
@@ -29,33 +24,33 @@ $bp-level-card-2: '>=680px';
 
     > .fa {
       position: absolute;
-      bottom: 8px;
-      font-size: 1.1em;
-      left: 15px;
-      padding: 5px;
+      font-size: 1.2em;
+      left: 20px;
+      bottom: 13px;
 
       &.fa-lock {
-        color: $black-light;
-        cursor: not-allowed;
+        color: $black;
+      }
+
+      &.-loading {
+        left: 18px;
+        bottom: 13px;
       }
     }
   }
 
-  &.-locked > .link {
+  &.-locked > .wrap {
     background-color: $purple-dark;
     @include bg-stripes;
   }
 
-  &.-locked:not(.-unlockable) > .link {
+  &.-locked:not(.-unlockable) > .wrap {
     cursor: not-allowed;
   }
 
-  &.-unlockable > .link {
-    background-color: $purple;
-  }
-
-  &.-unlockable > .link:hover {
-    background-color: $purple-light;
+  &.-unlockable > .wrap:hover {
+    background-color: mix($purple-dark, $white, 95);
+    cursor: pointer;
 
     .fa-unlock-alt {
       animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);

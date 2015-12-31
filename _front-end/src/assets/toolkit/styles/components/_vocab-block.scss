@@ -18,30 +18,31 @@
 
     .readingset {
       clear: fix;
+      line-height: 1;
       & + .readingset {
         margin-top: $unit-sm;
       }
     }
 
     .kanji {
-      text-shadow: 0 2px 0 rgba(0, 0, 0, .3);
+      text-shadow: 0 2px 2px rgba($purple-dark, .7);
       float: left;
-      font-size: 29px;
-      margin-top: -6px;
+      font-size: responsive 22px 32px;
       padding-bottom: $unit-xs;
     }
 
     .kana {
       overflow: hidden;
-      padding: 2px 0 12px;
+      padding-bottom: $unit-sm;
+      font-size: responsive 20px 30px;
     }
 
     .kana,
     .meaning {
-      text-shadow: 0 1px 0 rgba(0, 0, 0, .3);
+      text-shadow: 0 1px 2px rgba($purple-dark, .7);
       clear: right;
       float: right;
-      font-size: 18px;
+      font-size: responsive 18px 22px;
     }
 
     .meaning {
@@ -49,6 +50,7 @@
       max-width: calc(100% - 50px);
       margin: auto;
       text-align: right;
+      line-height: 1.3;
       @include media($bp-vocab) {
         max-width: calc(100% - 75px);
       }
@@ -57,8 +59,6 @@
     .kanji,
     .kana,
     .meaning {
-      font-family: $ff-japanese;
-
       @include media($bp-vocab) {
         display: block;
         float: none;

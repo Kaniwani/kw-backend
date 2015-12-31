@@ -6,27 +6,24 @@ $(document).ready(function() {
     $.notify.defaults({
         position: "right",
         autoHideDelay: 5000
-        });
+    });
 
     //When you click on an unlockable(yellow) level
     $(".unlockable").click(function(event){
         event.preventDefault();
         var requested_level = $(this).attr("id");
         var list_item = $(this);
-        // naive confirmation impementation, can change to custom styled modal instead
-        // TODO: @djtb use remodal or cferdinandi modal for nicer looking confirmation
-        if (window.confirm('Are you sure you want to unlock level ' + requested_level + '?')) {
-            list_item.find("img").show();
-            $.post("/kw/levelunlock/", {level: requested_level, csrfmiddlewaretoken:csrf_token}).done(function(data) {
-                list_item.removeClass("list-group-item-warning");
-                list_item.removeClass("unlockable");
-                list_item.addClass("unlocked");
-                list_item.addClass("list-group-item-success");
-                list_item.find("img").hide();
-                list_item.find("p").text("Level " + requested_level + " Unlocked");
-                list_item.notify(data, { className:"success" });
-            });
-        }
+        // TODO: @djtb use remodal or cferdinandi modal for confirmation
+        list_item.find("img").show();
+        $.post("/kw/levelunlock/", {level: requested_level, csrfmiddlewaretoken:csrf_token}).done(function(data) {
+            list_item.removeClass("list-group-item-warning");
+            list_item.removeClass("unlockable");
+            list_item.addClass("unlocked");
+            list_item.addClass("list-group-item-success");
+            list_item.find("img").hide();
+            list_item.find("p").text("Level " + requested_level + " Unlocked");
+            list_item.notify(data, { className:"success" });
+        });
     });
 
     $(".locked").click(function(event) {

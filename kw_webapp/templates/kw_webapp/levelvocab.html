@@ -29,20 +29,23 @@
           <!-- TODO: prefer only multiple kana entries but only ONE kanji / meaning -->
           {% for reading in review.vocabulary.reading_set.all %}
           <div class="readingset">
-            <span class="kanji">{{ reading.character }}</span>
-            <span class="kana">{{ reading.kana }}</span>
+            <span lang="ja" class="kanji">{{ reading.character }}</span>
+            <span lang="ja" class="kana">{{ reading.kana }}</span>
+            <!-- TODO: indivdual meanings would be better as inline elements inside meaning wrap -  so they can line-break an entire multi-word meaning (rather than mid-meaning) -->
             <span class="meaning">{{ reading.vocabulary.meaning }}</span>
           </div>
           {% endfor %}
 
           {% if review.hidden == False %}
-            <span class="fa fa-unlock" title="Relock" data-pk="{{ review.id }}"></span>
+            <!-- <span class="fa fa-unlock" title="Relock" data-pk="{{ review.id }}"></span> -->
           {% else %}
             <span class="fa fa-lock" title="Unlockable" data-pk="{{ review.id }}"></span>
           {% endif %}
 
         </div>
 
+        <!-- TODO: @tadgh I copied something from you or evo, I don't think this logic is actually what is wanted here?-->
+        {% comment 'not ready for production' %}
         <div class="vocab-extra">
           {% if review.streak > 8 %}
             <span class="icon icon-burned" title="KaniWani Level - Burned"></span>
@@ -59,17 +62,20 @@
           <div class="synonyms">
             <span class="text">User synonyms:</span>
 
-            {% comment 'possible approach using separate contentEditable <li>s ' %}
-              http://codepen.io/chriscoyier/pen/LVEdJg
-            {% endcomment %}
+            <!-- TODO: possible approach using separate contentEditable <li>s
+                 http://codepen.io/chriscoyier/pen/LVEdJg -->
 
             <ul class="list">
               <li class="item">Implementing</li>
               <li class="item">Soon but not yet!</li>
             </ul>
           </div>
+
           <a href="#" class="extratoggle fa fa-ellipsis-v"></a>
+
         </div>
+        {% endcomment %}
+
       </li>
     {% endfor %}
     </ul>

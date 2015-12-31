@@ -1,4 +1,5 @@
 {% extends "kw_webapp/logged_in.html" %}
+{% load staticfiles %}
 {% block content %}
 {{ block.super }}
 <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
@@ -13,28 +14,29 @@
       {% for level in levels %}
         {% if level.0 > user.profile.level %}
           <li class="level-card -locked" data-level-id="{{ level.0 }}">
-            <a href="#" class="link" title="Locked">
+            <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
-              <span class="fa fa-lock" title="Locked"</span>
-            </a>
+              <span class="fa fa-lock"></span>
+            </div>
           </li>
         {% elif level.1 == True %}
           <li class="level-card" data-level-id="{{ level.0 }}">
-            <a href="{% url "kw:vocabulary" %}{{ level.0 }}" class="link" title="Unlocked">
+            <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
-              <span class="fa fa-unlock" title="Unlocked"</span>
-            </a>
+              <span class="fa fa-unlock"></span>
+            </div>
           </li>
         {% elif level.1 == False %}
         <li class="level-card -locked -unlockable" data-level-id="{{ level.0 }}">
-            <a href="{% url "kw:vocabulary" %}{{ level.0 }}" class="link" title="Unlockable">
+            <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
-              <span class="fa fa-unlock-alt" title="Unlockable"</span>
-            </a>
+              <span class="fa fa-unlock-alt"></span>
+            </div>
           </li>
         {% endif %}
       {% endfor %}
     </ul>
+
   </div>
 </section>
 
