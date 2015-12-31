@@ -34,7 +34,7 @@
     $("#reviewsLeft").text(vocabulary_list.length)
     current_vocab = vocabulary_list.shift();
     console.log(current_vocab.meaning);
-    $("#meaning").text(current_vocab.meaning);
+    $("#meaning").html(current_vocab.meaning);
     $("#us-id").val(current_vocab.user_specific_id);
 
     $("#detailKana .-kana").text("");

@@ -11,14 +11,13 @@
       @extend %plainlist;
       float: right;
       font-size: responsive 16px 20px;
-      opacity: .95;
 
       > .item {
         display: inline-block;
         margin-left: 1em;
 
         span + span {
-          margin-left: 4px;
+          margin-left: 6px;
         }
       }
     }

@@ -9,16 +9,16 @@
 
   <div class="reviews">
     <h2 class="_visuallyhidden">Reviews</h2>
-    <button type="button" id="force-srs" class="pure-button">
+    <button type="button" id="forceSrs" class="pure-button">
       <span class="_visuallyhidden">Refresh</span>
       <span class="fa fa-refresh"></span>
     </button>
     {% if review_count > 0 %}
-      <a id="review-count" href="{% url "kw:review" %}" class="pure-button" role="button" >
+      <a id="reviewCount" href="{% url "kw:review" %}" class="pure-button" role="button" >
         {{ review_count }} Review{{ review_count|pluralize }}
       </a>
     {% else %}
-      <a id="review-count" href="{% url "kw:review" %}" class="pure-button -disabled" role="button">
+      <a id="reviewCount" href="{% url "kw:review" %}" class="pure-button button -disabled" role="button">
         Next review: {{ next_review_date|naturaltime }}
       </a>
     {% endif %}

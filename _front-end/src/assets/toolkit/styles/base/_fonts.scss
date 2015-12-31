@@ -2,9 +2,9 @@
 $ff-body: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 // 400 only
 $ff-heading: "Ubuntu", Helvetica, Arial, sans-serif;
-$ff-japanese: "Hiragino Kaku Gothic Pro", "Meiryo", "Yu Gothic", "ヒラギノ角ゴ Pro W3", "メイリオ", "Osaka", "MS PGothic", "ＭＳ Ｐゴシック", sans-serif;
+$ff-japanese: "Hiragino Kaku Gothic Pro", "Takao Pゴシック", "Meiryo", "Yu Gothic", "ヒラギノ角ゴ Pro W3", "メイリオ", "Osaka", "MS PGothic", "ＭＳ Ｐゴシック", sans-serif;
 
-*[lang="ja"] {
+[lang="ja"] {
   font-family: $ff-japanese;
 }
 

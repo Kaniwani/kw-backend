@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import wanakana from '../vendor/wanakana.js';
+import wanakana from '../vendor/wanakana.min.js';
 
 // TODO: CACHE more $elements
 
@@ -14,7 +14,11 @@ const api = {
     // cache jquery objects instead of querying dom all the time
     var $userAnswer = $(userAnswer);
     var csrf_token = $("#csrf").val(); //Grab CSRF token off of dummy form.
-    wanakana.bind(userAnswer);
+
+    // only try to bind if input exists
+    if (userAnswer) {
+      wanakana.bind(userAnswer);
+    }
 
     $userAnswer.focus();
 
@@ -133,7 +137,7 @@ const api = {
     function rightAnswer() {
       correctTotal += 1;
       answeredTotal += 1;
-      $userAnswer.css('background-color', 'hsl(80, 95%, 55%)');
+      $userAnswer.css('background-color', 'hsl(134, 78%, 62%)');
       //$userAnswer.blur();
       $userAnswer.addClass("-marked");
     }

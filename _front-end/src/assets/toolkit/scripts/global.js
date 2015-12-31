@@ -10,8 +10,9 @@ import $ from 'jquery';
 import login from './sections/login';
 import expandToggle from './components/expand-toggle';
 import revealToggle from './components/reveal-toggle';
-import vocabToggle from './components/vocab';
-import levels from './components/levels';
+import vocabToggle from './sections/vocab';
+import user from './sections/user';
+import levels from './sections/levels';
 import reviews from './sections/reviews';
 
 $(document).ready(() => {
@@ -21,6 +22,7 @@ $(document).ready(() => {
   revealToggle.init();
   vocabToggle.init();
   levels.init();
+  user.init();
   reviews.init();
 
 })
