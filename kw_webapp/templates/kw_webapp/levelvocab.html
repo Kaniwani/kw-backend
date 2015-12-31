@@ -25,8 +25,7 @@
         {% endif %}
 
         <div class="vocab-base">
-          <!-- TODO: maybe wrap reading in a styled div/class to allow for multiple entries vertically stacked -->
-          <!-- TODO: prefer only multiple kana entries but only ONE kanji / meaning -->
+          <!-- FIXME: @tadgh can you tease the logic to show the first kanji only, but still multiple kana/meaning -->
           {% for reading in review.vocabulary.reading_set.all %}
           <div class="readingset">
             <span lang="ja" class="kanji">{{ reading.character }}</span>
@@ -39,13 +38,14 @@
           {% if review.hidden == False %}
             <!-- <span class="fa fa-unlock" title="Relock" data-pk="{{ review.id }}"></span> -->
           {% else %}
-            <span class="fa fa-lock" title="Unlockable" data-pk="{{ review.id }}"></span>
+            <!-- <span class="fa fa-lock" data-pk="{{ review.id }}"></span> -->
           {% endif %}
 
         </div>
 
-        <!-- TODO: @tadgh I copied something from you or evo, I don't think this logic is actually what is wanted here?-->
+
         {% comment 'not ready for production' %}
+        <!-- FIXME: @tadgh In testing this only seemed to show apprentice icon. Did I break the logic trying to condense it into elifs? See old template below. Or does this review.streak not do what I think it does? -->
         <div class="vocab-extra">
           {% if review.streak > 8 %}
             <span class="icon icon-burned" title="KaniWani Level - Burned"></span>
