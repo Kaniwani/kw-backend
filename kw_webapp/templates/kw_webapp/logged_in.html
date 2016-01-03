@@ -1,5 +1,6 @@
 {% extends "kw_webapp/base.html" %}
 {% load staticfiles %}
+{% load humanize %}
 
 {% block content %}
 
@@ -20,7 +21,13 @@
 
         <li class="item">
           <a href="{% url "kw:review" %}" class="nav-link">
-            <span class="text">Reviews <span class="count">42+</span></span>
+              {% if review_count %}
+                  <span class="text">Reviews <span class="count"></span> {{ review_count }}</span>
+              {% elif next_review_date %}
+                  <span class="text">Next review in {{ next_review_date | naturaltime }}</span>
+              {% else %}
+                  <span class="text">No reviews!</span>
+              {% endif %}
           </a>
         </li>
         <li class="item">
