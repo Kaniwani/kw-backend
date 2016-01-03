@@ -1,9 +1,6 @@
 {% extends "kw_webapp/base.html" %}
 {% load staticfiles %}
-{% block scripts %}
-    {{ block.super }}
-    <!-- <link rel="stylesheet" href="{% static "css/navbar_top.css" %}" xmlns="http://www.w3.org/1999/html"> -->
-{% endblock %}
+
 {% block content %}
 
 <header class="site-header" role="banner">
@@ -18,8 +15,9 @@
     <nav class="site-nav">
       <a href="#0" class="expandToggle">☰ Menu</a>
       <ul class="nav-list toggleTarget">
-        <!-- TODO: @tadgh IF ACTIVE, -active CLASS ON li -->
-        <!-- perhaps via https://github.com/marcuswhybrow/django-lineage -->
+        <!-- TODO: @tadgh if active, '-active' class on <li>
+         perhaps via https://github.com/marcuswhybrow/django-lineage -->
+
         <li class="item">
           <a href="{% url "kw:review" %}" class="nav-link">
             <span class="text">Reviews <span class="count">42+</span></span>
