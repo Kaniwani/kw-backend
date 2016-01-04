@@ -48,6 +48,7 @@ class Profile(models.Model):
 
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')
+        x = [x[0] for x in x]
         return x
 
     def __str__(self):

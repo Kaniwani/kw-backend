@@ -188,7 +188,7 @@ class UnlockLevels(TemplateView):
         user_profile = self.request.user.profile
         context = super(UnlockLevels, self).get_context_data()
         level_status = []
-        unlocked_levels = [item[0] for item in user_profile.unlocked_levels_list()]
+        unlocked_levels = user_profile.unlocked_levels_list()
         for level in range(1, 61):
             if level in unlocked_levels:
                 level_status.append([level, True])
@@ -210,7 +210,7 @@ class Levels(TemplateView):
         user_profile = self.request.user.profile
         context = super(Levels, self).get_context_data()
         level_status = []
-        unlocked_levels = [item[0] for item in user_profile.unlocked_levels_list()]
+        unlocked_levels = user_profile.unlocked_levels_list()
         for level in range(1, 61):
             if level in unlocked_levels:
                 level_status.append([level, True])

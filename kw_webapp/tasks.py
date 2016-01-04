@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 import requests
 from KW.celery import app as celery_app
 from kw_webapp import constants
-from kw_webapp.models import UserSpecific, Vocabulary, Profile
+from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
 from datetime import timedelta, datetime
 from django.utils import timezone
 
@@ -102,9 +102,8 @@ def build_API_sync_string_for_user(user):
     # if the user has unlocked recent levels, check for new vocab on them as well.
     #  In our case its within the last 3 levels.
     for level in user.profile.unlocked_levels_list():
-        if user.profile.level - level[
-            0] <= 3:  # example if i'm 25, and i've set 22 and 23, it will check those as well. But not 21.
-            api_call += str(level[0]) + ","
+        if user.profile.level - level <= 3:  # example if i'm 25, and i've set 22 and 23, it will check those as well. But not 21.
+            api_call += str(level) + ","
     return api_call
 
 
@@ -116,7 +115,7 @@ def build_API_sync_string_for_user_for_level(user, level):
     :return: The fully formatted API string that will provide.
     '''
 
-    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(user.profile.api_key, level[0])
+    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(user.profile.api_key, level)
     return api_call
 
 
@@ -124,6 +123,8 @@ def lock_level_for_user(requested_level, user):
     reviews = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level)
     count = reviews.count()
     reviews.delete()
+    level = Level.objects.get(profile=user.profile, level=requested_level)
+    user.profile.unlocked_levels.remove(level)
     return count
 
 

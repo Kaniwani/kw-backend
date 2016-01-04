@@ -55,6 +55,16 @@ class TestCeleryTasks(TestCase):
         available_reviews = UserSpecific.objects.filter(user=self.user, vocabulary__reading__level=5).all()
         self.assertFalse(available_reviews)
 
+    def test_locking_level_removes_level_from_unlocked_list(self):
+        self.user.profile.unlocked_levels.get_or_create(level=7)
+        self.user.profile.unlocked_levels.get_or_create(level=6)
+        self.vocabulary.reading_set.create(level=6, kana="猫二", character="whatever2")
+
+        lock_level_for_user(6, self.user)
+
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [5, 7])
+
+
 
 
 
