@@ -41,32 +41,3 @@
 </section>
 
 {% endblock %}
-
-{% comment "old template" %}
-
-<div class="container">
-    <div class="col-md-6 col-md-offset-3">
-        <ul class="list-group">
-            {% for level in levels %}
-                    {% if level.0 > user.profile.level %}
-                        <a href="" class="list-group-item list-group-item-danger text-center locked"><p>Level {{ level.0 }} Locked</p></a>
-                    {% elif level.1 == True %}
-                        <a href="" class="list-group-item list-group-item-success text-center unlocked"><p>Level {{ level.0 }} Unlocked</p></a>
-                    {% elif level.1 == False %}
-                        <a href="" class="list-group-item list-group-item-warning text-center unlockable" id="{{ level.0 }}" style="position: relative;">
-                            <p>Level {{ level.0 }} Unlockable</p>
-                            <img src="{% static "img/ajax-loader.gif" %}" id="img_{{ level.0 }}" class="image">
-                        </a>
-
-                    {% endif %}
-            {% endfor %}
-        </ul>
-    </div>
-
-</div>
-
-<form>
-    <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
-</form>
-
-{% endcomment %}
