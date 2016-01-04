@@ -4,7 +4,11 @@
 {% block content %}
   {{ block.super }}
 
-  {% include 'partials/user.html' %}
+  <section class="user-section -fullwidth">
+    {% include 'partials/user-overview.html' %}
+    {% include 'partials/user-details.html' %}
+  </section>
+
   {% include 'partials/announcements.html' %}
 
 {% endblock %}

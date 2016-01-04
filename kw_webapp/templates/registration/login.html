@@ -13,6 +13,7 @@
 
   <a href="{% url "kw:register" %}" class="link">Not a member? Register here</a>
 
+  <!-- dem turtles -->
   <ul class="floating-icons" aria-hidden="true" role="presentation">
     <li class="icon"><span class="icon-turtle"></span></li>
     <li class="icon"><span class="icon-turtle"></span></li>
@@ -32,13 +33,3 @@
 </div>
 
 {% endblock %}
-
-
-{% comment 'old template' %}
-  <div class="well well-lg"  id="formdiv">
-    <h1 class="text-center">Login</h1>
-    {% crispy form %}
-    <a href="{% url "kw:register" %}" class="pull-right">Register</a>
-  </div>
-{% endcomment %}
-
