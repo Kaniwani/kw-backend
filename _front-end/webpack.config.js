@@ -27,7 +27,7 @@ module.exports = function(fabricatorConfig) {
 		cache: {}
 	};
 
-	if (!fabricatorConfig.dev) {
+	if (fabricatorConfig.prod != null) {
 		config.plugins.push(
 			new webpack.optimize.UglifyJsPlugin()
 		);
@@ -35,7 +35,6 @@ module.exports = function(fabricatorConfig) {
 		config.entry = {
 			'scripts/global': fabricatorConfig.src.scripts.toolkit
 		};
-
 	}
 
 	return config;
