@@ -60,6 +60,36 @@
       font-range: 300px 1600px;
       line-height: 1.3;
       text-align: center;
+
+      &.-marked {
+        color: $white;
+        text-shadow: $shadow-text-light;
+        + .submit > .fa {
+          color: $white;
+          text-shadow: $shadow-text-light;
+        }
+      }
+
+      &.-invalid {
+        background-color: $yellow;
+        color: $grey-dark;
+        text-shadow: none;
+        + .submit > .fa {
+          color: $grey-dark;
+          text-shadow: none;
+        }
+      }
+
+      &.-incorrect {
+        background-color: $red;
+      }
+
+      &.-correct {
+        padding: .35em 0;
+        font-size: responsive 28px 42px;
+        background-color: $green;
+      }
+
     }
 
     .submit {

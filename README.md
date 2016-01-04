@@ -46,6 +46,6 @@ Since we're using Node, life is wonderful. Here are all the tools you need.
 
 This will start a server at 127.0.0.1:3000 & open your browser to the styleguide.
 
-However, *to compile minified assets for the webapp* ensure you run `gulp --prod` after finished with development!!
+However, *to compile & copy assets to be accessed within the webapp* ensure you run `gulp --prod`
 
 More detailed information in `/_front-end/README.MD`

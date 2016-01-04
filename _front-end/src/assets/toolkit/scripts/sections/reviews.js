@@ -106,6 +106,7 @@ const api = {
 
     }
 
+    // TODO: @djtb - use jstorage, update local storage, expires 1 week, use post only at end of review (OR ANY NAVIGATION)
     function record_answer(us_id, correctness, previously_wrong) {
       //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
       $.post("/kw/record_answer/", {
@@ -118,33 +119,32 @@ const api = {
       })
     }
 
-    // TODO: pls djtb!!
-    // instead of these colors on answer field, set a class on entire review and use that modifier to style childrens
-    // so input bgc changes to css variables, but also font color, submit chevron can turn white
+    function clearColors() {
+      $userAnswer.removeClass('-marked -correct -incorrect -invalid');
+    }
 
     function nonHiraganaAnswer() {
-      $userAnswer.css('background-color', 'hsl(58, 95%, 48%)');
+      clearColors();
+      $userAnswer.addClass("-invalid");
     }
 
     function wrongAnswer() {
+      clearColors();
+      $userAnswer.addClass("-marked -incorrect");
       answeredTotal += 1;
       vocabulary_list.push(current_vocab);
-      $userAnswer.css('background-color', 'hsl(348, 100%, 50%)');
-      $userAnswer.addClass("-marked");
-      //$userAnswer.blur();
     }
 
     function rightAnswer() {
+      clearColors();
+      $userAnswer.addClass("-marked -correct");
       correctTotal += 1;
       answeredTotal += 1;
-      $userAnswer.css('background-color', 'hsl(134, 78%, 62%)');
-      //$userAnswer.blur();
-      $userAnswer.addClass("-marked");
     }
 
     function newVocab() {
+      clearColors();
       $userAnswer.val("");
-      $userAnswer.css('background-color', 'hsl(0, 0%, 96%)');
       $userAnswer.focus();
     }
 

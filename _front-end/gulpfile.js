@@ -17,6 +17,7 @@ var sass = require('gulp-sass');
 var sassGlob = require('gulp-sass-glob');
 var sourcemaps = require('gulp-sourcemaps');
 var webpack = require('webpack');
+var changed = require('gulp-changed');
 var rucksack = require('gulp-rucksack');
 
 
@@ -49,7 +50,7 @@ var webpackCompiler = webpack(webpackConfig);
 
 // clean
 gulp.task('clean', function () {
-	return del([config.dest]);
+	if (!config.prod) return del([config.dest]);
 });
 
 
@@ -79,7 +80,7 @@ gulp.task('styles:toolkit', function () {
 		.pipe(gulpif(!config.prod, reload({stream:true})));
 });
 
-gulp.task('styles', ['styles:fabricator', 'styles:toolkit']);
+gulp.task('styles', !config.prod ? ['styles:fabricator', 'styles:toolkit'] : ['styles:toolkit'] );
 
 
 // scripts
@@ -102,6 +103,7 @@ gulp.task('scripts', function (done) {
 // fonts
 gulp.task('fonts', function () {
 	return gulp.src(config.src.fonts)
+		.pipe(changed(config.dest + '/assets/fonts'))
 		.pipe(gulp.dest(config.dest + '/assets/fonts'));
 });
 
@@ -109,15 +111,18 @@ gulp.task('fonts', function () {
 // images
 gulp.task('images', function () {
 	return gulp.src(config.src.images)
+		.pipe(changed(config.dest + '/assets/images'))
 		.pipe(gulpif(config.prod, imagemin()))
 		.pipe(gulp.dest(config.dest + '/assets/images'));
 });
 
 // assemble
 gulp.task('assemble', function (done) {
-	assemble({
-		logErrors: config.prod
-	});
+	if (!config.prod) {
+		assemble({
+			logErrors: config.prod
+		});
+	}
 	done();
 });
 
@@ -187,6 +192,7 @@ gulp.task('default', ['clean'], function () {
 		if (config.prod) {
 			// copy assets to webapp static folder for django
 			gulp.src([config.dest + '/assets/**/*',  '!' + config.dest + '/assets/fabricator{,/**}'])
+	  			.pipe(changed(config.kwstatic))
 	  			.pipe(gulp.dest(config.kwstatic));
 		}
 

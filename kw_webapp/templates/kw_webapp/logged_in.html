@@ -20,13 +20,9 @@
 
         <li class="item">
           <a href="{% url "kw:review" %}" class="nav-link">
-            {% if review_count %}
-              <span class="text">Reviews <span class="count"> {{ review_count }}</span></span>
-            {% elif next_review_date %}
-              <span class="text">Next review in {{ next_review_date | naturaltime }}</span>
-            {% else %}
-              <span class="text">No reviews!</span>
-            {% endif %}
+            <span class="text">Reviews
+              {% if review_count %}<span class="count"> {{ review_count }}</span>{% endif %}
+            </span>
           </a>
         </li>
         <li class="item">

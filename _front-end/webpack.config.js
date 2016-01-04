@@ -29,9 +29,13 @@ module.exports = function(fabricatorConfig) {
 
 	if (!fabricatorConfig.dev) {
 		config.plugins.push(
-			new webpack.optimize.DedupePlugin(),
 			new webpack.optimize.UglifyJsPlugin()
 		);
+
+		config.entry = {
+			'scripts/global': fabricatorConfig.src.scripts.toolkit
+		};
+
 	}
 
 	return config;

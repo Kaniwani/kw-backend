@@ -4,6 +4,11 @@
 
 Fabricator is a tool for building website UI toolkits - _think ["Tiny Bootstraps, for Every Client"](http://daverupert.com/2013/04/responsive-deliverables/#tiny-bootstraps-for-every-client)_
 
+CSS, JS, Images, and Fonts are developed in `src/assets/toolkit/`
+
+HTML partials in `src/materials` and full example pages in `src/views`
+
+
 ## Quick Start
 
 Ensure you have *node.js* and *npm* installed. Node >4.2.2 and NPM >2.14.7 are known to work fine.
@@ -20,7 +25,7 @@ Once completed successfully. Run gulp as a build tool which will run a local ser
 $ gulp 
 ```
 
-However, *to compile minified assets for the webapp* ensure you run 
+However, *to compile assets for use in the webapp* ensure you run 
 ```shell
 gulp --prod
 ``` 

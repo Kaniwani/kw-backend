@@ -59,5 +59,11 @@
 
   > .reviews {
     margin-top: $unit-md;
+
+    > .button {
+      &:hover {
+        color: $blue;
+      }
+    }
   }
 }
