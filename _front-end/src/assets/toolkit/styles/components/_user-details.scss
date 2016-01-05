@@ -25,7 +25,8 @@ $bp-user-details: '>=650px';
     font-weight: normal;
   }
 
-  .wkinfo, .userinfo {
+  .wkinfo,
+  .userinfo {
     flex: 0 0 100%;
     @include media($bp-user-details) {
       flex: 1;
@@ -102,11 +103,10 @@ $bp-user-details: '>=650px';
         color: $white;
       }
 
-      .fa {
+      .icon {
         color: $white;
         display: inline-block;
-        margin-right: 3px;
-        vertical-align: middle;
+        margin-right: 5px;
       }
     }
   }

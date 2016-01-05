@@ -60,7 +60,7 @@
   > .reviews {
     margin-top: $unit-md;
 
-    > .button {
+    > .button:not(.-disabled) {
       &:hover {
         color: $blue;
       }

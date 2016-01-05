@@ -86,7 +86,7 @@ a {
   transition: all .3s ease-out;
   color: $grey-dark;
 
-  &:hover {
+  &:not(.-disabled):hover {
     color: $grey;
   }
 }
