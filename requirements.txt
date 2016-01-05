@@ -7,6 +7,7 @@ celery==3.1.13
 cookies==2.2.1
 django-crispy-forms==1.4.0
 django-filter==0.11.0
+django-lineage==0.2.0
 djangorestframework==3.3.1
 gunicorn==19.1.1
 kombu==3.0.21
