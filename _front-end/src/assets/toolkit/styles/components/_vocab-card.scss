@@ -5,7 +5,7 @@
   > .vocab-base {
     transition: background-color .5s ease-out;
 
-    > .fa {
+    > .icon {
       position: absolute;
       bottom: 0;
       color: #fff;
@@ -15,7 +15,7 @@
       cursor: pointer;
     }
 
-    > .fa-lock {
+    > .i-lock {
       color: $black-light;
       cursor: not-allowed;
     }
@@ -42,7 +42,7 @@
     .vocab-extra {
       margin-top: 0;
 
-      *:not(.extratoggle) {
+      * {
         opacity: 1;
       }
     }
@@ -63,7 +63,7 @@
   &.-unlockable > .vocab-base:hover {
     background-color: darken($purple, 7%);
 
-    .fa-unlock-alt {
+    .i-unlock {
       animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
     }
   }

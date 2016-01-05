@@ -4,7 +4,7 @@
   z-index: 1;
 
   > .icon {
-    font-size: 36px;
+    font-size: 32px;
     margin: 25px 0 25px 20px;
 
     @include media($bp-vocab) {
@@ -68,13 +68,10 @@
 
   > .extratoggle {
     @include tap-target(8px, 12px);
-    bottom: 0;
     padding: 4px 7px;
     position: absolute;
+    bottom: 0;
     right: 0;
-
-    &:hover {
-      text-decoration: none;
-    }
+    background: $white-light;
   }
 }
