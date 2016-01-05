@@ -2,6 +2,9 @@
  * Toolkit styles
  */
 
+// first so we can override
+@import "vendor/vendor";
+
 // explicitly ordered to control cascade
 @import "base/normalize";
 @import "base/asset-paths";
@@ -10,16 +13,13 @@
 @import "base/include-media";
 @import "base/grid";
 @import "base/helpers";
+@import "base/icons";
 @import "base/fonts";
 @import "base/loader";
 @import "base/layout";
 @import "base/buttons";
 @import "base/forms";
 
-// legacy styles (slowly move into sections/components below)
-@import "kw/styles";
-
 // glob import is alphabetical, use _01-stylesheet to order explicitly if needed
 @import "sections/*";
 @import "components/*";
-
