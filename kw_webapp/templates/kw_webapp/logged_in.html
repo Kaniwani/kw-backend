@@ -1,6 +1,6 @@
 {% extends "kw_webapp/base.html" %}
 {% load humanize %}
-
+{% load lineage %}
 {% block content %}
 
 <header class="site-header" role="banner">
@@ -18,39 +18,39 @@
         <!-- TODO: @tadgh if active, '-active' class on <li>
          perhaps via https://github.com/marcuswhybrow/django-lineage -->
 
-        <li class="item">
+        <li class="item {% ancestor 'kw:review' %}">
           <a href="{% url "kw:review" %}" class="nav-link">
             <span class="text">Reviews
               {% if review_count %}<span class="count"> {{ review_count }}</span>{% endif %}
             </span>
           </a>
         </li>
-        <li class="item">
+        <li class="item {% ancestor 'kw:unlocks' %}">
           <a href="{% url "kw:unlocks" %}" class="nav-link">
             <span class="text">Unlocks</span>
           </a>
         </li>
-        <li class="item">
+        <li class="item {% ancestor 'kw:vocabulary' %}">
           <a href="{% url "kw:vocabulary" %}" class="nav-link">
             <span class="text">Vocab</span>
           </a>
         </li>
-        <li class="item">
+        <li class="item {% ancestor 'kw:about' %}">
           <a href="{% url "kw:about" %}" class="nav-link">
             <span class="text">About</span>
           </a>
         </li>
-        <li class="item">
+        <li class="item {% ancestor 'kw:contact' %}">
           <a href="{% url "kw:contact" %}" class="nav-link">
             <span class="text">Contact</span>
           </a>
         </li>
-        <li class="item">
+        <li class="item {% ancestor 'kw:settings' %}">
           <a href="{% url "kw:settings" %}" class="nav-link">
             <span class="text">Settings</span>
           </a>
         </li>
-        <li class="item">
+        <li class="item {% ancestor 'kw:logout' %}">
           <a href="{% url "kw:logout" %}" class="nav-link">
             <span class="text">Logout</span>
           </a>

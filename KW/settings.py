@@ -187,7 +187,8 @@ INSTALLED_APPS = (
     'kw_webapp',
     'crispy_forms',
     'raven.contrib.django.raven_compat',
-    'rest_framework'
+    'rest_framework',
+    'lineage',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -197,11 +198,13 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = {
     'django.contrib.auth.context_processors.auth',
     "KW.preprocessors.review_count_preprocessor",
+    'django.core.context_processors.request', #TODO:  NOTE! This will change in 1.8 to django.template.context_processors.request
 }
 
 REST_FRAMEWORK = {
@@ -251,6 +254,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+LINEAGE_ANCESTOR_PHRASE = "-active"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
