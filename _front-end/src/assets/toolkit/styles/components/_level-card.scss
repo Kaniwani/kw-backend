@@ -13,28 +13,31 @@ $bp-level-card-2: '>=680px';
     color: #fff;
     display: block;
     overflow: hidden;
-    padding: 18px;
+    font-size: responsive 24px 30px;
+    min-height: 3.5em;
+
 
     > .levelnum {
       text-shadow: 1px 2px 2px rgba($purple-dark, .7);
-      float: left;
-      font-size: responsive 24px 30px;
       margin: -6px 0 26px;
+      position: absolute;
+      left: 20px;
+      top: 15px;
     }
 
-    > .fa {
+    > .icon {
       position: absolute;
-      font-size: 1.2em;
-      left: 20px;
-      bottom: 13px;
+      font-size: .9em;
+      right: 20px;
+      bottom: 15px;
 
-      &.fa-lock {
+      &.i-lock {
         color: $black;
       }
 
       &.-loading {
-        left: 18px;
-        bottom: 13px;
+        right: 18px;
+        bottom: 18px;
       }
     }
   }
@@ -52,7 +55,7 @@ $bp-level-card-2: '>=680px';
     background-color: mix($purple-dark, $white, 95);
     cursor: pointer;
 
-    .fa-unlock-alt {
+    .i-unlock {
       animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
     }
   }

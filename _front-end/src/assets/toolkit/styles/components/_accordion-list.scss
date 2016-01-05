@@ -15,7 +15,7 @@
 
   > .item > .toggle:checked {
     & ~ .label:after {
-      content: '–';
+      content: '\e818'; // 'i-minus'
 
       @include media($bp-lg) {
         // stupid - & + not being centered in fonts...
@@ -36,13 +36,6 @@
     position: relative;
     font-size: 1.2em;
     cursor: pointer;
-    transition: color .3s ease-out;
-
-    time {
-      font-size: .9em;
-      padding: 0 0.1em;
-      color: $grey-dark;
-    }
 
     // larger tap target
     &:before {
@@ -55,14 +48,11 @@
     }
 
     &:after {
-      content: '+';
-      display: inline-block;
-      line-height: 1.6;
+      @extend %icon-font;
+      font-size: .85em;
+      content: '\e817'; // i-plus
       color: $black-light;
     }
 
-    &:hover {
-      color: $grey-dark;
-    }
   }
 }
