@@ -2,7 +2,6 @@
 {% load staticfiles %}
 {% block scripts %}
   {{ block.super }}
-  <script src="{% static "js/levelvocab.js" %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -36,9 +35,9 @@
           {% endfor %}
 
           {% if review.hidden == False %}
-            <!-- <span class="fa fa-unlock" title="Relock" data-pk="{{ review.id }}"></span> -->
+            <span class="i-unlocked" title="Relock" data-pk="{{ review.id }}"></span>
           {% else %}
-            <!-- <span class="fa fa-lock" data-pk="{{ review.id }}"></span> -->
+            <span class="i-unlock" data-pk="{{ review.id }}"></span>
           {% endif %}
 
         </div>
@@ -84,8 +83,11 @@
 </section>
 
 {% endblock %}
-
-
+{% block bottomscripts %}
+    {{ block.super }}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> <!-- TODO @Subversity I assumed we had already imported jquery, but i got an undefined error on '$' so im temp reimporting it here until we migrate this JS.-->
+    <script src="{% static "js/levelvocab.js" %}"></script>
+{% endblock bottomscripts %}
 
 {% comment 'old template' %}
 

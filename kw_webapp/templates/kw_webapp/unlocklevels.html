@@ -16,21 +16,21 @@
           <li class="level-card -locked" data-level-id="{{ level.0 }}">
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
-              <span class="fa fa-lock"></span>
+              <span class="i-lock"></span>
             </div>
           </li>
         {% elif level.1 == True %}
           <li class="level-card -unlocked" data-level-id="{{ level.0 }}">
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
-              <span class="fa fa-unlock"></span>
+              <span class="i-unlocked"></span>
             </div>
           </li>
         {% elif level.1 == False %}
         <li class="level-card -locked -unlockable" data-level-id="{{ level.0 }}">
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
-              <span class="fa fa-unlock-alt"></span>
+              <span class="i-unlock"></span>
             </div>
           </li>
         {% endif %}
