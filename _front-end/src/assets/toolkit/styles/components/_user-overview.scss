@@ -60,7 +60,10 @@
   > .reviews {
     margin-top: $unit-md;
 
-    > .button:not(.-disabled) {
+    .button:not(.-disabled),
+    #forceSrs {
+      transition: color .3s ease-out;
+
       &:hover {
         color: $blue;
       }
