@@ -26,7 +26,9 @@
 
   {% block scripts %} {% endblock scripts %}
   {% block content %}{% endblock content %}
-  <script src="{% static "scripts/global.js" %}"></script>
+  {% block bottomscripts %}
+    <script src="{% static "scripts/global.js" %}"></script>
+  {% endblock bottomscripts %}
 
 </body>
 </html>

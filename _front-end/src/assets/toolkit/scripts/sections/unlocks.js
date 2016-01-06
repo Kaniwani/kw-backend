@@ -12,16 +12,16 @@ const api = {
         event.preventDefault();
 
         let $card = $(this);
-        let $icon = $card.find(".fa-unlock-alt");
+        let $icon = $card.find(".i-unlock");
         let level = $card.data("level-id");
 
-        $icon.removeClass("fa-unlock-alt").addClass('-loading');
+        $icon.removeClass("i-unlock").addClass('-loading');
 
         $.post("/kw/levelunlock/", {"level": level, csrfmiddlewaretoken: CSRF_TOKEN})
          .done(data => {
-            $icon.removeClass("-loading").addClass("fa-unlock");
+            $icon.removeClass("-loading").addClass("i-unlocked");
             $card.removeClass("-locked -unlockable");
-			 $card.addClass("-unlocked");
+		    $card.addClass("-unlocked");
           })
          .always(res => console.log(res));
 
@@ -31,14 +31,14 @@ const api = {
 		event.preventDefault();
 
 		let $card = $(this);
-        let $icon = $card.find(".fa-unlock-alt");
+        let $icon = $card.find(".i-unlock");
         let level = $card.data("level-id");
 
-        $icon.removeClass("fa-unlock").addClass('-loading');
+        $icon.removeClass("i-unlocked").addClass('-loading');
 
         $.post("/kw/levellock/", {"level": level, csrfmiddlewaretoken: CSRF_TOKEN})
          .done(data => {
-            $icon.removeClass("-loading").addClass("fa-lock");
+            $icon.removeClass("-loading").addClass("i-unlock");
             $card.removeClass("-unlocked");
 			 $card.addClass("-locked -unlockable");
           })
