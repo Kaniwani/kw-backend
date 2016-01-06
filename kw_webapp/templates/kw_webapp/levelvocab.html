@@ -1,8 +1,4 @@
 {% extends "kw_webapp/logged_in.html" %}
-{% load staticfiles %}
-{% block scripts %}
-  {{ block.super }}
-{% endblock %}
 
 {% block content %}
   {{ block.super }}
@@ -17,45 +13,41 @@
 
     <ul class="vocab-list">
       {% for review in reviews %}
-        {% if review.hidden == False %}
-          <li class="vocab-card">
-        {% else %}
-          <li class="vocab-card -locked -unlockable">
-        {% endif %}
+        <li class="vocab-card {% if review.hidden %}-locked -unlockable {% endif %}"
+            data-pk="{{ review.id }}">
 
         <div class="vocab-base">
           <!-- FIXME: @tadgh can you tease the logic to show the first kanji only, but still multiple kana/meaning -->
           {% for reading in review.vocabulary.reading_set.all %}
-          <div class="readingset">
-            <span lang="ja" class="kanji">{{ reading.character }}</span>
-            <span lang="ja" class="kana">{{ reading.kana }}</span>
-            <!-- TODO: indivdual meanings would be better as inline elements inside meaning wrap -  so they can line-break an entire multi-word meaning (rather than mid-meaning) -->
-            <span class="meaning">{{ reading.vocabulary.meaning }}</span>
-          </div>
+            <div class="readingset">
+              <span lang="ja" class="kanji">{{ reading.character }}</span>
+              <span lang="ja" class="kana">{{ reading.kana }}</span>
+              <!-- TODO: @djtb indivdual meanings would be better as inline elements inside meaning wrap -  so they can line-break an entire multi-word meaning (rather than mid-meaning) -->
+              <span class="meaning">{{ reading.vocabulary.meaning }}</span>
+            </div>
           {% endfor %}
 
-          {% if review.hidden == False %}
-            <span class="i-unlocked" title="Relock" data-pk="{{ review.id }}"></span>
+          {% if review.hidden %}
+            <span class="icon i-unlock"></span>
           {% else %}
-            <span class="i-unlock" data-pk="{{ review.id }}"></span>
+            <span class="icon i-unlocked"></span>
           {% endif %}
 
         </div>
 
 
-        {% comment 'not ready for production' %}
-        <!-- FIXME: @tadgh In testing this only seemed to show apprentice icon. Did I break the logic trying to condense it into elifs? See old template below. Or does this review.streak not do what I think it does? -->
+        {% comment 'not ready for production - also needs update from styleguide template' %}
         <div class="vocab-extra">
           {% if review.streak > 8 %}
-            <span class="icon icon-burned" title="KaniWani Level - Burned"></span>
+            <span class="icon i-burned" title="KaniWani Level - Burned"></span>
           {% elif review.streak > 7 %}
-              <span class="icon icon-enlightened" title="KaniWani Level - Enlightened"></span>
+              <span class="icon i-enlightened" title="KaniWani Level - Enlightened"></span>
           {% elif review.streak > 5 %}
-            <span class="icon icon-guru" title="KaniWani Level - Guru"></span>
+            <span class="icon i-guru" title="KaniWani Level - Guru"></span>
           {% elif review.streak > 2 %}
-            <span class="icon icon-master" title="KaniWani Level - Master"></span>
+            <span class="icon i-master" title="KaniWani Level - Master"></span>
           {% else %}
-            <span class="icon icon-apprentice" title="KaniWani Level - Apprentice"></span>
+            <span class="icon i-apprentice" title="KaniWani Level - Apprentice"></span>
           {% endif %}
 
           <div class="synonyms">
@@ -67,10 +59,11 @@
             <ul class="list">
               <li class="item">Implementing</li>
               <li class="item">Soon but not yet!</li>
+              <li>{{ review.synonyms_string }}</li>
             </ul>
           </div>
 
-          <a href="#" class="extratoggle fa fa-ellipsis-v"></a>
+          <button class="button extraToggle i-downarrow" title="More…"></button>
 
         </div>
         {% endcomment %}
@@ -83,74 +76,3 @@
 </section>
 
 {% endblock %}
-{% block bottomscripts %}
-    {{ block.super }}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script> <!-- TODO @Subversity I assumed we had already imported jquery, but i got an undefined error on '$' so im temp reimporting it here until we migrate this JS.-->
-    <script src="{% static "js/levelvocab.js" %}"></script>
-{% endblock bottomscripts %}
-
-{% comment 'old template' %}
-
-<input type="hidden" id="csrf" value="{{ csrf_token }}">
-
-<main role="main">
-  <header>
-    <h1><a href="{% url "kw:vocabulary" %}">Vocabulary</a> > <span>Level &lt;{{ selected_level }}&gt;</span></h1>
-  </header>
-
-  <ul class="vocab__list">
-      {% for review in reviews %}
-        {% if review.hidden == False %}
-          <li class="vocab__item">
-        {% else %}
-          <li class="vocab__item vocab__item--locked">
-        {% endif %}
-          <div class="vocab-upper">
-            {% for reading in review.vocabulary.reading_set.all %}
-              <div class="vocab__reading">
-                <span class="vocab__kanji">{{ reading.character }}</span>
-                <span class="vocab__kana">{{ reading.kana }}</span>
-                <span class="vocab__meaning">{{ reading.vocabulary.meaning }}</span>
-              </div>
-            {% endfor %}
-
-            {% if review.hidden == False %}
-              <a href="#" class="fa fa-unlock" title="Unlocked" data-pk="{{ review.id }}"><span class="visually-hidden">Unlocked</span></a>
-            {% else %}
-              <a href="#" class="fa fa-lock" title="Unlockable" data-pk="{{ review.id }}"><span class="visually-hidden">Unlockable</span></a>
-            {% endif %}
-          </div>
-          <div class="vocab-lower">
-            {% if review.streak > 8 %}
-              <span class="icon icon-burned" title="KaniWani Level - Burned"></span>
-            {% else %}
-              {% if review.streak > 7 %}
-                <span class="icon icon-enlightened" title="KaniWani Level - Enlightened"></span>
-              {% else %}
-                {% if review.streak > 5 %}
-                  <span class="icon icon-guru" title="KaniWani Level - Guru"></span>
-                {% else %}
-                  {% if review.streak > 2 %}
-                    <span class="icon icon-master" title="KaniWani Level - Master"></span>
-                  {% else %}
-                    <span class="icon icon-apprentice" title="KaniWani Level - Apprentice"></span>
-                  {% endif %}
-                {% endif %}
-              {% endif %}
-            {% endif %}
-
-            <div class="vocab-synonyms">
-              User synonyms: <span contentEditable="true">{{ review.synonyms_string }}</span><!--
-              <ul class="vocab-synonyms__list">
-                <li class="vocab-synonyms__item" contentEditable="true">Birth anniversary</li>
-                <li class="vocab-synonyms__item" contentEditable="true">That day of the year</li>
-              </ul> -->
-            </div>
-            <a href="#" class="vocab-lower__toggle fa fa-plus"></a>
-          </div>
-        </li>
-      {% endfor %}
-    </ul>
-  </main>
-
-  {% endcomment %}

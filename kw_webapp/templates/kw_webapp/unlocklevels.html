@@ -16,21 +16,30 @@
           <li class="level-card -locked" data-level-id="{{ level.0 }}">
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
-              <span class="i-lock"></span>
+              <span class="icon i-link -hidden" title="View vocab">
+                <a href="{% url "kw:vocabulary" %}{{ level.0 }}"></a>
+              </span>
+              <span class="icon i-lock"></span>
             </div>
           </li>
         {% elif level.1 == True %}
           <li class="level-card -unlocked" data-level-id="{{ level.0 }}">
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
-              <span class="i-unlocked"></span>
+              <span class="icon i-link" title="View vocab">
+                <a href="{% url "kw:vocabulary" %}{{ level.0 }}"></a>
+              </span>
+              <span class="icon i-unlocked" title="Relock"></span>
             </div>
           </li>
         {% elif level.1 == False %}
         <li class="level-card -locked -unlockable" data-level-id="{{ level.0 }}">
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
-              <span class="i-unlock"></span>
+              <span class="icon i-link -hidden" title="View vocab">
+                <a href="{% url "kw:vocabulary" %}{{ level.0 }}"></a>
+              </span>
+              <span class="icon i-unlock"></span>
             </div>
           </li>
         {% endif %}

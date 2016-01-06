@@ -15,24 +15,17 @@
     <nav class="site-nav">
       <a href="#0" class="expandToggle">☰ Menu</a>
       <ul class="nav-list toggleTarget">
-        <!-- TODO: @tadgh if active, '-active' class on <li>
-         perhaps via https://github.com/marcuswhybrow/django-lineage -->
 
         <li class="item {% ancestor 'kw:review' %}">
           <a href="{% url "kw:review" %}" class="nav-link">
             <span class="text">Reviews
-              {% if review_count %}<span class="count"> {{ review_count }}</span>{% endif %}
+              {% if review_count %}<span class="count">{{ review_count }}</span>{% endif %}
             </span>
           </a>
         </li>
         <li class="item {% ancestor 'kw:unlocks' %}">
           <a href="{% url "kw:unlocks" %}" class="nav-link">
             <span class="text">Unlocks</span>
-          </a>
-        </li>
-        <li class="item {% ancestor 'kw:vocabulary' %}">
-          <a href="{% url "kw:vocabulary" %}" class="nav-link">
-            <span class="text">Vocab</span>
           </a>
         </li>
         <li class="item {% ancestor 'kw:about' %}">

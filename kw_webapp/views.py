@@ -152,7 +152,7 @@ class LockRequested(View):
 
         removed_count = lock_level_for_user(requested_level, user)
 
-        return HttpResponse("Removed {} items from your study queue.".format(removed_count))
+        return HttpResponse("{} items removed from your study queue.".format(removed_count))
 
 class UnlockRequested(View):
     """

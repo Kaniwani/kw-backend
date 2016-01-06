@@ -55,6 +55,10 @@
   @extend %visuallyhidden;
 }
 
+.-hidden {
+  display: none !important;
+}
+
 ._strikeout {
   text-decoration: line-through;
 }

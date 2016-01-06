@@ -85,10 +85,6 @@ a {
   text-decoration: none;
   transition: all .3s ease-out;
   color: $grey-dark;
-
-  &:not(.-disabled):hover {
-    color: $grey;
-  }
 }
 
 p {

@@ -4,11 +4,12 @@
 
   > .vocab-base {
     transition: background-color .5s ease-out;
+    background-color: $purple-light;
 
     > .icon {
       position: absolute;
       bottom: 0;
-      color: #fff;
+      color: $white-light;
       left: 5px;
       padding: 10px 15px;
       font-size: 20px;
@@ -32,7 +33,7 @@
       text-align: center;
     }
 
-    *:not(.extratoggle) {
+    *:not(.extraToggle) {
       transition: opacity .33s ease;
       opacity: 0;
     }
@@ -48,20 +49,13 @@
     }
   }
 
-   &.-locked > .vocab-base:before {
-    background-image: image('stripes.png');
-    content: '';
-    height: 100%;
-    left: 0;
-    opacity: .6;
-    position: absolute;
-    top: 0;
-    width: 100%;
-    z-index: 0;
+   &.-locked > .vocab-base {
+    @include bg-stripes;
+    background-color: $purple-dark;
   }
 
   &.-unlockable > .vocab-base:hover {
-    background-color: darken($purple, 7%);
+    background-color: mix($purple-dark, $white, 95);
 
     .i-unlock {
       animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);

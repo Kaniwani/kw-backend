@@ -1,3 +1,5 @@
+// see levels.js for other implementation
+
 $(document).ready(function() {
     var csrf_token = $("#csrf").val();
     //Setting the highlighted tab in the nav bar.
@@ -32,11 +34,14 @@ $(document).ready(function() {
         list_item.notify("I'm Sorry, I can't let you do that. ", { className:"danger" });
     });
 
-    // TODO: @tadgh, this should have a POST to relock a level <3
     $(".unlocked").click(function(event) {
         event.preventDefault();
         var list_item = $(this);
         list_item.notify("Already Unlocked!", { className:"info" });
+
+        // relock endpoint
+        // $.post("/kw/levelunlock/", {level: requested_level, csrfmiddlewaretoken:csrf_token}).done(function(data) {/* stuff */}
+
     });
 
 

@@ -1,27 +1,22 @@
+// this file no longer loaded
+// refactored and active in webapp template via toolkit/scripts/sections/vocab.js
+
+function toggleClasses($icon, $card) {
+    $card.toggleClass('-locked -unlockable');
+    $icon.toggleClass("i-unlock").toggleClass("i-unlocked");
+}
+
 $(document).ready(function() {
     var csrf_token = $("#csrf").val();
-    $('body').on("click", ".i-unlock", function(event) {
-        event.preventDefault();
-        var $this = $(event.target);
-        var review_pk = $this.data("pk");
-        var item = $this;
-         $.post("/kw/togglevocab/", {"review_id": review_pk, csrfmiddlewaretoken:csrf_token}).done(function(data) {
-             console.log(data);
-             item.removeClass("i-unlock");
-             item.addClass("i-unlocked");
-        });
-    });
+    $('.vocab-list').on("click", ".icon", function(event) {
 
-    $("body").on("click", ".i-unlocked", function(event) {
-        event.preventDefault();
-        var $this = $(event.target);
-        var review_pk = $this.data("pk");
-        var item = $this;
-        $.post("/kw/togglevocab/", {"review_id": review_pk, csrfmiddlewaretoken:csrf_token}).done(function(data) {
+        var $icon = $(event.target),
+            $card = $icon.closest('.vocab-card')
+            review_pk = $card.data("pk");
+
+         $.post("/kw/togglevocab/", {"review_id": review_pk, csrfmiddlewaretoken:csrf_token}).done(function(data) {
             console.log(data);
-            item.removeClass("i-unlocked");
-            item.addClass("i-unlock");
+            toggleClasses($icon, $card);
         });
     });
-    //TODO @Subversity. You will notice that these functions are damn near identical. They both hit the same endpoint, which just toggles current hidden status. Can probably refactor this JS?
 });

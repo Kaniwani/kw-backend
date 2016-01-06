@@ -1,3 +1,5 @@
+// lock endpoint is just /kw/levellock
+
 $(document).ready(function() {
     var csrf_token = $("#csrf").val();
 

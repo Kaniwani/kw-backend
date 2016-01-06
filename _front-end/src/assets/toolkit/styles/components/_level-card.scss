@@ -7,15 +7,13 @@ $bp-level-card-2: '>=680px';
   border-radius: 3px;
 
   > .wrap {
-    transition: background-color .33s ease;
     background-color: $purple-light;
     border-radius: 3px;
-    color: #fff;
+    color: $white-light;
     display: block;
     overflow: hidden;
     font-size: responsive 24px 30px;
-    min-height: 3.5em;
-
+    min-height: 4em;
 
     > .levelnum {
       text-shadow: 1px 2px 2px rgba($purple-dark, .7);
@@ -28,23 +26,32 @@ $bp-level-card-2: '>=680px';
     > .icon {
       position: absolute;
       font-size: .9em;
-      right: 20px;
+      left: 20px;
       bottom: 15px;
 
       &.i-lock {
         color: $black;
       }
 
+      &.i-link {
+        left: auto;
+        right: 20px;
+        transition: color .3s ease-out;
+        &:hover {
+          color: $pink;
+        }
+      }
+
       &.-loading {
-        right: 18px;
+        left: 18px;
         bottom: 18px;
       }
     }
   }
 
   &.-locked > .wrap {
-    background-color: $purple-dark;
     @include bg-stripes;
+    background-color: $purple-dark;
   }
 
   &.-locked:not(.-unlockable) > .wrap {
@@ -52,11 +59,17 @@ $bp-level-card-2: '>=680px';
   }
 
   &.-unlockable > .wrap:hover {
-    background-color: mix($purple-dark, $white, 95);
-    cursor: pointer;
-
     .i-unlock {
+      cursor: pointer;
       animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
+    }
+  }
+
+  &.-unlocked:hover {
+    color: $white-light;
+    background-color: $purple;
+    > .wrap .icon {
+      cursor: pointer;
     }
   }
 }

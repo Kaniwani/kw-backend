@@ -97,7 +97,7 @@ class TestViews(TestCase):
 
         response = self.client.post("/kw/levellock/", data={"level": 5})
 
-        self.assertContains(response, "Removed 1 items from your study queue.")
+        self.assertContains(response, "1 items removed from your study queue.")
 
     @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_level", side_effect=lambda x, y: [1, 0])
     def test_unlocking_a_level_unlocks_all_vocab(self, unlock_call):

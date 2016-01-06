@@ -1,51 +1,48 @@
 import $ from 'jquery';
 
-let CSRF = null;
+// setup variables inside closure, but functions can access them if needs be
+let CSRF,
+    $vocabList,
+    $cards;
 
-const toggleVocabExpand = (event) => {
+function init() {
+  CSRF = $('#csrf').val();
+  $vocabList = $('.vocab-list');
+
+  // if parent element exists on page
+  if($vocabList.length) {
+    // Cache DOM elements
+    $cards = $vocabList.find('.vocab-card');
+
+    // Attach events
+    $cards.on('click', '.extraToggle', toggleVocabExpand);
+    $cards.on('click', '.icon', handleIconClick);
+  }
+}
+
+function toggleVocabExpand(event) {
   event.preventDefault();
-  $(event.target).closest('.vocab-card').toggleClass('-expanded');
-};
+  $(this).closest('.vocab-card').toggleClass('-expanded');
+}
 
-// const handleIconClick = (event) => {
-//   event.preventDefault();
-//   event.stopPropagation();
-//   let $icon = $(event.target);
-//   let $el = $icon.closest('.vocab-card');
-//   let level = $el.data("level-id");
-//   console.log($el, level);
+function handleIconClick(event) {
+  let $icon = $(this),
+      $card = $icon.closest('.vocab-card'),
+      review_pk = $card.data('pk');
 
-//   if ($el.hasClass('fa-unlock-alt')) {
-//     postUnlock($el, $icon, level);
-//   }
+    $.post('/kw/togglevocab/', { review_id: review_pk, csrfmiddlewaretoken: CSRF })
+      .done(() =>  toggleClasses($icon, $card))
+      .always(data => console.log(data));
+}
 
-// }
 
-// const postUnlock = ($el, $icon, level) => {
-//   $.post("/kw/levelunlock/", {"level": level, csrfmiddlewaretoken: CSRF})
-//    .done(function(data) {
-//       $icon.removeClass("fa-unlock-alt");
-//       $icon.addClass("fa-unlock");
-//       $el.removeClass("-locked -unlockable");
-//   });
-// };
-
-// const postlock = () => {};
+function toggleClasses($icon, $card) {
+    $card.toggleClass('-locked -unlockable');
+    $icon.toggleClass('i-unlock').toggleClass('i-unlocked');
+}
 
 const api = {
-  init() {
-    CSRF = $('#csrf').val();
-    let $vocabList = $('.vocab-list');
-
-    if($vocabList.length > 0) {
-      // Cache DOM elements
-      let $cards = $vocabList.find('.vocab-card');
-
-      // Attach events
-      $cards.on('click', '.extratoggle', toggleVocabExpand);
-      // $cards.on('click', '.fa', handleIconClick);
-    }
-  }
+  init: init
 };
 
 export default api;
