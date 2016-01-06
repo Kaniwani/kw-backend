@@ -3,6 +3,12 @@
 
 {% block content %}
   {{ block.super }}
+  {% if not user.profile.api_valid %}
+     Woah your API key is invalid!
+    {% comment %}
+        <--! TODO @Subversity show a little dialog box that tells them their API key is invalid? Maybe have it link to settings page when clicked on.  -->
+    {% endcomment %}
+  {% endif %}
 
   <section class="user-section -fullwidth">
     {% include 'partials/user-overview.html' %}
