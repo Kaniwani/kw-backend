@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import wanakana from '../vendor/wanakana.min.js';
 
-// TODO: CACHE more $elements
+// TODO: CACHE more $elements && refactor/extract functions
 
 const api = {
 

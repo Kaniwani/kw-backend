@@ -1,7 +1,7 @@
 import $ from 'jquery';
 
-// TODO: refactor like vocab.js
-// both click functions are almost identical
+// TODO: refactor like vocab.js both click functions are almost identical
+// TODO: change click target to not include i-link / level vocab link currently blocked/hijacked
 
 const api = {
 

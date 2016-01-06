@@ -1,4 +1,5 @@
-// see levels.js for other implementation
+// this file no longer loaded
+// actual js is compiled by gulp --prod from _front-end/src/assets/toolkit/scripts/sections/unlocks.js
 
 $(document).ready(function() {
     var csrf_token = $("#csrf").val();

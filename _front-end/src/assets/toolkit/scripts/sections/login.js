@@ -5,7 +5,7 @@ const api = {
   init() {
     $(".login-form .button.-submit").click(function(event){
       $(this).val('Signing in...');
-      // give user impression of things happening
+      // login animation
       setTimeout(() => $(this).closest('.container').addClass('-pending'), 750);
     });
   }

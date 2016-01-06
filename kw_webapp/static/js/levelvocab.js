@@ -1,5 +1,5 @@
 // this file no longer loaded
-// refactored and active in webapp template via toolkit/scripts/sections/vocab.js
+// actual js is compiled by gulp --prod from _front-end/src/assets/toolkit/scripts/sections/vocab.js
 
 function toggleClasses($icon, $card) {
     $card.toggleClass('-locked -unlockable');
