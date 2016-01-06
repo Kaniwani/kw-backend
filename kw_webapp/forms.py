@@ -97,5 +97,3 @@ class SettingsForm(ModelForm):
                 raise ValidationError("API Key not associated with a WaniKani User!")
         print("cleaned api Key...")
         return api_key
-
-

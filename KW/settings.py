@@ -189,6 +189,7 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     'rest_framework',
     'lineage',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -218,7 +219,13 @@ ROOT_URLCONF = 'KW.urls'
 
 WSGI_APPLICATION = 'KW.wsgi.application'
 
-
+#EMAIL BACKEND SETTINGS
+EMAIL_HOST = "127.0.0.1"
+EMAIL_PORT = 25
+#EMAIL_HOST_USER = "reports@kaniwani.com"
+#EMAIL_HOST_PASSWORD = ''
+MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
+DEFAULT_FROM_EMAIL = "notifications@KaniWani.com"
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 

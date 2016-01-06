@@ -5,6 +5,7 @@ anyjson==0.3.3
 billiard==3.3.0.18
 celery==3.1.13
 cookies==2.2.1
+django-contact-form==1.1
 django-crispy-forms==1.4.0
 django-filter==0.11.0
 django-lineage==0.2.0

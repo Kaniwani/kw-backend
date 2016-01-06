@@ -18,5 +18,6 @@ urlpatterns = patterns('',
                        url(r'^api/', include(router.urls)),
                        url(r'^kw/', include('kw_webapp.urls', namespace="kw")),
                        url(r'^admin/', include(admin.site.urls)),
+                       url(r'^contact/', include('contact_form.urls', namespace='contact')),
                        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
                        )
