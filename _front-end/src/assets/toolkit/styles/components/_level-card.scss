@@ -11,7 +11,7 @@ $bp-level-card-2: '>=680px';
     background-color: $purple-light;
     border-radius: 3px;
     color: $white-light;
-    transition: background .5s ease-in-out;
+    transition: background-color .6s ease-in-out;
     overflow: hidden;
     font-size: responsive 24px 30px;
     min-height: 4em;
@@ -55,7 +55,7 @@ $bp-level-card-2: '>=680px';
 
   &.-locked > .wrap {
     @include bg-stripes;
-    transition: background .5s ease-in-out;
+    transition: background-color .6s ease-in-out;
     background-color: $purple-dark;
   }
 
