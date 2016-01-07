@@ -22,7 +22,6 @@ function init() {
     $reviewCount = $('.nav-link > .text > .count')
 
     // Attach events
-    // TODO: TEST IF $levelList works as well as '.level-card -unlockable'
     $levelList.on('click', '[class*="i-unlock"]', handleLockClick);
   }
 }
@@ -36,8 +35,6 @@ function handleLockClick(event) {
   reviews = parseInt($reviewCount.text(), 10);
 
   $icon.removeClass("i-unlock i-unlocked").addClass('-loading');
-
-  console.log(level, $card.hasClass('-unlocked'))
 
   $card.hasClass('-unlocked') ? reLockPost()
                               : unLockPost();
@@ -63,7 +60,7 @@ function reLockPost() {
   $.post("/kw/levellock/", {level: level, csrfmiddlewaretoken: CSRF})
    .done(res => {
 
-      updateReviewCount(res)
+      updateReviewCount(res, true)
 
       // the post succeeds almost instantly, lets see the loading icon briefly for UI feedback
       setTimeout(() => {
@@ -72,19 +69,24 @@ function reLockPost() {
         $card.addClass("-locked -unlockable");
         $card.find('.i-link').addClass('-hidden');
       }, 400);
+
+      // TODO: notify user with response.
+
     })
    .fail(handleAjaxFail)
    .always(res => console.log(res));
 }
 
-function updateReviewCount(responseString) {
+function updateReviewCount(responseString, subtract = false) {
   let changed = parseInt(responseString.match(/^\d+/), 10);
-  let newCount = Number.isNaN(reviews) ? changed : reviews += changed;
+  !!subtract ? reviews -= changed : reviews += changed;
 
+  let newCount = Number.isNaN(reviews) ? changed : reviews;
   $reviewCount.text(newCount < 0 ? 0 : newCount);
 }
 
 function handleAjaxFail(res) {
+  // TODO: report server failure with modal instead
   window.alert('Something went wrong - please submit a bug report via contact form');
 }
 
