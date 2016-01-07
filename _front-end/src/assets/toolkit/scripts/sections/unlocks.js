@@ -1,4 +1,6 @@
 import $ from 'jquery';
+// docs -- http://github.com/jaredreich/notie.js/
+import notie from '../vendor/notie';
 
 // setup variables inside module closure, but functions in this file can modify and access them
 let CSRF,
@@ -23,6 +25,7 @@ function init() {
 
     // Attach events
     $levelList.on('click', '[class*="i-unlock"]', handleLockClick);
+    $levelList.on('click', '[class*="i-lock"]', () => notie.alert(3, 'Level is locked. No cheating!', 1));
   }
 }
 
@@ -34,47 +37,48 @@ function handleLockClick(event) {
   level = $card.data("level-id"),
   reviews = parseInt($reviewCount.text(), 10);
 
-  $icon.removeClass("i-unlock i-unlocked").addClass('-loading');
-
-  $card.hasClass('-unlocked') ? reLockPost()
-                              : unLockPost();
+  if ($card.hasClass('-unlocked')) {
+    notie.confirm(`Are you sure you want to relock level ${level}? This will reset your SRS levels.`, 'Yeah!', 'Nope', reLockLevel);
+  } else {
+    unLockLevel();
+  }
 }
 
-function unLockPost() {
+function unLockLevel() {
+  $icon.removeClass("i-unlock i-unlocked").addClass('-loading');
+
   $.post("/kw/levelunlock/", {level: level, csrfmiddlewaretoken: CSRF})
    .done(res => {
 
       updateReviewCount(res);
+      notie.alert(1, res, 1.5);
 
       $icon.removeClass("-loading").addClass('i-unlocked');
       $card.removeClass("-locked -unlockable");
       $card.addClass("-unlocked");
       $card.find('.i-link').removeClass('-hidden');
 
+
     })
-   .fail(handleAjaxFail)
-   .always(res => console.log(res));
+   .fail(handleAjaxFail);
 }
 
-function reLockPost() {
+function reLockLevel() {
+  $icon.removeClass("i-unlock i-unlocked").addClass('-loading');
+
   $.post("/kw/levellock/", {level: level, csrfmiddlewaretoken: CSRF})
    .done(res => {
 
       updateReviewCount(res, true)
+      notie.alert(1, res, 1.5);
 
-      // the post succeeds almost instantly, lets see the loading icon briefly for UI feedback
-      setTimeout(() => {
-        $icon.removeClass("-loading").addClass("i-unlock");
-        $card.removeClass("-unlocked");
-        $card.addClass("-locked -unlockable");
-        $card.find('.i-link').addClass('-hidden');
-      }, 400);
-
-      // TODO: notify user with response.
+      $icon.removeClass("-loading").addClass("i-unlock");
+      $card.removeClass("-unlocked");
+      $card.addClass("-locked -unlockable");
+      $card.find('.i-link').addClass('-hidden');
 
     })
-   .fail(handleAjaxFail)
-   .always(res => console.log(res));
+   .fail(handleAjaxFail);
 }
 
 function updateReviewCount(responseString, subtract = false) {
@@ -86,10 +90,10 @@ function updateReviewCount(responseString, subtract = false) {
 }
 
 function handleAjaxFail(res) {
-  // TODO: report server failure with modal instead
-  window.alert('Something went wrong - please submit a bug report via contact form');
-}
+  let message = `Something went wrong - please try again. If the problem persists, submit a bug report via <a href="/contact"> the contact form</a> with the following information: <q>${res.responseText} - ${res.status}: ${res.statusText}</q>.`;
 
+  notie.alert(3, message, 60);
+}
 
 const api = {
   init: init
