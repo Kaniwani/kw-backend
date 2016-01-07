@@ -1,17 +1,18 @@
 import $ from 'jquery';
 
-// setup variables inside closure, but functions can access them if needs be
+// setup variables inside module closure, but functions can access them if needs be
 let CSRF,
     $vocabList,
     $cards;
 
 function init() {
-  CSRF = $('#csrf').val();
   $vocabList = $('.vocab-list');
 
-  // if parent element exists on page
+  // if container element exists on current page
   if($vocabList.length) {
-    // Cache DOM elements
+
+    // cache elements/setup vars
+    CSRF = $('#csrf').val();
     $cards = $vocabList.find('.vocab-card');
 
     // Attach events

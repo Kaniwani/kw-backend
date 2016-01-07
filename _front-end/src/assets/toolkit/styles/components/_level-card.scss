@@ -7,10 +7,11 @@ $bp-level-card-2: '>=680px';
   border-radius: 3px;
 
   > .wrap {
+    display: block;
     background-color: $purple-light;
     border-radius: 3px;
     color: $white-light;
-    display: block;
+    transition: background .5s ease-in-out;
     overflow: hidden;
     font-size: responsive 24px 30px;
     min-height: 4em;
@@ -24,6 +25,7 @@ $bp-level-card-2: '>=680px';
     }
 
     > .icon {
+      @include tap-target(5px, 10px);
       position: absolute;
       font-size: .9em;
       left: 20px;
@@ -37,8 +39,10 @@ $bp-level-card-2: '>=680px';
         left: auto;
         right: 20px;
         transition: color .3s ease-out;
+        color: $white-light;
         &:hover {
-          color: $pink;
+          color: $grey-dark;
+          cursor: pointer;
         }
       }
 
@@ -51,11 +55,14 @@ $bp-level-card-2: '>=680px';
 
   &.-locked > .wrap {
     @include bg-stripes;
+    transition: background .5s ease-in-out;
     background-color: $purple-dark;
   }
 
-  &.-locked:not(.-unlockable) > .wrap {
-    cursor: not-allowed;
+  &.-locked {
+    .i-lock:hover {
+      cursor: not-allowed;
+    }
   }
 
   &.-unlockable > .wrap:hover {
@@ -66,9 +73,7 @@ $bp-level-card-2: '>=680px';
   }
 
   &.-unlocked:hover {
-    color: $white-light;
-    background-color: $purple;
-    > .wrap .icon {
+    .i-unlocked {
       cursor: pointer;
     }
   }
