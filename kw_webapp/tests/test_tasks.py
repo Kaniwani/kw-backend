@@ -1,9 +1,11 @@
 from django.test import TestCase, RequestFactory
 import responses
+
+from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific, Profile
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
     build_API_sync_string_for_user, add_synonyms_from_api_call_to_review, sync_unlocked_vocab_with_wk, \
-    lock_level_for_user
+    lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile
 
@@ -64,10 +66,6 @@ class TestCeleryTasks(TestCase):
 
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [5, 7])
 
-
-
-
-
     def test_create_new_vocab_based_on_json_works(self):
         vocab_json = {"character": "bleh", "kana": "bleh", "meaning": "two", "level": 1,
                       "user_specific": {"srs": "burned", "srs_numeric": 9, "unlocked_date": 1382674360,
@@ -90,3 +88,26 @@ class TestCeleryTasks(TestCase):
 
         sync_unlocked_vocab_with_wk(self.user)
         self.assertListEqual(self.review.synonyms_list(), ["kitten", "large rat"])
+
+    def test_building_unlock_all_string_works(self):
+        sample_level = constants.LEVEL_MAX
+        api_string = build_API_sync_string_for_user_for_levels(self.user,
+                                                               [level for level in range(1, sample_level + 1)])
+
+        expected = ",".join([str(level) for level in range(1, sample_level + 1)])
+
+        self.assertTrue(expected in api_string)
+
+    @responses.activate
+    def test_unlock_all_unlocks_all(self):
+        resp_body = sample_api_responses.single_vocab_response
+        level_list = [level for level in range(1, self.user.profile.level + 1)]
+        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, level_list),
+                      json=resp_body,
+                      status=200,
+                      content_type='application/json')
+
+        checked_levels, unlocked_count, locked_count = unlock_all_possible_levels_for_user(self.user)
+
+        self.assertListEqual(level_list, checked_levels)
+        self.assertEqual(unlocked_count, 1)

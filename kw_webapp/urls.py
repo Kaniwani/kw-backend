@@ -1,12 +1,14 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
 from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard, ReviewSummary, UnlockLevels, \
-    UnlockRequested, ForceSRSCheck, About, Contact, \
-    Settings, Levels, LevelVocab, ToggleVocabLockStatus, LockRequested
+    UnlockRequested, ForceSRSCheck, About, \
+    Settings, Levels, LevelVocab, ToggleVocabLockStatus, LockRequested, UnlockAll
 from kw_webapp.forms import UserLoginForm
+
 urlpatterns = patterns('',
                        url(r'^$', Dashboard.as_view(), name="home"),
                        url(r'^login/$', 'django.contrib.auth.views.login',
-                           {'template_name': 'registration/login.html', 'authentication_form': UserLoginForm},
+                           {'template_name': 'registration/login.html',
+                            'authentication_form': UserLoginForm},
                            name="login"),
                        url(r'^register/$', Register.as_view(), name="register"),
                        url(r'^logout/$', Logout.as_view(), name="logout"),
@@ -16,6 +18,7 @@ urlpatterns = patterns('',
                        url(r'^unlocks/$', UnlockLevels.as_view(), name="unlocks"),
                        url(r'^levelunlock/$', UnlockRequested.as_view(), name="do_unlock"),
                        url(r'^levellock/$', LockRequested.as_view(), name="do_lock"),
+                       url(r'^unlockall/', UnlockAll.as_view(), name="unlock_all"),
                        url(r'^force_srs/$', ForceSRSCheck.as_view(), name="force_srs"),
                        url(r'^about/$', About.as_view(), name='about'),
                        url(r'^vocabulary/$', Levels.as_view(), name='vocabulary'),

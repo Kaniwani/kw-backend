@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from django.utils import timezone
 
+from kw_webapp import constants
 
 logger = logging.getLogger("kw.models")
 
@@ -76,8 +77,8 @@ class Reading(models.Model):
     character = models.CharField(max_length=255)
     kana = models.CharField(max_length=255)
     level = models.PositiveIntegerField(validators=[
-        MinValueValidator(1),
-        MaxValueValidator(60),
+        MinValueValidator(constants.LEVEL_MIN),
+        MaxValueValidator(constants.LEVEL_MAX),
     ])
 
 
