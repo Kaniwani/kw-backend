@@ -1,4 +1,3 @@
-import $ from 'jquery';
 // docs -- http://github.com/jaredreich/notie.js/
 import notie from '../vendor/notie';
 

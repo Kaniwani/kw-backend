@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 const api = {
   init() {
     $('.expandToggle').click((ev) => {

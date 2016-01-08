@@ -1,50 +1,24 @@
-
 {% extends "kw_webapp/base.html" %}
-{% load staticfiles %}
-<!-- TODO: remove this if inline <script> with jquery gone -->
-{% block scripts %}
-    <script src="{% static "js/jquery.js"%}"></script>
-{% endblock scripts %}
-
 {% block content %}
 
-<input type="hidden" id="csrf" value="{{ csrf_token }}">
+    <input type="hidden" id="csrf" value="{{ csrf_token }}">
 
-<section class="review-section -fullwidth">
-  {% include 'partials/review-header.html' %}
-  {% include 'partials/review-quiz.html' %}
-</section>
+    <section class="review-section -fullwidth">
+      {% include 'partials/review-header.html' %}
+      {% include 'partials/review-quiz.html' %}
+    </section>
 
-<script>
-    // TODO: load into local storage straight-up - or receive as json somehow when reviews route is hit?
-    var vocabulary_list = [
-        {% for item in object_list %}
-        {
-            'user_specific_id':'{{ item.id }}',
-            'meaning':'{{ item.vocabulary.meaning }}{% if item.synonyms_string %}, {{ item.synonyms_string }}{% endif %}',
-            'readings':  [{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.kana }}',{% endif %}{% endfor %}],
-            'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
-        },
-        {% endfor %}
-    ];
+    <script>
+        simpleStorage.set('KW_reviewList', [
+            {% for item in object_list %}
+            {
+                'user_specific_id':'{{ item.id }}',
+                'meaning':'{{ item.vocabulary.meaning }}{% if item.synonyms_string %}, {{ item.synonyms_string }}{% endif %}',
+                'readings':  [{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.kana }}',{% endif %}{% endfor %}],
+                'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
+            },
+            {% endfor %}
+        ]);
+    </script>
 
-    // TODO: move into reviews.js completely if plausible (and remove jquery from %scripts block above)
-    console.log(vocabulary_list);
-    var current_vocab;
-    $("#reviewsLeft").text(vocabulary_list.length)
-    current_vocab = vocabulary_list.shift();
-    console.log(current_vocab.meaning);
-    $("#meaning").html(current_vocab.meaning);
-    $("#us-id").val(current_vocab.user_specific_id);
-
-    $("#detailKana .-kana").text("");
-      for (var i = 0; i < current_vocab.readings.length; i++) {
-        $("#detailKana .-kana").append(current_vocab.readings[i] + "</br>");
-      }
-    $("#detailKanji .-kanji").text("");
-      for (var i = 0; i < current_vocab.characters.length; i++) {
-        $("#detailKanji .-kanji").append(current_vocab.characters[i] + "</br>");
-      }
-
-</script>
 {% endblock %}

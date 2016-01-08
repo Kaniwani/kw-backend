@@ -1,6 +1,3 @@
-import $ from 'jquery';
-
-// setup variables inside module closure, but functions can access them if needs be
 let CSRF,
     $vocabList,
     $cards;

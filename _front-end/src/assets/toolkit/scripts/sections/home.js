@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 let $refreshButton,
 		$reviewCount;
 
@@ -20,6 +18,7 @@ function refreshReviews() {
 	let $icon = $refreshButton.find('span[class^="i-"]');
 	$icon.removeClass('i-refresh').addClass('-loading');
 
+	// TODO: update localStorage instead, then update reviewCount from storage (both in button as well as nav)
 	$.get("/kw/force_srs/")
 	 .done(function(data) {
 	 		data = parseInt(data, 10);

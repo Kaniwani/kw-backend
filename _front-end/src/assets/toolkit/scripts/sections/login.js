@@ -1,5 +1,3 @@
-import $ from 'jquery';
-
 function init() {
   $(".login-form .button.-submit").click(function(event){
     $(this).val('Signing in...');

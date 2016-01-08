@@ -18,13 +18,13 @@
 
         <div class="vocab-base">
           <!-- FIXME: @tadgh can you tease the logic to show the first kanji only, but still multiple kana/meaning -->
-            <div class="readingset">
-              <span lang="ja" class="kanji">{{ review.vocabulary.reading.character }}</span>
           {% for reading in review.vocabulary.reading_set.all %}
+            <div class="readingset">
+              <span lang="ja" class="kanji">{{ reading.character }}</span>
               <span lang="ja" class="kana">{{ reading.kana }}</span>
-          {% endfor %}
-              <span class="meaning">{{ review.vocabulary.meaning }}</span>
+              <span class="meaning">{{ reading.vocabulary.meaning }}</span>
             </div>
+          {% endfor %}
 
           {% if review.hidden %}
             <span class="icon i-unlock"></span>
