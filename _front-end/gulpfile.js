@@ -132,7 +132,6 @@ gulp.task('copy', function() {
 			.pipe(gulp.dest(config.kwstatic));
 })
 
-
 // server
 gulp.task('serve', function () {
 

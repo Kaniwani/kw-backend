@@ -67,23 +67,23 @@
 
 	var _sectionsHome2 = _interopRequireDefault(_sectionsHome);
 
-	var _componentsExpandToggle = __webpack_require__(5);
+	var _componentsExpandToggle = __webpack_require__(6);
 
 	var _componentsExpandToggle2 = _interopRequireDefault(_componentsExpandToggle);
 
-	var _componentsRevealToggle = __webpack_require__(6);
+	var _componentsRevealToggle = __webpack_require__(7);
 
 	var _componentsRevealToggle2 = _interopRequireDefault(_componentsRevealToggle);
 
-	var _sectionsVocab = __webpack_require__(7);
+	var _sectionsVocab = __webpack_require__(8);
 
 	var _sectionsVocab2 = _interopRequireDefault(_sectionsVocab);
 
-	var _sectionsUnlocks = __webpack_require__(8);
+	var _sectionsUnlocks = __webpack_require__(9);
 
 	var _sectionsUnlocks2 = _interopRequireDefault(_sectionsUnlocks);
 
-	var _sectionsReviews = __webpack_require__(11);
+	var _sectionsReviews = __webpack_require__(12);
 
 	var _sectionsReviews2 = _interopRequireDefault(_sectionsReviews);
 
@@ -9348,7 +9348,7 @@
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($) {"use strict";
+	/* WEBPACK VAR INJECTION */(function($, simpleStorage) {"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 		value: true
@@ -9360,25 +9360,28 @@
 		$refreshButton = $("#forceSrs");
 		$reviewCount = $("#reviewCount");
 
+		// are we on home page?
 		if ($refreshButton.length) {
-
-			// event handlers
 			$refreshButton.click(refreshReviews);
 			$(document).keypress(handleKeyPress);
 		}
 	}
 
-	function refreshReviews() {
-		var $icon = $refreshButton.find('span[class^="i-"]');
-		$icon.removeClass('i-refresh').addClass('-loading');
+	function pluralizeReviews(num) {
+		return num + (num > 1 ? " Reviews" : " Review");
+	}
 
-		// TODO: update localStorage instead, then update reviewCount from storage (both in button as well as nav)
+	function refreshReviews() {
+		var sessionVocab = (simpleStorage.get('sessionVocab') || []).length;
+		if (sessionVocab > 0) {
+			return $reviewCount.html(pluralizeReviews(sessionVocab));
+		}
+
 		$.get("/kw/force_srs/").done(function (data) {
-			data = parseInt(data, 10);
+			data = parseInt(data);
 			if (data > 0) {
-				$reviewCount.html(data + (data > 1 ? " Reviews" : " Review")).removeClass("-disabled");
+				$reviewCount.html(pluralizeReviews(data)).removeClass("-disabled");
 			}
-			$icon.removeClass('-loading').addClass('i-refresh');
 		});
 	}
 
@@ -9415,10 +9418,16 @@
 
 	exports["default"] = api;
 	module.exports = exports["default"];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(5)))
 
 /***/ },
 /* 5 */
+/***/ function(module, exports) {
+
+	module.exports = simpleStorage;
+
+/***/ },
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
@@ -9440,7 +9449,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 6 */
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {// TODO: export hide, show, toggle etc for reviews.js to access
@@ -9469,7 +9478,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
@@ -9528,7 +9537,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {// docs -- http://github.com/jaredreich/notie.js/
@@ -9540,7 +9549,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _vendorNotie = __webpack_require__(9);
+	var _vendorNotie = __webpack_require__(10);
 
 	var _vendorNotie2 = _interopRequireDefault(_vendorNotie);
 
@@ -9640,7 +9649,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*
@@ -10423,10 +10432,10 @@
 	if (typeof module !== 'undefined' && module) {
 	    module.exports = notie;
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)(module)))
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -10442,7 +10451,7 @@
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(simpleStorage, $) {'use strict';
@@ -10460,7 +10469,7 @@
 	// simpleStorage exposed via webpack from page header CDN <script>
 
 	// cache jquery objects instead of querying dom all the time
-	var remainingVocab = simpleStorage.get('KW_reviewList'),
+	var remainingVocab = simpleStorage.get('sessionVocab'),
 	    CSRF = $("#csrf").val(),
 	    //Grab CSRF token off of dummy form.
 	currentVocab = undefined,
@@ -10475,7 +10484,32 @@
 	    $reveal = $('.reveal'),
 	    $userAnswer = $('#userAnswer'),
 	    $detailKana = $('#detailKana'),
+	    $submitAnswer = $('#submitAnswer'),
 	    $detailKanji = $('#detailKanji');
+
+	function init() {
+	  if (!$meaning.length) return;
+	  // set initial values
+	  $reviewsLeft.text(remainingVocab.length);
+	  currentVocab = remainingVocab.shift();
+	  $meaning.html(currentVocab.meaning);
+	  $userID.val(currentVocab.user_specific_id);
+
+	  $detailKana.kana = $detailKana.find('.-kana');
+	  $detailKanji.kanji = $detailKanji.find('.-kanji');
+
+	  updateKanaKanjiDetails();
+
+	  // event listeners
+	  _vendorWanakanaMin2['default'].bind($userAnswer.get(0));
+	  $userAnswer.keypress(handleShortcuts);
+	  $submitAnswer.click(function () {
+	    return enterPressed();
+	  });
+
+	  // focus input field
+	  $userAnswer.focus();
+	}
 
 	function updateKanaKanjiDetails() {
 	  $detailKana.kana.html(currentVocab.readings.map(function (reading) {
@@ -10486,7 +10520,7 @@
 	  }));
 	}
 
-	function make_post(path, params) {
+	function makePost(path, params) {
 	  var form = document.createElement("form");
 	  form.setAttribute("method", "post");
 	  form.setAttribute("action", path);
@@ -10515,35 +10549,13 @@
 	  return this.indexOf(suffix, this.length - suffix.length) !== -1;
 	};
 
-	function init() {
-	  // set initial values
-	  $reviewsLeft.text(remainingVocab.length);
-	  currentVocab = remainingVocab.shift();
-	  $meaning.html(currentVocab.meaning);
-	  $userID.val(currentVocab.user_specific_id);
-
-	  $detailKana.kana = $detailKana.find('.-kana');
-	  $detailKanji.kanji = $detailKanji.find('.-kanji');
-
-	  updateKanaKanjiDetails();
-
-	  // only try to bind IME if input exists
-	  if ($userAnswer) {
-	    _vendorWanakanaMin2['default'].bind($userAnswer.get(0));
-	  }
-
-	  $userAnswer.on("keypress", handleShortcuts);
-
-	  $("#submitAnswer").click(function () {
-	    enterPressed();
-	  });
-
-	  $userAnswer.focus();
+	function existsIn(item, obj) {
+	  return Object.keys(obj).indexOf(item) < 0;
 	}
 
 	function compareAnswer() {
 	  var correct = undefined,
-	      previously_wrong = undefined,
+	      previouslyWrong = undefined,
 	      currentUserID = $userID.val(),
 	      answer = $userAnswer.val();
 
@@ -10558,48 +10570,47 @@
 	  }
 
 	  //Checking if the user's answer exists in valid readings.
-	  else if ($.inArray(answer, currentVocab.readings) != -1) {
+	  else if (existsIn(answer, currentVocab.readings)) {
 	      //Ensures this is the first time the vocab has been answered in this session, so it goes in the right
 	      //container(incorrect/correct)
-	      if ($.inArray(currentUserID, Object.keys(answerCorrectness)) == -1) {
-	        answerCorrectness[currentUserID] = 1;
-	        previously_wrong = false;
+	      if (existsIn(currentUserID, Object.keys(answerCorrectness))) {
+	        previouslyWrong = true;
 	      } else {
-	        previously_wrong = true;
+	        answerCorrectness[currentUserID] = 1;
+	        previouslyWrong = false;
 	      }
 	      correct = true;
 	      rightAnswer();
-	      var answer_index = $.inArray(answer, currentVocab.readings);
-	      fill_text_with_kanji(answer_index); //Fills the correct kanji based on the user's answers.
+	      replaceAnswerWithKanji(currentVocab.readings.indexOf(answer)); //Fills the correct kanji based on the user's answers.
 	    }
 	    //answer was not in the known readings.
 	    else {
-	        if ($.inArray(currentUserID, Object.keys(answerCorrectness)) == -1) {
-	          answerCorrectness[currentUserID] = -1;
-	          previously_wrong = false;
-	        } else {
+	        if (existsIn(currentUserID, Object.keys(answerCorrectness))) {
 	          answerCorrectness[currentUserID] -= 1;
-	          previously_wrong = true;
+	          previouslyWrong = true;
+	        } else {
+	          answerCorrectness[currentUserID] = -1;
+	          previouslyWrong = false;
 	        }
 	        wrongAnswer();
 	        correct = false;
 	      }
-	  recordAnswer(currentUserID, correct, previously_wrong); //record answer as true
+	  recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
 	  enableButtons();
 	}
 
 	// TODO: @djtb - use storage, update local storage, expires 1 week, use post only at end of review (OR ANY NAVIGATION)
-	function recordAnswer(us_id, correctness, previously_wrong) {
+	function recordAnswer(userID, correctness, previouslyWrong) {
 	  //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
 	  // TODO: @djtb record in a localStorage list instead, post that list at review end.
 	  // reviewcount probably needs to be in localStorage too so it can be updated, also so other parts of site can access it (so a disconnect and reconnect sees the mid-review count in title bar (from localstorage) for example).
 	  $.post("/kw/record_answer/", {
-	    user_specific_id: us_id,
+	    user_specific_id: userID,
 	    user_correct: correctness,
 	    csrfmiddlewaretoken: CSRF,
-	    wrong_before: previously_wrong
-	  }, function (data) {
-	    console.log(data);
+	    wrong_before: previouslyWrong
+	  }).always(function (res) {
+	    return console.log(res);
 	  });
 	}
 
@@ -10642,14 +10653,15 @@
 	  $detailKanji.find('.button').removeClass('-disabled');
 	}
 
-	function fill_text_with_kanji(index) {
+	function replaceAnswerWithKanji(index) {
 	  $userAnswer.val(currentVocab.characters[index]);
 	}
 
 	function rotateVocab() {
 
 	  if (remainingVocab.length === 0) {
-	    return make_post("/kw/summary/", answerCorrectness);
+	    simpleStorage.flush();
+	    return makePost("/kw/summary/", answerCorrectness);
 	  }
 
 	  $reviewsLeft.html(remainingVocab.length);
@@ -10712,13 +10724,7 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12), __webpack_require__(2)))
-
-/***/ },
-/* 12 */
-/***/ function(module, exports) {
-
-	module.exports = simpleStorage;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(5), __webpack_require__(2)))
 
 /***/ },
 /* 13 */

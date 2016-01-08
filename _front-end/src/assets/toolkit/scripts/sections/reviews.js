@@ -2,7 +2,7 @@ import wanakana from '../vendor/wanakana.min';
 // simpleStorage exposed via webpack from page header CDN <script>
 
 // cache jquery objects instead of querying dom all the time
-let remainingVocab = simpleStorage.get('KW_reviewList'),
+let remainingVocab = simpleStorage.get('sessionVocab'),
     CSRF = $("#csrf").val(), //Grab CSRF token off of dummy form.
     currentVocab,
     correctTotal = 0,
@@ -16,14 +16,37 @@ let remainingVocab = simpleStorage.get('KW_reviewList'),
     $reveal = $('.reveal'),
     $userAnswer = $('#userAnswer'),
     $detailKana = $('#detailKana'),
+    $submitAnswer = $('#submitAnswer'),
     $detailKanji = $('#detailKanji');
+
+function init() {
+  if (!$meaning.length) return;
+  // set initial values
+  $reviewsLeft.text(remainingVocab.length)
+  currentVocab = remainingVocab.shift();
+  $meaning.html(currentVocab.meaning);
+  $userID.val(currentVocab.user_specific_id);
+
+  $detailKana.kana = $detailKana.find('.-kana');
+  $detailKanji.kanji = $detailKanji.find('.-kanji');
+
+  updateKanaKanjiDetails();
+
+  // event listeners
+  wanakana.bind($userAnswer.get(0));
+  $userAnswer.keypress(handleShortcuts);
+  $submitAnswer.click( () => enterPressed() );
+
+  // focus input field
+  $userAnswer.focus();
+}
 
 function updateKanaKanjiDetails() {
   $detailKana.kana.html(currentVocab.readings.map( reading => `${reading} </br>` ));
   $detailKanji.kanji.html(currentVocab.characters.map( kanji => `${kanji} </br>` ));
 }
 
-function make_post(path, params) {
+function makePost(path, params) {
   var form = document.createElement("form");
   form.setAttribute("method", "post");
   form.setAttribute("action", path);
@@ -52,35 +75,13 @@ String.prototype.endsWith = function(suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
-function init() {
-  // set initial values
-  $reviewsLeft.text(remainingVocab.length)
-  currentVocab = remainingVocab.shift();
-  $meaning.html(currentVocab.meaning);
-  $userID.val(currentVocab.user_specific_id);
-
-  $detailKana.kana = $detailKana.find('.-kana');
-  $detailKanji.kanji = $detailKanji.find('.-kanji');
-
-  updateKanaKanjiDetails();
-
-  // only try to bind IME if input exists
-  if ($userAnswer) {
-    wanakana.bind($userAnswer.get(0));
-  }
-
-  $userAnswer.on("keypress", handleShortcuts);
-
-    $("#submitAnswer").click(function() {
-      enterPressed();
-    });
-
-  $userAnswer.focus();
+function existsIn(item, obj) {
+  return Object.keys(obj).indexOf(item) < 0;
 }
 
 function compareAnswer() {
   let correct,
-      previously_wrong,
+      previouslyWrong,
       currentUserID = $userID.val(),
       answer = $userAnswer.val();
 
@@ -95,51 +96,47 @@ function compareAnswer() {
   }
 
   //Checking if the user's answer exists in valid readings.
-  else if ($.inArray(answer, currentVocab.readings) != -1) {
+  else if (existsIn(answer, currentVocab.readings)) {
     //Ensures this is the first time the vocab has been answered in this session, so it goes in the right
     //container(incorrect/correct)
-    if ($.inArray(currentUserID, Object.keys(answerCorrectness)) == -1) {
-      answerCorrectness[currentUserID] = 1;
-      previously_wrong = false;
-
+    if (existsIn(currentUserID, Object.keys(answerCorrectness))) {
+      previouslyWrong = true;
     } else {
-      previously_wrong = true;
+      answerCorrectness[currentUserID] = 1;
+      previouslyWrong = false;
     }
     correct = true;
     rightAnswer();
-    let answer_index = $.inArray(answer, currentVocab.readings);
-    fill_text_with_kanji(answer_index); //Fills the correct kanji based on the user's answers.
+    replaceAnswerWithKanji(currentVocab.readings.indexOf(answer)); //Fills the correct kanji based on the user's answers.
   }
   //answer was not in the known readings.
   else {
-    if ($.inArray(currentUserID, Object.keys(answerCorrectness)) == -1) {
-      answerCorrectness[currentUserID] = -1;
-      previously_wrong = false
-    } else {
+    if (existsIn(currentUserID, Object.keys(answerCorrectness))) {
       answerCorrectness[currentUserID] -= 1;
-      previously_wrong = true
+      previouslyWrong = true
+    } else {
+      answerCorrectness[currentUserID] = -1;
+      previouslyWrong = false
     }
     wrongAnswer();
     correct = false;
 
   }
-  recordAnswer(currentUserID, correct, previously_wrong); //record answer as true
+  recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
   enableButtons();
 }
 
  // TODO: @djtb - use storage, update local storage, expires 1 week, use post only at end of review (OR ANY NAVIGATION)
-function recordAnswer(us_id, correctness, previously_wrong) {
+function recordAnswer(userID, correctness, previouslyWrong) {
   //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
   // TODO: @djtb record in a localStorage list instead, post that list at review end.
   // reviewcount probably needs to be in localStorage too so it can be updated, also so other parts of site can access it (so a disconnect and reconnect sees the mid-review count in title bar (from localstorage) for example).
   $.post("/kw/record_answer/", {
-    user_specific_id: us_id,
+    user_specific_id: userID,
     user_correct: correctness,
     csrfmiddlewaretoken: CSRF,
-    wrong_before: previously_wrong
-  }, function(data) {
-    console.log(data)
-  })
+    wrong_before: previouslyWrong
+  }).always( res => console.log(res) )
 }
 
 function clearColors() {
@@ -181,14 +178,15 @@ function enableButtons() {
   $detailKanji.find('.button').removeClass('-disabled');
 }
 
-function fill_text_with_kanji(index) {
+function replaceAnswerWithKanji(index) {
   $userAnswer.val(currentVocab.characters[index]);
 }
 
 function rotateVocab() {
 
   if (remainingVocab.length === 0) {
-    return make_post("/kw/summary/", answerCorrectness);
+    simpleStorage.flush();
+    return makePost("/kw/summary/", answerCorrectness);
   }
 
   $reviewsLeft.html(remainingVocab.length);

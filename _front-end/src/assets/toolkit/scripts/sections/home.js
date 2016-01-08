@@ -5,31 +5,31 @@ function init() {
 	$refreshButton = $("#forceSrs");
 	$reviewCount = $("#reviewCount");
 
+	// are we on home page?
 	if ($refreshButton.length) {
-
-		// event handlers
 		$refreshButton.click(refreshReviews);
 		$(document).keypress(handleKeyPress);
-
 	}
 }
 
-function refreshReviews() {
-	let $icon = $refreshButton.find('span[class^="i-"]');
-	$icon.removeClass('i-refresh').addClass('-loading');
-
-	// TODO: update localStorage instead, then update reviewCount from storage (both in button as well as nav)
-	$.get("/kw/force_srs/")
-	 .done(function(data) {
-	 		data = parseInt(data, 10);
-			if (data > 0) {
-				$reviewCount.html(data + (data > 1 ? " Reviews" : " Review"))
-										.removeClass("-disabled");
-			}
-			$icon.removeClass('-loading').addClass('i-refresh');
-	});
+function pluralizeReviews(num) {
+	return num + (num > 1 ? " Reviews" : " Review");
 }
 
+function refreshReviews() {
+	let sessionVocab = (simpleStorage.get('sessionVocab') || []).length;
+	if (sessionVocab > 0) {
+		return $reviewCount.html(pluralizeReviews(sessionVocab));
+	}
+
+	$.get("/kw/force_srs/")
+	 .done(function(data) {
+	 		data = parseInt(data);
+			if (data > 0) {
+				$reviewCount.html(pluralizeReviews(data)).removeClass("-disabled");
+			}
+	});
+}
 
 // shortcut to section based on R/S/U/H/C
 function handleKeyPress(key) {

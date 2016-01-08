@@ -1,4 +1,5 @@
 {% extends "kw_webapp/base.html" %}
+{% block title %}| Review{% endblock %}
 {% block content %}
 
     <input type="hidden" id="csrf" value="{{ csrf_token }}">
@@ -9,7 +10,7 @@
     </section>
 
     <script>
-        simpleStorage.set('KW_reviewList', [
+        var updateStorage = simpleStorage.set('sessionVocab', [
             {% for item in object_list %}
             {
                 'user_specific_id':'{{ item.id }}',
@@ -19,6 +20,7 @@
             },
             {% endfor %}
         ]);
+        console.log('Storage update result:', updateStorage);
     </script>
 
 {% endblock %}

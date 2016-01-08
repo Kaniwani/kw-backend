@@ -1,4 +1,6 @@
 {% extends "kw_webapp/logged_in.html" %}
+{% block title %}| Unlocks{% endblock %}
+
 {% block content %}
 {{ block.super }}
 <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
