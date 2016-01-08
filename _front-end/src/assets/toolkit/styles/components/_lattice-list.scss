@@ -4,19 +4,25 @@
   > .item {
     display: inline-block;
     margin-bottom: 4px;
+    background: $purple;
+    transition: all .2s ease-out;
+    border-radius: 2px;
   }
 
   > .item > .link {
-    padding: 4px 7px;
-    font-size: 1.1em;
-    border-radius: 2px;
-    text-shadow: 1px 1px 3px $purple-dark;
-    background: $purple;
+    display: block;
+    padding: 3px 8px;
     color: $white;
-    transition: background-color .2s ease-out;
-
-    &:hover {
-      background-color: $purple-light;
-    }
+    font-size: 1.1em;
+    text-shadow: 1px 1px 4px rgba($black-light, .7);
   }
+
+  &.-correct > .item {
+    background: $green;
+  }
+
+  &.-incorrect > .item {
+    background: $red;
+  }
+
 }

@@ -22,10 +22,6 @@
                   <span class="meaning">review.vocabulary.meaning</span>
                 </div>
               {% endfor %}
-
-              <!-- TODO: unstyled button[type="button"] with span inside -->
-              <span class="fa fa-unlock" title="Relock"></span>
-
             </div>
           </li>
         {% endfor %}
@@ -38,23 +34,13 @@
     {% if correct_count > 0 %}
       <h2 class="title">{{ correct_count }} Correct</h2>
 
-      <ul class="vocab-list -correct">
+      <ul class="lattice-list">
         {% for review in correct %}
-          <li class="vocab-card">
-            <div class="vocab-base">
-              {% for reading in review.vocabulary.reading_set.all %}
-                <div class="readingset">
-                  <span class="kanji">reading.character</span>
-                  <span class="kana">reading.kana</span>
-                  <span class="meaning">review.vocabulary.meaning</span>
-                </div>
-              {% endfor %}
-
-              <!-- TODO: unstyled button[type="button"] with span inside -->
-              <span class="fa fa-unlock" title="Relock"></span>
-
-            </div>
-          </li>
+          {% for reading in review.vocabulary.reading_set.all %}
+            <li class="item" data-en="Promise" data-ja="{{reading.kana}}">
+              <a lang="ja" class="link" title="{{review.vocabulary.meaning}}" href="{% url "kw:vocabulary" %}{{ reading.level }}">reading.character</a>
+            </li>
+          {% endfor %}
         {% endfor %}
       </ul>
 

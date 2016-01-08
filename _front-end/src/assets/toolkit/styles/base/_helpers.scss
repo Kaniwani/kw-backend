@@ -39,9 +39,9 @@
 
 %visuallyhidden {
   position: absolute;
-  height: 1px;
-  width: 1px;
-  margin: -1px;
+  height: 1px !important;
+  width: 1px !important;
+  margin: -1px !important;
   clip: rect(0 0 0 0);
   outline: 0;
   overflow: hidden;

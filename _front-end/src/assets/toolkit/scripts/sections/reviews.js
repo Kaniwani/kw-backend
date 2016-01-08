@@ -30,6 +30,7 @@ const api = {
       var form = document.createElement("form");
       form.setAttribute("method", "post");
       form.setAttribute("action", path);
+      form.setAttribute("class", '_visuallyhidden');
 
       for (var key in params) {
         if (params.hasOwnProperty(key)) {
