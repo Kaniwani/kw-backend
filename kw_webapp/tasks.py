@@ -93,7 +93,7 @@ def associate_vocab_to_user(vocab, user):
 
 def build_API_sync_string_for_user(user):
     '''
-    Builds a vocabulary api string for the user which includes all relevant levels.
+    Builds a vocabulary api string for the user which includes all relevant levels. Goes back 3 levels from current by default.
 
     :param user: The user to have their vocab updated
     :return: A fully formed and ready-to-request API string.
@@ -107,15 +107,15 @@ def build_API_sync_string_for_user(user):
     return api_call
 
 
-def build_API_sync_string_for_user_for_level(user, level):
+def build_API_sync_string_for_user_for_levels(user, levels):
     '''
     Given a user, build a vocabulary request string based on their api key, for a particular level.
     :param user: The related user.
     :param level: The level of vocabulary we want to update.
     :return: The fully formatted API string that will provide.
     '''
-
-    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(user.profile.api_key, level)
+    level_string = ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
+    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(user.profile.api_key, level_string)
     return api_call
 
 
@@ -127,16 +127,26 @@ def lock_level_for_user(requested_level, user):
     user.profile.unlocked_levels.remove(level)
     return count
 
+def unlock_all_possible_levels_for_user(user):
+    """
+
+    :param user: User to fully unlock.
+    :return: The list of levels unlocked, how many vocab were unlocked, how many vocab remain locked (as they are locked in WK)
+    """
+    level_list = [level for level in range(1, user.profile.level + 1)]
+    unlocked, locked = unlock_eligible_vocab_from_levels(user, level_list)
+    return level_list, unlocked, locked
 
 @celery_app.task()
-def unlock_eligible_vocab_from_level(user, level):
+def unlock_eligible_vocab_from_levels(user, levels):
     """
     I don't like duplicating code like this, but its for the purpose of reducing API call load on WaniKani. It's a hassle if the user caps out.
     :param user: user to add vocab to.
-    :param level: requested level unlock.
+    :param levels: requested level unlock. This can also be a list.
     :return: unlocked count, locked count
     """
-    api_string = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(user.profile.api_key, level)
+
+    api_string = build_API_sync_string_for_user_for_levels(user, levels)
     r = requests.get(api_string)
     if r.status_code == 200:
         # parsing out the JSON data
@@ -357,7 +367,7 @@ def pull_user_synonyms_by_level(user, level):
     :param level: The level for synonyms that should be pulled
     :return: None
     '''
-    request_string = build_API_sync_string_for_user_for_level(user, level)
+    request_string = build_API_sync_string_for_user_for_levels(user, level)
     r = requests.get(request_string)
     if r.status_code == 200:
         json_data = r.json()

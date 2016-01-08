@@ -13,7 +13,8 @@ from kw_webapp.models import Profile, UserSpecific, Announcement
 from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
 from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
-from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_level, lock_level_for_user
+from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_levels, lock_level_for_user, \
+    unlock_all_possible_levels_for_user
 import logging
 
 logger = logging.getLogger("kw.views")
@@ -154,6 +155,25 @@ class LockRequested(View):
 
         return HttpResponse("{} items removed from your study queue.".format(removed_count))
 
+class UnlockAll(View):
+    """
+    Ajax-only view unlocking ALL previous levels. The nuclear option, as it were.
+    """
+
+    def post(self, request, *args, **kwargs):
+        user = self.request.user
+        lower_level_range = [level for level in range(1, user.profile.level + 1)]
+        for level in lower_level_range:
+            if level not in user.profile.unlocked_levels_list():
+                should_sync = True
+                user.profile.unlocked_levels.get_or_create(level=level)
+
+        if should_sync:
+            level_list, unlocked_count, locked_count = unlock_all_possible_levels_for_user(user)
+            return HttpResponse("Unlocked {} levels, containing {} vocabulary.".format(len(level_list), unlocked_count))
+        else:
+            return HttpResponse("Everything has already been unlocked!")
+
 class UnlockRequested(View):
     """
     Ajax-only view meant for unlocking previous levels. Post params: Level.
@@ -166,7 +186,7 @@ class UnlockRequested(View):
         if int(requested_level) > user.profile.level:
             return HttpResponseForbidden()
 
-        ul_count, l_count = unlock_eligible_vocab_from_level(user, requested_level)
+        ul_count, l_count = unlock_eligible_vocab_from_levels(user, requested_level)
         user.profile.unlocked_levels.get_or_create(level=requested_level)
 
         if l_count == 0:

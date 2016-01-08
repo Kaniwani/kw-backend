@@ -1,11 +1,14 @@
 from unittest import mock
 
+import responses
 from django.contrib.auth.models import AnonymousUser
 from django.http import Http404, HttpResponseForbidden
 from django.test import TestCase, RequestFactory, Client
 
 import kw_webapp
 from kw_webapp.models import UserSpecific
+from kw_webapp.tasks import build_API_sync_string_for_user_for_levels
+from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import create_user, create_userspecific, create_profile, create_reading
 from kw_webapp.tests.utils import create_vocab
 
@@ -99,7 +102,7 @@ class TestViews(TestCase):
 
         self.assertContains(response, "1 items removed from your study queue.")
 
-    @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_level", side_effect=lambda x, y: [1, 0])
+    @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y: [1, 0])
     def test_unlocking_a_level_unlocks_all_vocab(self, unlock_call):
         self.client.login(username="user1", password="password")
 
@@ -117,18 +120,18 @@ class TestViews(TestCase):
 
         self.assertIsInstance(response, HttpResponseForbidden)
 
+    @responses.activate
+    def test_unlocking_all_levels_unlocks_all_levels(self):
+        request = self.factory.post("/kw/unlockall/")
+        request.user = self.user
+        resp_body = sample_api_responses.single_vocab_response
+
+        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, [1, 2, 3, 4, 5]),
+                      json=resp_body,
+                      status=200,
+                      content_type='application/json')
 
 
-        # TODO write tests for vocab page
-
-        # def test_vocab_page_contains_only_unlocked_vocab(self):
-        #     u = create_user("Tadgh")
-        #     v1 = create_vocab("cat")
-        #     r1 = create_reading(v1, "猫", "ねこ", 5)
-        #     v2 = create_vocab("dog")
-        #     r2 = create_reading(v2, "犬", "いぬ", 5)
-        #     review = create_userspecific(v1, u)
-        #     request = self.factory.get('/kw/vocabulary')
-        #     request.user = u
-        #     returned_response = kw_webapp.views.UnlockedVocab.as_view()(request).render().content
-        #     self.assertIn("cat", str(returned_response))
+        unlock_ajax_view = kw_webapp.views.UnlockAll.as_view()
+        response = unlock_ajax_view(request)
+        self.assertListEqual(sorted(self.user.profile.unlocked_levels_list()), [1, 2, 3, 4, 5])
