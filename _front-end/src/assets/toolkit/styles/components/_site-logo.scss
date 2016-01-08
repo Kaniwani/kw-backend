@@ -11,10 +11,6 @@
     }
   }
 
-  &.-active > .text {
-    background: $purple;
-  }
-
   > .text {
     display: table-cell;
     vertical-align: middle;

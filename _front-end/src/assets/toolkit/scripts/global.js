@@ -7,20 +7,22 @@
 
 import $ from 'jquery';
 
-import login from './sections/login';
-import home from './sections/home';
 import expandToggle from './components/expand-toggle';
 import revealToggle from './components/reveal-toggle';
+import invalidApiKey from './components/invalidApiKey';
+import login from './sections/login';
+import home from './sections/home';
 import vocab from './sections/vocab';
 import unlocks from './sections/unlocks';
 import reviews from './sections/reviews';
 
 $(document).ready(() => {
 
-  login.init();
-  home.init();
+  invalidApiKey.init();
   expandToggle.init();
   revealToggle.init();
+  login.init();
+  home.init();
   vocab.init();
   unlocks.init();
   reviews.init();

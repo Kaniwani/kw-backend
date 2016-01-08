@@ -31,6 +31,7 @@ module.exports = function(fabricatorConfig) {
 	  plugins: [
 	    new webpack.ProvidePlugin({
 	      simpleStorage: 'simpleStorage',
+	      notie: 'notie',
 	      $: 'jquery'
 	    })
 	  ],

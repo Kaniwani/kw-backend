@@ -1,6 +1,3 @@
-// docs -- http://github.com/jaredreich/notie.js/
-import notie from '../vendor/notie';
-
 // setup variables inside module closure, but functions in this file can modify and access them
 let CSRF,
     $reviewCount,
