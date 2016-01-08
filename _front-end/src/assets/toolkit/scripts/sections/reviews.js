@@ -42,7 +42,7 @@ const api = {
         }
       }
       //CSRF hackery.
-      csrf_field = document.createElement("input");
+      let csrf_field = document.createElement("input");
       csrf_field.setAttribute("name", "csrfmiddlewaretoken");
       csrf_field.setAttribute("value", csrf_token);
       form.appendChild(csrf_field);
