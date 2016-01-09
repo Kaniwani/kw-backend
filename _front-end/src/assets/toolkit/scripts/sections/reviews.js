@@ -221,12 +221,13 @@ function rotateVocab() {
 
   updateKanaKanjiDetails();
   newVocab();
+  $userAnswer.removeClass('-marked');
+
 }
 
 function enterPressed() {
   if ($userAnswer.hasClass('-marked')) {
     rotateVocab();
-    $userAnswer.removeClass('-marked');
   } else {
     compareAnswer();
   }
