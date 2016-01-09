@@ -8,10 +8,15 @@
   background: $blue-light;
   background: linear-gradient(to bottom, $blue-light 40%, $blue-dark 95%);
 
-  @include media($bp-lg) {
-    overflow: hidden;
+  &.-pending {
+    > .container > .login-form,
+    > .link {
+      opacity: 0;
+    }
+    > .container > .title {
+      transform: translate(0%, -60vh);
+    }
   }
-
 
   > .container {
     max-width: 600px;
@@ -26,7 +31,6 @@
       left: 50%;
       transform: translate(-50%, -50%);
     }
-
 
     > .title {
       position: relative;
@@ -46,27 +50,19 @@
     > .login-form {
       transition: opacity 1s ease;
     }
-
-    &.-pending {
-      > .login-form {
-        opacity: 0;
-      }
-      > .title {
-        transform: translate(0%, -60vh);
-      }
-    }
   }
 
   > .link {
     display: block;
+    position: relative;
     padding: $unit-xs;
     font-size: 14px;
     font-weight: 400;
     text-decoration: none;
     color: $white;
-    z-index: 2;
+    z-index: 3;
     opacity: .85;
-    transition: opacity .2s ease;
+    transition: opacity 1s ease;
     text-align: center;
 
     @include media($bp-lg) {
@@ -75,6 +71,7 @@
       right: 0;
       padding: 12px 18px;
       font-size: 16px;
+      transition: opacity .2s ease-out;
       text-align: right;
     }
 
@@ -85,6 +82,7 @@
 
   > .floating-icons {
     position: absolute;
+    z-index: 1;
     top: 0;
     left: 0;
   }

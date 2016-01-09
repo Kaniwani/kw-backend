@@ -1,10 +1,11 @@
 <div class="review-header">
   <div class="inner">
-    <a href="{% url "kw:home" %}" class="homelink"><span class="i-home"></span></a>
+    <progress class="progressbar" min="0" max="2000" value="0"></progress>
+    <a href="{% url "kw:home" %}" class="homelink"><span class="icon i-home"></span></a>
     <ul class="statslist">
-      <li class="item"><span class="i-thumbsup"></span><span id="reviewsCorrect">0</span>%</li>
-      <li class="item"><span class="i-ok"></span><span id="reviewsDone">0</span></li>
-      <li class="item"><span class="i-inbox"></span><span id="reviewsLeft"></span></li>
+      <li class="item"><span class="icon i-thumbsup"></span><span id="reviewsCorrect">0</span>%</li>
+      <li class="item"><span class="icon i-ok"></span><span id="reviewsDone">0</span></li>
+      <li class="item"><span class="icon i-inbox"></span><span id="reviewsLeft"></span></li>
     </ul>
   </div>
 </div>

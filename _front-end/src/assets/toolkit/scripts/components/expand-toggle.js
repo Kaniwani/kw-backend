@@ -1,4 +1,6 @@
-import $ from 'jquery';
+// this is used in the NAV MENU
+// something similar is being called in vocab.js
+// should extract that to here for re-use in other areas
 
 const api = {
   init() {

@@ -23,7 +23,14 @@ module.exports = function(fabricatorConfig) {
 				}
 			]
 		},
-		plugins: [],
+
+	  plugins: [
+	    new webpack.ProvidePlugin({
+	      $: 'jquery',
+	      simpleStorage: 'simplestorage.js',
+	      notie: 'notie',
+	    })
+	  ],
 		cache: {}
 	};
 

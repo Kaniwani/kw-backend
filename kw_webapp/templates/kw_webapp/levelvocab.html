@@ -1,4 +1,5 @@
 {% extends "kw_webapp/logged_in.html" %}
+{% block title %}| Vocab > {{selected_level}}{% endblock %}
 
 {% block content %}
   {{ block.super }}
@@ -13,24 +14,22 @@
 
     <ul class="vocab-list">
       {% for review in reviews %}
-        <li class="vocab-card {% if review.hidden %}-locked -unlockable {% endif %}"
+        <li id="vocab{{ review.id }}" class="vocab-card {% if review.hidden %}-locked -unlockable {% endif %}"
             data-pk="{{ review.id }}">
 
         <div class="vocab-base">
-          <!-- FIXME: @tadgh can you tease the logic to show the first kanji only, but still multiple kana/meaning -->
           {% for reading in review.vocabulary.reading_set.all %}
             <div class="readingset">
               <span lang="ja" class="kanji">{{ reading.character }}</span>
               <span lang="ja" class="kana">{{ reading.kana }}</span>
-              <!-- TODO: @djtb indivdual meanings would be better as inline elements inside meaning wrap -  so they can line-break an entire multi-word meaning (rather than mid-meaning) -->
               <span class="meaning">{{ reading.vocabulary.meaning }}</span>
             </div>
           {% endfor %}
 
           {% if review.hidden %}
-            <span class="icon i-unlock"></span>
+            <span class="icon i-unlock" title="Unlock"></span>
           {% else %}
-            <span class="icon i-unlocked"></span>
+            <span class="icon i-unlocked" title="Relock"></span>
           {% endif %}
 
         </div>

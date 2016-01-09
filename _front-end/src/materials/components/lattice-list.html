@@ -3,21 +3,58 @@ notes: |
   Just an idea component, perhaps to be used for correct items in summary only.
   Or could provide a toggle that changes classes, for users to choose which format they prefer!
   `data-en` and `data-ja` are for use in mouseover tooltip (not yet implemented!)
+
+  Modifier classes for `lattice-list` include `-correct` & `-incorrect`
 ---
 
 <ul class="lattice-list">
-  {{# iterate 20}}
+  {{# iterate 10}}
     <li class="item" data-en="Promise" data-ja="やくそく">
-      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}">約束</a>
+      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">約束</a>
     </li>
     <li class="item" data-en="Reservation" data-ja="よやく">
-      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}">予約</a>
+      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">予約</a>
     </li>
     <li class="item" data-en="Promise" data-ja="やく">
-      <a lang="ja" class="link" href="{% url "kw:vocabulary" %}{{ reading.level }}">約</a>
+      <a lang="ja" class="link" href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">約</a>
     </li>
     <li class="item" data-en="To Promise" data-ja="やくする">
-      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}">約する</a>
+      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">約する</a>
+    </li>
+  {{/ iterate }}
+</ul>
+
+<pre>-correct</pre>
+<ul class="lattice-list -correct">
+  {{# iterate 12}}
+    <li class="item" data-en="Promise" data-ja="やくそく">
+      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">約束</a>
+    </li>
+    <li class="item" data-en="Reservation" data-ja="よやく">
+      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">予約</a>
+    </li>
+    <li class="item" data-en="Promise" data-ja="やく">
+      <a lang="ja" class="link" href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">約</a>
+    </li>
+    <li class="item" data-en="To Promise" data-ja="やくする">
+      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">約する</a>
+    </li>
+  {{/ iterate }}
+</ul>
+<pre>-incorrect</pre>
+<ul class="lattice-list -incorrect">
+  {{# iterate 8}}
+    <li class="item" data-en="Promise" data-ja="やくそく">
+      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">約束</a>
+    </li>
+    <li class="item" data-en="Reservation" data-ja="よやく">
+      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">予約</a>
+    </li>
+    <li class="item" data-en="Promise" data-ja="やく">
+      <a lang="ja" class="link" href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">約</a>
+    </li>
+    <li class="item" data-en="To Promise" data-ja="やくする">
+      <a lang="ja" class="link"  href="{% url "kw:vocabulary" %}{{ reading.level }}#{{review_id}}">約する</a>
     </li>
   {{/ iterate }}
 </ul>

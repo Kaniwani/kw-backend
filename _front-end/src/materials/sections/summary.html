@@ -5,17 +5,28 @@
 
     <h2 class="title">4 Incorrect</h2>
     <ul class="vocab-list -incorrect">
-      {{> vocab-card modifiers='-unlocked' icon='fa-unlock' hint='Relock' }}
-      {{> vocab-card modifiers='-unlocked' icon='fa-unlock' hint='Relock' }}
-      {{> vocab-card modifiers='-unlocked' icon='fa-unlock' hint='Relock' }}
-      {{> vocab-card modifiers='-unlocked -expanded' icon='i-unlock' hint='Relock' }}
+      {{> vocab-card modifiers='-unlocked' icon='icon i-unlock' hint='Relock' }}
+      {{> vocab-card modifiers='-unlocked' icon='icon i-unlock' hint='Relock' }}
+      {{> vocab-card modifiers='-unlocked' icon='icon i-unlock' hint='Relock' }}
+      {{> vocab-card modifiers='-unlocked -expanded' icon='icon i-unlock' hint='Relock' }}
     </ul>
 
     <h2 class="title">3 Correct</h2>
     <ul class="vocab-list -correct">
-      {{> vocab-card modifiers='-unlocked' icon='fa-unlock' hint='Relock' }}
-      {{> vocab-card modifiers='-unlocked' icon='fa-unlock' hint='Relock' }}
-      {{> vocab-card modifiers='-unlocked -expanded' icon='i-unlock' hint='Relock' }}
+      {{> vocab-card modifiers='-unlocked' icon='icon i-unlock' hint='Relock' }}
+      {{> vocab-card modifiers='-unlocked' icon='icon i-unlock' hint='Relock' }}
+      {{> vocab-card modifiers='-unlocked -expanded' icon='icon i-unlock' hint='Relock' }}
+    </ul>
+
+    <h3><em>Alternatively...</em></h3>
+
+    <h2 class="title">15 Correct</h2>
+    <ul class="lattice-list -correct">
+    {{# iterate 15 }}
+      <li class="item" data-en="Kanji" data-ja="かんじ">
+        <a lang="ja" class="link" title="Kanji" href="#0">漢字</a>
+      </li>
+    {{/ iterate }}
     </ul>
 
   </div>

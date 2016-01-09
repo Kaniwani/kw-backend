@@ -10,13 +10,19 @@ colors:
     black: "hsl(0, 0%, 16%)"
     black-dark: "hsl(0, 0%, 0%)"
   kaniwani:
-    blue-dark: "hsl(228, 71%, 51%)"
-    blue: "hsl(208, 100%, 45%)"
     blue-light: "hsl(200, 100%, 41%)"
+    blue-dark: "hsl(228, 71%, 52%)"
+    purple-light: "hsl(280, 100%, 50%)"
     purple-dark: "hsl(280, 80%, 36%)"
-    purple: "hsl(280, 100%, 46%)"
-    purple-light: " hsl(280, 100%, 50%)"
-    pink: "hsl(320, 100%, 50%)"
-    red: "hsl(348, 100%, 50%)"
-    green: "hsl(134, 78%, 60%)"
-    yellow: "hsl(58, 95%, 48%)"
+    blue: "hsl(220, 100%, 47%)"
+    purple: "hsl(282, 100%, 47%)"
+    pink: "hsl(314, 100%, 50%)"
+    red: "hsl(346, 75%, 54%)"
+    green: "hsl(107, 56%, 62%)"
+    yellow: "hsl(53, 100%, 48%)"
+
+
+
+
+
+

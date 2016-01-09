@@ -4,19 +4,30 @@
   > .item {
     display: inline-block;
     margin-bottom: 4px;
+    background: $purple;
+    transition: all .2s ease-out;
+    border-radius: 2px;
   }
 
   > .item > .link {
-    padding: 4px 7px;
-    font-size: 1.1em;
-    border-radius: 2px;
-    text-shadow: 1px 1px 3px $purple-dark;
-    background: $purple;
+    display: block;
+    padding: .15em .5em;
     color: $white;
-    transition: background-color .2s ease-out;
+    font-size: 1.8em;
+    text-shadow: 1px 1px 4px rgba($purple-dark, .7);
+  }
 
-    &:hover {
-      background-color: $purple-light;
+  &.-correct > .item {
+    background: $green;
+    > .link{
+     text-shadow: 1px 1px 4px rgba(darken($green, 20), .7);
+    }
+  }
+
+  &.-incorrect > .item {
+    background: $red;
+    > .link {
+      text-shadow: 1px 1px 4px rgba(darken($red, 20), .7);
     }
   }
 }

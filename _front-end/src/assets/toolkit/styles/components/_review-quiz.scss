@@ -63,10 +63,10 @@
 
       &.-marked {
         color: $white;
-        text-shadow: $shadow-text-light;
-        + .submit > .fa {
+        text-shadow: $shadow-text-thin;
+        + .submit > .icon {
           color: $white;
-          text-shadow: $shadow-text-light;
+          text-shadow: $shadow-text-thin;
         }
       }
 
@@ -74,7 +74,7 @@
         background-color: $yellow;
         color: $grey-dark;
         text-shadow: none;
-        + .submit > .fa {
+        + .submit > .icon {
           color: $grey-dark;
           text-shadow: none;
         }

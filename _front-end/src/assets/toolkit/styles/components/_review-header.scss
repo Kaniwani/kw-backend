@@ -2,9 +2,30 @@
 
   > .inner {
 
+    > progress.progressbar {
+      position: absolute;
+      transition: background-color .4s ease-out;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-color: $purple;
+      color: $white;
+      border: none;
+      opacity: .9;
+
+      &::-webkit-progress-bar{ background-color: $white-light !important; }
+      &::-moz-progress-bar { background-color: $white-light !important; }
+      &::ms-fill { background-color: $white-light !important; }
+      &::-webkit-progress-value { background-color: $white-light !important; }
+    }
+
     > .homelink,
     > .statslist {
-      margin: .3em .6em;
+      margin: .75em;
     }
 
     > .statslist {
@@ -24,7 +45,6 @@
 
     > .homelink {
       opacity: .8;
-      color: white;
       display: block;
       float: left;
       font-size: responsive 16px 20px;
@@ -34,7 +54,6 @@
         opacity: 1;
       }
     }
-
   }
 }
 

@@ -6,6 +6,7 @@
   border-radius: 3px;
 
   > .vocab-base {
+    display: block;
     position: relative;
     clear: fix;
     color: $white-light;
@@ -27,14 +28,14 @@
     .kanji {
       text-shadow: 0 2px 2px rgba($purple-dark, .7);
       float: left;
-      font-size: responsive 22px 32px;
-      padding-bottom: $unit-xs;
+      font-size: responsive 34px 40px;
+      padding-bottom: .5em;
     }
 
     .kana {
       overflow: hidden;
       padding-bottom: $unit-sm;
-      font-size: responsive 20px 30px;
+      font-size: responsive 24px 30px;
     }
 
     .kana,
@@ -42,12 +43,12 @@
       text-shadow: 0 1px 2px rgba($purple-dark, .7);
       clear: right;
       float: right;
-      font-size: responsive 18px 22px;
+      font-size: responsive 22px 24px;
     }
 
     .meaning {
-      // leave space on left for lock icon
-      max-width: calc(100% - 50px);
+      // leave space on left for kanji/lock icon
+      max-width: calc(100% - 150px);
       margin: auto;
       text-align: right;
       line-height: 1.3;

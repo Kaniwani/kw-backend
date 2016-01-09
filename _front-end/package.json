@@ -49,10 +49,13 @@
     "gulp-sourcemaps": "^1.5.2",
     "gulp-util": "^3.0.6",
     "imports-loader": "^0.6.4",
-    "jquery": "^2.1.4",
     "run-sequence": "^1.1.2",
     "script-loader": "^0.6.1",
     "webpack": "^1.12.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "jquery": "^2.1.4",
+    "notie": "^2.1.0",
+    "simplestorage.js": "^0.2.0"
+  }
 }
