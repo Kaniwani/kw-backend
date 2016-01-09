@@ -259,6 +259,9 @@ class LevelVocab(TemplateView):
     def dispatch(self, *args, **kwargs):
         return super(LevelVocab, self).dispatch(*args, **kwargs)
 
+class Error404(TemplateView):
+    template_name = "404.html"
+
 
 class ToggleVocabLockStatus(View):
     """
