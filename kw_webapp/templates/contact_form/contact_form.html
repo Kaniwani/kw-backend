@@ -1,0 +1,10 @@
+{% extends "kw_webapp/logged_in.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    {{ block.super }}
+    <form action={% url "contact:contact_form" %} method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
