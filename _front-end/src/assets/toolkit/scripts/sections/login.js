@@ -1,8 +1,10 @@
 function init() {
-  $(".login-form .button.-submit").click(function(event){
+  $(".login-form .button.-submit").click(function(ev){
     $(this).val('Signing in...');
     // login animation
-    setTimeout(() => $(this).closest('.container').addClass('-pending'), 750);
+    setTimeout(() => {
+      $(this).closest('.login-section').addClass('-pending');
+    }, 750);
   });
 }
 

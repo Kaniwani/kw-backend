@@ -44,7 +44,7 @@ function init() {
   $meaning.html(currentVocab.meaning);
   $userID.val(currentVocab.user_specific_id);
 
-  $progressbar.attr('max', remainingVocab.length);
+  $progressbar.attr('max', remainingVocab.length + 1);
   $detailKana.kana = $detailKana.find('.-kana');
   $detailKanji.kanji = $detailKanji.find('.-kanji');
 
@@ -191,7 +191,7 @@ function wrongAnswer() {
 
 function rightAnswer() {
   clearColors();
-  $progressbar.val(remainingVocab.length);
+
   $userAnswer.addClass('-marked -correct');
   correctTotal += 1;
   answeredTotal += 1;
@@ -219,26 +219,23 @@ function replaceAnswerWithKanji(index) {
 
 function rotateVocab() {
 
+  $progressbar.val(correctTotal);
+  $reviewsLeft.html(simpleStorage.get('reviewCount'));
+  $reviewsDone.html(correctTotal);
+  $reviewsCorrect.html(Math.floor((correctTotal / answeredTotal) * 100));
+
   if (remainingVocab.length === 0) {
     updateStorage();
     console.log('Summary post data', answerCorrectness);
     return makePost('/kw/summary/', answerCorrectness);
   }
 
-  console.log('Rotating vocab');
-
-  $reviewsLeft.html(simpleStorage.get('reviewCount'));
-  $reviewsDone.html(correctTotal);
-  $progressbar.val(correctTotal);
-  $reviewsCorrect.html(Math.floor((correctTotal / answeredTotal) * 100));
-
   currentVocab = remainingVocab.shift();
-
   $reveal.addClass('-hidden');
-  disableButtons();
   $meaning.html(currentVocab.meaning);
   $userID.val(currentVocab.user_specific_id);
 
+  disableButtons();
   updateKanaKanjiDetails();
   newVocab();
   $userAnswer.removeClass('-marked');
