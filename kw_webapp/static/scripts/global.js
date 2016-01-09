@@ -90,7 +90,7 @@
 	$(document).ready(function () {
 
 	  _componentsInvalidApiKey2['default'].init();
-	  //  expandToggle.init();
+	  _componentsExpandToggle2['default'].init();
 	  _componentsRevealToggle2['default'].init();
 	  _sectionsLogin2['default'].init();
 	  _sectionsHome2['default'].init();
@@ -9319,23 +9319,29 @@
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
-
+	/* WEBPACK VAR INJECTION */(function($) {// this is used in the NAV MENU
 	// something similar is being called in vocab.js
 	// should extract that to here for re-use in other areas
 
-	// const api = {
-	//   init() {
-	//     $('.expandToggle').click((ev) => {
-	//       ev.preventDefault();
-	//       $(ev.target).siblings('.toggleTarget').toggleClass('-open');
-	//     });
-	//   }
-	// }
+	'use strict';
 
-	// export default api;
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+	var api = {
+	  init: function init() {
+	    $('.expandToggle').click(function (ev) {
+	      ev.preventDefault();
+	      $(ev.target).siblings('.toggleTarget').toggleClass('-open');
+	    });
+	  }
+	};
+
+	exports['default'] = api;
+	module.exports = exports['default'];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
 /* 4 */

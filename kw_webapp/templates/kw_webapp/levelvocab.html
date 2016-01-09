@@ -1,4 +1,5 @@
 {% extends "kw_webapp/logged_in.html" %}
+{% block title %}| Vocab > {{selected_level}}{% endblock %}
 
 {% block content %}
   {{ block.super }}
@@ -17,7 +18,6 @@
             data-pk="{{ review.id }}">
 
         <div class="vocab-base">
-          <!-- FIXME: @tadgh can you tease the logic to show the first kanji only, but still multiple kana/meaning -->
           {% for reading in review.vocabulary.reading_set.all %}
             <div class="readingset">
               <span lang="ja" class="kanji">{{ reading.character }}</span>
@@ -27,9 +27,9 @@
           {% endfor %}
 
           {% if review.hidden %}
-            <span class="icon i-unlock"></span>
+            <span class="icon i-unlock" title="Unlock"></span>
           {% else %}
-            <span class="icon i-unlocked"></span>
+            <span class="icon i-unlocked" title="Relock"></span>
           {% endif %}
 
         </div>

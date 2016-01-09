@@ -14,15 +14,20 @@
     padding: 3px 8px;
     color: $white;
     font-size: 1.1em;
-    text-shadow: 1px 1px 4px rgba($black-light, .7);
+    text-shadow: 1px 1px 4px rgba($purple-dark, .7);
   }
 
   &.-correct > .item {
     background: $green;
+    > .link{
+     text-shadow: 1px 1px 4px rgba(darken($green, 20), .7);
+    }
   }
 
   &.-incorrect > .item {
     background: $red;
+    > .link {
+      text-shadow: 1px 1px 4px rgba(darken($red, 20), .7);
+    }
   }
-
 }

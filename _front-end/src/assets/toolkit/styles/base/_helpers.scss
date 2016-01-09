@@ -1,3 +1,4 @@
+// increases clickable/hoverable/tappable area for element without increasing size visually or adding internal padding
 @mixin tap-target($Y: .5em, $X: 1em) {
   &:after {
     position: absolute;
@@ -16,6 +17,7 @@
   margin-right: auto;
 }
 
+// angled background stripes for disabled cards
 @mixin bg-stripes($color1: rgba(#fff, .3), $color2: transparent) {
   background-size: 6px 6px;
   background-image: linear-gradient(-45deg, $color1 25%, $color2 25%,
