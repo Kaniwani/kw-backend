@@ -10681,6 +10681,9 @@
 	        wrongAnswer();
 	        correct = false;
 	      }
+
+	  recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
+	  enableButtons();
 	}
 
 	// TODO: @djtb - use storage, update local storage, expires 1 week, use post only at end of review (OR ANY NAVIGATION)
