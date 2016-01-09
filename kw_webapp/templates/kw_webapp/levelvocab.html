@@ -14,7 +14,7 @@
 
     <ul class="vocab-list">
       {% for review in reviews %}
-        <li class="vocab-card {% if review.hidden %}-locked -unlockable {% endif %}"
+        <li id="vocab{{ review.id }}" class="vocab-card {% if review.hidden %}-locked -unlockable {% endif %}"
             data-pk="{{ review.id }}">
 
         <div class="vocab-base">
