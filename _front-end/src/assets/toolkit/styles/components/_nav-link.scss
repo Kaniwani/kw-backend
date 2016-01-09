@@ -21,8 +21,11 @@
     padding-bottom: 4px;
 
     .count {
-      margin-left: 3px;
+      display: inline-block;
       color: $blue-light;
+      :not(:empty) {
+        margin-left: 3px;
+      }
     }
 
     &:not(:only-child) {

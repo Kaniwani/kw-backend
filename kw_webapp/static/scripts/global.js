@@ -10641,7 +10641,7 @@
 	      currentUserID = $userID.val(),
 	      answer = $userAnswer.val();
 
-	  console.log('comparing');
+	  console.log('Comparing', answer);
 
 	  //Fixing the terminal n.
 	  if (answer.endsWith('n')) {
@@ -10705,8 +10705,8 @@
 	function updateStorage() {
 	  simpleStorage.set('sessionVocab', remainingVocab);
 	  simpleStorage.set('reviewCount', remainingVocab.length);
-	  console.log('Storage is now:\n    count: ' + simpleStorage.get('reviewCount') + '\n    vocab: ' + simpleStorage.get('sessionVocab').map(function (x) {
-	    return x.meaning;
+	  console.log('Storage is now:\n    reviewCount: ' + simpleStorage.get('reviewCount') + '\n    sessionVocab: ' + simpleStorage.get('sessionVocab').map(function (x) {
+	    return x.meaning.split(',')[0];
 	  }) + '\n  ');
 	}
 

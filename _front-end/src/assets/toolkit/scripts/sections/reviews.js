@@ -82,7 +82,7 @@ function compareAnswer() {
     currentUserID = $userID.val(),
     answer = $userAnswer.val();
 
-  console.log('comparing')
+  console.log('Comparing', answer);
 
   //Fixing the terminal n.
   if (answer.endsWith('n')) {
@@ -150,8 +150,8 @@ function updateStorage() {
   simpleStorage.set('sessionVocab', remainingVocab);
   simpleStorage.set('reviewCount', remainingVocab.length);
   console.log(`Storage is now:
-    count: ${simpleStorage.get('reviewCount')}
-    vocab: ${simpleStorage.get('sessionVocab').map( x => x.meaning )}
+    reviewCount: ${simpleStorage.get('reviewCount')}
+    sessionVocab: ${simpleStorage.get('sessionVocab').map( x => x.meaning.split(',')[0] )}
   `);
 }
 
