@@ -82,7 +82,7 @@ function compareAnswer() {
     currentUserID = $userID.val(),
     answer = $userAnswer.val();
 
-  console.log('Comparing', answer);
+  console.log('Comparing', answer, 'with vocab item:', currentVocab.meaning);
 
   //Fixing the terminal n.
   if (answer.endsWith('n')) {
