@@ -57,7 +57,6 @@ function init() {
 
   // focus input field
   $userAnswer.focus();
-  nprogress.start();
 }
 
 function updateKanaKanjiDetails() {

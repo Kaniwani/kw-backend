@@ -10559,10 +10559,6 @@
 
 	var _vendorWanakanaMin2 = _interopRequireDefault(_vendorWanakanaMin);
 
-	var _nprogress = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"nprogress\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
-
-	var _nprogress2 = _interopRequireDefault(_nprogress);
-
 	// cache jquery objects instead of querying dom all the time
 	var CSRF = $('#csrf').val(),
 	    //Grab CSRF token off of dummy form.
@@ -10619,7 +10615,6 @@
 
 	  // focus input field
 	  $userAnswer.focus();
-	  _nprogress2['default'].start();
 	}
 
 	function updateKanaKanjiDetails() {
