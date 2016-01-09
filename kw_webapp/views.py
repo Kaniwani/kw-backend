@@ -174,6 +174,12 @@ class UnlockAll(View):
         else:
             return HttpResponse("Everything has already been unlocked!")
 
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(UnlockAll, self).dispatch(*args, **kwargs)
+
+
 class UnlockRequested(View):
     """
     Ajax-only view meant for unlocking previous levels. Post params: Level.
@@ -252,7 +258,7 @@ class LevelVocab(TemplateView):
         context = super(LevelVocab, self).get_context_data()
         level = self.kwargs['level']
         user = self.request.user
-        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level)
+        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level).distinct()
         context['reviews'] = level_vocab
         context['selected_level'] = level
         return context
