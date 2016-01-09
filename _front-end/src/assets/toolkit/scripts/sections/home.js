@@ -1,19 +1,25 @@
 import refreshReviews from '../components/refreshReviews';
 
-let $refreshButton;
+let $refreshButton,
+		$reviewButton;
 
 function init() {
 	$refreshButton = $("#forceSrs");
+	$reviewButton = $("#reviewCount");
 
 	// are we on home page?
 	if ($refreshButton.length) {
 		// event handlers
-		$refreshButton.click( () => refreshReviews({forceGet: true}) );
+		$refreshButton.click(() => refreshReviews({forceGet: true}) );
+		$reviewButton.click(ev => {
+			if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
+		});
 		$(document).keypress(handleKeyPress);
 
 		// update from sessionstorage, if nothing there then hit server
 		refreshReviews();
 	}
+
 }
 
 // shortcut to section based on R/S/U/H/C

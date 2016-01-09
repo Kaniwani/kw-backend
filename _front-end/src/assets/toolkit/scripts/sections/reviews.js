@@ -85,6 +85,8 @@ function compareAnswer() {
       currentUserID = $userID.val(),
       answer = $userAnswer.val();
 
+  console.log('comparing')
+
   //Fixing the terminal n.
   if (answer.endsWith('n')) {
     answer = answer.slice(0, -1) + 'ん';
@@ -120,7 +122,6 @@ function compareAnswer() {
     }
     wrongAnswer();
     correct = false;
-
   }
   recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
   enableButtons();
@@ -130,13 +131,23 @@ function compareAnswer() {
 function recordAnswer(userID, correctness, previouslyWrong) {
   //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
   // TODO: @djtb record in a localStorage list instead, post that list at review end.
-  // reviewcount probably needs to be in localStorage too so it can be updated, also so other parts of site can access it (so a disconnect and reconnect sees the mid-review count in title bar (from localstorage) for example).
   $.post("/kw/record_answer/", {
     user_specific_id: userID,
     user_correct: correctness,
     csrfmiddlewaretoken: CSRF,
     wrong_before: previouslyWrong
-  }).always( res => console.log(res) )
+  })
+  .done(() => {
+    simpleStorage.set('sessionVocab', remainingVocab);
+    simpleStorage.set('reviewCount', remainingVocab.length);
+    console.log(`Recorded answer, storage is now:
+      count: ${simpleStorage.get('reviewCount')}
+      vocab: ${simpleStorage.get('sessionVocab').map( x => x.meaning )}
+    `);
+  })
+  .always(res => {
+    console.log(res);
+  });
 }
 
 function clearColors() {
@@ -185,12 +196,14 @@ function replaceAnswerWithKanji(index) {
 function rotateVocab() {
 
   if (remainingVocab.length === 0) {
-    simpleStorage.flush();
+    console.log('no more vocab', answerCorrectness);
     makePost("/kw/summary/", answerCorrectness);
     return;
   }
 
-  $reviewsLeft.html(remainingVocab.length);
+  console.log('should not log on final review');
+
+  $reviewsLeft.html(simpleStorage.get('reviewCount'));
   $reviewsDone.html(correctTotal);
   $reviewsCorrect.html(Math.floor((correctTotal / answeredTotal) * 100));
 
@@ -243,8 +256,6 @@ function handleShortcuts(event) {
 function null_out(event) {
   event.preventDefault();
 }
-
-
 
 const api = {
   init: init

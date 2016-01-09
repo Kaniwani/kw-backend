@@ -5,8 +5,6 @@
  *
  */
 
-import $ from 'jquery';
-
 import expandToggle from './components/expand-toggle';
 import revealToggle from './components/reveal-toggle';
 import invalidApiKey from './components/invalidApiKey';

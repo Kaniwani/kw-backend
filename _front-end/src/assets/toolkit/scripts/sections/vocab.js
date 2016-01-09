@@ -32,14 +32,21 @@ function handleIconClick(event) {
       .done(res =>  {
         toggleClasses($icon, $card);
         let $count = $('#navReviewCount');
-        let count = simpleStorage.get('reviewCount');
+        let count = simpleStorage.get('reviewCount') || 0;
         let increase = /^added/i.test(res);
         increase ? count++ : count--;
 
-        console.log(increase, $count, count);
+        console.log(`Debug vocab item toggle:
+          review_pk: ${review_pk},
+          res: ${res},
+          increase: ${increase},
+          count: ${count}`
+        );
 
-        simpleStorage.set('reviewCount', count)
-        $count.html(count);
+        if (count >= 0) {
+          simpleStorage.set('reviewCount', count);
+          $count.text(count);
+        }
       })
       .always(res => console.log(res));
 }

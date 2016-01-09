@@ -44,7 +44,7 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
+	/* WEBPACK VAR INJECTION */(function($) {/**
 	 * Toolkit JavaScript
 	 *
 	 * This should be the full compiled js from project src (same as public/assets/js/)
@@ -54,10 +54,6 @@
 	'use strict';
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _jquery = __webpack_require__(2);
-
-	var _jquery2 = _interopRequireDefault(_jquery);
 
 	var _componentsExpandToggle = __webpack_require__(3);
 
@@ -91,7 +87,7 @@
 
 	var _sectionsReviews2 = _interopRequireDefault(_sectionsReviews);
 
-	(0, _jquery2['default'])(document).ready(function () {
+	$(document).ready(function () {
 
 	  _componentsInvalidApiKey2['default'].init();
 	  //  expandToggle.init();
@@ -102,6 +98,7 @@
 	  _sectionsUnlocks2['default'].init();
 	  _sectionsReviews2['default'].init();
 	});
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
 /* 1 */,
@@ -10240,16 +10237,21 @@
 
 	var _componentsRefreshReviews2 = _interopRequireDefault(_componentsRefreshReviews);
 
-	var $refreshButton = undefined;
+	var $refreshButton = undefined,
+	    $reviewButton = undefined;
 
 	function init() {
 		$refreshButton = $("#forceSrs");
+		$reviewButton = $("#reviewCount");
 
 		// are we on home page?
 		if ($refreshButton.length) {
 			// event handlers
 			$refreshButton.click(function () {
 				return (0, _componentsRefreshReviews2["default"])({ forceGet: true });
+			});
+			$reviewButton.click(function (ev) {
+				if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
 			});
 			$(document).keypress(handleKeyPress);
 
@@ -10311,16 +10313,27 @@
 	}
 
 	function ajaxReviewCount() {
-	  $.get("/kw/force_srs/").done(function (data) {
+	  $.get("/kw/force_srs/").done(function (res) {
+	    res = parseInt(res, 10);
 
-	    console.log('Review count updated from server:', data);
-
-	    data = parseInt(data);
-	    if (data > 0) {
-	      $navCount.html(data);
-	      if ($buttonCount.length) $buttonCount.html(pluralize(' Review', data)).removeClass('-disabled');
+	    if (res > 0) {
+	      simpleStorage.set('reviewCount', res);
+	      $navCount.text(res);
+	      if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
 	    }
+
+	    console.log('Review count updated from server:', res);
 	  });
+	}
+
+	function storageReviewCount() {
+	  $navCount.text(storageCount);
+	  // if on home page update the reviews button too
+	  if ($buttonCount.length) {
+	    $buttonCount.text(pluralize(' Review', storageCount)).removeClass('.-disabled');
+	  }
+
+	  console.log('Review count updated from local storage:', storageCount);
 	}
 
 	var refreshReviews = function refreshReviews() {
@@ -10330,17 +10343,12 @@
 
 	  $navCount = $("#navReviewCount");
 	  $buttonCount = $("#reviewCount");
-	  storageCount = simpleStorage.get('reviewCount');
+	  storageCount = simpleStorage.get('reviewCount') || 0;
 
 	  if (forceGet == true || storageCount < 1) {
 	    ajaxReviewCount();
 	  } else {
-	    $navCount.html(storageCount);
-
-	    // if on home page update the reviews button too
-	    if ($buttonCount.length) $buttonCount.html(pluralize(' Review', storageCount));
-
-	    console.log('Review count updated from local storage:', storageCount);
+	    storageReviewCount();
 	  }
 	};
 
@@ -10396,14 +10404,16 @@
 	  $.post('/kw/togglevocab/', { review_id: review_pk, csrfmiddlewaretoken: CSRF }).done(function (res) {
 	    toggleClasses($icon, $card);
 	    var $count = $('#navReviewCount');
-	    var count = simpleStorage.get('reviewCount');
+	    var count = simpleStorage.get('reviewCount') || 0;
 	    var increase = /^added/i.test(res);
 	    increase ? count++ : count--;
 
-	    console.log(increase, $count, count);
+	    console.log('Debug vocab item toggle:\n          review_pk: ' + review_pk + ',\n          res: ' + res + ',\n          increase: ' + increase + ',\n          count: ' + count);
 
-	    simpleStorage.set('reviewCount', count);
-	    $count.html(count);
+	    if (count >= 0) {
+	      simpleStorage.set('reviewCount', count);
+	      $count.text(count);
+	    }
 	  }).always(function (res) {
 	    return console.log(res);
 	  });
@@ -10635,6 +10645,8 @@
 	      currentUserID = $userID.val(),
 	      answer = $userAnswer.val();
 
+	  console.log('comparing');
+
 	  //Fixing the terminal n.
 	  if (answer.endsWith('n')) {
 	    answer = answer.slice(0, -1) + 'ん';
@@ -10679,14 +10691,19 @@
 	function recordAnswer(userID, correctness, previouslyWrong) {
 	  //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
 	  // TODO: @djtb record in a localStorage list instead, post that list at review end.
-	  // reviewcount probably needs to be in localStorage too so it can be updated, also so other parts of site can access it (so a disconnect and reconnect sees the mid-review count in title bar (from localstorage) for example).
 	  $.post("/kw/record_answer/", {
 	    user_specific_id: userID,
 	    user_correct: correctness,
 	    csrfmiddlewaretoken: CSRF,
 	    wrong_before: previouslyWrong
+	  }).done(function () {
+	    simpleStorage.set('sessionVocab', remainingVocab);
+	    simpleStorage.set('reviewCount', remainingVocab.length);
+	    console.log('Recorded answer, storage is now:\n      count: ' + simpleStorage.get('reviewCount') + '\n      vocab: ' + simpleStorage.get('sessionVocab').map(function (x) {
+	      return x.meaning;
+	    }) + '\n    ');
 	  }).always(function (res) {
-	    return console.log(res);
+	    console.log(res);
 	  });
 	}
 
@@ -10736,12 +10753,14 @@
 	function rotateVocab() {
 
 	  if (remainingVocab.length === 0) {
-	    simpleStorage.flush();
+	    console.log('no more vocab', answerCorrectness);
 	    makePost("/kw/summary/", answerCorrectness);
 	    return;
 	  }
 
-	  $reviewsLeft.html(remainingVocab.length);
+	  console.log('should not log on final review');
+
+	  $reviewsLeft.html(simpleStorage.get('reviewCount'));
 	  $reviewsDone.html(correctTotal);
 	  $reviewsCorrect.html(Math.floor(correctTotal / answeredTotal * 100));
 
