@@ -96,14 +96,6 @@ class About(TemplateView):
         return super(About, self).dispatch(*args, **kwargs)
 
 
-class Contact(TemplateView):
-    template_name = "kw_webapp/contact.html"
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(Contact, self).dispatch(*args, **kwargs)
-
-
 class Dashboard(TemplateView):
     template_name = "kw_webapp/home.html"
 
