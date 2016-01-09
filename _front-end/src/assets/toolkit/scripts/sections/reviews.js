@@ -194,9 +194,12 @@ function replaceAnswerWithKanji(index) {
 function rotateVocab() {
 
   if (remainingVocab.length === 0) {
+    console.log('no more vocab', answerCorrectness);
     makePost("/kw/summary/", answerCorrectness);
     return;
   }
+
+  console.log('should not log on final review');
 
   $reviewsLeft.html(simpleStorage.get('reviewCount'));
   $reviewsDone.html(correctTotal);
