@@ -282,7 +282,7 @@ class RecordAnswer(View):
             return HttpResponseForbidden("You can't modify that object!")
 
         data_logger.info(
-            "{}|{}|{}|{}".format(review.user.username, review.vocabulary.meaning, user_correct, review.streak, review.synonyms))
+            "{}|{}|{}|{}".format(review.user.username, review.vocabulary.meaning, user_correct, review.streak, review.synonyms_string()))
         if user_correct:
             if not previously_wrong:
                 review.correct += 1
