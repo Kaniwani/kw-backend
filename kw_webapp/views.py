@@ -395,7 +395,10 @@ class ReviewSummary(TemplateView):
                                                        "incorrect": incorrect,
                                                        "correct_count": len(correct),
                                                        "incorrect_count": len(incorrect),
-                                                       "review_count": len(correct) + len(incorrect)})
+                                                       "review_count": len(correct) + len(incorrect),
+                                                       "request": self.request}, #HOLY MOTHER OF GOD I NEED TO FIX THIS
+                                    )
+
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):

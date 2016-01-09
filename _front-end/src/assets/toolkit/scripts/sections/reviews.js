@@ -44,6 +44,7 @@ const api = {
       }
       //CSRF hackery.
       let csrf_field = document.createElement("input");
+
       csrf_field.setAttribute("name", "csrfmiddlewaretoken");
       csrf_field.setAttribute("value", csrf_token);
       form.appendChild(csrf_field);
@@ -164,10 +165,9 @@ const api = {
     }
 
     function rotateVocab() {
-
       if (vocabulary_list.length === 0) {
         make_post("/kw/summary/", answer_correctness);
-        return
+        return;
       }
 
       $("#reviewsLeft").html(vocabulary_list.length);
