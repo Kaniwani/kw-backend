@@ -66,7 +66,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = UserSpecific.objects.filter(user=user, burnt=true)
+        queryset = UserSpecific.objects.filter(user=user, needs_review=True)
         return queryset
 
     @method_decorator(login_required)
