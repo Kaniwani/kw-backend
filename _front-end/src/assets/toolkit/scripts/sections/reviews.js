@@ -1,4 +1,5 @@
 import wanakana from '../vendor/wanakana.min';
+import nprogress from 'nprogress';
 
 // cache jquery objects instead of querying dom all the time
 let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
@@ -55,6 +56,7 @@ function init() {
 
   // focus input field
   $userAnswer.focus();
+  nprogress.start();
 }
 
 function updateKanaKanjiDetails() {

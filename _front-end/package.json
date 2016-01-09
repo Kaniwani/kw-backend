@@ -54,9 +54,8 @@
     "webpack": "^1.12.1"
   },
   "dependencies": {
-    "notie": "^2.1.0",
     "jquery": "^2.1.4",
-    "nprogress": "^0.2.0",
+    "notie": "^2.1.0",
     "simplestorage.js": "^0.2.0"
   }
 }
