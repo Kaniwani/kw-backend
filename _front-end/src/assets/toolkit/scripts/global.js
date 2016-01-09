@@ -19,7 +19,7 @@ import reviews from './sections/reviews';
 $(document).ready(() => {
 
   invalidApiKey.init();
-  expandToggle.init();
+//  expandToggle.init();
   revealToggle.init();
   login.init();
   home.init();

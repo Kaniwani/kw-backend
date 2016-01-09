@@ -10,7 +10,7 @@
     </section>
 
     <script>
-        var updateStorage = simpleStorage.set('sessionVocab', [
+        var reviewVocab = [
             {% for item in object_list %}
             {
                 'user_specific_id':'{{ item.id }}',
@@ -19,8 +19,15 @@
                 'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
             },
             {% endfor %}
-        ]);
-        console.log('Storage update result:', updateStorage);
+        ];
+
+        var updateVocab = simpleStorage.set('sessionVocab', reviewVocab);
+        var updateCount = simpleStorage.set('reviewCount', reviewVocab.length);
+        console.log(
+            'Update session vocab:', updateVocab,
+            '\n Update count:', updateCount,
+            '\n Length:', reviewVocab.length
+        );
     </script>
 
 {% endblock %}

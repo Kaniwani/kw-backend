@@ -29,8 +29,19 @@ function handleIconClick(event) {
       review_pk = $card.data('pk');
 
     $.post('/kw/togglevocab/', { review_id: review_pk, csrfmiddlewaretoken: CSRF })
-      .done(() =>  toggleClasses($icon, $card))
-      .always(data => console.log(data));
+      .done(res =>  {
+        toggleClasses($icon, $card);
+        let $count = $('#navReviewCount');
+        let count = simpleStorage.get('reviewCount');
+        let increase = /^added/i.test(res);
+        increase ? count++ : count--;
+
+        console.log(increase, $count, count);
+
+        simpleStorage.set('reviewCount', count)
+        $count.html(count);
+      })
+      .always(res => console.log(res));
 }
 
 

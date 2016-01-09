@@ -186,7 +186,8 @@ function rotateVocab() {
 
   if (remainingVocab.length === 0) {
     simpleStorage.flush();
-    return makePost("/kw/summary/", answerCorrectness);
+    makePost("/kw/summary/", answerCorrectness);
+    return;
   }
 
   $reviewsLeft.html(remainingVocab.length);

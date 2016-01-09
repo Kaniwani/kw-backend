@@ -18,7 +18,7 @@
         <li class="item {% ancestor 'kw:review' %}">
           <a href="{% url "kw:review" %}" class="nav-link">
             <span class="text">Reviews
-              {% if review_count %}<span class="count">{{ review_count }}</span>{% endif %}
+              {% if review_count %}<span id="navReviewCount" class="count">{{ review_count }}</span>{% endif %}
             </span>
           </a>
         </li>

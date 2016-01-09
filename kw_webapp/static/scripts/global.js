@@ -79,22 +79,22 @@
 
 	var _sectionsHome2 = _interopRequireDefault(_sectionsHome);
 
-	var _sectionsVocab = __webpack_require__(11);
+	var _sectionsVocab = __webpack_require__(12);
 
 	var _sectionsVocab2 = _interopRequireDefault(_sectionsVocab);
 
-	var _sectionsUnlocks = __webpack_require__(12);
+	var _sectionsUnlocks = __webpack_require__(13);
 
 	var _sectionsUnlocks2 = _interopRequireDefault(_sectionsUnlocks);
 
-	var _sectionsReviews = __webpack_require__(13);
+	var _sectionsReviews = __webpack_require__(14);
 
 	var _sectionsReviews2 = _interopRequireDefault(_sectionsReviews);
 
 	(0, _jquery2['default'])(document).ready(function () {
 
 	  _componentsInvalidApiKey2['default'].init();
-	  _componentsExpandToggle2['default'].init();
+	  //  expandToggle.init();
 	  _componentsRevealToggle2['default'].init();
 	  _sectionsLogin2['default'].init();
 	  _sectionsHome2['default'].init();
@@ -9322,25 +9322,23 @@
 
 /***/ },
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	/* WEBPACK VAR INJECTION */(function($) {'use strict';
+	"use strict";
 
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	var api = {
-	  init: function init() {
-	    $('.expandToggle').click(function (ev) {
-	      ev.preventDefault();
-	      $(ev.target).siblings('.toggleTarget').toggleClass('-open');
-	    });
-	  }
-	};
+	// something similar is being called in vocab.js
+	// should extract that to here for re-use in other areas
 
-	exports['default'] = api;
-	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	// const api = {
+	//   init() {
+	//     $('.expandToggle').click((ev) => {
+	//       ev.preventDefault();
+	//       $(ev.target).siblings('.toggleTarget').toggleClass('-open');
+	//     });
+	//   }
+	// }
+
+	// export default api;
 
 /***/ },
 /* 4 */
@@ -10230,41 +10228,34 @@
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($, simpleStorage) {"use strict";
+	/* WEBPACK VAR INJECTION */(function($) {"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
 		value: true
 	});
-	var $refreshButton = undefined,
-	    $reviewCount = undefined;
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+	var _componentsRefreshReviews = __webpack_require__(10);
+
+	var _componentsRefreshReviews2 = _interopRequireDefault(_componentsRefreshReviews);
+
+	var $refreshButton = undefined;
 
 	function init() {
 		$refreshButton = $("#forceSrs");
-		$reviewCount = $("#reviewCount");
 
 		// are we on home page?
 		if ($refreshButton.length) {
-			$refreshButton.click(refreshReviews);
+			// event handlers
+			$refreshButton.click(function () {
+				return (0, _componentsRefreshReviews2["default"])({ forceGet: true });
+			});
 			$(document).keypress(handleKeyPress);
+
+			// update from sessionstorage, if nothing there then hit server
+			(0, _componentsRefreshReviews2["default"])();
 		}
-	}
-
-	function pluralizeReviews(num) {
-		return num + (num > 1 ? " Reviews" : " Review");
-	}
-
-	function refreshReviews() {
-		var sessionVocab = (simpleStorage.get('sessionVocab') || []).length;
-		if (sessionVocab > 0) {
-			return $reviewCount.html(pluralizeReviews(sessionVocab));
-		}
-
-		$.get("/kw/force_srs/").done(function (data) {
-			data = parseInt(data);
-			if (data > 0) {
-				$reviewCount.html(pluralizeReviews(data)).removeClass("-disabled");
-			}
-		});
 	}
 
 	// shortcut to section based on R/S/U/H/C
@@ -10277,7 +10268,7 @@
 				break;
 			case k == 83 || k == 115:
 				// S
-				$refreshButton.click();
+				(0, _componentsRefreshReviews2["default"])();
 				break;
 			case k == 85 || k == 117:
 				// U
@@ -10300,19 +10291,74 @@
 
 	exports["default"] = api;
 	module.exports = exports["default"];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(10)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
 /* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($, simpleStorage) {"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var $navCount = undefined,
+	    $buttonCount = undefined,
+	    storageCount = undefined;
+
+	function pluralize(text, num) {
+	  return num + text + (num > 1 ? "s" : "");
+	}
+
+	function ajaxReviewCount() {
+	  $.get("/kw/force_srs/").done(function (data) {
+
+	    console.log('Review count updated from server:', data);
+
+	    data = parseInt(data);
+	    if (data > 0) {
+	      $navCount.html(data);
+	      if ($buttonCount.length) $buttonCount.html(pluralize(' Review', data)).removeClass('-disabled');
+	    }
+	  });
+	}
+
+	var refreshReviews = function refreshReviews() {
+	  var _ref = arguments.length <= 0 || arguments[0] === undefined ? { forceGet: false } : arguments[0];
+
+	  var forceGet = _ref.forceGet;
+
+	  $navCount = $("#navReviewCount");
+	  $buttonCount = $("#reviewCount");
+	  storageCount = simpleStorage.get('reviewCount');
+
+	  if (forceGet == true || storageCount < 1) {
+	    ajaxReviewCount();
+	  } else {
+	    $navCount.html(storageCount);
+
+	    // if on home page update the reviews button too
+	    if ($buttonCount.length) $buttonCount.html(pluralize(' Review', storageCount));
+
+	    console.log('Review count updated from local storage:', storageCount);
+	  }
+	};
+
+	exports["default"] = refreshReviews;
+	module.exports = exports["default"];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(11)))
+
+/***/ },
+/* 11 */
 /***/ function(module, exports) {
 
 	module.exports = simpleStorage;
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($) {'use strict';
+	/* WEBPACK VAR INJECTION */(function($, simpleStorage) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
@@ -10347,10 +10393,19 @@
 	      $card = $icon.closest('.vocab-card'),
 	      review_pk = $card.data('pk');
 
-	  $.post('/kw/togglevocab/', { review_id: review_pk, csrfmiddlewaretoken: CSRF }).done(function () {
-	    return toggleClasses($icon, $card);
-	  }).always(function (data) {
-	    return console.log(data);
+	  $.post('/kw/togglevocab/', { review_id: review_pk, csrfmiddlewaretoken: CSRF }).done(function (res) {
+	    toggleClasses($icon, $card);
+	    var $count = $('#navReviewCount');
+	    var count = simpleStorage.get('reviewCount');
+	    var increase = /^added/i.test(res);
+	    increase ? count++ : count--;
+
+	    console.log(increase, $count, count);
+
+	    simpleStorage.set('reviewCount', count);
+	    $count.html(count);
+	  }).always(function (res) {
+	    return console.log(res);
 	  });
 	}
 
@@ -10365,10 +10420,10 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(11)))
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($, notie) {// setup variables inside module closure, but functions in this file can modify and access them
@@ -10472,7 +10527,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(6)))
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(simpleStorage, $) {'use strict';
@@ -10483,7 +10538,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _vendorWanakanaMin = __webpack_require__(14);
+	var _vendorWanakanaMin = __webpack_require__(15);
 
 	var _vendorWanakanaMin2 = _interopRequireDefault(_vendorWanakanaMin);
 
@@ -10682,7 +10737,8 @@
 
 	  if (remainingVocab.length === 0) {
 	    simpleStorage.flush();
-	    return makePost("/kw/summary/", answerCorrectness);
+	    makePost("/kw/summary/", answerCorrectness);
+	    return;
 	  }
 
 	  $reviewsLeft.html(remainingVocab.length);
@@ -10745,10 +10801,10 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10), __webpack_require__(2)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(2)))
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// this is a custom modified version of wanakana that overcomes the isHiragana failure bug for long hyphens (on entries like ハート形)
@@ -10757,7 +10813,7 @@
 	var wanakana,
 	    __indexOf = [].indexOf || function (a) {
 	  for (var b = 0, c = this.length; c > b; b++) if (b in this && this[b] === a) return b;return -1;
-	};wanakana = wanakana || {}, wanakana.version = "1.3.6", "function" == "function" && __webpack_require__(15) && !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	};wanakana = wanakana || {}, wanakana.version = "1.3.6", "function" == "function" && __webpack_require__(16) && !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
 	  return wanakana;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)), wanakana.LOWERCASE_START = 97, wanakana.LOWERCASE_END = 122, wanakana.UPPERCASE_START = 65, wanakana.UPPERCASE_END = 90, wanakana.HIRAGANA_START = 12353, wanakana.HIRAGANA_END = 12438, wanakana.KATAKANA_START = 12449, wanakana.KATAKANA_END = 12538, wanakana.LOWERCASE_FULLWIDTH_START = 65345, wanakana.LOWERCASE_FULLWIDTH_END = 65370, wanakana.UPPERCASE_FULLWIDTH_START = 65313, wanakana.UPPERCASE_FULLWIDTH_END = 65338, wanakana.defaultOptions = { useObseleteKana: !1, IMEMode: !1 }, wanakana.bind = function (a) {
 	  return a.addEventListener("input", wanakana._onInput);
@@ -10846,7 +10902,7 @@
 	}, wanakana.R_to_J = { a: "あ", i: "い", u: "う", e: "え", o: "お", yi: "い", wu: "う", whu: "う", xa: "ぁ", xi: "ぃ", xu: "ぅ", xe: "ぇ", xo: "ぉ", xyi: "ぃ", xye: "ぇ", ye: "いぇ", wha: "うぁ", whi: "うぃ", whe: "うぇ", who: "うぉ", wi: "うぃ", we: "うぇ", va: "ゔぁ", vi: "ゔぃ", vu: "ゔ", ve: "ゔぇ", vo: "ゔぉ", vya: "ゔゃ", vyi: "ゔぃ", vyu: "ゔゅ", vye: "ゔぇ", vyo: "ゔょ", ka: "か", ki: "き", ku: "く", ke: "け", ko: "こ", lka: "ヵ", lke: "ヶ", xka: "ヵ", xke: "ヶ", kya: "きゃ", kyi: "きぃ", kyu: "きゅ", kye: "きぇ", kyo: "きょ", ca: "か", ci: "き", cu: "く", ce: "け", co: "こ", lca: "ヵ", lce: "ヶ", xca: "ヵ", xce: "ヶ", qya: "くゃ", qyu: "くゅ", qyo: "くょ", qwa: "くぁ", qwi: "くぃ", qwu: "くぅ", qwe: "くぇ", qwo: "くぉ", qa: "くぁ", qi: "くぃ", qe: "くぇ", qo: "くぉ", kwa: "くぁ", qyi: "くぃ", qye: "くぇ", ga: "が", gi: "ぎ", gu: "ぐ", ge: "げ", go: "ご", gya: "ぎゃ", gyi: "ぎぃ", gyu: "ぎゅ", gye: "ぎぇ", gyo: "ぎょ", gwa: "ぐぁ", gwi: "ぐぃ", gwu: "ぐぅ", gwe: "ぐぇ", gwo: "ぐぉ", sa: "さ", si: "し", shi: "し", su: "す", se: "せ", so: "そ", za: "ざ", zi: "じ", zu: "ず", ze: "ぜ", zo: "ぞ", ji: "じ", sya: "しゃ", syi: "しぃ", syu: "しゅ", sye: "しぇ", syo: "しょ", sha: "しゃ", shu: "しゅ", she: "しぇ", sho: "しょ", shya: "しゃ", shyu: "しゅ", shye: "しぇ", shyo: "しょ", swa: "すぁ", swi: "すぃ", swu: "すぅ", swe: "すぇ", swo: "すぉ", zya: "じゃ", zyi: "じぃ", zyu: "じゅ", zye: "じぇ", zyo: "じょ", ja: "じゃ", ju: "じゅ", je: "じぇ", jo: "じょ", jya: "じゃ", jyi: "じぃ", jyu: "じゅ", jye: "じぇ", jyo: "じょ", ta: "た", ti: "ち", tu: "つ", te: "て", to: "と", chi: "ち", tsu: "つ", ltu: "っ", xtu: "っ", tya: "ちゃ", tyi: "ちぃ", tyu: "ちゅ", tye: "ちぇ", tyo: "ちょ", cha: "ちゃ", chu: "ちゅ", che: "ちぇ", cho: "ちょ", cya: "ちゃ", cyi: "ちぃ", cyu: "ちゅ", cye: "ちぇ", cyo: "ちょ", chya: "ちゃ", chyu: "ちゅ", chye: "ちぇ", chyo: "ちょ", tsa: "つぁ", tsi: "つぃ", tse: "つぇ", tso: "つぉ", tha: "てゃ", thi: "てぃ", thu: "てゅ", the: "てぇ", tho: "てょ", twa: "とぁ", twi: "とぃ", twu: "とぅ", twe: "とぇ", two: "とぉ", da: "だ", di: "ぢ", du: "づ", de: "で", "do": "ど", dya: "ぢゃ", dyi: "ぢぃ", dyu: "ぢゅ", dye: "ぢぇ", dyo: "ぢょ", dha: "でゃ", dhi: "でぃ", dhu: "でゅ", dhe: "でぇ", dho: "でょ", dwa: "どぁ", dwi: "どぃ", dwu: "どぅ", dwe: "どぇ", dwo: "どぉ", na: "な", ni: "に", nu: "ぬ", ne: "ね", no: "の", nya: "にゃ", nyi: "にぃ", nyu: "にゅ", nye: "にぇ", nyo: "にょ", ha: "は", hi: "ひ", hu: "ふ", he: "へ", ho: "ほ", fu: "ふ", hya: "ひゃ", hyi: "ひぃ", hyu: "ひゅ", hye: "ひぇ", hyo: "ひょ", fya: "ふゃ", fyu: "ふゅ", fyo: "ふょ", fwa: "ふぁ", fwi: "ふぃ", fwu: "ふぅ", fwe: "ふぇ", fwo: "ふぉ", fa: "ふぁ", fi: "ふぃ", fe: "ふぇ", fo: "ふぉ", fyi: "ふぃ", fye: "ふぇ", ba: "ば", bi: "び", bu: "ぶ", be: "べ", bo: "ぼ", bya: "びゃ", byi: "びぃ", byu: "びゅ", bye: "びぇ", byo: "びょ", pa: "ぱ", pi: "ぴ", pu: "ぷ", pe: "ぺ", po: "ぽ", pya: "ぴゃ", pyi: "ぴぃ", pyu: "ぴゅ", pye: "ぴぇ", pyo: "ぴょ", ma: "ま", mi: "み", mu: "む", me: "め", mo: "も", mya: "みゃ", myi: "みぃ", myu: "みゅ", mye: "みぇ", myo: "みょ", ya: "や", yu: "ゆ", yo: "よ", xya: "ゃ", xyu: "ゅ", xyo: "ょ", ra: "ら", ri: "り", ru: "る", re: "れ", ro: "ろ", rya: "りゃ", ryi: "りぃ", ryu: "りゅ", rye: "りぇ", ryo: "りょ", la: "ら", li: "り", lu: "る", le: "れ", lo: "ろ", lya: "りゃ", lyi: "りぃ", lyu: "りゅ", lye: "りぇ", lyo: "りょ", wa: "わ", wo: "を", lwe: "ゎ", xwa: "ゎ", n: "ん", nn: "ん", "n ": "ん", xn: "ん", ltsu: "っ" }, wanakana.FOUR_CHARACTER_EDGE_CASES = ["lts", "chy", "shy"], wanakana.J_to_R = { あ: "a", い: "i", う: "u", え: "e", お: "o", ゔぁ: "va", ゔぃ: "vi", ゔ: "vu", ゔぇ: "ve", ゔぉ: "vo", か: "ka", き: "ki", きゃ: "kya", きぃ: "kyi", きゅ: "kyu", く: "ku", け: "ke", こ: "ko", が: "ga", ぎ: "gi", ぐ: "gu", げ: "ge", ご: "go", ぎゃ: "gya", ぎぃ: "gyi", ぎゅ: "gyu", ぎぇ: "gye", ぎょ: "gyo", さ: "sa", す: "su", せ: "se", そ: "so", ざ: "za", ず: "zu", ぜ: "ze", ぞ: "zo", し: "shi", しゃ: "sha", しゅ: "shu", しょ: "sho", じ: "ji", じゃ: "ja", じゅ: "ju", じょ: "jo", た: "ta", ち: "chi", ちゃ: "cha", ちゅ: "chu", ちょ: "cho", つ: "tsu", て: "te", と: "to", だ: "da", ぢ: "di", づ: "du", で: "de", ど: "do", な: "na", に: "ni", にゃ: "nya", にゅ: "nyu", にょ: "nyo", ぬ: "nu", ね: "ne", の: "no", は: "ha", ひ: "hi", ふ: "fu", へ: "he", ほ: "ho", ひゃ: "hya", ひゅ: "hyu", ひょ: "hyo", ふぁ: "fa", ふぃ: "fi", ふぇ: "fe", ふぉ: "fo", ば: "ba", び: "bi", ぶ: "bu", べ: "be", ぼ: "bo", びゃ: "bya", びゅ: "byu", びょ: "byo", ぱ: "pa", ぴ: "pi", ぷ: "pu", ぺ: "pe", ぽ: "po", ぴゃ: "pya", ぴゅ: "pyu", ぴょ: "pyo", ま: "ma", み: "mi", む: "mu", め: "me", も: "mo", みゃ: "mya", みゅ: "myu", みょ: "myo", や: "ya", ゆ: "yu", よ: "yo", ら: "ra", り: "ri", る: "ru", れ: "re", ろ: "ro", りゃ: "rya", りゅ: "ryu", りょ: "ryo", わ: "wa", を: "wo", ん: "n", ゐ: "wi", ゑ: "we", きぇ: "kye", きょ: "kyo", じぃ: "jyi", じぇ: "jye", ちぃ: "cyi", ちぇ: "che", ひぃ: "hyi", ひぇ: "hye", びぃ: "byi", びぇ: "bye", ぴぃ: "pyi", ぴぇ: "pye", みぇ: "mye", みぃ: "myi", りぃ: "ryi", りぇ: "rye", にぃ: "nyi", にぇ: "nye", しぃ: "syi", しぇ: "she", いぇ: "ye", うぁ: "wha", うぉ: "who", うぃ: "wi", うぇ: "we", ゔゃ: "vya", ゔゅ: "vyu", ゔょ: "vyo", すぁ: "swa", すぃ: "swi", すぅ: "swu", すぇ: "swe", すぉ: "swo", くゃ: "qya", くゅ: "qyu", くょ: "qyo", くぁ: "qwa", くぃ: "qwi", くぅ: "qwu", くぇ: "qwe", くぉ: "qwo", ぐぁ: "gwa", ぐぃ: "gwi", ぐぅ: "gwu", ぐぇ: "gwe", ぐぉ: "gwo", つぁ: "tsa", つぃ: "tsi", つぇ: "tse", つぉ: "tso", てゃ: "tha", てぃ: "thi", てゅ: "thu", てぇ: "the", てょ: "tho", とぁ: "twa", とぃ: "twi", とぅ: "twu", とぇ: "twe", とぉ: "two", ぢゃ: "dya", ぢぃ: "dyi", ぢゅ: "dyu", ぢぇ: "dye", ぢょ: "dyo", でゃ: "dha", でぃ: "dhi", でゅ: "dhu", でぇ: "dhe", でょ: "dho", どぁ: "dwa", どぃ: "dwi", どぅ: "dwu", どぇ: "dwe", どぉ: "dwo", ふぅ: "fwu", ふゃ: "fya", ふゅ: "fyu", ふょ: "fyo", ぁ: "a", ぃ: "i", ぇ: "e", ぅ: "u", ぉ: "o", ゃ: "ya", ゅ: "yu", ょ: "yo", っ: "", ゕ: "ka", ゖ: "ka", ゎ: "wa", "　": " ", んあ: "n'a", んい: "n'i", んう: "n'u", んえ: "n'e", んお: "n'o", んや: "n'ya", んゆ: "n'yu", んよ: "n'yo" };
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
