@@ -1,5 +1,4 @@
 import wanakana from '../vendor/wanakana.min';
-import nprogress from 'nprogress';
 
 // cache jquery objects instead of querying dom all the time
 let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
@@ -17,7 +16,8 @@ let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
   $userAnswer = $('#userAnswer'),
   $detailKana = $('#detailKana'),
   $submitAnswer = $('#submitAnswer'),
-  $detailKanji = $('#detailKanji');
+  $detailKanji = $('#detailKanji'),
+  $progressbar = $('.progressbar');
 
 function init() {
   // if not on reviews page then exit
@@ -44,6 +44,7 @@ function init() {
   $meaning.html(currentVocab.meaning);
   $userID.val(currentVocab.user_specific_id);
 
+  $progressbar.attr('max', remainingVocab.length);
   $detailKana.kana = $detailKana.find('.-kana');
   $detailKanji.kanji = $detailKanji.find('.-kanji');
 
@@ -191,6 +192,7 @@ function wrongAnswer() {
 
 function rightAnswer() {
   clearColors();
+  $progressbar.val(remainingVocab.length);
   $userAnswer.addClass('-marked -correct');
   correctTotal += 1;
   answeredTotal += 1;
@@ -228,6 +230,7 @@ function rotateVocab() {
 
   $reviewsLeft.html(simpleStorage.get('reviewCount'));
   $reviewsDone.html(correctTotal);
+  $progressbar.val(correctTotal);
   $reviewsCorrect.html(Math.floor((correctTotal / answeredTotal) * 100));
 
   currentVocab = remainingVocab.shift();

@@ -2,9 +2,36 @@
 
   > .inner {
 
+    > progress.progressbar {
+      position: absolute;
+      transition: backgroun-color .4s ease-out;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 5px;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      color: $purple;
+      background-color: $purple;
+      border: none;
+      opacity: .9;
+    }
+
+    progress::-webkit-progress-bar,
+    progress::-moz-progress-bar,
+    progress::progress-bar,
+    progress::ms-fill {
+      background-color: $white-light;
+    }
+
+    progress::-webkit-progress-value {
+      background: $white-light;
+    }
+
     > .homelink,
     > .statslist {
-      margin: .3em .6em;
+      margin: .75em;
     }
 
     > .statslist {
@@ -24,7 +51,6 @@
 
     > .homelink {
       opacity: .8;
-      color: white;
       display: block;
       float: left;
       font-size: responsive 16px 20px;

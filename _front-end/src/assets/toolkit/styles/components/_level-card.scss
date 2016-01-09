@@ -5,6 +5,7 @@ $bp-level-card-2: '>=680px';
 .level-card {
   position: relative;
   border-radius: 3px;
+  display: block;
 
   > .wrap {
     display: block;
