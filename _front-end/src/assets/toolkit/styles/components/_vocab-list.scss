@@ -1,19 +1,14 @@
 .vocab-list {
-  @include container($site-max-width - 300px);
   margin-top: 0;
   margin-bottom: 0;
   padding: 0;
-
-  @include media($bp-xl) {
-    @include container($site-max-width);
-    clear: fix;
-  }
+  clear: fix;
 
   > .vocab-card {
     margin: 0 0 $unit-sm;
 
     // TODO: flexbox instead for equal height pairs
-    @include media($bp-xl) {
+    @include media($bp-lg) {
       width: calc(50% - #{$unit-xs} / 2);
       float: left;
       margin-bottom: $unit-xs;

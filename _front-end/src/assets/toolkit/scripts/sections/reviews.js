@@ -4,6 +4,7 @@ import wanakana from '../vendor/wanakana.min';
 let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
   remainingVocab,
   currentVocab,
+  sessionFinished,
   correctTotal = 0,
   answeredTotal = 0,
   answerCorrectness = [],
@@ -32,7 +33,9 @@ function init() {
   let updateCount = simpleStorage.set('reviewCount', window.KWinitialVocab.length);
 
   // set initial values
+  simpleStorage.set('sessionFinished', false);
   remainingVocab = simpleStorage.get('sessionVocab');
+
   console.log(
       '\nUpdate session vocab:', updateVocab,
       '\nUpdate count:', updateCount,
@@ -226,6 +229,7 @@ function rotateVocab() {
 
   if (remainingVocab.length === 0) {
     updateStorage();
+    simpleStorage.set('sessionFinished', true);
     console.log('Summary post data', answerCorrectness);
     return makePost('/kw/summary/', answerCorrectness);
   }

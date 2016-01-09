@@ -1,6 +1,7 @@
 let $navCount,
     $buttonCount,
-    storageCount;
+    storageCount,
+    sessionFinished;
 
 function pluralize(text, num) {
   return num + text + (num > 1 ? "s" : "");
@@ -11,11 +12,9 @@ function ajaxReviewCount() {
    .done(res => {
       res = parseInt(res, 10);
 
-      if (res > 0) {
-        simpleStorage.set('reviewCount', res);
-        $navCount.text(res);
-        if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
-      }
+      simpleStorage.set('reviewCount', res);
+      $navCount.text(res);
+      if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
 
       console.log('Review count updated from server:', res)
   });
@@ -35,8 +34,9 @@ const refreshReviews = function({forceGet} = {forceGet: false}) {
   $navCount = $("#navReviewCount");
   $buttonCount = $("#reviewCount");
   storageCount = simpleStorage.get('reviewCount') || 0;
+  sessionFinished = simpleStorage.get('sessionFinished');
 
-  if (forceGet == true || storageCount < 1) {
+  if (!!sessionFinished && forceGet == true || storageCount < 1) {
     ajaxReviewCount();
   } else {
     storageReviewCount();

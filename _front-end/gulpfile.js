@@ -177,7 +177,7 @@ gulp.task('serve', function () {
 	gulp.task('images:watch', ['images'], reload);
 	gulp.watch(config.src.images, ['images:watch']);
 
-	gulp.watch('src/**/*', ['copy']);
+	gulp.watch('dist/**/*', ['copy']);
 
 });
 

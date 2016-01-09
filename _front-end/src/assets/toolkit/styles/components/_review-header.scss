@@ -12,21 +12,15 @@
       -webkit-appearance: none;
       -moz-appearance: none;
       appearance: none;
-      color: $purple;
       background-color: $purple;
+      color: $white;
       border: none;
       opacity: .9;
-    }
 
-    progress::-webkit-progress-bar,
-    progress::-moz-progress-bar,
-    progress::progress-bar,
-    progress::ms-fill {
-      background-color: $white-light;
-    }
-
-    progress::-webkit-progress-value {
-      background: $white-light;
+      &::-webkit-progress-bar{ background-color: $white-light !important; }
+      &::-moz-progress-bar { background-color: $white-light !important; }
+      &::ms-fill { background-color: $white-light !important; }
+      &::-webkit-progress-value { background-color: $white-light !important; }
     }
 
     > .homelink,

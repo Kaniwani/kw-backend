@@ -10312,7 +10312,8 @@
 	});
 	var $navCount = undefined,
 	    $buttonCount = undefined,
-	    storageCount = undefined;
+	    storageCount = undefined,
+	    sessionFinished = undefined;
 
 	function pluralize(text, num) {
 	  return num + text + (num > 1 ? "s" : "");
@@ -10322,11 +10323,9 @@
 	  $.get("/kw/force_srs/").done(function (res) {
 	    res = parseInt(res, 10);
 
-	    if (res > 0) {
-	      simpleStorage.set('reviewCount', res);
-	      $navCount.text(res);
-	      if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
-	    }
+	    simpleStorage.set('reviewCount', res);
+	    $navCount.text(res);
+	    if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
 
 	    console.log('Review count updated from server:', res);
 	  });
@@ -10350,8 +10349,9 @@
 	  $navCount = $("#navReviewCount");
 	  $buttonCount = $("#reviewCount");
 	  storageCount = simpleStorage.get('reviewCount') || 0;
+	  sessionFinished = simpleStorage.get('sessionFinished');
 
-	  if (forceGet == true || storageCount < 1) {
+	  if (!!sessionFinished && forceGet == true || storageCount < 1) {
 	    ajaxReviewCount();
 	  } else {
 	    storageReviewCount();
@@ -10564,6 +10564,7 @@
 	    //Grab CSRF token off of dummy form.
 	remainingVocab = undefined,
 	    currentVocab = undefined,
+	    sessionFinished = undefined,
 	    correctTotal = 0,
 	    answeredTotal = 0,
 	    answerCorrectness = [],
@@ -10592,7 +10593,9 @@
 	  var updateCount = simpleStorage.set('reviewCount', window.KWinitialVocab.length);
 
 	  // set initial values
+	  simpleStorage.set('sessionFinished', false);
 	  remainingVocab = simpleStorage.get('sessionVocab');
+
 	  console.log('\nUpdate session vocab:', updateVocab, '\nUpdate count:', updateCount, '\nLength:', window.KWinitialVocab.length);
 
 	  $reviewsLeft.text(remainingVocab.length);
@@ -10783,6 +10786,7 @@
 
 	  if (remainingVocab.length === 0) {
 	    updateStorage();
+	    simpleStorage.set('sessionFinished', true);
 	    console.log('Summary post data', answerCorrectness);
 	    return makePost('/kw/summary/', answerCorrectness);
 	  }
