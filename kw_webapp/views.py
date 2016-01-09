@@ -200,7 +200,7 @@ class UnlockRequested(View):
 
 
 class UnlockLevels(TemplateView):
-    template_name = "kw_webapp/unlocklevels.html"
+    template_name = "kw_webapp/vocabulary.html"
 
     def get_context_data(self, **kwargs):
         user_profile = self.request.user.profile
@@ -219,28 +219,6 @@ class UnlockLevels(TemplateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(UnlockLevels, self).dispatch(*args, **kwargs)
-
-
-class Levels(TemplateView):
-    template_name = "kw_webapp/levels.html"
-
-    def get_context_data(self, **kwargs):
-        user_profile = self.request.user.profile
-        context = super(Levels, self).get_context_data()
-        level_status = []
-        unlocked_levels = user_profile.unlocked_levels_list()
-        for level in range(1, 61):
-            if level in unlocked_levels:
-                level_status.append([level, True])
-            else:
-                level_status.append([level, False])
-
-        context["levels"] = level_status
-        return context
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(Levels, self).dispatch(*args, **kwargs)
 
 
 class LevelVocab(TemplateView):

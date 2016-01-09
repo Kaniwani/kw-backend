@@ -20,9 +20,9 @@
             <span class="text">Reviews <span id="navReviewCount" class="count">{% if review_count %}{{ review_count }}{% endif %}</span></span>
           </a>
         </li>
-        <li class="item {% ancestor 'kw:unlocks' %}">
-          <a href="{% url "kw:unlocks" %}" class="nav-link">
-            <span class="text">Unlocks</span>
+        <li class="item {% ancestor 'kw:vocab' %}">
+          <a href="{% url "kw:vocab" %}" class="nav-link">
+            <span class="text">Vocabulary</span>
           </a>
         </li>
         <li class="item {% ancestor 'kw:about' %}">
