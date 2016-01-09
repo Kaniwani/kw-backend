@@ -12,7 +12,7 @@ logger = logging.getLogger("kw.models")
 class Announcement(models.Model):
     title = models.CharField(max_length=255)
     body = models.TextField()
-    pub_date = models.DateTimeField('Date Published', default=timezone.now(), null=True)
+    pub_date = models.DateTimeField('Date Published', auto_now_add=True, null=True)
     creator = models.ForeignKey(User)
 
     def __str__(self):
@@ -88,7 +88,6 @@ class Reading(models.Model):
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
-    synonyms = models.CharField(max_length=255, default=None, blank=True, null=True)
     user = models.ForeignKey(User)
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)

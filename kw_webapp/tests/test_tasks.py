@@ -63,7 +63,6 @@ class TestCeleryTasks(TestCase):
         self.vocabulary.reading_set.create(level=6, kana="猫二", character="whatever2")
 
         lock_level_for_user(6, self.user)
-
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [5, 7])
 
     def test_create_new_vocab_based_on_json_works(self):
