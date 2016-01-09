@@ -258,10 +258,6 @@ function handleShortcuts(event) {
   }
 }
 
-function null_out(event) {
-  event.preventDefault();
-}
-
 const api = {
   init: init
 };

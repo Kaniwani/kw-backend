@@ -10813,10 +10813,6 @@
 	  }
 	}
 
-	function null_out(event) {
-	  event.preventDefault();
-	}
-
 	var api = {
 	  init: init
 	};
