@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="google" content="notranslate">
 
-  <title>{% block title %}{% endblock title %}</title>
+  <title>KaniWani {% block title %}{% endblock title %}</title>
 
   <link rel="stylesheet" href="{% static "styles/main.css" %}">
 
@@ -20,6 +20,9 @@
   <link href="{% static "images/favicon/favicon-128.png" %}" rel="shortcut icon" sizes="128x128" type="image/png" />
   <link href="{% static "images/favicon/favicon-128.png" %}" rel="apple-touch-icon" sizes="128x128" type="image/png" />
   <link href="{% static "images/favicon/favicon-128.png" %}" rel="apple-touch-icon-precomposed" sizes="128x128" type="image/png" />
+
+  <!-- this is referenced in webpack config and exposed to js modules, removing it here will break reviews etc -->
+  <script src="https://cdn.jsdelivr.net/simplestorage/0.2.0/simpleStorage.min.js"></script>
 
 </head>
 <body>

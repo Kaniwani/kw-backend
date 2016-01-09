@@ -15,11 +15,10 @@
     <nav class="site-nav">
       <a href="#0" class="expandToggle">☰ Menu</a>
       <ul class="nav-list toggleTarget">
-
         <li class="item {% ancestor 'kw:review' %}">
           <a href="{% url "kw:review" %}" class="nav-link">
             <span class="text">Reviews
-              {% if review_count %}<span class="count">{{ review_count }}</span>{% endif %}
+              <span id="navReviewCount" class="count">{% if review_count %}{{ review_count }}{% endif %}</span>
             </span>
           </a>
         </li>

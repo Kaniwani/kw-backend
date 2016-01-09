@@ -126,6 +126,11 @@ gulp.task('assemble', function (done) {
 	done();
 });
 
+gulp.task('copy', function() {
+	gulp.src([config.dest + '/assets/**/*',  '!' + config.dest + '/assets/fabricator{,/**}'])
+			.pipe(changed(config.kwstatic))
+			.pipe(gulp.dest(config.kwstatic));
+})
 
 // server
 gulp.task('serve', function () {
@@ -172,6 +177,8 @@ gulp.task('serve', function () {
 	gulp.task('images:watch', ['images'], reload);
 	gulp.watch(config.src.images, ['images:watch']);
 
+	gulp.watch('src/**/*', ['copy']);
+
 });
 
 
@@ -184,18 +191,12 @@ gulp.task('default', ['clean'], function () {
 		'scripts',
 		'images',
 		'fonts',
-		'assemble'
+		'assemble',
+		'copy'
 	];
 
 	// run build
 	runSequence(tasks, function () {
-		if (config.prod) {
-			// copy assets to webapp static folder for django
-			gulp.src([config.dest + '/assets/**/*',  '!' + config.dest + '/assets/fabricator{,/**}'])
-	  			.pipe(changed(config.kwstatic))
-	  			.pipe(gulp.dest(config.kwstatic));
-		}
-
 		if (!config.prod) {
 			gulp.start('serve');
 		}

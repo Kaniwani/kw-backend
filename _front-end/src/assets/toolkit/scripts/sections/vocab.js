@@ -1,6 +1,3 @@
-import $ from 'jquery';
-
-// setup variables inside module closure, but functions can access them if needs be
 let CSRF,
     $vocabList,
     $cards;
@@ -32,8 +29,26 @@ function handleIconClick(event) {
       review_pk = $card.data('pk');
 
     $.post('/kw/togglevocab/', { review_id: review_pk, csrfmiddlewaretoken: CSRF })
-      .done(() =>  toggleClasses($icon, $card))
-      .always(data => console.log(data));
+      .done(res =>  {
+        toggleClasses($icon, $card);
+        let $count = $('#navReviewCount');
+        let count = simpleStorage.get('reviewCount') || 0;
+        let increase = /^added/i.test(res);
+        increase ? count++ : count--;
+
+        console.log(`Debug vocab item toggle:
+          review_pk: ${review_pk},
+          res: ${res},
+          increase: ${increase},
+          count: ${count}`
+        );
+
+        if (count >= 0) {
+          simpleStorage.set('reviewCount', count);
+          $count.text(count);
+        }
+      })
+      .always(res => console.log(res));
 }
 
 
