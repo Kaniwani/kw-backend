@@ -1,9 +1,8 @@
 import wanakana from '../vendor/wanakana.min';
-// simpleStorage exposed via webpack from page header CDN <script>
 
 // cache jquery objects instead of querying dom all the time
-let remainingVocab = simpleStorage.get('sessionVocab'),
-  CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
+let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
+  remainingVocab,
   currentVocab,
   correctTotal = 0,
   answeredTotal = 0,
@@ -20,8 +19,25 @@ let remainingVocab = simpleStorage.get('sessionVocab'),
   $detailKanji = $('#detailKanji');
 
 function init() {
+  // if not on reviews page then exit
   if (!$meaning.length) return;
+
+  // TODO: for mid-review drops, we should submit previous answerCorrectness, and THEN get ask for reviews again from server? or get previous sessionVocab state and merge with the server provided sessionVocab?
+  // if (simpleStorage.get('prevSessionAnswers') != null) {
+  //  submit dem done answers
+  //  get prev sessionvocab, add to a set, add in server ones, re-update sessionvocab with union
+  // }
+  let updateVocab = simpleStorage.set('sessionVocab', window.KWinitialVocab);
+  let updateCount = simpleStorage.set('reviewCount', window.KWinitialVocab.length);
+
   // set initial values
+  remainingVocab = simpleStorage.get('sessionVocab');
+  console.log(
+      '\nUpdate session vocab:', updateVocab,
+      '\nUpdate count:', updateCount,
+      '\nLength:', window.KWinitialVocab.length
+  );
+
   $reviewsLeft.text(remainingVocab.length)
   currentVocab = remainingVocab.shift();
   $meaning.html(currentVocab.meaning);

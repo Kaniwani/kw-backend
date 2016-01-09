@@ -23,16 +23,12 @@ module.exports = function(fabricatorConfig) {
 				}
 			]
 		},
-		// pull in the simplestorage.js file that is loaded in reviews html template
-		externals: {
-	    simpleStorage: 'simpleStorage'
-	  },
-	  // expose it to webpack modules without having to import/require
+
 	  plugins: [
 	    new webpack.ProvidePlugin({
-	      simpleStorage: 'simpleStorage',
+	      $: 'jquery',
+	      simpleStorage: 'simplestorage.js',
 	      notie: 'notie',
-	      $: 'jquery'
 	    })
 	  ],
 		cache: {}

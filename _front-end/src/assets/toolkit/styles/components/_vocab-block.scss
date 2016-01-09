@@ -28,8 +28,11 @@
     .kanji {
       text-shadow: 0 2px 2px rgba($purple-dark, .7);
       float: left;
-      font-size: responsive 22px 40px;
-      padding-bottom: $unit-xs;
+      font-size: responsive 40px 50px;
+      padding-bottom: 5px;
+      @include media($bp-vocab) {
+        padding-bottom: $unit-sm;
+      }
     }
 
     .kana {
