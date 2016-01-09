@@ -10254,10 +10254,10 @@
 				if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
 			});
 			$(document).keypress(handleKeyPress);
-
-			// update from sessionstorage, if nothing there then hit server
-			(0, _componentsRefreshReviews2["default"])();
 		}
+
+		// update from sessionstorage, if nothing there then hit server
+		(0, _componentsRefreshReviews2["default"])();
 	}
 
 	// shortcut to section based on R/S/U/H/C
@@ -10693,14 +10693,18 @@
 	    csrfmiddlewaretoken: CSRF,
 	    wrong_before: previouslyWrong
 	  }).done(function () {
-	    simpleStorage.set('sessionVocab', remainingVocab);
-	    simpleStorage.set('reviewCount', remainingVocab.length);
-	    console.log('Recorded answer, storage is now:\n      count: ' + simpleStorage.get('reviewCount') + '\n      vocab: ' + simpleStorage.get('sessionVocab').map(function (x) {
-	      return x.meaning;
-	    }) + '\n    ');
+	    updateStorage();
 	  }).always(function (res) {
 	    console.log(res);
 	  });
+	}
+
+	function updateStorage() {
+	  simpleStorage.set('sessionVocab', remainingVocab);
+	  simpleStorage.set('reviewCount', remainingVocab.length);
+	  console.log('Storage is now:\n    count: ' + simpleStorage.get('reviewCount') + '\n    vocab: ' + simpleStorage.get('sessionVocab').map(function (x) {
+	    return x.meaning;
+	  }) + '\n  ');
 	}
 
 	function clearColors() {
@@ -10749,9 +10753,12 @@
 	function rotateVocab() {
 
 	  if (remainingVocab.length === 0) {
-	    makePost("/kw/summary/", answerCorrectness);
-	    return;
+	    updateStorage();
+	    console.log('Summary post data', answerCorrectness);
+	    return makePost("/kw/summary/", answerCorrectness);
 	  }
+
+	  console.log('Rotating vocab');
 
 	  $reviewsLeft.html(simpleStorage.get('reviewCount'));
 	  $reviewsDone.html(correctTotal);

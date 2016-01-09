@@ -136,16 +136,20 @@ function recordAnswer(userID, correctness, previouslyWrong) {
       wrong_before: previouslyWrong
     })
     .done(() => {
-      simpleStorage.set('sessionVocab', remainingVocab);
-      simpleStorage.set('reviewCount', remainingVocab.length);
-      console.log(`Recorded answer, storage is now:
-      count: ${simpleStorage.get('reviewCount')}
-      vocab: ${simpleStorage.get('sessionVocab').map( x => x.meaning )}
-    `);
+      updateStorage();
     })
     .always(res => {
       console.log(res);
     });
+}
+
+function updateStorage() {
+  simpleStorage.set('sessionVocab', remainingVocab);
+  simpleStorage.set('reviewCount', remainingVocab.length);
+  console.log(`Storage is now:
+    count: ${simpleStorage.get('reviewCount')}
+    vocab: ${simpleStorage.get('sessionVocab').map( x => x.meaning )}
+  `);
 }
 
 function clearColors() {
@@ -194,12 +198,12 @@ function replaceAnswerWithKanji(index) {
 function rotateVocab() {
 
   if (remainingVocab.length === 0) {
-    console.log('no more vocab', answerCorrectness);
-    makePost("/kw/summary/", answerCorrectness);
-    return;
+    updateStorage();
+    console.log('Summary post data', answerCorrectness);
+    return makePost("/kw/summary/", answerCorrectness);
   }
 
-  console.log('should not log on final review');
+  console.log('Rotating vocab');
 
   $reviewsLeft.html(simpleStorage.get('reviewCount'));
   $reviewsDone.html(correctTotal);

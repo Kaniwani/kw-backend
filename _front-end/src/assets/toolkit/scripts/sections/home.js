@@ -15,11 +15,10 @@ function init() {
 			if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
 		});
 		$(document).keypress(handleKeyPress);
-
-		// update from sessionstorage, if nothing there then hit server
-		refreshReviews();
 	}
 
+	// update from sessionstorage, if nothing there then hit server
+	refreshReviews();
 }
 
 // shortcut to section based on R/S/U/H/C
