@@ -1,6 +1,6 @@
 from django.utils import timezone
 from kw_webapp.models import UserSpecific, Profile
-from kw_webapp.tasks import unlock_eligible_vocab_from_level
+from kw_webapp.tasks import unlock_eligible_vocab_from_levels
 
 
 def wipe_all_reviews_for_user(user):
@@ -19,7 +19,7 @@ def reset_reviews_for_user(user):
 
 
 def unlock_level_for_user(level, user):
-    unlock_eligible_vocab_from_level(user, level)
+    unlock_eligible_vocab_from_levels(user, level)
 
 
 def flag_all_reviews_for_user(user, needed):
@@ -36,3 +36,9 @@ def reset_unlocked_levels_for_user(user):
 def reset_user(user):
     wipe_all_reviews_for_user(user)
     reset_unlocked_levels_for_user(user)
+
+
+def create_profile_for_user(user):
+    p = Profile(user=user, api_key="INVALID_KEY", level=1, api_valid=False)
+    p.save()
+    return p
