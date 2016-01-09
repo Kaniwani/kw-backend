@@ -10323,9 +10323,15 @@
 	  $.get("/kw/force_srs/").done(function (res) {
 	    res = parseInt(res, 10);
 
-	    simpleStorage.set('reviewCount', res);
-	    $navCount.text(res);
-	    if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
+	    if (res === storageCount) {
+	      $navCount.text('');
+	    }
+
+	    if (res > 0) {
+	      simpleStorage.set('reviewCount', res);
+	      $navCount.text(res);
+	      if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
+	    }
 
 	    console.log('Review count updated from server:', res);
 	  });
