@@ -38,7 +38,8 @@ function init() {
   console.log(
       '\nUpdate session vocab:', updateVocab,
       '\nUpdate count:', updateCount,
-      '\nLength:', window.KWinitialVocab.length
+      '\nLength:', window.KWinitialVocab.length,
+      '\nSession Finished:', simpleStorage.get('sessionFinished')
   );
 
   $reviewsLeft.text(remainingVocab.length)
@@ -172,6 +173,7 @@ function updateStorage() {
   simpleStorage.set('reviewCount', remainingVocab.length);
   console.log(`Storage is now:
     reviewCount: ${simpleStorage.get('reviewCount')}
+    sessionFinished: ${simpleStorage.get('sessionFinished')}
     sessionVocab: ${simpleStorage.get('sessionVocab').map( x => x.meaning.split(',')[0] )}
   `);
 }

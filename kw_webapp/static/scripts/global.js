@@ -10324,26 +10324,32 @@
 	  $.get("/kw/force_srs/").done(function (res) {
 	    res = parseInt(res, 10);
 
-	    if (res === storageCount) {
+	    if (sessionFinished) {
 	      $navCount.text('');
 	    }
 
 	    if (res > 0) {
 	      simpleStorage.set('reviewCount', res);
 	      $navCount.text(res);
+	      $navCount.closest('.nav-link').removeClass('-disabled');
+
 	      if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
 	    }
 
 	    console.log('Review count updated from server:', res);
-	    simpleStorage.set('recentlyRefreshed', true, { TTL: 60000 });
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
+	    simpleStorage.set('reviewCount', res);
 	  });
 	}
 
 	function storageReviewCount() {
-	  $navCount.text(storageCount);
-	  // if on home page update the reviews button too
-	  if ($buttonCount.length) {
-	    $buttonCount.text(pluralize(' Review', storageCount)).removeClass('.-disabled');
+	  if (storageCount > 0) {
+	    $navCount.text(storageCount);
+	    $navCount.closest('.nav-link').removeClass('-disabled');
+	    // if on home page update the reviews button too
+	    if ($buttonCount.length) {
+	      $buttonCount.text(pluralize(' Review', storageCount)).removeClass('-disabled');
+	    }
 	  }
 
 	  console.log('Review count updated from local storage:', storageCount);
@@ -10357,12 +10363,11 @@
 	  $navCount = $("#navReviewCount");
 	  $buttonCount = $("#reviewCount");
 	  storageCount = simpleStorage.get('reviewCount') || 0;
-	  /*  sessionFinished = simpleStorage.get('sessionFinished');*/
+	  sessionFinished = simpleStorage.get('sessionFinished');
 	  recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
+	  console.log(!recentlyRefreshed, forceGet, sessionFinished, storageCount < 1);
 
-	  // TODO: sessionFinished isn't the best way to update count
-	  //  isn't really working as intended - better to
-	  if ( /*(!sessionFinished || */forceGet /*)*/ && !recentlyRefreshed || storageCount < 1) {
+	  if (!recentlyRefreshed || sessionFinished && storageCount < 1 && forceGet) {
 	    ajaxReviewCount();
 	  } else {
 	    storageReviewCount();
@@ -10384,11 +10389,18 @@
 /* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($, simpleStorage) {'use strict';
+	/* WEBPACK VAR INJECTION */(function($) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _componentsRefreshReviewsJs = __webpack_require__(10);
+
+	var _componentsRefreshReviewsJs2 = _interopRequireDefault(_componentsRefreshReviewsJs);
+
 	var CSRF = undefined,
 	    $vocabList = undefined,
 	    $cards = undefined;
@@ -10421,17 +10433,10 @@
 
 	  $.post('/kw/togglevocab/', { review_id: review_pk, csrfmiddlewaretoken: CSRF }).done(function (res) {
 	    toggleClasses($icon, $card);
-	    var $count = $('#navReviewCount');
-	    var count = simpleStorage.get('reviewCount') || 0;
-	    var increase = /^added/i.test(res);
-	    increase ? count++ : count--;
 
-	    console.log('Debug vocab item toggle:\n          review_pk: ' + review_pk + ',\n          res: ' + res + ',\n          increase: ' + increase + ',\n          count: ' + count);
+	    (0, _componentsRefreshReviewsJs2['default'])();
 
-	    if (count >= 0) {
-	      simpleStorage.set('reviewCount', count);
-	      $count.text(count);
-	    }
+	    console.log('Vocab item toggle:\n          review_pk: ' + review_pk + ',\n          res: ' + res);
 	  }).always(function (res) {
 	    return console.log(res);
 	  });
@@ -10448,18 +10453,25 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(11)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($, notie) {// setup variables inside module closure, but functions in this file can modify and access them
-	'use strict';
+	/* WEBPACK VAR INJECTION */(function($, notie) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _componentsRefreshReviewsJs = __webpack_require__(10);
+
+	var _componentsRefreshReviewsJs2 = _interopRequireDefault(_componentsRefreshReviewsJs);
+
+	// setup variables inside module closure, but functions in this file can modify and access them
 	var CSRF = undefined,
 	    $reviewCount = undefined,
 	    $levelList = undefined,
@@ -10505,13 +10517,14 @@
 
 	  $.post("/kw/levelunlock/", { level: level, csrfmiddlewaretoken: CSRF }).done(function (res) {
 
-	    updateReviewCount(res);
 	    notie.alert(1, res, 1.5);
 
 	    $icon.removeClass("-loading").addClass('i-unlocked');
 	    $card.removeClass("-locked -unlockable");
 	    $card.addClass("-unlocked");
 	    $card.find('.i-link').removeClass('-hidden');
+
+	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
 	  }).fail(handleAjaxFail);
 	}
 
@@ -10520,24 +10533,15 @@
 
 	  $.post("/kw/levellock/", { level: level, csrfmiddlewaretoken: CSRF }).done(function (res) {
 
-	    updateReviewCount(res, true);
 	    notie.alert(1, res, 1.5);
 
 	    $icon.removeClass("-loading").addClass("i-unlock");
 	    $card.removeClass("-unlocked");
 	    $card.addClass("-locked -unlockable");
 	    $card.find('.i-link').addClass('-hidden');
+
+	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
 	  }).fail(handleAjaxFail);
-	}
-
-	function updateReviewCount(responseString) {
-	  var subtract = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
-
-	  var changed = parseInt(responseString.match(/^\d+/), 10);
-	  !!subtract ? reviews -= changed : reviews += changed;
-
-	  var newCount = Number.isNaN(reviews) ? changed : reviews;
-	  $reviewCount.text(newCount < 0 ? 0 : newCount);
 	}
 
 	function handleAjaxFail(res) {
@@ -10606,7 +10610,7 @@
 	  // set initial values
 	  remainingVocab = simpleStorage.get('sessionVocab');
 
-	  console.log('\nUpdate session vocab:', updateVocab, '\nUpdate count:', updateCount, '\nLength:', window.KWinitialVocab.length);
+	  console.log('\nUpdate session vocab:', updateVocab, '\nUpdate count:', updateCount, '\nLength:', window.KWinitialVocab.length, '\nSession Finished:', simpleStorage.get('sessionFinished'));
 
 	  $reviewsLeft.text(remainingVocab.length);
 	  currentVocab = remainingVocab.shift();
@@ -10739,7 +10743,7 @@
 	function updateStorage() {
 	  simpleStorage.set('sessionVocab', remainingVocab);
 	  simpleStorage.set('reviewCount', remainingVocab.length);
-	  console.log('Storage is now:\n    reviewCount: ' + simpleStorage.get('reviewCount') + '\n    sessionVocab: ' + simpleStorage.get('sessionVocab').map(function (x) {
+	  console.log('Storage is now:\n    reviewCount: ' + simpleStorage.get('reviewCount') + '\n    sessionFinished: ' + simpleStorage.get('sessionFinished') + '\n    sessionVocab: ' + simpleStorage.get('sessionVocab').map(function (x) {
 	    return x.meaning.split(',')[0];
 	  }) + '\n  ');
 	}
