@@ -39,24 +39,24 @@ class Migration(migrations.Migration):
             field=models.BooleanField(default=False),
             preserve_default=True,
         ),
-        #migrations.AddField(
-        #    model_name='profile',
-        #    name='join_date',
-        #    field=models.DateField(auto_now_add=True),
-        #    preserve_default=True,
-        #),
+        migrations.AddField(
+            model_name='profile',
+            name='join_date',
+            field=models.DateField(auto_now_add=True),
+            preserve_default=True,
+        ),
         migrations.AddField(
             model_name='profile',
             name='posts_count',
             field=models.PositiveIntegerField(default=0),
             preserve_default=True,
         ),
-       # migrations.AddField(
-       #     model_name='profile',
-       #     name='title',
-       #     field=models.CharField(default='Turtles', max_length=255),
-       #     preserve_default=True,
-       # ),
+        migrations.AddField(
+            model_name='profile',
+            name='title',
+            field=models.CharField(default='Turtles', max_length=255),
+            preserve_default=True,
+        ),
         migrations.AddField(
             model_name='profile',
             name='topics_count',
