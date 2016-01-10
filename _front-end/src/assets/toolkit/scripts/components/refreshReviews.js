@@ -24,7 +24,7 @@ function ajaxReviewCount() {
       }
 
       console.log('Review count updated from server:', res)
-      simpleStorage.set('recentlyRefreshed', true, {TTL: 15000});
+      simpleStorage.set('recentlyRefreshed', true, {TTL: 60000});
   });
 
 }
