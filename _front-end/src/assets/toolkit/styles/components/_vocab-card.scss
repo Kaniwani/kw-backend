@@ -1,0 +1,65 @@
+.vocab-card {
+  $bp-vocab: '<=600px';
+  @extend .vocab-block;
+
+  > .vocab-base {
+    transition: background-color .5s ease-out;
+    background-color: $purple-light;
+
+    > .icon {
+      position: absolute;
+      bottom: 0;
+      color: $white-light;
+      left: 5px;
+      padding: 10px 15px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    > .i-lock {
+      color: $black-light;
+      cursor: not-allowed;
+    }
+  }
+
+  // FIXME: margin-top hard-coded... what if user has loads of synonyms resulting in greater height?
+  > .vocab-extra {
+    transition: margin-top .33s ease;
+    margin-top: -56px;
+    overflow: hidden;
+
+    @include media($bp-vocab) {
+      margin-top: -99px;
+      text-align: center;
+    }
+
+    *:not(.extraToggle) {
+      transition: opacity .33s ease;
+      opacity: 0;
+    }
+  }
+
+  &.-expanded {
+    .vocab-extra {
+      margin-top: 0;
+
+      * {
+        opacity: 1;
+      }
+    }
+  }
+
+   &.-locked > .vocab-base {
+    @include bg-stripes;
+    background-color: $purple-dark;
+  }
+
+  &.-unlockable > .vocab-base:hover {
+    background-color: mix($purple-dark, $white, 95);
+
+    .i-unlock {
+      animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
+    }
+  }
+}
+

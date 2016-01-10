@@ -1,0 +1,89 @@
+.login-section {
+  position: relative;
+  display: block;
+  min-height: 100vh;
+  width: 100%;
+  overflow: auto;
+  color: $white;
+  background: $blue-light;
+  background: linear-gradient(to bottom, $blue-light 40%, $blue-dark 95%);
+
+  &.-pending {
+    > .container > .login-form,
+    > .link {
+      opacity: 0;
+    }
+    > .container > .title {
+      transform: translate(0%, -60vh);
+    }
+  }
+
+  > .container {
+    max-width: 600px;
+    text-align: center;
+    z-index: 2;
+    margin: $unit-md auto $unit-sm;
+
+    @include media($bp-lg) {
+      position: absolute;
+      margin: 0;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    > .title {
+      position: relative;
+      margin-top: 0;
+      line-height: 1.2;
+      opacity: .9;
+      z-index: 2;
+      color: $white;
+      transition: transform 8s ease-in;
+      font-size: 40px;
+
+      @include media($bp-lg) {
+        font-size: 60px;
+      }
+    }
+
+    > .login-form {
+      transition: opacity 1s ease;
+    }
+  }
+
+  > .link {
+    display: block;
+    position: relative;
+    padding: $unit-xs;
+    font-size: 14px;
+    font-weight: 400;
+    text-decoration: none;
+    color: $white;
+    z-index: 3;
+    opacity: .85;
+    transition: opacity 1s ease;
+    text-align: center;
+
+    @include media($bp-lg) {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 12px 18px;
+      font-size: 16px;
+      transition: opacity .2s ease-out;
+      text-align: right;
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  > .floating-icons {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+  }
+}

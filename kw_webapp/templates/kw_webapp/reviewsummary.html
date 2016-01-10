@@ -1,20 +1,68 @@
 {% extends "kw_webapp/logged_in.html" %}
-{% load staticfiles %}
-
-{% block scripts %}
-    {{ block.super }}
-    <script src="{% static "js/reviewsummary.js" %}"></script>
-{% endblock scripts %}
 
 {% block content %}
-    {{ block.super }}
+  {{ block.super }}
+
+<section class="summary-section">
+  <div class="inner">
+
+    <h1 class="section-heading">{% widthratio correct_count review_count 100 %}% Accuracy</h1>
+
+    <h2 class="title">{{ incorrect_count }} Incorrect</h2>
+    {% if incorrect_count > 0 %}
+
+      <ul class="vocab-list -incorrect">
+        {% for review in incorrect %}
+          <li class="vocab-card">
+            <div class="vocab-base">
+              {% for reading in review.vocabulary.reading_set.all %}
+                <a href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.id }}" class="readingset">
+                  <span lang="ja" class="kanji">{{ reading.character }}</span>
+                  <span lang="ja" class="kana">{{ reading.kana }}</span>
+                  <span class="meaning">{{ review.vocabulary.meaning }}</span>
+                </a>
+              {% endfor %}
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+
+    {% else %}
+      <h3 class="title">完璧だった！</h3>
+    {% endif %}
+
+    <h2 class="title">{{ correct_count }} Correct</h2>
+
+    {% if correct_count > 0 %}
+
+      <ul class="lattice-list -correct">
+        {% for review in correct %}
+          {% for reading in review.vocabulary.reading_set.all %}
+            <li class="item" data-en="Promise" data-ja="{{ reading.kana }}">
+              <a lang="ja" class="link" title="{{ review.vocabulary.meaning }}" href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.id }}">{{ reading.character }}</a>
+            </li>
+          {% endfor %}
+        {% endfor %}
+      </ul>
+
+    {% else %}
+      <h3>Well, that's unfortunate... しっかりしろよ</h3>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock content %}
+
+{% comment 'old template' %}
+
     <div class="container">
         <div class="row">
             <a href="{% url "kw:home" %}" class="home-button btn-link col-md-1 col-md-offset-4"><span class="glyphicon glyphicon-home"></span></a>
             <h1 class="text-center center-block col-md-3">{% widthratio correct_count review_count 100 %}% Accuracy</h1>
         </div>
         <div class="row">
-            {% if incorrect_count > 0 %}
+            {% if correct_count > 0 %}
                 <div class="col-md-3 col-md-offset-3">
             {% else %}
                 <div class="col-md-6 col-md-offset-3">
@@ -75,4 +123,5 @@
             {% endif %}
         </div>
     </div>
-{% endblock content %}
+
+{% endcomment %}

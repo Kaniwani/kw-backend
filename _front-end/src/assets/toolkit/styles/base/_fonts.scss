@@ -1,0 +1,112 @@
+// icon font located in _icons.scss
+
+// 300, 400, 700 weights available
+$ff-body: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+// 400 only
+$ff-heading: "Ubuntu", Helvetica, Arial, sans-serif;
+$ff-japanese: "Hiragino Kaku Gothic Pro", "Takao Pゴシック", "Meiryo", "Yu Gothic", "ヒラギノ角ゴ Pro W3", "メイリオ", "Osaka", "MS PGothic", "ＭＳ Ｐゴシック", sans-serif;
+
+[lang="ja"] {
+  font-family: $ff-japanese;
+}
+
+body {
+  font-family: $ff-body;
+  font-size: 16px;
+  font-size: responsive 14px 18px;
+  font-range: 400px 1400px;
+  line-height: 1.4;
+  color: $black-light;
+}
+
+*:focus {
+  outline: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: $ff-heading;
+  color: $grey-dark;
+  font-weight: normal;
+  margin: 0;
+  margin-bottom: $unit-xs;
+  line-height: 1.6;
+
+  &:first-child {
+    margin-top: .5em;
+  }
+}
+
+.-mega {
+  font-size: responsive 21px 70px;
+  font-range: 600px 2000px;
+  // line-height is hooge enough
+  margin: 0 !important;
+}
+
+h1 {
+  font-family: $ff-heading;
+  font-size: 30px;
+  font-size: responsive 21px 36px;
+  font-range: 600px 1300px;
+}
+
+h2 {
+  font-size: 25px;
+  font-size: responsive 20px 30px;
+}
+
+h3 {
+  font-size: responsive 18px 25px;
+}
+
+h4 {
+  font-size: responsive 17px 24px;
+}
+
+h5 {
+  font-size: responsive 16px 23px;
+}
+
+h6 {
+  font-size: responsive 16px 21px;
+}
+
+b,
+strong {
+  font-family: $ff-heading;
+}
+
+a {
+  text-decoration: none;
+  transition: all .3s ease-out;
+  color: $grey-dark;
+}
+
+p {
+  max-width: 800px;
+  margin: 0;
+  margin-bottom: .7em;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  > a {
+    color: $blue-light;
+    &:hover {
+      color: $blue-dark;
+    }
+  }
+}
+
+mark {
+  background: rgba($blue-light, .4);
+  padding: 0 .2em;
+  border-radius: 1px;
+}
+

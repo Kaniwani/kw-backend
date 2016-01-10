@@ -15,12 +15,13 @@ class UserLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(UserLoginForm, self).__init__(*args, **kwargs)
         self.fields['username'].label = False
+        self.fields['username'].css_class = "False"
         self.fields['username'].widget.attrs['placeholder'] = "Username"
         self.fields['password'].widget.attrs['placeholder'] = "Password"
         self.fields['password'].label = False
         self.helper = FormHelper()
-        self.helper.add_input(Submit("submit", "Sign In", css_class='btn btn-primary col-md-12'))
-        self.helper.form_class = 'form-horizontal'
+        self.helper.add_input(Submit("submit", "Sign In", css_class='button -submit'))
+        self.helper.form_class = 'login-form'
         self.helper.form_method = 'post'
         self.helper.form_action = ''
 
@@ -38,10 +39,8 @@ class UserCreateForm(UserCreationForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = ''
-        self.helper.add_input(Submit("submit", "Submit"))
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-lg-3'
-        self.helper.field_class = 'col-lg-9'
+        self.helper.add_input(Submit("submit", "Submit", css_class='button -submit'))
+        self.helper.form_class = 'login-form'
         self.helper.form_style = "default"
         self.helper.help_text_inline = True
         self.helper.error_text_inline = False
@@ -79,10 +78,10 @@ class SettingsForm(ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = ''
-        self.helper.add_input(Submit("submit", "Save"))
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-lg-4'
-        self.helper.field_class = 'col-lg-8'
+        self.helper.add_input(Submit("submit", "Save", css_class='pure-button pure-button-primary'))
+        self.helper.form_class = 'pure-form pure-form-stacked'
+        self.helper.label_class = ''
+        self.helper.field_class = 'pure-input-1'
         self.helper.form_style = "default"
         self.helper.help_text_inline = True
         self.helper.error_text_inline = False
@@ -98,5 +97,3 @@ class SettingsForm(ModelForm):
                 raise ValidationError("API Key not associated with a WaniKani User!")
         print("cleaned api Key...")
         return api_key
-
-

@@ -1,0 +1,18 @@
+.settings-section {
+
+  > .inner {
+
+    input:not([type="submit"]) {
+      min-width: 300px;
+      @include media($bp-lg) {
+        min-width: 600px;
+      }
+    }
+
+    input[type="submit"] {
+      margin-top: 10px;
+      background-color: $blue-light;
+    }
+  }
+
+}

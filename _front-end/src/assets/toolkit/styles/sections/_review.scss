@@ -1,0 +1,19 @@
+.review-section {
+  position: relative;
+
+  > .review-header {
+    color: $white;
+    overflow: visible;
+    max-height: 0;
+
+    > .inner {
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+
+    > .inner > .homelink > .icon {
+      color: $white;
+    }
+  }
+}

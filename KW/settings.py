@@ -9,16 +9,27 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from collections import namedtuple
 from datetime import timedelta
 import os
 from django.core.urlresolvers import reverse_lazy
 import raven
 
-
-import KW.secrets as secrets
-
+try:
+    import KW.secrets as secrets
+except ImportError:
+    print("Couldn't find a secrets file. Defaulting")
+    secrets = namedtuple('secrets', ['DEPLOY', 'RAVEN_DSN', 'SECRET_KEY', 'DB_TYPE'])
+    secrets.DB_TYPE = "sqlite"
+    secrets.DEPLOY = False
+    secrets.SECRET_KEY = "samplekey"
+    secrets.RAVEN_DSN = "Whatever"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+
+sentry_class = 'raven.contrib.django.raven_compat.handlers.SentryHandler' if secrets.DEPLOY else 'logging.StreamHandler'
+sentry_level = 'ERROR' if secrets.DEPLOY else 'DEBUG'
 
 LOGGING = {
     'version': 1,
@@ -36,8 +47,8 @@ LOGGING = {
     },
     'handlers': {
         'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
+            'level': sentry_level,
+            'class': sentry_class,
         },
         'views': {
             'level': 'DEBUG',
@@ -150,9 +161,9 @@ RAVEN_CONFIG = {
 SECRET_KEY = secrets.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG =True
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 
@@ -164,20 +175,21 @@ LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-SOUTH_TESTS_MIGRATE = False
 
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.humanize',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'kw_webapp',
-    'south',
     'crispy_forms',
     'raven.contrib.django.raven_compat',
-    'django.contrib.humanize',
+    'rest_framework',
+    'lineage',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -187,11 +199,33 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
 )
+
+TEMPLATE_CONTEXT_PROCESSORS = {
+    'django.contrib.auth.context_processors.auth',
+    "KW.preprocessors.review_count_preprocessor",
+    'django.core.context_processors.request', #TODO:  NOTE! This will change in 1.8 to django.template.context_processors.request
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+    'PAGE_SIZE': 10
+}
 
 ROOT_URLCONF = 'KW.urls'
 
 WSGI_APPLICATION = 'KW.wsgi.application'
+
+#EMAIL BACKEND SETTINGS
+EMAIL_HOST = "127.0.0.1"
+EMAIL_PORT = 25
+#EMAIL_HOST_USER = "reports@kaniwani.com"
+#EMAIL_HOST_PASSWORD = ''
+MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
+DEFAULT_FROM_EMAIL = "notifications@KaniWani.com"
 
 
 # Database
@@ -229,12 +263,17 @@ USE_L10N = True
 
 USE_TZ = True
 
+LINEAGE_ANCESTOR_PHRASE = "-active"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = "/opt/venvs/KaniWaniEnv/KW/kw_webapp/static"
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "../_front-end/dist/assets"),
+)
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
+    os.path.join(BASE_DIR,  'kw_webapp/templates/kw_webapp')
 )

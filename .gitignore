@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 
+# local dev database
+db.sqlite3
+
 # C extensions
 *.so
 
@@ -50,7 +53,8 @@ coverage.xml
 .ropeproject
 
 # Django stuff:
-*.log
+*.log*
+logs/*.log*
 *.pot
 KW/secrets.py
 celerybeat*
@@ -99,3 +103,14 @@ $RECYCLE.BIN/
 *.msi
 *.msm
 *.msp
+
+
+# Front end
+# =========================
+node_modules
+.sass-cache
+.DS_Store
+dist
+
+# Ignore all local backup files
+*.bak

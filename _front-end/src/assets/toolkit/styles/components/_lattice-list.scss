@@ -1,0 +1,33 @@
+.lattice-list {
+  @extend %plainlist;
+
+  > .item {
+    display: inline-block;
+    margin-bottom: 4px;
+    background: $purple;
+    transition: all .2s ease-out;
+    border-radius: 2px;
+  }
+
+  > .item > .link {
+    display: block;
+    padding: .15em .5em;
+    color: $white;
+    font-size: 1.8em;
+    text-shadow: 1px 1px 4px rgba($purple-dark, .7);
+  }
+
+  &.-correct > .item {
+    background: $green;
+    > .link{
+     text-shadow: 1px 1px 4px rgba(darken($green, 20), .7);
+    }
+  }
+
+  &.-incorrect > .item {
+    background: $red;
+    > .link {
+      text-shadow: 1px 1px 4px rgba(darken($red, 20), .7);
+    }
+  }
+}

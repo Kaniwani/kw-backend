@@ -1,37 +1,54 @@
 {% extends "kw_webapp/base.html" %}
-{% load staticfiles %}
-{% block scripts %}
-    {{ block.super }}
-    <link rel="stylesheet" href="{% static "css/navbar_top.css" %}" xmlns="http://www.w3.org/1999/html">
-{% endblock %}
+{% load humanize %}
+{% load lineage %}
 {% block content %}
 
-    <div class="container">
-         <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-         <div class="container-fluid">
-            <div class="navbar-header">
-              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-              </button>
-              <a class="navbar-brand" href="#">KaniWani</a>
-            </div>
-            <div class="navbar-collapse collapse">
-              <ul class="nav navbar-nav">
-                <li id="home_tab">      <a href="{% url "kw:home" %}"><span class="glyphicon glyphicon-home"></span></a></li>
-                <li id="unlocks_tab">   <a href="{% url "kw:unlocks" %}"><span class="glyphicon glyphicon-lock"></span></a></li>
-                <li id="about_tab">     <a href="{% url "kw:about" %}"><span class="glyphicon glyphicon-question-sign"></span></a></li>
-                <li id="vocabulary_tab"><a href="{% url "kw:vocab" %}"><span class="glyphicon glyphicon-briefcase"></span></a></li>
-                <li id="contact_tab">   <a href="{% url "kw:contact" %}"><span class="glyphicon glyphicon-envelope"></span></a></li>
-                <li id="settings_tab">  <a href="{%  url "kw:settings" %}"><span class="glyphicon glyphicon-cog"></span></a></li>
-              </ul>
-              <a href="{% url "kw:logout" %}" id="logoutbtn" class="btn btn-default navbar-btn navbar-nav navbar-right" role="button">Logout</a></li>
-            </div><!--/.nav-collapse -->
-        </div>
-    </div>
-    </div>
-    <body>
+<header class="site-header" role="banner">
+  <div class="inner">
+    <a href="/" class="site-logo">
+      <span class="text">
+        <span class="kana">かに&#8202;わに</span>
+        <span class="kanji">蟹鰐</span>
+      </span>
+    </a>
+
+    <nav class="site-nav">
+      <a href="#0" class="expandToggle">☰ Menu</a>
+      <ul class="nav-list toggleTarget">
+        <li class="item {% ancestor 'kw:review' %}">
+          <a href="{% url "kw:review" %}" class="nav-link -disabled">
+            <span class="text">Reviews <span id="navReviewCount" class="count">{% if review_count %}{{ review_count }}{% endif %}</span></span>
+          </a>
+        </li>
+        <li class="item {% ancestor 'kw:vocab' %}">
+          <a href="{% url "kw:vocab" %}" class="nav-link">
+            <span class="text">Vocabulary</span>
+          </a>
+        </li>
+        <li class="item {% ancestor 'kw:about' %}">
+          <a href="{% url "kw:about" %}" class="nav-link">
+            <span class="text">About</span>
+          </a>
+        </li>
+        <li class="item {% ancestor 'contact:contact_form' %}">
+          <a href="{% url "contact:contact_form" %}" class="nav-link">
+            <span class="text">Contact</span>
+          </a>
+        </li>
+        <li class="item {% ancestor 'kw:settings' %}">
+          <a href="{% url "kw:settings" %}" class="nav-link">
+            <span class="text">Settings</span>
+          </a>
+        </li>
+        <li class="item {% ancestor 'kw:logout' %}">
+          <a href="{% url "kw:logout" %}" class="nav-link">
+            <span class="text">Logout</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+  </div>
+</header>
+
 {% endblock %}
-</body>

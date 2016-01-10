@@ -1,0 +1,35 @@
+.site-header {
+  background: $white;
+  box-shadow: $shadow-bottom-light;
+
+  > .inner {
+    @include container($site-max-width);
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    > .site-logo {
+      margin: 10px;
+      flex-shrink: 0;
+      align-self: flex-start;
+      @include media($bp-nav-1) {
+        align-self: center;
+      }
+    }
+
+    > .site-nav {
+      align-self: flex-start;
+      font-size: 14px;
+
+      @include media($bp-nav-1) {
+        align-self: center;
+      }
+
+      @include media($bp-nav-2) {
+        font-size: 16px;
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+.accordion-list {
+  @extend %plainlist;
+
+  > .item > .content {
+    position: relative;
+    padding-left: $unit-sm;
+    padding-top: $unit-xs / 2;
+    padding-bottom: $unit-xs / 2;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: all .4s ease-out;
+    transform: translateZ(0);
+  }
+
+  > .item > .toggle:checked {
+    & ~ .label:after {
+      content: '\e818'; // 'i-minus'
+
+      @include media($bp-lg) {
+        // stupid - & + not being centered in fonts...
+        transform: translateY(-2px);
+      }
+    }
+
+    & ~ .content {
+      max-height: 500px;
+      opacity: 1;
+    }
+  }
+
+  > .item > .label {
+    font-family: $ff-heading;
+    font-weight: 400;
+    color: $grey-dark;
+    position: relative;
+    font-size: 1.2em;
+    cursor: pointer;
+
+    // larger tap target
+    &:before {
+      position: absolute;
+      content: '';
+      top: -5px;
+      bottom: -5px;
+      left: -5px;
+      right: -5px;
+    }
+
+    &:after {
+      @extend %icon-font;
+      font-size: .85em;
+      content: '\e817'; // i-plus
+      color: $black-light;
+    }
+
+  }
+}

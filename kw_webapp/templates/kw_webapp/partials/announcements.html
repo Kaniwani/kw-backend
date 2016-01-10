@@ -1,0 +1,22 @@
+<section class="announcements-section">
+  <div class="inner">
+    <h2 class="section-heading">
+      Announcements
+    </h2>
+    <ul class="accordion-list">
+      {% for item in announcements %}
+        <li class="item">
+          <input class="toggle" id="announcement-{{ item.id }}" type="checkbox" hidden>
+          <label class="label" for="announcement-{{ item.id }}">
+            <span class="text">{{ item.title }}</span>
+          </label>
+          <article class="content">
+            <header class="_visuallyhidden">{{ item.title }}</header>
+            {{ item.body|safe }}
+            <footer>--  {{ item.creator.username }}</footer>
+          </article>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,72 @@
+.user-overview {
+  position: relative;
+  padding: $unit-md $unit-md $unit-md*2;
+  background: $blue-light;
+  background: linear-gradient(to bottom right, $blue-light 33%, $blue 77%);
+  text-align: center;
+
+  // triangle
+  &:after {
+    border-color: transparent transparent $black-light;
+    border-style: none solid solid;
+    border-width: 20px;
+    bottom: 0;
+    content: '';
+    height: 0;
+    left: 50%;
+    margin-left: -20px;
+    position: absolute;
+    width: 0;
+    z-index: 1;
+  }
+
+  > .name {
+    margin-top: 0;
+    text-shadow: $shadow-text-light;
+    color: $white;
+  }
+
+  > .gravatar {
+    background: $white;
+    border-radius: 100%;
+    display: inline-block;
+    height: 162px;
+    margin: 0 auto;
+    padding: 6px;
+    position: relative;
+    width: 162px;
+
+    &:before {
+      box-shadow: inset 3px 3px 8px 0 rgba(0, 0, 0, .26);
+      border-radius: 100%;
+      content: '';
+      display: block;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 1;
+    }
+
+    img {
+      border-radius: 100%;
+      display: block;
+      height: auto;
+      width: 100%;
+    }
+  }
+
+  > .reviews {
+    margin-top: $unit-md;
+
+    .button:not(.-disabled),
+    #forceSrs {
+      transition: color .3s ease-out;
+
+      &:hover {
+        color: $blue;
+      }
+    }
+  }
+}

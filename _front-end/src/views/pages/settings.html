@@ -1,0 +1,30 @@
+---
+layout: full-page
+title: settings
+---
+
+<section class="settings-section">
+  <div class="inner">
+    <h1>Settings</h1>
+
+    <!-- this is the current crispy form output -->
+    <!-- TODO: changes classes in forms.py and style -->
+    <form  class="pure-form pure-form-stacked" method="post" >
+      <input type='hidden' name='csrfmiddlewaretoken' value='6wxemc6gGXpMw2jSxfXZthIip35UjAs3' /> <div id="div_id_api_key" class="form-group">
+      <label for="id_api_key" class="control-label  requiredField"> Api key<span class="asteriskField">*</span></label>
+      <div class="controls pure-input-1">
+        <input class="textinput textInput form-control" id="id_api_key" maxlength="255" name="api_key" type="text" value="5fa2d9c257dda131a54018f5c3f5ff90" /> </div>
+      </div>
+      <div id="div_id_level" class="form-group">
+        <label for="id_level" class="control-label  requiredField"> Level<span class="asteriskField">*</span></label>
+        <div class="controls pure-input-1">
+          <input class="numberinput form-control" id="id_level" min="0" name="level" readonly="True" type="number" value="15" />
+        </div>
+      </div>
+      <div class="form-actions">
+        <input type="submit" name="submit" value="Save" class="btn btn-primary pure-button pure-button-primary" id="submit-id-submit"/>
+      </div>
+    </form>
+
+  </div>
+</section>

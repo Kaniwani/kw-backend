@@ -1,0 +1,43 @@
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+html {
+  height: 100vh;
+}
+
+body {
+  background: $white-light;
+  height: 100%;
+}
+
+// matches .whatever-section, .something-section
+[class*="-section"] {
+  &:not(.-fullwidth) {
+    @include container($site-max-width);
+    margin-bottom: $unit-md;
+  }
+
+  > .inner {
+    padding-left: $unit-sm;
+    padding-right: $unit-sm;
+  }
+}
+
+[contenteditable="true"] {
+  overflow: hidden !important;
+
+  br {
+    display: none !important;
+  }
+
+  * {
+    display: inline !important;
+  }
+}

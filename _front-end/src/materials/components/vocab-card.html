@@ -1,0 +1,29 @@
+---
+notes: |
+  Has Vocab-Extra tucked away inside (toggle via bottom right).
+  Modifier classes and icons alter this component, see them in action in [vocab-list](/components.html#vocab-list).
+
+  Classes: `-locked -unlockable -expanded`
+
+  Icons: `.icon i-lock .icon i-unlocked .icon i-unlock`
+
+  When used in review summary, `.readingset` is a link not a div!
+
+---
+
+<li class="vocab-card {{modifiers}}">
+  <div class="vocab-base">
+
+    <div class="readingset">
+      <span lang="ja" class="kanji">お誕生日おめでとう</span>
+      <span lang="ja" class="kana">おたんじょうびおめでとう</span>
+      <span class="meaning">Happy Birthday</span>
+    </div>
+
+    <span class="{{icon}}"></span>
+
+  </div>
+
+  {{> vocab-extra }}
+
+</li>

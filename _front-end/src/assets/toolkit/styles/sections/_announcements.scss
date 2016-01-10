@@ -1,0 +1,14 @@
+.announcements-section {
+  text-align: left;
+
+  // should match $bp-user-details in user-details
+  @include media('>=670px') {
+    text-align: center;
+
+    .accordion-list > .item > .content {
+      @include container(800px);
+      padding-left: 0;
+    }
+  }
+
+}
