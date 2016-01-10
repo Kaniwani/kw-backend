@@ -1,14 +1,15 @@
 from datetime import timedelta
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
-from django.shortcuts import get_object_or_404, render_to_response
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound
+from django.shortcuts import get_object_or_404, render_to_response, render
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, ListView, FormView, View
 from rest_framework import viewsets
 from kw_webapp import constants
+from kw_webapp.decorators.ValidApiRequired import valid_api_required
 from kw_webapp.models import Profile, UserSpecific, Announcement
 from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
@@ -35,6 +36,7 @@ class Settings(FormView):
         print(form.cleaned_data)
         data = form.cleaned_data
         self.request.user.profile.api_key = data['api_key']
+        self.request.user.profile.api_valid = True
         self.request.user.profile.save()
         logger.info("Saved Settings changes for {}.".format(self.request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:settings"))
@@ -199,9 +201,9 @@ class UnlockRequested(View):
         return super(UnlockRequested, self).dispatch(*args, **kwargs)
 
 
+
 class UnlockLevels(TemplateView):
     template_name = "kw_webapp/vocabulary.html"
-
     def get_context_data(self, **kwargs):
         user_profile = self.request.user.profile
         context = super(UnlockLevels, self).get_context_data()
@@ -217,6 +219,7 @@ class UnlockLevels(TemplateView):
         return context
 
     @method_decorator(login_required)
+    @method_decorator(valid_api_required)
     def dispatch(self, *args, **kwargs):
         return super(UnlockLevels, self).dispatch(*args, **kwargs)
 
@@ -236,9 +239,6 @@ class LevelVocab(TemplateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LevelVocab, self).dispatch(*args, **kwargs)
-
-class Error404(TemplateView):
-    template_name = "404.html"
 
 
 class ToggleVocabLockStatus(View):

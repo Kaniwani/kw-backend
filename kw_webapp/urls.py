@@ -4,6 +4,7 @@ from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard, R
     Settings, LevelVocab, ToggleVocabLockStatus, LockRequested, UnlockAll, Error404
 from kw_webapp.forms import UserLoginForm
 
+
 urlpatterns = patterns('',
                        url(r'^$', Dashboard.as_view(), name="home"),
                        url(r'^login/$', 'django.contrib.auth.views.login',

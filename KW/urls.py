@@ -4,6 +4,7 @@ from django.contrib import admin
 from rest_framework import routers
 
 import kw_webapp
+from kw_webapp.views import Error404
 
 admin.autodiscover()
 
@@ -11,7 +12,6 @@ router = routers.DefaultRouter()
 router.register(r'user', kw_webapp.views.UserViewSet)
 router.register(r'review', kw_webapp.views.ReviewViewSet)
 router.register(r'profile', kw_webapp.views.ProfileViewSet)
-
 
 urlpatterns = patterns('',
                        url(r'^$', 'kw_webapp.views.home', name='home'),
