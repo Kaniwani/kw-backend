@@ -1,3 +1,5 @@
+import refreshReviews from '../components/refreshReviews.js';
+
 // setup variables inside module closure, but functions in this file can modify and access them
 let CSRF,
     $reviewCount,
@@ -46,7 +48,6 @@ function unLockLevel() {
   $.post("/kw/levelunlock/", {level: level, csrfmiddlewaretoken: CSRF})
    .done(res => {
 
-      updateReviewCount(res);
       notie.alert(1, res, 1.5);
 
       $icon.removeClass("-loading").addClass('i-unlocked');
@@ -54,6 +55,8 @@ function unLockLevel() {
       $card.addClass("-unlocked");
       $card.find('.i-link').removeClass('-hidden');
 
+      refreshReviews({forceGet:true});
+      simpleStorage.set('recentlyRefreshed', true, {TTL: 5000});
 
     })
    .fail(handleAjaxFail);
@@ -65,7 +68,6 @@ function reLockLevel() {
   $.post("/kw/levellock/", {level: level, csrfmiddlewaretoken: CSRF})
    .done(res => {
 
-      updateReviewCount(res, true)
       notie.alert(1, res, 1.5);
 
       $icon.removeClass("-loading").addClass("i-unlock");
@@ -73,16 +75,11 @@ function reLockLevel() {
       $card.addClass("-locked -unlockable");
       $card.find('.i-link').addClass('-hidden');
 
+      refreshReviews({forceGet:true});
+      simpleStorage.set('recentlyRefreshed', true, {TTL: 5000});
+
     })
    .fail(handleAjaxFail);
-}
-
-function updateReviewCount(responseString, subtract = false) {
-  let changed = parseInt(responseString.match(/^\d+/), 10);
-  !!subtract ? reviews -= changed : reviews += changed;
-
-  let newCount = Number.isNaN(reviews) ? changed : reviews;
-  $reviewCount.text(newCount < 0 ? 0 : newCount);
 }
 
 function handleAjaxFail(res) {

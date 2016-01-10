@@ -33,13 +33,13 @@ function init() {
   let updateCount = simpleStorage.set('reviewCount', window.KWinitialVocab.length);
 
   // set initial values
-  simpleStorage.set('sessionFinished', false);
   remainingVocab = simpleStorage.get('sessionVocab');
 
   console.log(
       '\nUpdate session vocab:', updateVocab,
       '\nUpdate count:', updateCount,
-      '\nLength:', window.KWinitialVocab.length
+      '\nLength:', window.KWinitialVocab.length,
+      '\nSession Finished:', simpleStorage.get('sessionFinished')
   );
 
   $reviewsLeft.text(remainingVocab.length)
@@ -146,6 +146,7 @@ function compareAnswer() {
   }
 
   recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
+  simpleStorage.set('sessionFinished', false, {TTL: 3600000});
   enableButtons();
 }
 
@@ -172,6 +173,7 @@ function updateStorage() {
   simpleStorage.set('reviewCount', remainingVocab.length);
   console.log(`Storage is now:
     reviewCount: ${simpleStorage.get('reviewCount')}
+    sessionFinished: ${simpleStorage.get('sessionFinished')}
     sessionVocab: ${simpleStorage.get('sessionVocab').map( x => x.meaning.split(',')[0] )}
   `);
 }
