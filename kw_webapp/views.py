@@ -241,6 +241,12 @@ class LevelVocab(TemplateView):
         return super(LevelVocab, self).dispatch(*args, **kwargs)
 
 
+class Error404(View):
+    def get(self, request, *args, **kwargs):
+        response = render(template_name="404.html", status=404)
+        return HttpResponseNotFound(response)
+
+
 class ToggleVocabLockStatus(View):
     """
     Ajax-only view that essentially flips the hidden status of a single vocabulary.

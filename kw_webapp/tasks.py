@@ -121,7 +121,7 @@ def build_API_sync_string_for_user_for_levels(user, levels):
 
 def lock_level_for_user(requested_level, user):
     reviews = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level)
-    count = reviews.count()
+    count = reviews.distinct().count()
     reviews.delete()
     level = Level.objects.get(profile=user.profile, level=requested_level)
     user.profile.unlocked_levels.remove(level)

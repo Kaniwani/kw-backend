@@ -4,7 +4,6 @@ from django.contrib import admin
 from rest_framework import routers
 
 import kw_webapp
-from kw_webapp.views import Error404
 
 admin.autodiscover()
 
