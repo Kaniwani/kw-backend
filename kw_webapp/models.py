@@ -35,12 +35,12 @@ class Profile(models.Model):
     api_valid = models.BooleanField(default=False)
     gravatar = models.CharField(max_length=255)
     about = models.CharField(max_length=255, default="")
-    website = models.CharField(max_length=255, default="N/A")
-    twitter = models.CharField(max_length=255, default="N/A")
+    website = models.CharField(max_length=255, default="N/A", null=True)
+    twitter = models.CharField(max_length=255, default="N/A", null=True)
     topics_count = models.PositiveIntegerField(default=0)
     posts_count = models.PositiveIntegerField(default=0)
-    title = models.CharField(max_length=255, default="Turtles")
-    join_date = models.DateField(auto_now_add=True)
+    title = models.CharField(max_length=255, default="Turtles", null=True)
+    join_date = models.DateField(auto_now_add=True, null=True)
     level = models.PositiveIntegerField(null=True, validators=[
         MinValueValidator(1),
         MaxValueValidator(60),

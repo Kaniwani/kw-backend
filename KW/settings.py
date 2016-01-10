@@ -161,9 +161,9 @@ RAVEN_CONFIG = {
 SECRET_KEY = secrets.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-TEMPLATE_DEBUG =True
+TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 
@@ -270,9 +270,9 @@ LINEAGE_ANCESTOR_PHRASE = "-active"
 
 STATIC_URL = '/static/'
 STATIC_ROOT = "/opt/venvs/KaniWaniEnv/KW/kw_webapp/static"
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "../_front-end/dist/assets"),
-)
+#STATICFILES_DIRS = (
+#    os.path.join(BASE_DIR, "../_front-end/dist/assets"),
+#)
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
     os.path.join(BASE_DIR,  'kw_webapp/templates/kw_webapp')
