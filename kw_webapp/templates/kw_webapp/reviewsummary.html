@@ -16,7 +16,7 @@
           <li class="vocab-card">
             <div class="vocab-base">
               {% for reading in review.vocabulary.reading_set.all %}
-                <a href="{% url "kw:vocabulary" %}{{ reading.level }}#vocab{{ review.id }}" class="readingset">
+                <a href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.id }}" class="readingset">
                   <span lang="ja" class="kanji">{{ reading.character }}</span>
                   <span lang="ja" class="kana">{{ reading.kana }}</span>
                   <span class="meaning">{{ review.vocabulary.meaning }}</span>
@@ -39,7 +39,7 @@
         {% for review in correct %}
           {% for reading in review.vocabulary.reading_set.all %}
             <li class="item" data-en="Promise" data-ja="{{ reading.kana }}">
-              <a lang="ja" class="link" title="{{ review.vocabulary.meaning }}" href="{% url "kw:vocabulary" %}{{ reading.level }}#vocab{{ review.id }}">{{ reading.character }}</a>
+              <a lang="ja" class="link" title="{{ review.vocabulary.meaning }}" href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.id }}">{{ reading.character }}</a>
             </li>
           {% endfor %}
         {% endfor %}
