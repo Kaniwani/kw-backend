@@ -1,6 +1,7 @@
 let $navCount,
     $buttonCount,
     storageCount,
+    recentlyRefreshed,
     sessionFinished;
 
 function pluralize(text, num) {
@@ -23,7 +24,9 @@ function ajaxReviewCount() {
       }
 
       console.log('Review count updated from server:', res)
+      console.log(simpleStorage.set('recentlyRefreshed', true, {TTL: 60}));
   });
+
 }
 
 function storageReviewCount() {
@@ -41,8 +44,10 @@ const refreshReviews = function({forceGet} = {forceGet: false}) {
   $buttonCount = $("#reviewCount");
   storageCount = simpleStorage.get('reviewCount') || 0;
   sessionFinished = simpleStorage.get('sessionFinished');
+  recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
+  console.log(simpleStorage.get('recentlyRefreshed'), typeof simpleStorage.get('recentlyRefreshed'));
 
-  if (!!sessionFinished && forceGet == true || storageCount < 1) {
+  if (!!sessionFinished && !!recentlyRefreshed && forceGet == true || storageCount < 1) {
     ajaxReviewCount();
   } else {
     storageReviewCount();
