@@ -1,1 +1,7 @@
-Test!!
+Hello Gary and Duncan! Here is a fresh message from a user!
+
+Name: {{ name }}
+Email: {{ email }}
+
+-------------------------
+{{ body }}
