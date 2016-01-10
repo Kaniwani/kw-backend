@@ -33,7 +33,6 @@ function init() {
   let updateCount = simpleStorage.set('reviewCount', window.KWinitialVocab.length);
 
   // set initial values
-  simpleStorage.set('sessionFinished', false);
   remainingVocab = simpleStorage.get('sessionVocab');
 
   console.log(
@@ -146,6 +145,7 @@ function compareAnswer() {
   }
 
   recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
+  simpleStorage.set('sessionFinished', false, {TTL: 3600000});
   enableButtons();
 }
 
