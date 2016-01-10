@@ -10337,7 +10337,7 @@
 	    }
 
 	    console.log('Review count updated from server:', res);
-	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 20000 });
 	    simpleStorage.set('reviewCount', res);
 	  });
 	}
@@ -10459,7 +10459,7 @@
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($, notie) {'use strict';
+	/* WEBPACK VAR INJECTION */(function($, notie, simpleStorage) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
@@ -10525,6 +10525,7 @@
 	    $card.find('.i-link').removeClass('-hidden');
 
 	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
 	  }).fail(handleAjaxFail);
 	}
 
@@ -10541,6 +10542,7 @@
 	    $card.find('.i-link').addClass('-hidden');
 
 	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
 	  }).fail(handleAjaxFail);
 	}
 
@@ -10556,7 +10558,7 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(6)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(6), __webpack_require__(11)))
 
 /***/ },
 /* 14 */

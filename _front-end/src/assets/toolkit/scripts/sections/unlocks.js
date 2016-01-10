@@ -56,6 +56,7 @@ function unLockLevel() {
       $card.find('.i-link').removeClass('-hidden');
 
       refreshReviews({forceGet:true});
+      simpleStorage.set('recentlyRefreshed', true, {TTL: 5000});
 
     })
    .fail(handleAjaxFail);
@@ -75,6 +76,7 @@ function reLockLevel() {
       $card.find('.i-link').addClass('-hidden');
 
       refreshReviews({forceGet:true});
+      simpleStorage.set('recentlyRefreshed', true, {TTL: 5000});
 
     })
    .fail(handleAjaxFail);
