@@ -72,8 +72,13 @@ class UserCreateForm(UserCreationForm):
 class SettingsForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['api_key', 'level']
-
+        fields = ['api_key', 'level',  'follow_me']
+        help_texts = {
+            "follow_me": (". If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani."),
+        }
+        labels = {
+            "follow_me": "Follow Wanikani Progress",
+        }
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -83,7 +88,7 @@ class SettingsForm(ModelForm):
         self.helper.label_class = ''
         self.helper.field_class = 'pure-input-1'
         self.helper.form_style = "default"
-        self.helper.help_text_inline = True
+        self.helper.help_text_inline = False
         self.helper.error_text_inline = False
         super(SettingsForm, self).__init__(*args, **kwargs)
         self.fields['level'].widget.attrs['readonly'] = True

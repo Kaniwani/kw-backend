@@ -100,10 +100,8 @@ def build_API_sync_string_for_user(user):
     '''
     api_call = "https://www.wanikani.com/api/user/{}/vocabulary/".format(user.profile.api_key)
     # if the user has unlocked recent levels, check for new vocab on them as well.
-    #  In our case its within the last 3 levels.
     for level in user.profile.unlocked_levels_list():
-        if user.profile.level - level <= 3:  # example if i'm 25, and i've set 22 and 23, it will check those as well. But not 21.
-            api_call += str(level) + ","
+        api_call += str(level) + ","
     return api_call
 
 
@@ -191,7 +189,8 @@ def sync_user_profile_with_wk(user):
             user.profile.about = user_info["about"]
             user.profile.website = user_info["website"]
             user.profile.twitter = user_info["twitter"]
-            user.profile.unlocked_levels.get_or_create(level=user_info["level"])
+            if user.profile.follow_me:
+                user.profile.unlocked_levels.get_or_create(level=user_info["level"])
             user.profile.gravatar = user_info["gravatar"]
             user.profile.api_valid = True
             user.profile.save()
@@ -268,23 +267,22 @@ def add_synonyms_from_api_call_to_review(review, user_specific_json):
 
 
 def sync_unlocked_vocab_with_wk(user):
-    request_string = build_API_sync_string_for_user(user)
-    r = requests.get(request_string)
-    if r.status_code == 200:
-        json_data = r.json()
-        vocab_list = json_data['requested_information']
-        vocab_list = [vocab_json for vocab_json in vocab_list if
-                      vocab_json['user_specific'] is not None]  # filters out locked items.
-        for vocabulary_json in vocab_list:
-            user_specific = vocabulary_json['user_specific']
-            vocab = get_or_create_vocab_by_json(vocabulary_json)
-            new_review = associate_vocab_to_user(vocab, user)
-            add_synonyms_from_api_call_to_review(new_review, user_specific)
-            new_review.save()
-
-        logger.info("Synced Vocabulary for {}".format(user.username))
-    else:
-        logger.error("{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
+    if user.profile.unlocked_levels_list():
+        request_string = build_API_sync_string_for_user(user)
+        r = requests.get(request_string)
+        if r.status_code == 200:
+            json_data = r.json()
+            vocab_list = json_data['requested_information']
+            vocab_list = [vocab_json for vocab_json in vocab_list if vocab_json['user_specific'] is not None]  # filters out locked items.
+            for vocabulary_json in vocab_list:
+                user_specific = vocabulary_json['user_specific']
+                vocab = get_or_create_vocab_by_json(vocabulary_json)
+                new_review = associate_vocab_to_user(vocab, user)
+                add_synonyms_from_api_call_to_review(new_review, user_specific)
+                new_review.save()
+            logger.info("Synced Vocabulary for {}".format(user.username))
+        else:
+            logger.error("{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
 
 
 @celery_app.task()

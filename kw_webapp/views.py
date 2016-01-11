@@ -35,9 +35,15 @@ class Settings(FormView):
     def form_valid(self, form):
         print(form.cleaned_data)
         data = form.cleaned_data
-        self.request.user.profile.api_key = data['api_key']
-        self.request.user.profile.api_valid = True
-        self.request.user.profile.save()
+        user_profile = self.request.user.profile
+        user_profile.api_key = data['api_key']
+        user_profile.api_valid = True
+        #re-unlock current level is user now wants to be followed.
+        if not user_profile.follow_me and data['follow_me']:
+            user_profile.unlocked_levels.get_or_create(level=user_profile.level)
+            unlock_eligible_vocab_from_levels(self.request.user, user_profile.level)
+        user_profile.follow_me = data['follow_me']
+        user_profile.save()
         logger.info("Saved Settings changes for {}.".format(self.request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:settings"))
 
@@ -140,10 +146,6 @@ class LockRequested(View):
         user = self.request.user
         requested_level = request.POST['level']
 
-        if int(requested_level) == user.profile.level:
-            pass
-            # TODO this is here so that I can set the user to non-following mode when i get around
-            # to implementing that.
 
         removed_count = lock_level_for_user(requested_level, user)
 
@@ -204,6 +206,7 @@ class UnlockRequested(View):
 
 class UnlockLevels(TemplateView):
     template_name = "kw_webapp/vocabulary.html"
+
     def get_context_data(self, **kwargs):
         user_profile = self.request.user.profile
         context = super(UnlockLevels, self).get_context_data()

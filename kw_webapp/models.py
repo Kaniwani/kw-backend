@@ -45,6 +45,7 @@ class Profile(models.Model):
         MinValueValidator(1),
         MaxValueValidator(60),
     ])
+    follow_me = models.BooleanField(default=True)
     unlocked_levels = models.ManyToManyField(Level)
 
     def unlocked_levels_list(self):
@@ -55,6 +56,11 @@ class Profile(models.Model):
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
 
+    def is_being_followed(self):
+        if self.level in self.unlocked_levels_list():
+            return True
+        else:
+            return False
 
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
