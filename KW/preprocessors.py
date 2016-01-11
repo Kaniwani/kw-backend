@@ -1,6 +1,7 @@
 from django.db.models import Min
 from kw_webapp.models import UserSpecific
 
+
 def review_count_preprocessor(request):
     if hasattr(request, 'user'):
         if hasattr(request.user, 'profile'):
@@ -8,9 +9,10 @@ def review_count_preprocessor(request):
             if review_count > 0:
                 return {'review_count': review_count}
             else:
-                reviews = UserSpecific.objects.filter(user=request.user)\
-                    .exclude(next_review_date=None)\
-                    .exclude(hidden=True)\
+                reviews = UserSpecific.objects.filter(user=request.user) \
+                    .exclude(next_review_date=None) \
+                    .exclude(hidden=True) \
+                    .exclude(burnt=True) \
                     .annotate(Min('next_review_date')).order_by('next_review_date')
 
                 if reviews:
