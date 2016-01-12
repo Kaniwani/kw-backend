@@ -101,7 +101,8 @@ def build_API_sync_string_for_user(user):
     api_call = "https://www.wanikani.com/api/user/{}/vocabulary/".format(user.profile.api_key)
     # if the user has unlocked recent levels, check for new vocab on them as well.
     for level in user.profile.unlocked_levels_list():
-        api_call += str(level) + ","
+        if user.profile.level - level <= 3:
+            api_call += str(level) + ","
     return api_call
 
 
