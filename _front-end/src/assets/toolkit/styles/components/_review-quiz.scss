@@ -15,17 +15,21 @@
     background-repeat: repeat-x;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFAA00FF, endColorstr=#FF9300DD, GradientType=0);
     color: $white;
-    height: 50vh;
     text-align: center;
+    height: auto;
+    height: 45vh;
+    @include media($bp-xxl) {
+      height: 40vh;
+    }
   }
 
   .meaning {
     color: $white;
     text-shadow: 1px 2px 4px $purple-dark;
-    padding: $unit-xl $unit-sm $unit-sm;
+    padding: 1em $unit-sm;
     display: table-cell;
-    font-size: responsive 28px 44px;
-    font-range: 300px 1600px;
+    font-size: responsive 24px 50px;
+    font-range: 300px 2000px;
     vertical-align: middle;
     line-height: 1.3;
     letter-spacing: -1px;
@@ -36,7 +40,6 @@
   }
 
   .lower {
-    height: 49vh;
 
     fieldset {
       position: relative;
@@ -56,10 +59,11 @@
       padding: .5em 0;
       background-color: $white-light;
       box-shadow: $shadow-inner-medium;
-      font-size: responsive 24px 38px;
-      font-range: 300px 1600px;
-      line-height: 1.3;
+      font-size: responsive 24px 50px;
+      font-range: 300px 2000px;
+      line-height: 1;
       text-align: center;
+      transition: all .1s ease-out;
 
       &.-marked {
         color: $white;
@@ -68,6 +72,12 @@
           color: $white;
           text-shadow: $shadow-text-thin;
         }
+
+        &::-webkit-input-placeholder { color: $white; }
+        &::-moz-placeholder { color: $white;  }
+        &:-ms-input-placeholder { color: $white; }
+        &:placeholder-shown { color: $white; }
+
       }
 
       &.-invalid {
@@ -85,8 +95,6 @@
       }
 
       &.-correct {
-        padding: .35em 0;
-        font-size: responsive 28px 42px;
         background-color: $green;
       }
 
