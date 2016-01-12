@@ -2,6 +2,7 @@
 $bp-md: '>=md'; // 768px in include-media
 $bp-lg: '>=lg'; // 1024px in include-media
 $bp-xl: '>=xl'; // 1200px in include-media
+$bp-xxl: '>=xxl'; // 2000px in include-media
 
 /* Custom Component Breakpoints */
 // should really be contained within components, not happy that these are used across several...
