@@ -74,7 +74,7 @@ class SettingsForm(ModelForm):
         model = Profile
         fields = ['api_key', 'level',  'follow_me']
         help_texts = {
-            "follow_me": (". If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani."),
+            "follow_me": ("If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani."),
         }
         labels = {
             "follow_me": "Follow Wanikani Progress",
