@@ -10587,6 +10587,7 @@
 	    answerCorrectness = [],
 	    $reviewsLeft = $('#reviewsLeft'),
 	    $meaning = $('#meaning'),
+	    $streakIcon = $('.streak > .icon'),
 	    $userID = $('#us-id'),
 	    $reviewsDone = $('#reviewsDone'),
 	    $reviewsCorrect = $('#reviewsCorrect'),
@@ -10624,6 +10625,7 @@
 	  $detailKanji.kanji = $detailKanji.find('.-kanji');
 
 	  updateKanaKanjiDetails();
+	  updateStreak();
 
 	  // event listeners
 	  _vendorWanakanaMin2['default'].bind($userAnswer.get(0));
@@ -10634,6 +10636,13 @@
 
 	  // focus input field
 	  $userAnswer.focus();
+	}
+
+	function updateStreak() {
+	  var streak = currentVocab.streak;
+	  var iconClass = streak > 8 ? 'i-burned' : streak > 7 ? 'i-enlightened' : streak > 5 ? 'i-master' : streak > 2 ? 'i-guru' : 'i-apprentice';
+
+	  $streakIcon.addClass(iconClass).attr('title', iconClass.slice(2));
 	}
 
 	function updateKanaKanjiDetails() {

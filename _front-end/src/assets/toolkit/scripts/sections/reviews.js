@@ -10,6 +10,7 @@ let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
   answerCorrectness = [],
   $reviewsLeft = $('#reviewsLeft'),
   $meaning = $('#meaning'),
+  $streakIcon = $('.streak > .icon'),
   $userID = $('#us-id'),
   $reviewsDone = $('#reviewsDone'),
   $reviewsCorrect = $('#reviewsCorrect'),
@@ -52,6 +53,7 @@ function init() {
   $detailKanji.kanji = $detailKanji.find('.-kanji');
 
   updateKanaKanjiDetails();
+  updateStreak();
 
   // event listeners
   wanakana.bind($userAnswer.get(0));
@@ -60,6 +62,17 @@ function init() {
 
   // focus input field
   $userAnswer.focus();
+}
+
+function updateStreak() {
+  let streak = currentVocab.streak;
+  let iconClass = streak > 8 ? 'i-burned' :
+                  streak > 7 ? 'i-enlightened' :
+                  streak > 5 ? 'i-master' :
+                  streak > 2 ? 'i-guru'
+                             : 'i-apprentice';
+
+  $streakIcon.addClass(iconClass).attr('title', iconClass.slice(2));
 }
 
 function updateKanaKanjiDetails() {

@@ -100,14 +100,14 @@
 
     }
 
-    .submit {
+    .submit,
+    .streak {
       position: absolute;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-content: center;
       height: 100%;
-      right: 0;
       bottom: 0;
       padding: 0 .75em;
       appearance: none;
@@ -123,5 +123,14 @@
         color: $grey-dark;
       }
     }
+
+    .submit {
+      right: 0;
+    }
+
+    .streak {
+      left: 0;
+    }
+
   }
 }
