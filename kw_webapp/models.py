@@ -42,8 +42,8 @@ class Profile(models.Model):
     title = models.CharField(max_length=255, default="Turtles", null=True)
     join_date = models.DateField(auto_now_add=True, null=True)
     level = models.PositiveIntegerField(null=True, validators=[
-        MinValueValidator(1),
-        MaxValueValidator(60),
+        MinValueValidator(constants.LEVEL_MIN),
+        MaxValueValidator(constants.LEVEL_MAX),
     ])
     follow_me = models.BooleanField(default=True)
     unlocked_levels = models.ManyToManyField(Level)
