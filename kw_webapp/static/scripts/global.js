@@ -10770,17 +10770,24 @@
 	  $userAnswer.addClass('-invalid');
 	}
 
-	function wrongAnswer() {
+	function markWrong() {
 	  clearColors();
 	  $userAnswer.addClass('-marked -incorrect');
+	}
+
+	function wrongAnswer() {
+	  markWrong();
 	  answeredTotal += 1;
 	  remainingVocab.push(currentVocab);
 	}
 
-	function rightAnswer() {
+	function markRight() {
 	  clearColors();
-
 	  $userAnswer.addClass('-marked -correct');
+	}
+
+	function rightAnswer() {
+	  markRight();
 	  correctTotal += 1;
 	  answeredTotal += 1;
 	}
@@ -10806,7 +10813,6 @@
 	}
 
 	function rotateVocab() {
-
 	  $progressbar.val(correctTotal);
 	  $reviewsLeft.html(simpleStorage.get('reviewCount'));
 	  $reviewsDone.html(correctTotal);
@@ -10830,19 +10836,20 @@
 	  $userAnswer.removeClass('-marked');
 	}
 
-	function enterPressed() {
-	  if ($userAnswer.hasClass('-marked')) {
-	    rotateVocab();
-	  } else {
-	    compareAnswer();
+	function enterPressed(event) {
+	  if (event != null) {
+	    event.stopPropagation();
+	    event.preventDefault();
 	  }
+
+	  $userAnswer.hasClass('-marked') ? rotateVocab() : compareAnswer();
 	}
 
 	function handleShortcuts(event) {
 	  if (event.which == 13) {
 	    event.stopPropagation();
 	    event.preventDefault();
-	    enterPressed();
+	    enterPressed(null);
 	  }
 	  if ($userAnswer.hasClass('-marked')) {
 	    event.stopPropagation();

@@ -47,9 +47,10 @@
     > .text {
       background-color: $white;
       text-align: center;
-      padding: $unit-md $unit-sm;
+      padding: $unit-xs $unit-sm;
       max-width: 100%;
-      font-size: 2em;
+      font-size: 2.5em;
+      line-height: 1.5;
 
       &.-kanji {
         box-shadow: inset 2px 0 10px -2px rgba($black-light, .15);
