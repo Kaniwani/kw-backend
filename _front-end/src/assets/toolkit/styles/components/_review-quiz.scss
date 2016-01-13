@@ -57,19 +57,19 @@
       outline: none;
       border: 0;
       margin: 0;
-      padding: .5em 0;
+      padding: 0;
       background-color: $white-light;
       box-shadow: $shadow-inner-medium;
       font-size: responsive 24px 50px;
       font-range: 300px 2000px;
-      line-height: 1;
+      line-height: 2.5;
       text-align: center;
       transition: all .1s ease-out;
 
       &.-marked {
         color: $white;
         text-shadow: $shadow-text-thin;
-        + .submit > .icon {
+        + .submitwrap .icon {
           color: $white;
           text-shadow: $shadow-text-thin;
         }
@@ -85,7 +85,7 @@
         background-color: $yellow;
         color: $grey-dark;
         text-shadow: none;
-        + .submit > .icon {
+        + .submitwrap .icon {
           color: $grey-dark;
           text-shadow: none;
         }
@@ -98,31 +98,42 @@
       &.-correct {
         background-color: $green;
       }
-
     }
 
-    .submit {
-      position: absolute;
+    .submitwrap,
+    .streak {
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-content: center;
-      height: 100%;
-      right: 0;
-      bottom: 0;
       padding: 0 .75em;
-      appearance: none;
-      background: none;
-      border: 0;
-      border-radius: 0;
-      box-shadow: none;
 
-      > .icon {
+      .icon {
         font-size: responsive 20px 36px;
         font-range: 300px 1600px;
         line-height: 0;
         color: $grey-dark;
       }
+    }
+
+    .submit,
+    .streak {
+      position: absolute;
+      bottom: 0;
+      height: 100%;
+    }
+
+    .streak {
+      left: 0;
+    }
+
+    .submit {
+      right: 0;
+      appearance: none;
+      background: none;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
     }
   }
 }

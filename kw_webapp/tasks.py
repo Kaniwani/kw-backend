@@ -183,7 +183,7 @@ def sync_user_profile_with_wk(user):
             user_info = json_data["user_information"]
             user.profile.level = user_info["level"]
             user.profile.title = user_info["title"]
-            user.profile.join_date = datetime.fromtimestamp(user_info["creation_date"])
+            user.profile.join_date = datetime.utcfromtimestamp(user_info["creation_date"])
             user.profile.topics_count = user_info["topics_count"]
             user.profile.posts_count = user_info["posts_count"]
             user.profile.about = user_info["about"]

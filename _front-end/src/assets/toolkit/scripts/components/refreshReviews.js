@@ -20,7 +20,7 @@ function ajaxReviewCount() {
       if (res > 0) {
         simpleStorage.set('reviewCount', res);
         $navCount.text(res)
-        $navCount.closest('.nav-link').removeClass('-disabled');
+        $navCount.closest('.nav-link');
 
         if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
       }
@@ -35,7 +35,7 @@ function ajaxReviewCount() {
 function storageReviewCount() {
   if (storageCount > 0) {
     $navCount.text(storageCount);
-    $navCount.closest('.nav-link').removeClass('-disabled');
+    $navCount.closest('.nav-link');
     // if on home page update the reviews button too
     if ($buttonCount.length) {
       $buttonCount.text(pluralize(' Review', storageCount)).removeClass('-disabled');
