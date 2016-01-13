@@ -15,6 +15,7 @@ let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
   $reviewsDone = $('#reviewsDone'),
   $reviewsCorrect = $('#reviewsCorrect'),
   $reveal = $('.reveal'),
+  $answerForm = $('.answerForm'),
   $userAnswer = $('#userAnswer'),
   $detailKana = $('#detailKana'),
   $submitAnswer = $('#submitAnswer'),
@@ -58,9 +59,10 @@ function init() {
   // event listeners
   wanakana.bind($userAnswer.get(0));
   $userAnswer.keypress(handleShortcuts);
-  // FIXME: this might be auto-advancing on mobiles
-  // double-check if we need this at all (button submit should be fine for the form and phone keyboard should submit on "go" or whatever it is)
-  $submitAnswer.click(() => enterPressed());
+
+  // rotate or record on 'submit'
+  $submitAnswer.click(enterPressed);
+  $answerForm.submit(enterPressed);
 
   // focus input field
   $userAnswer.focus();
