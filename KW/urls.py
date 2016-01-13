@@ -13,6 +13,7 @@ router.register(r'review', kw_webapp.views.ReviewViewSet)
 router.register(r'profile', kw_webapp.views.ProfileViewSet)
 
 urlpatterns = patterns('',
+                       url(r'^auth/', include('django.contrib.auth.urls')),
                        url(r'^$', 'kw_webapp.views.home', name='home'),
                        url(r'^api/', include(router.urls)),
                        url(r'^kw/', include('kw_webapp.urls', namespace="kw")),
