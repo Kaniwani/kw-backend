@@ -8,16 +8,18 @@
     <form>
       <fieldset>
         <div class="streak">
-          <span class="icon"></span>
+          <span class="icon i-enlightened"></span>
         </div>
 
         <label for="userAnswer" class="question _visuallyhidden">Vocabulary <strong>reading</strong></label>
         <input id="userAnswer" lang="ja" class="answer" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" required>
 
         <button id="submitAnswer" type="submit" class="submit">
-          <span class="icon i-rightarrow"></span>
-          <span class="_visuallyhidden">Submit</span>
+          <span class="submitwrap">
+            <span class="icon i-rightarrow"></span>
+          </span>
         </button>
+
         <input type="hidden" id="us-id" value="Nothing!">
       </fieldset>
     </form>
