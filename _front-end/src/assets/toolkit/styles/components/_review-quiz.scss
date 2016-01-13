@@ -33,6 +33,7 @@
     vertical-align: middle;
     line-height: 1.3;
     letter-spacing: -1px;
+
     @include media($bp-lg) {
       padding-left: 10%;
       padding-right: 10%;
