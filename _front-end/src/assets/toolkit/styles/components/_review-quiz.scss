@@ -68,7 +68,7 @@
       &.-marked {
         color: $white;
         text-shadow: $shadow-text-thin;
-        + .submit > .icon {
+        + .submitwrap .icon {
           color: $white;
           text-shadow: $shadow-text-thin;
         }
@@ -84,7 +84,7 @@
         background-color: $yellow;
         color: $grey-dark;
         text-shadow: none;
-        + .submit > .icon {
+        + .submitwrap .icon {
           color: $grey-dark;
           text-shadow: none;
         }
@@ -100,7 +100,7 @@
 
     }
 
-    .submit,
+    .submitwrap,
     .streak {
       position: absolute;
       display: flex;
@@ -116,7 +116,7 @@
       border-radius: 0;
       box-shadow: none;
 
-      > .icon {
+      .icon {
         font-size: responsive 20px 36px;
         font-range: 300px 1600px;
         line-height: 0;
@@ -124,7 +124,7 @@
       }
     }
 
-    .submit {
+    .submitwrap {
       right: 0;
     }
 
