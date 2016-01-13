@@ -42,7 +42,7 @@
 
   .lower {
 
-    fieldset {
+    .answerpanel {
       position: relative;
       padding: 0;
       margin: 0;
@@ -78,7 +78,6 @@
         &::-moz-placeholder { color: $white;  }
         &:-ms-input-placeholder { color: $white; }
         &:placeholder-shown { color: $white; }
-
       }
 
       &.-invalid {

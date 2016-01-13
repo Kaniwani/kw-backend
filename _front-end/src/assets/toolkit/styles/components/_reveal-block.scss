@@ -23,6 +23,7 @@
       transition: all .1s ease-in;
       filter: blur(1px);
       cursor: not-allowed;
+      opacity: .85;
     }
 
     &:not(.-disabled):hover,
