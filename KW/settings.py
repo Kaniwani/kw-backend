@@ -178,13 +178,13 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 INSTALLED_APPS = (
     'django.contrib.admin',
+    'kw_webapp',
     'django.contrib.auth',
     'django.contrib.humanize',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'kw_webapp',
     'crispy_forms',
     'raven.contrib.django.raven_compat',
     'rest_framework',
@@ -225,7 +225,7 @@ EMAIL_PORT = 25
 #EMAIL_HOST_USER = "reports@kaniwani.com"
 #EMAIL_HOST_PASSWORD = ''
 MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
-DEFAULT_FROM_EMAIL = "notifications@KaniWani.com"
+DEFAULT_FROM_EMAIL = "garygrantgraham@yahoo.com"
 
 
 # Database
