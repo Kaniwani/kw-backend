@@ -36,7 +36,8 @@ function handleLockClick(event) {
   reviews = parseInt($reviewCount.text(), 10);
 
   if ($card.hasClass('-unlocked')) {
-    notie.confirm(`Are you sure you want to relock level ${level}? This will reset your SRS levels.`, 'Yeah!', 'Nope', reLockLevel);
+    notie.confirm(`Are you sure you want to relock level ${level}?
+      </br>This will reset the SRS for all items in this level.`, 'Yeah!', 'Nope', reLockLevel);
   } else {
     unLockLevel();
   }
