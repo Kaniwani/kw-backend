@@ -10337,7 +10337,7 @@
 	    }
 
 	    console.log('Review count updated from server:', res);
-	    simpleStorage.set('recentlyRefreshed', true, { TTL: 20000 });
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 300000 });
 	    simpleStorage.set('reviewCount', res);
 	  });
 	}
@@ -10367,7 +10367,7 @@
 	  recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
 	  console.log(!recentlyRefreshed, forceGet, sessionFinished, storageCount < 1);
 
-	  if (!recentlyRefreshed || sessionFinished && storageCount < 1 && forceGet) {
+	  if (!recentlyRefreshed || /*sessionFinished && storageCount < 1 && */forceGet) {
 	    ajaxReviewCount();
 	  } else {
 	    storageReviewCount();
@@ -10506,7 +10506,7 @@
 	  $icon = $(this), $card = $icon.closest(".level-card"), level = $card.data("level-id"), reviews = parseInt($reviewCount.text(), 10);
 
 	  if ($card.hasClass('-unlocked')) {
-	    notie.confirm('Are you sure you want to relock level ' + level + '? This will reset your SRS levels.', 'Yeah!', 'Nope', reLockLevel);
+	    notie.confirm('Are you sure you want to relock level ' + level + '? This will also reset the SRS on all items in this level.', 'Yeah!', 'Nope', reLockLevel);
 	  } else {
 	    unLockLevel();
 	  }

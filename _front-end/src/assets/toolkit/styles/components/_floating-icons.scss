@@ -8,155 +8,194 @@
 
   > .icon {
     position: absolute;
-    list-style: none;
     display: block;
-    width: 40px;
-    height: 40px;
-    bottom: -160px;
-    opacity: .46;
-    animation-duration: 12s;
+    list-style: none;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
+    backface-visibility: hidden;
+    transform: translateX(0) translateY(0) translateZ(0) rotate(0deg);
 
-    &:nth-child(1){
-      left: calc(50% - 140px);
-      bottom: -220px;
-      width: 280px;
-      height: 280px;
-      opacity: .1;
-
-      animation-name: rotate-left-slow;
-      animation-timing-function: ease-out;
-      animation-duration: 54s;
+    @for $i from 1 through 6 {
+      $M: random(6); // multiplier
+      &:nth-child(#{$i}) {
+         @include turtle-animation(
+          $i: $i, // animation name suffix
+          $imgSize: #{30 * $M}, // px
+          $opacity: (random(45) + 20) / 100,
+          $duration: random(20) + 15, // seconds
+          $delay: $i / 2, // seconds
+          $rotate: random(20) + (3 * $M), // deg
+          $drift: random(6) * $M // vw
+        );
+      }
     }
 
-    &:nth-child(2){
-      left: 12%;
-      width: 85px;
-      height: 85px;
-      opacity: .74;
-
-      animation-name: rotate-right;
-      animation-delay: 2s;
-      animation-duration: 21s;
+    @for $i from 10 through 12 {
+      $M: #{random(2) + 1}; // multiplier
+      &:nth-child(#{$i}) {
+         @include turtle-animation(
+          $i: $i, // animation name suffix
+          $imgSize: #{80 * $M}, // px
+          $opacity: (random(20) + 20) / 100,
+          $duration: (random(30) * $M + 10), // seconds
+          $delay: random(20), // seconds
+          $rotate: random(30 * $M) + 5, // deg
+          $drift: random(6 * $M) + 2 // vw
+        );
+      }
     }
 
-    &:nth-child(3){
-      left: 91%;
-      width: 52px;
-      height: 52px;
-      opacity: .85;
+    // width: 40px;
+    // height: 40px;
+    // bottom: -160px;
+    // opacity: ((random(45) + 35) / 100);
+    // animation-duration: 12s;
 
-      animation-name: rotate-left;
-      animation-duration: 14s;
-      animation-timing-function: ease-out;
+    @include media('<768px') {
+      // hide all but first 5
+      &:nth-last-child(-n+6) {
+        display: none;
+      }
     }
 
-    &:nth-child(4){
-      left: 24%;
-      width: 66px;
-      height: 66px;
-      opacity: .68;
+    // &:nth-child(1) {
+    //   left: calc(50% - 140px);
+    //   bottom: -280px;
+    //   width: 280px;
+    //   height: 280px;
+    //   opacity: .1;
 
-      animation-name: float-up-left;
-      animation-duration: 11s;
-      animation-delay: 5s;
-    }
+    //   animation-name: rotate-left-slow;
+    //   animation-timing-function: ease-out;
+    //   animation-duration: 54s;
+    // }
 
-    &:nth-child(5){
-      left: 37%;
-      height: 35px;
-      width: 35px;
-      opacity: .63;
+    // &:nth-child(2){
+    //   left: 37%;
+    //   height: 35px;
+    //   width: 35px;
+    //   opacity: .63;
 
-      animation-name: float-up-right;
-      animation-timing-function: ease-in-out;
-      animation-delay: 6s;
+    //   animation-name: float-up-right;
+    //   animation-timing-function: ease-in-out;
+    //   animation-delay: 6s;
+    // }
 
-    }
+    // &:nth-child(3){
+    //   left: 24%;
+    //   width: 66px;
+    //   height: 66px;
+    //   opacity: .68;
 
-    &:nth-child(6){
-      left: 42%;
-      width: 72px;
-      height: 72px;
-      opacity: .49;
+    //   animation-name: float-up-left;
+    //   animation-duration: 11s;
+    //   animation-delay: 5s;
+    // }
 
-      animation-name: rotate-right-slow;
-      animation-duration: 22s;
-    }
+    // &:nth-child(4){
+    //   left: 42%;
+    //   width: 72px;
+    //   height: 72px;
+    //   opacity: .49;
 
-    &:nth-child(7){
-      left: 56%;
-      width: 114px;
-      height: 114px;
-      opacity: .42;
+    //   animation-name: rotate-right-slow;
+    //   animation-duration: 22s;
+    // }
 
-      animation-name: float-up-right;
-      animation-delay: 5s;
-      animation-duration: 47s;
-    }
+    // &:nth-child(5){
+    //   left: 12%;
+    //   width: 85px;
+    //   height: 85px;
+    //   opacity: .74;
 
-    &:nth-child(8){
-      left: 63%;
-      width: 20px;
-      height: 20px;
-      opacity: .72;
+    //   animation-name: rotate-left;
+    //   animation-delay: 2s;
+    //   animation-duration: 21s;
+    // }
 
-      animation-name: float-up-left;
-      animation-delay: 4s;
-      animation-timing-function: linear;
-    }
+    // &:nth-child(6){
+    //   left: 91%;
+    //   width: 52px;
+    //   height: 52px;
+    //   opacity: .85;
 
-    &:nth-child(9){
-      left: 76%;
-      width: 44px;
-      height: 44px;
-      opacity: .69;
+    //   animation-name: rotate-right;
+    //   animation-duration: 14s;
+    //   animation-timing-function: ease-out;
+    // }
 
-      animation-name: float-up;
-      animation-duration: 19s;
-    }
+    // &:nth-child(7){
+    //   left: 56%;
+    //   width: 114px;
+    //   height: 114px;
+    //   opacity: .42;
 
-    &:nth-child(10){
-      left: 81%;
-      width: 110px;
-      height: 110px;
-      opacity: .47;
+    //   animation-name: float-up-right;
+    //   animation-delay: 5s;
+    //   animation-duration: 47s;
+    // }
 
-      animation-name: rotate-right-slow;
-      animation-duration: 43s;
-      animation-timing-function: ease-in;
-    }
+    // &:nth-child(8){
+    //   left: 63%;
+    //   width: 20px;
+    //   height: 20px;
+    //   opacity: .72;
 
-    &:nth-child(11){
-      left: 26%;
-      width: 134px;
-      height: 134px;
-      opacity: .32;
+    //   animation-name: float-up-left;
+    //   animation-delay: 4s;
+    //   animation-timing-function: linear;
+    // }
 
-      animation-name: float-up;
-      animation-delay: 14s;
-      animation-duration: 31s;
-    }
+    // &:nth-child(9){
+    //   left: 76%;
+    //   width: 44px;
+    //   height: 44px;
+    //   opacity: .69;
 
-    &:nth-child(12){
-      left: 69%;
-      width: 86px;
-      height: 86px;
-      opacity: .71;
+    //   animation-name: float-up;
+    //   animation-duration: 19s;
+    // }
 
-      animation-name: float-up-right;
-      animation-timing-function: ease-in;
-      animation-duration: 24s;
-    }
+    // &:nth-child(10){
+    //   left: 81%;
+    //   width: 110px;
+    //   height: 110px;
+    //   opacity: .47;
 
-    &:nth-child(13){
-      left: 4%;
-      width: 66px;
-      height: 66px;
-      animation-delay: 8s;
-      animation-name: float-up-right;
-    }
+    //   animation-name: rotate-right-slow;
+    //   animation-duration: 43s;
+    //   animation-timing-function: ease-in;
+    // }
+
+    // &:nth-child(11){
+    //   left: 26%;
+    //   width: 134px;
+    //   height: 134px;
+    //   opacity: .32;
+
+    //   animation-name: float-up;
+    //   animation-delay: 14s;
+    //   animation-duration: 31s;
+    // }
+
+    // &:nth-child(12){
+    //   left: 69%;
+    //   width: 86px;
+    //   height: 86px;
+    //   opacity: .71;
+
+    //   animation-name: float-up-right;
+    //   animation-timing-function: ease-in;
+    //   animation-duration: 24s;
+    // }
+
+    // &:nth-child(13){
+    //   left: 4%;
+    //   width: 66px;
+    //   height: 66px;
+    //   animation-delay: 8s;
+    //   animation-name: float-up-right;
+    // }
   }
 
   .icon-turtle {
