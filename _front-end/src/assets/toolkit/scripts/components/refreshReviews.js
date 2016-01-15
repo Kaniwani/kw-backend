@@ -26,7 +26,7 @@ function ajaxReviewCount() {
       }
 
       console.log('Review count updated from server:', res)
-      simpleStorage.set('recentlyRefreshed', true, {TTL: 20000});
+      simpleStorage.set('recentlyRefreshed', true, {TTL: 300000});
       simpleStorage.set('reviewCount', res);
   });
 
@@ -53,7 +53,7 @@ let refreshReviews = function({forceGet} = {forceGet: false}) {
   recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
   console.log(!recentlyRefreshed, forceGet, sessionFinished, storageCount < 1)
 
-  if (!recentlyRefreshed || sessionFinished && storageCount < 1 && forceGet) {
+  if (!recentlyRefreshed || /*sessionFinished && storageCount < 1 && */ forceGet) {
     ajaxReviewCount();
   } else {
     storageReviewCount();
