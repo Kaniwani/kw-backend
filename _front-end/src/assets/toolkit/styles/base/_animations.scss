@@ -27,33 +27,6 @@
 @mixin turtle-animation($i, $imgSize, $opacity, $duration, $delay, $rotate, $drift) {
   $left: random(100);
 
-  @function plusMinus($n) {
-    @return if(random(2) > 1, -#{$n}, +#{$n});
-  }
-
-  @function randOpacity($O) {
-    @return if(random(2) > 1, #{$O - random(15) / 100}, #{$O + random(15) / 100});
-  }
-
-  @function calcDrift($L, $D) {
-    @return if($L > 50, #{-$D}vw, #{$D}vw);
-  }
-
-
-  @keyframes turtle-float-#{$i} {
-    33% {
-      opacity: randOpacity($opacity) ;
-    }
-    66% {
-      opacity: randOpacity($opacity) ;
-    }
-    100% {
-      opacity: randOpacity($opacity) ;
-      transform: translateX(calcDrift($left, $drift))
-                 translateY(calc(-102vh - #{$imgSize}px))
-                 rotate(#{plusMinus($rotate)}deg)
-    }
-  }
   opacity: $opacity;
   width: #{$imgSize}px;
   height: #{$imgSize}px;
@@ -62,6 +35,29 @@
   animation-name: turtle-float-#{$i};
   animation-duration: #{$duration}s;
   animation-delay: #{$delay}s;
-  animation-timing-function: if(random(2) > 1, ease-in, ease-out);
+
+  @function plusMinus($n) {
+    @return if(random(2) > 1, -#{$n}, +#{$n});
+  }
+
+  @function calcDrift($L, $D) {
+    @return if($L > 50, #{-$D}vw, #{$D}vw);
+  }
+
+  @keyframes turtle-float-#{$i} {
+    33% {
+      // not DRY intentionally so we get different random() values with sass
+      opacity: if(random(2) > 1, #{$opacity - random(40) / 100}, #{$opacity + random(40) / 100});
+    }
+    66% {
+      opacity: if(random(2) > 1, #{$opacity - random(40) / 100}, #{$opacity + random(40) / 100}) ;
+    }
+    100% {
+      opacity: if(random(2) > 1, #{$opacity - random(40) / 100}, #{$opacity + random(40) / 100}) ;
+      transform: translateX(calcDrift($left, $drift))
+                 translateY(calc(-102vh - #{$imgSize}px))
+                 rotate(#{plusMinus($rotate)}deg)
+    }
+  }
 }
 

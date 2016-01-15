@@ -51,7 +51,12 @@ let refreshReviews = function({forceGet} = {forceGet: false}) {
   storageCount = simpleStorage.get('reviewCount') || 0;
   sessionFinished = simpleStorage.get('sessionFinished');
   recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
-  console.log(!recentlyRefreshed, forceGet, sessionFinished, storageCount < 1)
+  console.log(`
+    recentlyRefreshed: ${!recentlyRefreshed},
+    forceGet: ${forceGet},
+    sessionFinished: ${sessionFinished},
+    storageCount: ${storageCount < 1}`
+  );
 
   if (!recentlyRefreshed || /*sessionFinished && storageCount < 1 && */ forceGet) {
     ajaxReviewCount();
