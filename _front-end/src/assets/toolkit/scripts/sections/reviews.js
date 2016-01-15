@@ -15,6 +15,7 @@ let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
   $reviewsDone = $('#reviewsDone'),
   $reviewsCorrect = $('#reviewsCorrect'),
   $reveal = $('.reveal'),
+  $answerForm = $('.answerForm'),
   $userAnswer = $('#userAnswer'),
   $detailKana = $('#detailKana'),
   $submitAnswer = $('#submitAnswer'),
@@ -58,9 +59,10 @@ function init() {
   // event listeners
   wanakana.bind($userAnswer.get(0));
   $userAnswer.keypress(handleShortcuts);
-  // FIXME: this might be auto-advancing on mobiles
-  // double-check if we need this at all (button submit should be fine for the form and phone keyboard should submit on "go" or whatever it is)
-  $submitAnswer.click(() => enterPressed());
+
+  // rotate or record on 'submit'
+  $submitAnswer.click(enterPressed);
+  $answerForm.submit(enterPressed);
 
   // focus input field
   $userAnswer.focus();
@@ -202,17 +204,24 @@ function nonHiraganaAnswer() {
   $userAnswer.addClass('-invalid');
 }
 
-function wrongAnswer() {
+function markWrong() {
   clearColors();
   $userAnswer.addClass('-marked -incorrect');
+}
+
+function wrongAnswer() {
+  markWrong();
   answeredTotal += 1;
   remainingVocab.push(currentVocab);
 }
 
-function rightAnswer() {
+function markRight() {
   clearColors();
-
   $userAnswer.addClass('-marked -correct');
+}
+
+function rightAnswer() {
+  markRight();
   correctTotal += 1;
   answeredTotal += 1;
 }
@@ -238,7 +247,6 @@ function replaceAnswerWithKanji(index) {
 }
 
 function rotateVocab() {
-
   $progressbar.val(correctTotal);
   $reviewsLeft.html(simpleStorage.get('reviewCount'));
   $reviewsDone.html(correctTotal);
@@ -263,19 +271,20 @@ function rotateVocab() {
 
 }
 
-function enterPressed() {
-  if ($userAnswer.hasClass('-marked')) {
-    rotateVocab();
-  } else {
-    compareAnswer();
+function enterPressed(event) {
+  if (event != null) {
+    event.stopPropagation();
+    event.preventDefault();
   }
+
+  $userAnswer.hasClass('-marked') ? rotateVocab() : compareAnswer();
 }
 
 function handleShortcuts(event) {
   if (event.which == 13) {
     event.stopPropagation();
     event.preventDefault();
-    enterPressed();
+    enterPressed(null);
   }
   if ($userAnswer.hasClass('-marked')) {
     event.stopPropagation();

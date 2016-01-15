@@ -15,7 +15,7 @@ from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
 from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    unlock_all_possible_levels_for_user
+    unlock_all_possible_levels_for_user, sync_user_profile_with_wk
 import logging
 
 logger = logging.getLogger("kw.views")
@@ -38,12 +38,14 @@ class Settings(FormView):
         user_profile = self.request.user.profile
         user_profile.api_key = data['api_key']
         user_profile.api_valid = True
+
         #re-unlock current level is user now wants to be followed.
         if not user_profile.follow_me and data['follow_me']:
             user_profile.unlocked_levels.get_or_create(level=user_profile.level)
             unlock_eligible_vocab_from_levels(self.request.user, user_profile.level)
         user_profile.follow_me = data['follow_me']
         user_profile.save()
+        sync_user_profile_with_wk(self.request.user)
         logger.info("Saved Settings changes for {}.".format(self.request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:settings"))
 

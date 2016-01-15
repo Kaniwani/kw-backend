@@ -95,6 +95,7 @@ class SettingsForm(ModelForm):
 
     def clean_api_key(self):
         api_key = self.cleaned_data['api_key']
+
         r = requests.get("https://www.wanikani.com/api/user/{}/user-information".format(api_key))
         if r.status_code == 200:
             json_data = r.json()
