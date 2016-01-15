@@ -72,12 +72,14 @@ class UserCreateForm(UserCreationForm):
 class SettingsForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['api_key', 'level',  'follow_me']
+        fields = ['api_key', 'level',  'follow_me', 'auto_advance_on_success', 'auto_expand_answer_on_failure']
         help_texts = {
             "follow_me": ("If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani."),
         }
         labels = {
             "follow_me": "Follow Wanikani Progress",
+            "auto_advance_on_success": "Automatically advance to next review if correct.",
+            "auto_expand_answer_on_failure": "Automatically show the correct answer if you answer incorrectly",
         }
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
@@ -95,7 +97,6 @@ class SettingsForm(ModelForm):
 
     def clean_api_key(self):
         api_key = self.cleaned_data['api_key']
-
         r = requests.get("https://www.wanikani.com/api/user/{}/user-information".format(api_key))
         if r.status_code == 200:
             json_data = r.json()

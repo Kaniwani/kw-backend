@@ -45,8 +45,12 @@ class Profile(models.Model):
         MinValueValidator(constants.LEVEL_MIN),
         MaxValueValidator(constants.LEVEL_MAX),
     ])
-    follow_me = models.BooleanField(default=True)
+
+    #General user-changeable settings
     unlocked_levels = models.ManyToManyField(Level)
+    follow_me = models.BooleanField(default=True)
+    auto_expand_answer_on_failure = models.BooleanField(default=False)
+    auto_advance_on_success = models.BooleanField(default=False)
 
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')

@@ -6,7 +6,8 @@ from django.shortcuts import get_object_or_404, render_to_response, render
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, ListView, FormView, View
+from django.views.generic import TemplateView, ListView, View
+from django.views.generic.edit import FormView, UpdateView
 from rest_framework import viewsets
 from kw_webapp import constants
 from kw_webapp.decorators.ValidApiRequired import valid_api_required
@@ -15,37 +16,44 @@ from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
 from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    unlock_all_possible_levels_for_user, sync_user_profile_with_wk
+    unlock_all_possible_levels_for_user, sync_user_profile_with_wk, get_wanikani_level_by_api_key
 import logging
 
 logger = logging.getLogger("kw.views")
 data_logger = logging.getLogger("kw.review_data")
 
 
-class Settings(FormView):
+class Settings(UpdateView):
     template_name = "kw_webapp/settings.html"
     form_class = SettingsForm
+    model = Profile
 
-    def get_context_data(self, **kwargs):
-        context = super(Settings, self).get_context_data()
-        form = SettingsForm(instance=self.request.user.profile)
-        context['form'] = form
-        return context
+    #def get_context_data(self, **kwargs):
+       # context = super(Settings, self).get_context_data()
+       # form = SettingsForm(instance=self.request.user.profile)
+       # context['form'] = form
+       # return context
+
+    def get_object(self, queryset=None):
+        return Profile.objects.get(user=self.request.user)
 
     def form_valid(self, form):
-        print(form.cleaned_data)
-        data = form.cleaned_data
-        user_profile = self.request.user.profile
-        user_profile.api_key = data['api_key']
-        user_profile.api_valid = True
+        ##re-unlock current level is user now wants to be followed.
+        #if not self.request.user.profile.follow_me and form.cleaned_data['follow_me']:
+        was_following = self.request.user.profile.follow_me
+        self.object = form.save(commit=False)
+        self.object.api_valid = True
+        if not was_following and self.object.follow_me: #if user swaps from non-following to following, sync them.
+            print("Syncing!")
+            self.object.level = get_wanikani_level_by_api_key(self.object.api_key)
+            self.object.unlocked_levels.get_or_create(level=self.object.level)
+            self.object.save()
+            unlock_eligible_vocab_from_levels(self.object.user, self.object.level)
+            user = User.objects.get(username=self.request.user.username)
+            sync_user_profile_with_wk(user)
+        else:
+            self.object.save()
 
-        #re-unlock current level is user now wants to be followed.
-        if not user_profile.follow_me and data['follow_me']:
-            user_profile.unlocked_levels.get_or_create(level=user_profile.level)
-            unlock_eligible_vocab_from_levels(self.request.user, user_profile.level)
-        user_profile.follow_me = data['follow_me']
-        user_profile.save()
-        sync_user_profile_with_wk(self.request.user)
         logger.info("Saved Settings changes for {}.".format(self.request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:settings"))
 
