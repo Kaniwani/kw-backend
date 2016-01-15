@@ -270,9 +270,10 @@ LINEAGE_ANCESTOR_PHRASE = "-active"
 
 STATIC_URL = '/static/'
 STATIC_ROOT = "/opt/venvs/KaniWaniEnv/KW/kw_webapp/static"
-#STATICFILES_DIRS = (
-#    os.path.join(BASE_DIR, "../_front-end/dist/assets"),
-#)
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "_front-end/dist/assets"),
+)
+print(STATICFILES_DIRS)
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
     os.path.join(BASE_DIR,  'kw_webapp/templates/kw_webapp')
