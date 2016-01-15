@@ -269,7 +269,7 @@ LINEAGE_ANCESTOR_PHRASE = "-active"
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = "/opt/venvs/KaniWaniEnv/KW/kw_webapp/static"
+STATIC_ROOT = "/var/www/kaniwani.com/static"
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "_front-end/dist/assets"),
 )
