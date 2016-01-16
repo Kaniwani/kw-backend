@@ -2,7 +2,9 @@
   $logo-avatar-size: 80;
 
   background-color: $black;
-  padding: $unit-sm;
+  // not sure why 4px... gotta be inline-blocks somewhere
+  padding-top: calc(#{$unit-xs} + 4px);
+  padding-bottom: $unit-xs;
 
   > .inner {
     @include container($site-max-width);
@@ -15,10 +17,7 @@
 
     @include media('<' + #{$logo-avatar-size * 4.5} + 'px') {
       flex-direction: column;
-      > * {
-        &:not(:first-child) {
-          margin-top: $unit-sm;
-        }
+      > .hexagon-box {
         &:first-child {
           align-self: flex-start;
         }
