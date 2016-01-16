@@ -8,6 +8,7 @@ var del = require('del');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var gulpif = require('gulp-if');
+var stripDebug = require('gulp-strip-debug');
 var imagemin = require('gulp-imagemin');
 var prefix = require('gulp-autoprefixer');
 var rename = require('gulp-rename');
@@ -38,8 +39,7 @@ var config = {
 		fonts: 'src/assets/toolkit/fonts/**/*',
 		views: 'src/views/*.html'
 	},
-	dest: 'dist',
-	kwstatic: '../kw_webapp/static/'
+	dest: 'dist'
 };
 
 
@@ -126,11 +126,13 @@ gulp.task('assemble', function (done) {
 	done();
 });
 
-gulp.task('copy', function() {
-	gulp.src([config.dest + '/assets/**/*',  '!' + config.dest + '/assets/fabricator{,/**}'])
-			.pipe(changed(config.kwstatic))
-			.pipe(gulp.dest(config.kwstatic));
-})
+// remove console.log statements
+gulp.task('stripLogs', function () {
+  return gulp.src(config.dest + '/assets/scripts/global.js')
+		    .pipe(stripDebug())
+        .pipe(gulp.dest(config.dest + '/assets/scripts'));
+
+});
 
 // server
 gulp.task('serve', function () {
@@ -177,8 +179,6 @@ gulp.task('serve', function () {
 	gulp.task('images:watch', ['images'], reload);
 	gulp.watch(config.src.images, ['images:watch']);
 
-	gulp.watch('dist/**/*', ['copy']);
-
 });
 
 
@@ -191,14 +191,16 @@ gulp.task('default', ['clean'], function () {
 		'scripts',
 		'images',
 		'fonts',
-		'assemble',
-		'copy'
+		'assemble'
 	];
 
 	// run build
 	runSequence(tasks, function () {
 		if (!config.prod) {
 			gulp.start('serve');
+		}
+		if (config.prod) {
+			gulp.start('stripLogs');
 		}
 	});
 

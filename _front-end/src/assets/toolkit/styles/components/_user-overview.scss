@@ -18,6 +18,8 @@
     position: absolute;
     width: 0;
     z-index: 1;
+    // anti-alias jagged lines on firefox
+    -moz-transform: scale(.9999);
   }
 
   > .name {

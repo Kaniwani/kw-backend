@@ -1,5 +1,3 @@
-import refreshReviews from '../components/refreshReviews.js';
-
 let CSRF,
     $vocabList,
     $cards;
@@ -33,14 +31,6 @@ function handleIconClick(event) {
     $.post('/kw/togglevocab/', { review_id: review_pk, csrfmiddlewaretoken: CSRF })
       .done(res =>  {
         toggleClasses($icon, $card);
-
-        refreshReviews();
-
-        console.log(`Vocab item toggle:
-          review_pk: ${review_pk},
-          res: ${res}`
-        );
-
       })
       .always(res => console.log(res));
 }

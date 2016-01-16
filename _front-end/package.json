@@ -1,9 +1,9 @@
 {
-  "name": "fabricator",
+  "name": "Kaniwani",
   "version": "1.2.2",
-  "description": "A tool for building website UI toolkits",
+  "description": "Reverse study Wanikani",
   "license": "MIT",
-  "homepage": "http://fbrctr.github.io/",
+  "homepage": "http://www.kaniwani.com",
   "main": "README.md",
   "scripts": {
     "gulp": "gulp",
@@ -20,11 +20,11 @@
     "patterns",
     "library"
   ],
-  "author": "Luke Askew",
+  "author": "Duncan Bay, Gary Graham",
   "licenses": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fbrctr/fabricator.git"
+    "url": "https://github.com/tadgh/KW.git"
   },
   "engines": {
     "node": ">=0.12.0",
@@ -47,6 +47,7 @@
     "gulp-sass": "^2.0.4",
     "gulp-sass-glob": "0.0.2",
     "gulp-sourcemaps": "^1.5.2",
+    "gulp-strip-debug": "^1.1.0",
     "gulp-util": "^3.0.6",
     "imports-loader": "^0.6.4",
     "run-sequence": "^1.1.2",

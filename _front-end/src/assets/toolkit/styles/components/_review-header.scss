@@ -1,25 +1,12 @@
 .review-header {
 
   > .inner {
+    position: relative;
 
-    // TODO: change to a div and animate width instead in reviews.js
-    > progress.progressbar {
+    > .progress-bar {
       position: absolute;
-      transition: background-color .4s ease-out;
       top: 0;
       left: 0;
-      width: 100%;
-      height: 4px;
-      appearance: none;
-      background-color: $purple;
-      color: $white;
-      border: none;
-      opacity: .9;
-
-      &::-webkit-progress-bar{ background-color: $white-light !important; }
-      &::-moz-progress-bar { background-color: $white-light !important; }
-      &::ms-fill { background-color: $white-light !important; }
-      &::-webkit-progress-value { background-color: $white-light !important; }
     }
 
     > .homelink,
