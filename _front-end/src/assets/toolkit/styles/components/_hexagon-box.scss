@@ -1,7 +1,6 @@
-@mixin hex-box($w:115, $h:100, $bg: $black) {
+@mixin hex-box($w:115, $bg: $black) {
   width: #{$w}px;
-  height: #{$h}px;
-  flex: 0 0 #{$w}px;
+  height: #{$w * .86}px;
   $vborder: #{$w * .43};
   $hborder: #{$w * .21};
 
@@ -32,7 +31,6 @@
   // default is 115w, 100h, bg: $black
   @include hex-box();
   display: block;
-  margin: 0 1em;
   position: relative;
   overflow: hidden;
 

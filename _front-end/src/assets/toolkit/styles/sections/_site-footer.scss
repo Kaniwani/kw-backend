@@ -1,27 +1,39 @@
 .site-footer {
+  $logo-avatar-size: 80;
+
   background-color: $black;
   padding: $unit-sm;
 
   > .inner {
     @include container($site-max-width);
+    padding-left: $unit-sm;
+    padding-right: $unit-sm;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 
-    @include media('<400px') {
+    @include media('<' + #{$logo-avatar-size * 4.5} + 'px') {
       flex-direction: column;
       > * {
-        margin-top: $unit-sm;
+        &:not(:first-child) {
+          margin-top: $unit-sm;
+        }
+        &:first-child {
+          align-self: flex-start;
+        }
+        &:last-child {
+          align-self: flex-end;
+        }
       }
     }
 
     .site-logo {
-      flex: 0 0 100px;
+      flex: 0 0 #{$logo-avatar-size}px;
 
       > .text {
-        width: 100px;
-        height: 100px;
+        width: #{$logo-avatar-size}px;
+        height: #{$logo-avatar-size}px;
         background-color: $purple;
 
         &:hover {
@@ -29,15 +41,17 @@
         }
 
         .kana {
-          font-size: 16px;
+          font-size: $logo-avatar-size / 3;
         }
         .kanji {
-          font-size: 36px;
+          font-size: $logo-avatar-size / 2;
         }
       }
     }
 
     .hexagon-box {
+      @include hex-box($w: $logo-avatar-size + 5);
+      flex: 0 0 #{$logo-avatar-size + 5}px;
       &.djtb {
         align-self: flex-start;
       }

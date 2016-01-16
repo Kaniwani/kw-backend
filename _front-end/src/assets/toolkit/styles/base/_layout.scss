@@ -39,13 +39,8 @@ body {
 .site-content {
   flex: 1 0 auto; /* 2 */
   width: 100%;
-  padding: $unit-sm 0;
-
-  @include media($bp-lg) {
-    padding: $unit-lg 0;
-  }
-
 }
+
 .site-content::after {
   content: '\00a0'; /* &nbsp; */
   display: block;
@@ -66,6 +61,7 @@ body {
     padding-left: $unit-sm;
     padding-right: $unit-sm;
   }
+
 }
 
 [contenteditable="true"] {
