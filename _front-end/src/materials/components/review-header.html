@@ -1,6 +1,7 @@
 <div class="review-header">
   <div class="inner">
-    <progress class="progressbar" min="0" max="2000" value="0"></progress>
+    <!-- not <progress> due to inconsistent browser implementation -->
+    {{> progress-bar }}
     <a href="{% url "kw:home" %}" class="homelink"><span class="icon i-home"></span></a>
     <ul class="statslist">
       <li class="item"><span class="icon i-thumbsup"></span><span id="reviewsCorrect">0</span>%</li>
