@@ -126,6 +126,14 @@ gulp.task('assemble', function (done) {
 	done();
 });
 
+// remove console.log statements
+gulp.task('stripLogs', function () {
+  return gulp.src(config.dest + '/assets/scripts/global.js')
+		    .pipe(stripDebug())
+        .pipe(gulp.dest(config.dest + '/assets/scripts'));
+
+});
+
 // server
 gulp.task('serve', function () {
 
@@ -190,6 +198,9 @@ gulp.task('default', ['clean'], function () {
 	runSequence(tasks, function () {
 		if (!config.prod) {
 			gulp.start('serve');
+		}
+		if (config.prod) {
+			gulp.start('stripLogs');
 		}
 	});
 
