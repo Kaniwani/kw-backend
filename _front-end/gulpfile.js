@@ -8,6 +8,7 @@ var del = require('del');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var gulpif = require('gulp-if');
+var stripDebug = require('gulp-strip-debug');
 var imagemin = require('gulp-imagemin');
 var prefix = require('gulp-autoprefixer');
 var rename = require('gulp-rename');
