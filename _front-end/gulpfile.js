@@ -38,8 +38,7 @@ var config = {
 		fonts: 'src/assets/toolkit/fonts/**/*',
 		views: 'src/views/*.html'
 	},
-	dest: 'dist',
-	kwstatic: '../kw_webapp/static/'
+	dest: 'dist'
 };
 
 
@@ -126,12 +125,6 @@ gulp.task('assemble', function (done) {
 	done();
 });
 
-gulp.task('copy', function() {
-	gulp.src([config.dest + '/assets/**/*',  '!' + config.dest + '/assets/fabricator{,/**}'])
-			.pipe(changed(config.kwstatic))
-			.pipe(gulp.dest(config.kwstatic));
-})
-
 // server
 gulp.task('serve', function () {
 
@@ -177,8 +170,6 @@ gulp.task('serve', function () {
 	gulp.task('images:watch', ['images'], reload);
 	gulp.watch(config.src.images, ['images:watch']);
 
-	gulp.watch('dist/**/*', ['copy']);
-
 });
 
 
@@ -191,8 +182,7 @@ gulp.task('default', ['clean'], function () {
 		'scripts',
 		'images',
 		'fonts',
-		'assemble',
-		'copy'
+		'assemble'
 	];
 
 	// run build
