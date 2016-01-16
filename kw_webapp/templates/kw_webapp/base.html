@@ -25,7 +25,9 @@
 <body>
 
   {% block scripts %} {% endblock scripts %}
-  {% block content %}{% endblock content %}
+  <div class="site">
+    {% block content %}{% endblock content %}
+  </div>
   {% block bottomscripts %}
     <script src="{% static "scripts/global.js" %}"></script>
   {% endblock bottomscripts %}

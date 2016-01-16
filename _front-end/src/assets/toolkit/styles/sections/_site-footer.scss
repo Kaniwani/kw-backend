@@ -1,25 +1,50 @@
 .site-footer {
-  padding-top: $unit-sm;
   background-color: $black;
+  padding: $unit-sm;
 
-  .title {
-    color: $white;
-  }
+  > .inner {
+    @include container($site-max-width);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 
-  .site-logo {
-    > .text {
-      background-color: $pink;
-      color: $black-light;
+    @include media('<400px') {
+      flex-direction: column;
+      > * {
+        margin-top: $unit-sm;
+      }
     }
 
-    &:hover {
-      color: $black-light;
-      text-decoration: none;
+    .site-logo {
+      flex: 0 0 100px;
 
       > .text {
-        background: $purple;
+        width: 100px;
+        height: 100px;
+        background-color: $purple;
+
+        &:hover {
+          background-color: $pink;
+        }
+
+        .kana {
+          font-size: 16px;
+        }
+        .kanji {
+          font-size: 36px;
+        }
+      }
+    }
+
+    .hexagon-box {
+      &.djtb {
+        align-self: flex-start;
+      }
+      &.-tadgh {
+        align-self: flex-end;
       }
     }
   }
-
 }
+

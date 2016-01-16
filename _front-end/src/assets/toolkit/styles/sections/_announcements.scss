@@ -1,9 +1,11 @@
 .announcements-section {
   text-align: left;
+  padding-top: $unit-md;
 
   // should match $bp-user-details in user-details
   @include media('>=670px') {
     text-align: center;
+    padding-bottom: $unit-md;
 
     .accordion-list > .item > .content {
       @include container(800px);

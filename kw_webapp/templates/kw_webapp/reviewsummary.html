@@ -52,76 +52,8 @@
   </div>
 </section>
 
+</div>
+<!-- / .site-content -->
+{% include 'partials/site-footer.html' %}
+
 {% endblock content %}
-
-{% comment 'old template' %}
-
-    <div class="container">
-        <div class="row">
-            <a href="{% url "kw:home" %}" class="home-button btn-link col-md-1 col-md-offset-4"><span class="glyphicon glyphicon-home"></span></a>
-            <h1 class="text-center center-block col-md-3">{% widthratio correct_count review_count 100 %}% Accuracy</h1>
-        </div>
-        <div class="row">
-            {% if correct_count > 0 %}
-                <div class="col-md-3 col-md-offset-3">
-            {% else %}
-                <div class="col-md-6 col-md-offset-3">
-            {% endif %}
-                <div class="row">
-                    <button class="btn btn-success btn-lg col-md-12" id="correct-expand-button">{{ correct_count }} Correct <span class="caret"></span> </button >
-                </div>
-                <div class="row">
-                    <div class="jumbotron" id="correct_jumbo">
-                        <ul class="media-list">
-                            {% for review in correct %}
-                                <li class="media">
-                                    <li class="media-heading"> <h2 class="text-center">{{ review.vocabulary.meaning }}</h2></li>
-                                    <li class="media-body">
-                                    <table class="table">
-                                    {% for reading in review.vocabulary.reading_set.all %}
-                                        <tr>
-                                            <td>{{ reading.kana }}</td>
-                                            <td>{{ reading.character }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                    </table>
-                                    </li>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-
-            </div>
-            {% if incorrect_count > 0 %}
-            <div class="col-md-3">
-                <div class="row">
-                    <button class="btn btn-danger btn-lg col-md-12" id="incorrect-expand-button">{{ incorrect_count }} Incorrect <span class="caret "></span></button >
-                </div>
-                <div class="row">
-                    <div class="jumbotron" id="incorrect_jumbo">
-                         <ul class="media-list">
-                            {% for review in incorrect %}
-                                <li class="media">
-                                    <li class="media-heading"> <h2 class="text-center">{{ review.vocabulary.meaning }}</h2></li>
-                                    <li class="media-body">
-                                    <table class="table">
-                                    {% for reading in review.vocabulary.reading_set.all %}
-                                        <tr>
-                                            <td>{{ reading.kana }}</td>
-                                            <td>{{ reading.character }}</td>
-                                        </tr>
-                                    {% endfor %}
-                                    </table>
-                                    </li>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-{% endcomment %}
