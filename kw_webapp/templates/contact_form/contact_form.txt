@@ -1,5 +1,8 @@
 Hello Gary and Duncan! Here is a fresh message from a user!
 
+<b>username:</b> {{user.username}}
+<b>registered email:</b> {{user.email}}
+
 Name: {{ name }}
 Email: {{ email }}
 
