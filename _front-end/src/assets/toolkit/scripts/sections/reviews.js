@@ -2,9 +2,10 @@ import wanakana from '../vendor/wanakana.min';
 
 // cache jquery objects instead of querying dom all the time
 let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
+  sessionFinished,
   remainingVocab,
   currentVocab,
-  sessionFinished,
+  startCount,
   correctTotal = 0,
   answeredTotal = 0,
   answerCorrectness = [],
@@ -20,7 +21,7 @@ let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
   $detailKana = $('#detailKana'),
   $submitAnswer = $('#submitAnswer'),
   $detailKanji = $('#detailKanji'),
-  $progressbar = $('.progressbar');
+  $progressBar = $('.progress-bar > .value');
 
 function init() {
   // if not on reviews page then exit
@@ -36,6 +37,7 @@ function init() {
 
   // set initial values
   remainingVocab = simpleStorage.get('sessionVocab');
+  startCount = remainingVocab.length;
 
   console.log(
       '\nUpdate session vocab:', updateVocab,
@@ -46,10 +48,8 @@ function init() {
 
   $reviewsLeft.text(remainingVocab.length)
   currentVocab = remainingVocab.shift();
-  $meaning.html(currentVocab.meaning);
   $userID.val(currentVocab.user_specific_id);
 
-  $progressbar.attr('max', remainingVocab.length + 1);
   $detailKana.kana = $detailKana.find('.-kana');
   $detailKanji.kanji = $detailKanji.find('.-kanji');
 
@@ -64,7 +64,8 @@ function init() {
   $submitAnswer.click(enterPressed);
   $answerForm.submit(enterPressed);
 
-  // focus input field
+  // ask a question
+  $meaning.html(currentVocab.meaning);
   $userAnswer.focus();
 }
 
@@ -216,6 +217,8 @@ function wrongAnswer() {
 }
 
 function markRight() {
+  let progress = (correctTotal / startCount) * 100;
+  updateProgressBar(progress);
   clearColors();
   $userAnswer.addClass('-marked -correct');
 }
@@ -246,8 +249,11 @@ function replaceAnswerWithKanji(index) {
   $userAnswer.val(currentVocab.characters[index]);
 }
 
+function updateProgressBar(percent) {
+  $progressBar.css('width', percent + '%');
+}
+
 function rotateVocab() {
-  $progressbar.val(correctTotal);
   $reviewsLeft.html(simpleStorage.get('reviewCount'));
   $reviewsDone.html(correctTotal);
   $reviewsCorrect.html(Math.floor((correctTotal / answeredTotal) * 100));
