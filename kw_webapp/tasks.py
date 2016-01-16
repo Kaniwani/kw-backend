@@ -88,7 +88,7 @@ def associate_vocab_to_user(vocab, user):
     except UserSpecific.MultipleObjectsReturned:
         us = UserSpecific.objects.filter(vocabulary=vocab, user=user)
         for u in us:
-            logger.error("during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(u))
+            logger.error("during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(user.username, u))
 
 
 def build_API_sync_string_for_user(user):
