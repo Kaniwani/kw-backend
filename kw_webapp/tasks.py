@@ -209,11 +209,12 @@ def sync_user_profile_with_wk(user):
 
 
 @celery_app.task()
-def sync_with_wk(user):
+def sync_with_wk(user, recent_only=False):
     '''
-    Takes a user. Checks the vocab list from WK for the last 3 levels. If anything new has been unlocked on the WK side,
+    Takes a user. Checks the vocab list from WK for all levels. If anything new has been unlocked on the WK side,
     it also unlocks it here on Kaniwani and creates a new review for the user.
 
+    :param recent_only: if set to True, will sync only user's most recent 3 levels. This is for during login when it is synchronous.
     :param user: The user to check for new unlocks
     :return: None
     '''
@@ -221,10 +222,14 @@ def sync_with_wk(user):
     # For the love of god don't delete this next line
     sync_user_profile_with_wk(user)
     if user.profile.api_valid and user.profile.follow_me:
-        sync_unlocked_vocab_with_wk(user)
+        if recent_only:
+            sync_recent_unlocked_vocab_with_wk(user)
+        else:
+            sync_unlocked_vocab_with_wk(user)
     else:
         logger.warn(
             "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed ")
+
 
 
 def create_new_vocabulary(vocabulary_json):
@@ -269,33 +274,42 @@ def add_synonyms_from_api_call_to_review(review, user_specific_json):
         review.synonym_set.get_or_create(text=synonym)
     return review
 
-
-def sync_unlocked_vocab_with_wk(user):
-    if user.profile.unlocked_levels_list():
-        request_string = build_API_sync_string_for_user(user)
-        r = requests.get(request_string)
-        start = timezone.now()
-        print("Start is:{}".format(timezone.now()))
-        if r.status_code == 200:
-            print("got response")
+def process_vocabulary_response_for_user(user, response):
+    """
+    Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
+    :param response:
+    :return:
+    """
+    r = response
+    if r.status_code == 200:
             json_data = r.json()
             vocab_list = json_data['requested_information']
             vocab_list = [vocab_json for vocab_json in vocab_list if
                           vocab_json['user_specific'] is not None]  # filters out locked items.
             for vocabulary_json in vocab_list:
-                print("working on vocab: {}".format(vocabulary_json["meaning"]))
                 user_specific = vocabulary_json['user_specific']
                 vocab = get_or_create_vocab_by_json(vocabulary_json)
                 new_review = associate_vocab_to_user(vocab, user)
                 add_synonyms_from_api_call_to_review(new_review, user_specific)
                 new_review.save()
             logger.info("Synced Vocabulary for {}".format(user.username))
-            print("done at {}".format(timezone.now()))
-            print("Took: {}".format(timezone.now() - start))
-        else:
-            logger.error(
-                "{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
+    else:
+        logger.error("{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
 
+def sync_recent_unlocked_vocab_with_wk(user):
+    if user.profile.unlocked_levels_list():
+        levels = [level for level in range(user.profile.level - 2, user.profile.level + 1) if
+                  level in user.profile.unlocked_levels_list()]
+        request_string = build_API_sync_string_for_user_for_levels(user, levels)
+        r = requests.get(request_string)
+        process_vocabulary_response_for_user(user, r)
+
+
+def sync_unlocked_vocab_with_wk(user):
+    if user.profile.unlocked_levels_list():
+        request_string = build_API_sync_string_for_user(user)
+        r = requests.get(request_string)
+        process_vocabulary_response_for_user(user, r)
 
 @celery_app.task()
 def sync_all_users_to_wk():
