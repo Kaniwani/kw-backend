@@ -6,14 +6,22 @@
     <ul class="accordion-list">
       {% for item in announcements %}
         <li class="item">
-          <input class="toggle" id="announcement-{{ item.id }}" type="checkbox" hidden>
-          <label class="label" for="announcement-{{ item.id }}">
-            <span class="text">{{ item.title }}</span>
-          </label>
-          <article class="content">
-            <header class="_visuallyhidden">{{ item.title }}</header>
-            {{ item.body|safe }}
-            <footer>--  {{ item.creator.username }}</footer>
+          <article class="accordion-container">
+
+            <header class="header -toggle">
+              <h4 class="title">{{ item.title }}
+                <time class="time" pubdate="{{item.pub_date}}"> ({{ item.pub_date }})</time>
+              </h4>
+              <span class="icon i-downarrow" aria-hidden="true"></span>
+            </header>
+
+            <div class="wrap">
+              <div class="content">
+                <p>{{ item.body|safe }}</p>
+                <p class="author">{{ item.creator.username }}</p>
+              </div>
+            </div>
+
           </article>
         </li>
       {% endfor %}
