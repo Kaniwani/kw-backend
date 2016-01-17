@@ -198,6 +198,7 @@ function updateStorage() {
 
 function clearColors() {
   $userAnswer.removeClass('-marked -correct -incorrect -invalid');
+  $streakIcon.removeClass('-marked');
 }
 
 function nonHiraganaAnswer() {
@@ -208,6 +209,7 @@ function nonHiraganaAnswer() {
 function markWrong() {
   clearColors();
   $userAnswer.addClass('-marked -incorrect');
+  $streakIcon.addClass('-marked');
 }
 
 function wrongAnswer() {
@@ -221,6 +223,7 @@ function markRight() {
   updateProgressBar(progress);
   clearColors();
   $userAnswer.addClass('-marked -correct');
+  $streakIcon.addClass('-marked');
 }
 
 function rightAnswer() {

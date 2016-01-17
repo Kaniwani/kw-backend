@@ -114,6 +114,9 @@
         font-range: 300px 1600px;
         line-height: 0;
         color: $grey-dark;
+        &.-marked {
+          color: $white;
+        }
       }
     }
 

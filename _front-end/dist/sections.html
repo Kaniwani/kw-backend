@@ -116,6 +116,9 @@
 							<a href="components.html#level-list">Level List</a>
 						</li>
 						<li>
+							<a href="components.html#progress-bar">Progress Bar</a>
+						</li>
+						<li>
 							<a href="components.html#review-extra">Review Extra</a>
 						</li>
 						<li>
@@ -524,8 +527,10 @@
 	<section class="review-section -fullwidth">
 	<div class="review-header">
 		<div class="inner">
-			<progress class="progressbar" min="0" max="2000" value="0"></progress>
-			<a href="{% url " kw:home " %}" class="homelink"><span class="icon i-home"></span></a>
+			<!-- not <progress> due to inconsistent browser implementation -->
+			<div class="progress-bar">
+				<span class="value"></span>
+			</div> <a href="{% url " kw:home " %}" class="homelink"><span class="icon i-home"></span></a>
 			<ul class="statslist">
 				<li class="item"><span class="icon i-thumbsup"></span><span id="reviewsCorrect">0</span>%</li>
 				<li class="item"><span class="icon i-ok"></span><span id="reviewsDone">0</span></li>
@@ -535,28 +540,27 @@
 	</div>
 	<div class="review-quiz">
 		<div class="upper">
-			<h1 id="meaning" class="meaning">Meaning</h1>
+			<h1 id="meaning" class="meaning"><span class="icon -loading"></span></h1>
 		</div>
 
 		<div class="lower">
 
-			<form>
-				<fieldset>
-					<div class="streak">
-						<span class="icon i-enlightened"></span>
-					</div>
+			<form class="answerpanel">
+				<div class="streak">
+					<span class="icon i-enlightened"></span>
+				</div>
 
-					<label for="userAnswer" class="question _visuallyhidden">Vocabulary <strong>reading</strong></label>
-					<input id="userAnswer" lang="ja" class="answer" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" required>
+				<label for="userAnswer" class="question _visuallyhidden">Vocabulary <strong>reading</strong></label>
+				<input id="userAnswer" lang="ja" class="answer" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
 
-					<button id="submitAnswer" type="submit" class="submit">
-						<span class="submitwrap">
-              <span class="icon i-rightarrow"></span>
-						</span>
-					</button>
+				<button id="submitAnswer" type="submit" class="submit">
+					<!-- wrap because <button> can't display:flex in safari properly -->
+					<span class="submitwrap">
+            <span class="icon i-rightarrow"></span>
+					</span>
+				</button>
 
-					<input type="hidden" id="us-id" value="Nothing!">
-				</fieldset>
+				<input type="hidden" id="us-id" value="Nothing!">
 			</form>
 
 			<div class="review-extra">
@@ -614,8 +618,10 @@
 	<pre><code class="language-markup">&lt;section class=&quot;review-section -fullwidth&quot;&gt;
 	&lt;div class=&quot;review-header&quot;&gt;
 		&lt;div class=&quot;inner&quot;&gt;
-			&lt;progress class=&quot;progressbar&quot; min=&quot;0&quot; max=&quot;2000&quot; value=&quot;0&quot;&gt;&lt;/progress&gt;
-			&lt;a href=&quot;{% url &quot; kw:home &quot; %}&quot; class=&quot;homelink&quot;&gt;&lt;span class=&quot;icon i-home&quot;&gt;&lt;/span&gt;&lt;/a&gt;
+			&lt;!-- not &lt;progress&gt; due to inconsistent browser implementation --&gt;
+			&lt;div class=&quot;progress-bar&quot;&gt;
+				&lt;span class=&quot;value&quot;&gt;&lt;/span&gt;
+			&lt;/div&gt; &lt;a href=&quot;{% url &quot; kw:home &quot; %}&quot; class=&quot;homelink&quot;&gt;&lt;span class=&quot;icon i-home&quot;&gt;&lt;/span&gt;&lt;/a&gt;
 			&lt;ul class=&quot;statslist&quot;&gt;
 				&lt;li class=&quot;item&quot;&gt;&lt;span class=&quot;icon i-thumbsup&quot;&gt;&lt;/span&gt;&lt;span id=&quot;reviewsCorrect&quot;&gt;0&lt;/span&gt;%&lt;/li&gt;
 				&lt;li class=&quot;item&quot;&gt;&lt;span class=&quot;icon i-ok&quot;&gt;&lt;/span&gt;&lt;span id=&quot;reviewsDone&quot;&gt;0&lt;/span&gt;&lt;/li&gt;
@@ -625,28 +631,27 @@
 	&lt;/div&gt;
 	&lt;div class=&quot;review-quiz&quot;&gt;
 		&lt;div class=&quot;upper&quot;&gt;
-			&lt;h1 id=&quot;meaning&quot; class=&quot;meaning&quot;&gt;Meaning&lt;/h1&gt;
+			&lt;h1 id=&quot;meaning&quot; class=&quot;meaning&quot;&gt;&lt;span class=&quot;icon -loading&quot;&gt;&lt;/span&gt;&lt;/h1&gt;
 		&lt;/div&gt;
 
 		&lt;div class=&quot;lower&quot;&gt;
 
-			&lt;form&gt;
-				&lt;fieldset&gt;
-					&lt;div class=&quot;streak&quot;&gt;
-						&lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
-					&lt;/div&gt;
+			&lt;form class=&quot;answerpanel&quot;&gt;
+				&lt;div class=&quot;streak&quot;&gt;
+					&lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
+				&lt;/div&gt;
 
-					&lt;label for=&quot;userAnswer&quot; class=&quot;question _visuallyhidden&quot;&gt;Vocabulary &lt;strong&gt;reading&lt;/strong&gt;&lt;/label&gt;
-					&lt;input id=&quot;userAnswer&quot; lang=&quot;ja&quot; class=&quot;answer&quot; type=&quot;text&quot; placeholder=&quot;答え&quot; autocapitalize=&quot;off&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; autocomplete=&quot;off&quot; required&gt;
+				&lt;label for=&quot;userAnswer&quot; class=&quot;question _visuallyhidden&quot;&gt;Vocabulary &lt;strong&gt;reading&lt;/strong&gt;&lt;/label&gt;
+				&lt;input id=&quot;userAnswer&quot; lang=&quot;ja&quot; class=&quot;answer&quot; type=&quot;text&quot; placeholder=&quot;答え&quot; autocapitalize=&quot;off&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; autocomplete=&quot;off&quot;&gt;
 
-					&lt;button id=&quot;submitAnswer&quot; type=&quot;submit&quot; class=&quot;submit&quot;&gt;
-						&lt;span class=&quot;submitwrap&quot;&gt;
-              &lt;span class=&quot;icon i-rightarrow&quot;&gt;&lt;/span&gt;
-						&lt;/span&gt;
-					&lt;/button&gt;
+				&lt;button id=&quot;submitAnswer&quot; type=&quot;submit&quot; class=&quot;submit&quot;&gt;
+					&lt;!-- wrap because &lt;button&gt; can&#x27;t display:flex in safari properly --&gt;
+					&lt;span class=&quot;submitwrap&quot;&gt;
+            &lt;span class=&quot;icon i-rightarrow&quot;&gt;&lt;/span&gt;
+					&lt;/span&gt;
+				&lt;/button&gt;
 
-					&lt;input type=&quot;hidden&quot; id=&quot;us-id&quot; value=&quot;Nothing!&quot;&gt;
-				&lt;/fieldset&gt;
+				&lt;input type=&quot;hidden&quot; id=&quot;us-id&quot; value=&quot;Nothing!&quot;&gt;
 			&lt;/form&gt;
 
 			&lt;div class=&quot;review-extra&quot;&gt;
