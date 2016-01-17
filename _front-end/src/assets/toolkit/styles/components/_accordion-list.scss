@@ -1,10 +1,17 @@
 .accordion-list {
   @extend %plainlist;
+  // should match user-details.scss
+  $bp-user-details: '>=650px';
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
   align-content: space-around;
+
+  text-align: left;
+  @include media($bp-user-details) {
+    text-align: center;
+  }
 
   > .item {
     flex: 1 1 100%;
