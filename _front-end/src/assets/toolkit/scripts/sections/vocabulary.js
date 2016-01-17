@@ -51,7 +51,7 @@ function unLockLevel() {
 
   $.post("/kw/levelunlock/", {level: level, csrfmiddlewaretoken: CSRF})
    .done(res => {
-      notie.alert(1, res, 20);
+      notie.alert(1, res, 8);
 
       $icon.removeClass("-loading").addClass('i-unlocked');
       $card.removeClass("-locked -unlockable");
@@ -74,7 +74,7 @@ function reLockLevel() {
 
       if (level === currentLevel) res += currentLevelMsg;
 
-      notie.alert(1, res, 30);
+      notie.alert(1, res, 20);
 
       $icon.removeClass("-loading").addClass("i-unlock");
       $card.removeClass("-unlocked");
