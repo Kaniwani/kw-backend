@@ -197,7 +197,7 @@ class UnlockRequested(View):
             return HttpResponse("{} vocabulary unlocked".format(ul_count))
         else:
             return HttpResponse(
-                "{} vocabulary unlocked.\nHowever, you still have {} vocabulary locked in WaniKani".format(ul_count,
+                "{} vocabulary unlocked.<br/>You still have {} upcoming vocabulary to unlock on WaniKani for your current level.".format(ul_count,
                                                                                                            l_count))
 
     @method_decorator(login_required)

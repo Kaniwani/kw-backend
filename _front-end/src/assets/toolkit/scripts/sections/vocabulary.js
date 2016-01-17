@@ -8,6 +8,7 @@ let CSRF,
     $icon,
     $card,
     level,
+    currentLevel,
     reviews;
 
 function init() {
@@ -18,6 +19,8 @@ function init() {
 
     // cache selector elements/unchanging vars
     CSRF = $('#csrf').val();
+    currentLevel = parseInt($('#currentLevel').val(), 10);
+    console.log(currentLevel);
     $levels = $levelList.find('.level-card');
     $reviewCount = $('.nav-link > .text > .count')
 
@@ -48,8 +51,7 @@ function unLockLevel() {
 
   $.post("/kw/levelunlock/", {level: level, csrfmiddlewaretoken: CSRF})
    .done(res => {
-
-      notie.alert(1, res, 1.5);
+      notie.alert(1, res, 20);
 
       $icon.removeClass("-loading").addClass('i-unlocked');
       $card.removeClass("-locked -unlockable");
@@ -58,7 +60,6 @@ function unLockLevel() {
 
       refreshReviews({forceGet:true});
       simpleStorage.set('recentlyRefreshed', true, {TTL: 5000});
-
     })
    .fail(handleAjaxFail);
 }
@@ -69,7 +70,11 @@ function reLockLevel() {
   $.post("/kw/levellock/", {level: level, csrfmiddlewaretoken: CSRF})
    .done(res => {
 
-      notie.alert(1, res, 1.5);
+      let currentLevelMsg = `<br/> We noticed that you just locked your current level. <br/>Newly unlocked vocab on WaniKani will no longer be added to your reviews.<br/> You can toggle <b>Follow WaniKani</b> back on in the <a href="/kw/settings"><b>Settings page</b></a>.`;
+
+      if (level === currentLevel) res += currentLevelMsg;
+
+      notie.alert(1, res, 30);
 
       $icon.removeClass("-loading").addClass("i-unlock");
       $card.removeClass("-unlocked");
