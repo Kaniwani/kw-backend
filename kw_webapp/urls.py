@@ -17,7 +17,9 @@ urlpatterns = patterns('',
                            kwargs={"template_name": "kw_registration/password_reset_form.html"}),
 
                        url(r'^auth/password_reset/done/$', 'django.contrib.auth.views.password_reset_done',
-                           name="password_reset_done"),
+                           name="password_reset_done",
+                           kwargs={"template_name": "kw_registration/password_reset_done.html"}),
+
 
                        url(r'^review/$', Review.as_view(), name="review"),
                        url(r'^summary/$', ReviewSummary.as_view(), name="summary"),
