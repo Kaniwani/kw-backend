@@ -10,7 +10,7 @@
 
             <header class="header -toggle">
               <h4 class="title">{{ item.title }}
-                <time class="time" pubdate="{{item.pub_date}}"> ({{ item.pub_date }})</time>
+                <time class="time" pubdate="{{item.pub_date}}"> ({{ item.pub_date | date:"N d, Y" }})</time>
               </h4>
               <span class="icon i-downarrow" aria-hidden="true"></span>
             </header>
