@@ -88,10 +88,7 @@ a {
 }
 
 p {
-  // FIXME: not sure about this being site-wide really
-  // better to have a variable and write max-width within components/sections
-  max-width: 800px;
-  margin: 0;
+  margin-top: 0;
   margin-bottom: .7em;
 
   &:last-child {
