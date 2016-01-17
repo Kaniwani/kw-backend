@@ -4,6 +4,7 @@
 {% block content %}
 {{ block.super }}
 <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
+<input type="hidden" id="currentLevel" value="{{ user.profile.level }}"></input>
 
 <section class="levels-section">
   <div class="inner">

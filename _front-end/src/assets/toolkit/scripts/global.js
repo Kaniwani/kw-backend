@@ -12,8 +12,8 @@ import accordionContainer from './components/accordionContainer';
 import invalidApiKey from './components/invalidApiKey';
 import login from './sections/login';
 import home from './sections/home';
-import vocab from './sections/vocab';
-import unlocks from './sections/unlocks';
+import vocab from './sections/vocabulary';
+import levelVocab from './sections/levelVocab';
 import reviews from './sections/reviews';
 
 $(document).ready(() => {
@@ -25,7 +25,7 @@ $(document).ready(() => {
   login.init();
   home.init();
   vocab.init();
-  unlocks.init();
+  levelVocab.init();
   reviews.init();
 
 })

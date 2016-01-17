@@ -1,7 +1,7 @@
 from unittest import mock
 
 import responses
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 from django.http import Http404, HttpResponseForbidden
 from django.test import TestCase, RequestFactory, Client
 
@@ -101,6 +101,17 @@ class TestViews(TestCase):
         response = self.client.post("/kw/levellock/", data={"level": 5})
 
         self.assertContains(response, "1 items removed from your study queue.")
+
+    def test_locking_current_level_disables_following_setting(self):
+        self.client.login(username="user1", password="password")
+        self.user.profile.follow_me = True
+        self.user.profile.level = 5
+        self.user.save()
+
+        response = self.client.post("/kw/levellock/", data={"level": 5})
+
+        user = User.objects.get(username="user1")
+        self.assertFalse(user.profile.follow_me)
 
     @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y: [1, 0])
     def test_unlocking_a_level_unlocks_all_vocab(self, unlock_call):
