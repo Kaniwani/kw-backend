@@ -147,8 +147,10 @@ class LockRequested(View):
     def post(self, request, *args, **kwargs):
         user = self.request.user
         requested_level = request.POST['level']
-
-
+        #if user locks their current level, prevent WK syncing new stuff.
+        if user.profile.level == int(requested_level):
+            user.profile.follow_me = False
+            user.profile.save()
         removed_count = lock_level_for_user(requested_level, user)
 
         return HttpResponse("{} items removed from your study queue.".format(removed_count))
