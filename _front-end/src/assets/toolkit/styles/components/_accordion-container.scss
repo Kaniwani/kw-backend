@@ -1,0 +1,60 @@
+.accordion-container {
+
+  > .header {
+    &.-toggle {
+      cursor: pointer;
+    }
+
+    .title,
+    .icon {
+      display: inline-block;
+      vertical-align: baseline;
+      &:not(:first-child) {
+        margin-left: .4em;
+      }
+    }
+
+    .title {
+      margin-top: 0;
+    }
+
+    .time {
+      font-size: .85em;
+    }
+
+    .icon {
+      &:before {
+        display: block;
+        color: $black;
+        font-size: 1.1em;
+        transition: transform .2s ease-in-out;
+        transform: rotate(0deg);
+      }
+    }
+  }
+
+  > .wrap {
+    transition: max-height .4s ease-out;
+    max-height: 0;
+    overflow: hidden;
+  }
+
+  .content {
+    .author {
+      &:before {
+        content: '—';
+      }
+    }
+  }
+
+  &.-open {
+    > .header > .icon {
+      &:before {
+      transition: transform .2s ease-in-out;
+      transform: rotate(180deg) translateY(-2px);
+      }
+    }
+  }
+
+}
+

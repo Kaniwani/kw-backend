@@ -14,7 +14,7 @@
         Scribed <strong><span class="topics-count">{{ user.profile.topics_count }}</span> topics</strong> &amp; <strong><span class="posts-count">{{ user.profile.posts_count }}</span> posts</strong>
       </li>
       <li class="item">
-        Serving the Crabigator since <strong><span class="join-date"> {{ user.profile.join_date }}</span></strong>
+        Serving the Crabigator since <strong><span class="join-date"> {{ user.profile.join_date  | date:"N d, Y" }}</span></strong>
       </li>
     </ul>
   </div>
