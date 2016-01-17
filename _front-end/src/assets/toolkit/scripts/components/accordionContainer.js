@@ -18,7 +18,7 @@ function init() {
 
       if ($acc.hasClass('-open')) {
         accH = $content.outerHeight();
-        $.scrollTo($acc, 500);
+        $.scrollTo($acc, 500, { interrupt: true });
       } else {
         accH = 0;
       }
