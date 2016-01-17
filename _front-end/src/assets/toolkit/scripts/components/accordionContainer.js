@@ -1,5 +1,7 @@
 // adds $(el).on('debouncedresize') event for listening
-import debouncedresize from '../vendor/jquery.debouncedresize';
+import debouncedResize from '../vendor/jquery.debouncedResize';
+// scrolls to $.scrollto($el)
+import scrollTo from '../vendor/jquery.scrollTo';
 
 function init() {
   if ($('.accordion-container').length) {
@@ -16,6 +18,7 @@ function init() {
 
       if ($acc.hasClass('-open')) {
         accH = $content.outerHeight();
+        $.scrollTo($acc, 300);
       } else {
         accH = 0;
       }

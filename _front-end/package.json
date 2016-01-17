@@ -56,7 +56,6 @@
   },
   "dependencies": {
     "jquery": "^2.1.4",
-    "jquery.scrollto": "^2.1.2",
     "notie": "^2.1.0",
     "simplestorage.js": "^0.2.0"
   }

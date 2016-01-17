@@ -1,6 +1,9 @@
 .announcements-section {
+  // should match user-details.scss
+  $bp-user-details: '>=650px';
+
   text-align: left;
-  @include media($bp-lg) {
+  @include media($bp-user-details) {
     text-align: center;
   }
 }

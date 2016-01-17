@@ -68,27 +68,27 @@
 
 	var _componentsAccordionContainer2 = _interopRequireDefault(_componentsAccordionContainer);
 
-	var _componentsInvalidApiKey = __webpack_require__(7);
+	var _componentsInvalidApiKey = __webpack_require__(8);
 
 	var _componentsInvalidApiKey2 = _interopRequireDefault(_componentsInvalidApiKey);
 
-	var _sectionsLogin = __webpack_require__(10);
+	var _sectionsLogin = __webpack_require__(11);
 
 	var _sectionsLogin2 = _interopRequireDefault(_sectionsLogin);
 
-	var _sectionsHome = __webpack_require__(11);
+	var _sectionsHome = __webpack_require__(12);
 
 	var _sectionsHome2 = _interopRequireDefault(_sectionsHome);
 
-	var _sectionsVocab = __webpack_require__(14);
+	var _sectionsVocab = __webpack_require__(15);
 
 	var _sectionsVocab2 = _interopRequireDefault(_sectionsVocab);
 
-	var _sectionsUnlocks = __webpack_require__(15);
+	var _sectionsUnlocks = __webpack_require__(16);
 
 	var _sectionsUnlocks2 = _interopRequireDefault(_sectionsUnlocks);
 
-	var _sectionsReviews = __webpack_require__(16);
+	var _sectionsReviews = __webpack_require__(17);
 
 	var _sectionsReviews2 = _interopRequireDefault(_sectionsReviews);
 
@@ -10012,9 +10012,15 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _vendorJqueryDebouncedresize = __webpack_require__(6);
+	var _vendorJqueryDebouncedResize = __webpack_require__(6);
 
-	var _vendorJqueryDebouncedresize2 = _interopRequireDefault(_vendorJqueryDebouncedresize);
+	var _vendorJqueryDebouncedResize2 = _interopRequireDefault(_vendorJqueryDebouncedResize);
+
+	// scrolls to $.scrollto($el)
+
+	var _vendorJqueryScrollTo = __webpack_require__(7);
+
+	var _vendorJqueryScrollTo2 = _interopRequireDefault(_vendorJqueryScrollTo);
 
 	function init() {
 	  if ($('.accordion-container').length) {
@@ -10031,6 +10037,7 @@
 
 	      if ($acc.hasClass('-open')) {
 	        accH = $content.outerHeight();
+	        $.scrollTo($acc, 300);
 	      } else {
 	        accH = 0;
 	      }
@@ -10113,6 +10120,219 @@
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+	 * jQuery.scrollTo
+	 * Copyright (c) 2007-2015 Ariel Flesler - aflesler<a>gmail<d>com | http://flesler.blogspot.com
+	 * Licensed under MIT
+	 * http://flesler.blogspot.com/2007/10/jqueryscrollto.html
+	 * @projectDescription Lightweight, cross-browser and highly customizable animated scrolling with jQuery
+	 * @author Ariel Flesler
+	 * @version 2.1.2
+	 */
+	'use strict';
+
+	;(function (factory) {
+		'use strict';
+		if (true) {
+			// AMD
+			!(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(2)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+		} else if (typeof module !== 'undefined' && module.exports) {
+			// CommonJS
+			module.exports = factory(require('jquery'));
+		} else {
+			// Global
+			factory(jQuery);
+		}
+	})(function ($) {
+		'use strict';
+
+		var $scrollTo = $.scrollTo = function (target, duration, settings) {
+			return $(window).scrollTo(target, duration, settings);
+		};
+
+		$scrollTo.defaults = {
+			axis: 'xy',
+			duration: 0,
+			limit: true
+		};
+
+		function isWin(elem) {
+			return !elem.nodeName || $.inArray(elem.nodeName.toLowerCase(), ['iframe', '#document', 'html', 'body']) !== -1;
+		}
+
+		$.fn.scrollTo = function (target, duration, settings) {
+			if (typeof duration === 'object') {
+				settings = duration;
+				duration = 0;
+			}
+			if (typeof settings === 'function') {
+				settings = { onAfter: settings };
+			}
+			if (target === 'max') {
+				target = 9e9;
+			}
+
+			settings = $.extend({}, $scrollTo.defaults, settings);
+			// Speed is still recognized for backwards compatibility
+			duration = duration || settings.duration;
+			// Make sure the settings are given right
+			var queue = settings.queue && settings.axis.length > 1;
+			if (queue) {
+				// Let's keep the overall duration
+				duration /= 2;
+			}
+			settings.offset = both(settings.offset);
+			settings.over = both(settings.over);
+
+			return this.each(function () {
+				// Null target yields nothing, just like jQuery does
+				if (target === null) return;
+
+				var win = isWin(this),
+				    elem = win ? this.contentWindow || window : this,
+				    $elem = $(elem),
+				    targ = target,
+				    attr = {},
+				    toff;
+
+				switch (typeof targ) {
+					// A number will pass the regex
+					case 'number':
+					case 'string':
+						if (/^([+-]=?)?\d+(\.\d+)?(px|%)?$/.test(targ)) {
+							targ = both(targ);
+							// We are done
+							break;
+						}
+						// Relative/Absolute selector
+						targ = win ? $(targ) : $(targ, elem);
+					/* falls through */
+					case 'object':
+						if (targ.length === 0) return;
+						// DOMElement / jQuery
+						if (targ.is || targ.style) {
+							// Get the real position of the target
+							toff = (targ = $(targ)).offset();
+						}
+				}
+
+				var offset = $.isFunction(settings.offset) && settings.offset(elem, targ) || settings.offset;
+
+				$.each(settings.axis.split(''), function (i, axis) {
+					var Pos = axis === 'x' ? 'Left' : 'Top',
+					    pos = Pos.toLowerCase(),
+					    key = 'scroll' + Pos,
+					    prev = $elem[key](),
+					    max = $scrollTo.max(elem, axis);
+
+					if (toff) {
+						// jQuery / DOMElement
+						attr[key] = toff[pos] + (win ? 0 : prev - $elem.offset()[pos]);
+
+						// If it's a dom element, reduce the margin
+						if (settings.margin) {
+							attr[key] -= parseInt(targ.css('margin' + Pos), 10) || 0;
+							attr[key] -= parseInt(targ.css('border' + Pos + 'Width'), 10) || 0;
+						}
+
+						attr[key] += offset[pos] || 0;
+
+						if (settings.over[pos]) {
+							// Scroll to a fraction of its width/height
+							attr[key] += targ[axis === 'x' ? 'width' : 'height']() * settings.over[pos];
+						}
+					} else {
+						var val = targ[pos];
+						// Handle percentage values
+						attr[key] = val.slice && val.slice(-1) === '%' ? parseFloat(val) / 100 * max : val;
+					}
+
+					// Number or 'number'
+					if (settings.limit && /^\d+$/.test(attr[key])) {
+						// Check the limits
+						attr[key] = attr[key] <= 0 ? 0 : Math.min(attr[key], max);
+					}
+
+					// Don't waste time animating, if there's no need.
+					if (!i && settings.axis.length > 1) {
+						if (prev === attr[key]) {
+							// No animation needed
+							attr = {};
+						} else if (queue) {
+							// Intermediate animation
+							animate(settings.onAfterFirst);
+							// Don't animate this axis again in the next iteration.
+							attr = {};
+						}
+					}
+				});
+
+				animate(settings.onAfter);
+
+				function animate(callback) {
+					var opts = $.extend({}, settings, {
+						// The queue setting conflicts with animate()
+						// Force it to always be true
+						queue: true,
+						duration: duration,
+						complete: callback && function () {
+							callback.call(elem, targ, settings);
+						}
+					});
+					$elem.animate(attr, opts);
+				}
+			});
+		};
+
+		// Max scrolling position, works on quirks mode
+		// It only fails (not too badly) on IE, quirks mode.
+		$scrollTo.max = function (elem, axis) {
+			var Dim = axis === 'x' ? 'Width' : 'Height',
+			    scroll = 'scroll' + Dim;
+
+			if (!isWin(elem)) return elem[scroll] - $(elem)[Dim.toLowerCase()]();
+
+			var size = 'client' + Dim,
+			    doc = elem.ownerDocument || elem.document,
+			    html = doc.documentElement,
+			    body = doc.body;
+
+			return Math.max(html[scroll], body[scroll]) - Math.min(html[size], body[size]);
+		};
+
+		function both(val) {
+			return $.isFunction(val) || $.isPlainObject(val) ? val : { top: val, left: val };
+		}
+
+		// Add special hooks so that window scroll properties can be animated
+		$.Tween.propHooks.scrollLeft = $.Tween.propHooks.scrollTop = {
+			get: function get(t) {
+				return $(t.elem)[t.prop]();
+			},
+			set: function set(t) {
+				var curr = this.get(t);
+				// If interrupt is true and user scrolled, stop animating
+				if (t.options.interrupt && t._last && t._last !== curr) {
+					return $(t.elem).stop();
+				}
+				var next = Math.round(t.now);
+				// Don't waste CPU
+				// Browsers don't render floating point scroll
+				if (curr !== next) {
+					$(t.elem)[t.prop](next);
+					t._last = this.get(t);
+				}
+			}
+		};
+
+		// AMD requirement
+		return $scrollTo;
+	});
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/* WEBPACK VAR INJECTION */(function($, notie) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
@@ -10133,10 +10353,10 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(8)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(9)))
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(module) {/*
@@ -10917,10 +11137,10 @@
 	if (typeof module !== 'undefined' && module) {
 	    module.exports = notie;
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(10)(module)))
 
 /***/ },
-/* 9 */
+/* 10 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -10936,7 +11156,7 @@
 
 
 /***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
@@ -10965,7 +11185,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {"use strict";
@@ -10976,7 +11196,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-	var _componentsRefreshReviews = __webpack_require__(12);
+	var _componentsRefreshReviews = __webpack_require__(13);
 
 	var _componentsRefreshReviews2 = _interopRequireDefault(_componentsRefreshReviews);
 
@@ -11039,7 +11259,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($, simpleStorage) {"use strict";
@@ -11113,17 +11333,17 @@
 
 	exports["default"] = refreshReviews;
 	module.exports = exports["default"];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(13)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(14)))
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;/*! simpleStorage v0.2.0, Unlicense 2015. https://github.com/andris9/simpleStorage */
 	!function(a,b){"use strict"; true?!(__WEBPACK_AMD_DEFINE_FACTORY__ = (b), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)):"undefined"!=typeof exports?module.exports=b():a.simpleStorage=b()}(this,function(){"use strict";function a(){p=j(),d(),g(),b(),"addEventListener"in window&&window.addEventListener("pageshow",function(a){a.persisted&&c()},!1),p=!0}function b(){"addEventListener"in window?window.addEventListener("storage",c,!1):document.attachEvent("onstorage",c)}function c(){try{d()}catch(a){return void(p=!1)}g()}function d(){var a=localStorage.getItem("simpleStorage");try{n=JSON.parse(a)||{}}catch(b){n={}}o=f()}function e(){try{localStorage.setItem("simpleStorage",JSON.stringify(n)),o=f()}catch(a){return k(a)}return!0}function f(){var a=localStorage.getItem("simpleStorage");return a?String(a).length:0}function g(){var a,b,c,d,f,h=1/0,j=0;if(clearTimeout(q),n&&n.__simpleStorage_meta&&n.__simpleStorage_meta.TTL){for(a=+new Date,f=n.__simpleStorage_meta.TTL.keys||[],d=n.__simpleStorage_meta.TTL.expire||{},b=0,c=f.length;c>b;b++){if(!(d[f[b]]<=a)){d[f[b]]<h&&(h=d[f[b]]);break}j++,delete n[f[b]],delete d[f[b]]}h!==1/0&&(q=setTimeout(g,Math.min(h-a,2147483647))),j&&(f.splice(0,j),i(),e())}}function h(a,b){var c,d,e=+new Date,f=!1;if(b=Number(b)||0,0!==b){if(!n.hasOwnProperty(a))return!1;if(n.__simpleStorage_meta||(n.__simpleStorage_meta={}),n.__simpleStorage_meta.TTL||(n.__simpleStorage_meta.TTL={expire:{},keys:[]}),n.__simpleStorage_meta.TTL.expire[a]=e+b,n.__simpleStorage_meta.TTL.expire.hasOwnProperty(a))for(c=0,d=n.__simpleStorage_meta.TTL.keys.length;d>c;c++)n.__simpleStorage_meta.TTL.keys[c]===a&&n.__simpleStorage_meta.TTL.keys.splice(c);for(c=0,d=n.__simpleStorage_meta.TTL.keys.length;d>c;c++)if(n.__simpleStorage_meta.TTL.expire[n.__simpleStorage_meta.TTL.keys[c]]>e+b){n.__simpleStorage_meta.TTL.keys.splice(c,0,a),f=!0;break}f||n.__simpleStorage_meta.TTL.keys.push(a)}else if(n&&n.__simpleStorage_meta&&n.__simpleStorage_meta.TTL){if(n.__simpleStorage_meta.TTL.expire.hasOwnProperty(a))for(delete n.__simpleStorage_meta.TTL.expire[a],c=0,d=n.__simpleStorage_meta.TTL.keys.length;d>c;c++)if(n.__simpleStorage_meta.TTL.keys[c]===a){n.__simpleStorage_meta.TTL.keys.splice(c,1);break}i()}return clearTimeout(q),n&&n.__simpleStorage_meta&&n.__simpleStorage_meta.TTL&&n.__simpleStorage_meta.TTL.keys.length&&(q=setTimeout(g,Math.min(Math.max(n.__simpleStorage_meta.TTL.expire[n.__simpleStorage_meta.TTL.keys[0]]-e,0),2147483647))),!0}function i(){var a,b=!1,c=!1;if(!n||!n.__simpleStorage_meta)return b;n.__simpleStorage_meta.TTL&&!n.__simpleStorage_meta.TTL.keys.length&&(delete n.__simpleStorage_meta.TTL,b=!0);for(a in n.__simpleStorage_meta)if(n.__simpleStorage_meta.hasOwnProperty(a)){c=!0;break}return c||(delete n.__simpleStorage_meta,b=!0),b}function j(){var a,b=0;if(null===window.localStorage||"unknown"==typeof window.localStorage)throw a=new Error("localStorage is disabled"),a.code=t,a;if(!window.localStorage)throw a=new Error("localStorage not supported"),a.code=s,a;try{b=window.localStorage.length}catch(c){throw k(c)}try{window.localStorage.setItem("__simpleStorageInitTest",Date.now().toString(16)),window.localStorage.removeItem("__simpleStorageInitTest")}catch(c){throw b?k(c):(a=new Error("localStorage is disabled"),a.code=t,a)}return!0}function k(a){var b;return 22===a.code||1014===a.code||[-2147024882,-2146828281,-21474675259].indexOf(a.number)>0?(b=new Error("localStorage quota exceeded"),b.code=u,b):18===a.code||1e3===a.code?(b=new Error("localStorage is disabled"),b.code=t,b):"TypeError"===a.name?(b=new Error("localStorage is disabled"),b.code=t,b):a}function l(a){if(!a)return r="OK",a;switch(a.code){case s:case t:case u:r=a.code;break;default:r=a.code||a.number||a.message||a.name}return a}var m="0.2.0",n=!1,o=0,p=!1,q=null,r="OK",s="LS_NOT_AVAILABLE",t="LS_DISABLED",u="LS_QUOTA_EXCEEDED";try{a()}catch(v){l(v)}return{version:m,status:r,canUse:function(){return"OK"===r&&!!p},set:function(a,b,c){if("__simpleStorage_meta"===a)return!1;if(!n)return!1;if("undefined"==typeof b)return this.deleteKey(a);c=c||{};try{b=JSON.parse(JSON.stringify(b))}catch(d){return k(d)}return n[a]=b,h(a,c.TTL||0),e()},get:function(a){return n?n.hasOwnProperty(a)&&"__simpleStorage_meta"!==a&&this.getTTL(a)?n[a]:void 0:!1},deleteKey:function(a){return n&&a in n?(delete n[a],h(a,0),e()):!1},setTTL:function(a,b){return n?(h(a,b),e()):!1},getTTL:function(a){var b;return n&&n.hasOwnProperty(a)?n.__simpleStorage_meta&&n.__simpleStorage_meta.TTL&&n.__simpleStorage_meta.TTL.expire&&n.__simpleStorage_meta.TTL.expire.hasOwnProperty(a)?(b=Math.max(n.__simpleStorage_meta.TTL.expire[a]-+new Date||0,0),b||!1):1/0:!1},flush:function(){if(!n)return!1;n={};try{return localStorage.removeItem("simpleStorage"),!0}catch(a){return k(a)}},index:function(){if(!n)return!1;var a,b=[];for(a in n)n.hasOwnProperty(a)&&"__simpleStorage_meta"!==a&&b.push(a);return b},storageSize:function(){return o}}});
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
@@ -11182,7 +11402,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($, notie, simpleStorage) {'use strict';
@@ -11193,7 +11413,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _componentsRefreshReviewsJs = __webpack_require__(12);
+	var _componentsRefreshReviewsJs = __webpack_require__(13);
 
 	var _componentsRefreshReviewsJs2 = _interopRequireDefault(_componentsRefreshReviewsJs);
 
@@ -11284,10 +11504,10 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(8), __webpack_require__(13)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(9), __webpack_require__(14)))
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($, simpleStorage) {'use strict';
@@ -11298,7 +11518,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _vendorWanakanaMin = __webpack_require__(17);
+	var _vendorWanakanaMin = __webpack_require__(18);
 
 	var _vendorWanakanaMin2 = _interopRequireDefault(_vendorWanakanaMin);
 
@@ -11612,10 +11832,10 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(13)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(14)))
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// this is a custom modified version of wanakana that overcomes the isHiragana failure bug for long hyphens (on entries like ハート形)
@@ -11624,7 +11844,7 @@
 	var wanakana,
 	    __indexOf = [].indexOf || function (a) {
 	  for (var b = 0, c = this.length; c > b; b++) if (b in this && this[b] === a) return b;return -1;
-	};wanakana = wanakana || {}, wanakana.version = "1.3.6", "function" == "function" && __webpack_require__(18) && !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	};wanakana = wanakana || {}, wanakana.version = "1.3.6", "function" == "function" && __webpack_require__(19) && !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
 	  return wanakana;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)), wanakana.LOWERCASE_START = 97, wanakana.LOWERCASE_END = 122, wanakana.UPPERCASE_START = 65, wanakana.UPPERCASE_END = 90, wanakana.HIRAGANA_START = 12353, wanakana.HIRAGANA_END = 12438, wanakana.KATAKANA_START = 12449, wanakana.KATAKANA_END = 12538, wanakana.LOWERCASE_FULLWIDTH_START = 65345, wanakana.LOWERCASE_FULLWIDTH_END = 65370, wanakana.UPPERCASE_FULLWIDTH_START = 65313, wanakana.UPPERCASE_FULLWIDTH_END = 65338, wanakana.defaultOptions = { useObseleteKana: !1, IMEMode: !1 }, wanakana.bind = function (a) {
 	  return a.addEventListener("input", wanakana._onInput);
@@ -11713,7 +11933,7 @@
 	}, wanakana.R_to_J = { a: "あ", i: "い", u: "う", e: "え", o: "お", yi: "い", wu: "う", whu: "う", xa: "ぁ", xi: "ぃ", xu: "ぅ", xe: "ぇ", xo: "ぉ", xyi: "ぃ", xye: "ぇ", ye: "いぇ", wha: "うぁ", whi: "うぃ", whe: "うぇ", who: "うぉ", wi: "うぃ", we: "うぇ", va: "ゔぁ", vi: "ゔぃ", vu: "ゔ", ve: "ゔぇ", vo: "ゔぉ", vya: "ゔゃ", vyi: "ゔぃ", vyu: "ゔゅ", vye: "ゔぇ", vyo: "ゔょ", ka: "か", ki: "き", ku: "く", ke: "け", ko: "こ", lka: "ヵ", lke: "ヶ", xka: "ヵ", xke: "ヶ", kya: "きゃ", kyi: "きぃ", kyu: "きゅ", kye: "きぇ", kyo: "きょ", ca: "か", ci: "き", cu: "く", ce: "け", co: "こ", lca: "ヵ", lce: "ヶ", xca: "ヵ", xce: "ヶ", qya: "くゃ", qyu: "くゅ", qyo: "くょ", qwa: "くぁ", qwi: "くぃ", qwu: "くぅ", qwe: "くぇ", qwo: "くぉ", qa: "くぁ", qi: "くぃ", qe: "くぇ", qo: "くぉ", kwa: "くぁ", qyi: "くぃ", qye: "くぇ", ga: "が", gi: "ぎ", gu: "ぐ", ge: "げ", go: "ご", gya: "ぎゃ", gyi: "ぎぃ", gyu: "ぎゅ", gye: "ぎぇ", gyo: "ぎょ", gwa: "ぐぁ", gwi: "ぐぃ", gwu: "ぐぅ", gwe: "ぐぇ", gwo: "ぐぉ", sa: "さ", si: "し", shi: "し", su: "す", se: "せ", so: "そ", za: "ざ", zi: "じ", zu: "ず", ze: "ぜ", zo: "ぞ", ji: "じ", sya: "しゃ", syi: "しぃ", syu: "しゅ", sye: "しぇ", syo: "しょ", sha: "しゃ", shu: "しゅ", she: "しぇ", sho: "しょ", shya: "しゃ", shyu: "しゅ", shye: "しぇ", shyo: "しょ", swa: "すぁ", swi: "すぃ", swu: "すぅ", swe: "すぇ", swo: "すぉ", zya: "じゃ", zyi: "じぃ", zyu: "じゅ", zye: "じぇ", zyo: "じょ", ja: "じゃ", ju: "じゅ", je: "じぇ", jo: "じょ", jya: "じゃ", jyi: "じぃ", jyu: "じゅ", jye: "じぇ", jyo: "じょ", ta: "た", ti: "ち", tu: "つ", te: "て", to: "と", chi: "ち", tsu: "つ", ltu: "っ", xtu: "っ", tya: "ちゃ", tyi: "ちぃ", tyu: "ちゅ", tye: "ちぇ", tyo: "ちょ", cha: "ちゃ", chu: "ちゅ", che: "ちぇ", cho: "ちょ", cya: "ちゃ", cyi: "ちぃ", cyu: "ちゅ", cye: "ちぇ", cyo: "ちょ", chya: "ちゃ", chyu: "ちゅ", chye: "ちぇ", chyo: "ちょ", tsa: "つぁ", tsi: "つぃ", tse: "つぇ", tso: "つぉ", tha: "てゃ", thi: "てぃ", thu: "てゅ", the: "てぇ", tho: "てょ", twa: "とぁ", twi: "とぃ", twu: "とぅ", twe: "とぇ", two: "とぉ", da: "だ", di: "ぢ", du: "づ", de: "で", "do": "ど", dya: "ぢゃ", dyi: "ぢぃ", dyu: "ぢゅ", dye: "ぢぇ", dyo: "ぢょ", dha: "でゃ", dhi: "でぃ", dhu: "でゅ", dhe: "でぇ", dho: "でょ", dwa: "どぁ", dwi: "どぃ", dwu: "どぅ", dwe: "どぇ", dwo: "どぉ", na: "な", ni: "に", nu: "ぬ", ne: "ね", no: "の", nya: "にゃ", nyi: "にぃ", nyu: "にゅ", nye: "にぇ", nyo: "にょ", ha: "は", hi: "ひ", hu: "ふ", he: "へ", ho: "ほ", fu: "ふ", hya: "ひゃ", hyi: "ひぃ", hyu: "ひゅ", hye: "ひぇ", hyo: "ひょ", fya: "ふゃ", fyu: "ふゅ", fyo: "ふょ", fwa: "ふぁ", fwi: "ふぃ", fwu: "ふぅ", fwe: "ふぇ", fwo: "ふぉ", fa: "ふぁ", fi: "ふぃ", fe: "ふぇ", fo: "ふぉ", fyi: "ふぃ", fye: "ふぇ", ba: "ば", bi: "び", bu: "ぶ", be: "べ", bo: "ぼ", bya: "びゃ", byi: "びぃ", byu: "びゅ", bye: "びぇ", byo: "びょ", pa: "ぱ", pi: "ぴ", pu: "ぷ", pe: "ぺ", po: "ぽ", pya: "ぴゃ", pyi: "ぴぃ", pyu: "ぴゅ", pye: "ぴぇ", pyo: "ぴょ", ma: "ま", mi: "み", mu: "む", me: "め", mo: "も", mya: "みゃ", myi: "みぃ", myu: "みゅ", mye: "みぇ", myo: "みょ", ya: "や", yu: "ゆ", yo: "よ", xya: "ゃ", xyu: "ゅ", xyo: "ょ", ra: "ら", ri: "り", ru: "る", re: "れ", ro: "ろ", rya: "りゃ", ryi: "りぃ", ryu: "りゅ", rye: "りぇ", ryo: "りょ", la: "ら", li: "り", lu: "る", le: "れ", lo: "ろ", lya: "りゃ", lyi: "りぃ", lyu: "りゅ", lye: "りぇ", lyo: "りょ", wa: "わ", wo: "を", lwe: "ゎ", xwa: "ゎ", n: "ん", nn: "ん", "n ": "ん", xn: "ん", ltsu: "っ" }, wanakana.FOUR_CHARACTER_EDGE_CASES = ["lts", "chy", "shy"], wanakana.J_to_R = { あ: "a", い: "i", う: "u", え: "e", お: "o", ゔぁ: "va", ゔぃ: "vi", ゔ: "vu", ゔぇ: "ve", ゔぉ: "vo", か: "ka", き: "ki", きゃ: "kya", きぃ: "kyi", きゅ: "kyu", く: "ku", け: "ke", こ: "ko", が: "ga", ぎ: "gi", ぐ: "gu", げ: "ge", ご: "go", ぎゃ: "gya", ぎぃ: "gyi", ぎゅ: "gyu", ぎぇ: "gye", ぎょ: "gyo", さ: "sa", す: "su", せ: "se", そ: "so", ざ: "za", ず: "zu", ぜ: "ze", ぞ: "zo", し: "shi", しゃ: "sha", しゅ: "shu", しょ: "sho", じ: "ji", じゃ: "ja", じゅ: "ju", じょ: "jo", た: "ta", ち: "chi", ちゃ: "cha", ちゅ: "chu", ちょ: "cho", つ: "tsu", て: "te", と: "to", だ: "da", ぢ: "di", づ: "du", で: "de", ど: "do", な: "na", に: "ni", にゃ: "nya", にゅ: "nyu", にょ: "nyo", ぬ: "nu", ね: "ne", の: "no", は: "ha", ひ: "hi", ふ: "fu", へ: "he", ほ: "ho", ひゃ: "hya", ひゅ: "hyu", ひょ: "hyo", ふぁ: "fa", ふぃ: "fi", ふぇ: "fe", ふぉ: "fo", ば: "ba", び: "bi", ぶ: "bu", べ: "be", ぼ: "bo", びゃ: "bya", びゅ: "byu", びょ: "byo", ぱ: "pa", ぴ: "pi", ぷ: "pu", ぺ: "pe", ぽ: "po", ぴゃ: "pya", ぴゅ: "pyu", ぴょ: "pyo", ま: "ma", み: "mi", む: "mu", め: "me", も: "mo", みゃ: "mya", みゅ: "myu", みょ: "myo", や: "ya", ゆ: "yu", よ: "yo", ら: "ra", り: "ri", る: "ru", れ: "re", ろ: "ro", りゃ: "rya", りゅ: "ryu", りょ: "ryo", わ: "wa", を: "wo", ん: "n", ゐ: "wi", ゑ: "we", きぇ: "kye", きょ: "kyo", じぃ: "jyi", じぇ: "jye", ちぃ: "cyi", ちぇ: "che", ひぃ: "hyi", ひぇ: "hye", びぃ: "byi", びぇ: "bye", ぴぃ: "pyi", ぴぇ: "pye", みぇ: "mye", みぃ: "myi", りぃ: "ryi", りぇ: "rye", にぃ: "nyi", にぇ: "nye", しぃ: "syi", しぇ: "she", いぇ: "ye", うぁ: "wha", うぉ: "who", うぃ: "wi", うぇ: "we", ゔゃ: "vya", ゔゅ: "vyu", ゔょ: "vyo", すぁ: "swa", すぃ: "swi", すぅ: "swu", すぇ: "swe", すぉ: "swo", くゃ: "qya", くゅ: "qyu", くょ: "qyo", くぁ: "qwa", くぃ: "qwi", くぅ: "qwu", くぇ: "qwe", くぉ: "qwo", ぐぁ: "gwa", ぐぃ: "gwi", ぐぅ: "gwu", ぐぇ: "gwe", ぐぉ: "gwo", つぁ: "tsa", つぃ: "tsi", つぇ: "tse", つぉ: "tso", てゃ: "tha", てぃ: "thi", てゅ: "thu", てぇ: "the", てょ: "tho", とぁ: "twa", とぃ: "twi", とぅ: "twu", とぇ: "twe", とぉ: "two", ぢゃ: "dya", ぢぃ: "dyi", ぢゅ: "dyu", ぢぇ: "dye", ぢょ: "dyo", でゃ: "dha", でぃ: "dhi", でゅ: "dhu", でぇ: "dhe", でょ: "dho", どぁ: "dwa", どぃ: "dwi", どぅ: "dwu", どぇ: "dwe", どぉ: "dwo", ふぅ: "fwu", ふゃ: "fya", ふゅ: "fyu", ふょ: "fyo", ぁ: "a", ぃ: "i", ぇ: "e", ぅ: "u", ぉ: "o", ゃ: "ya", ゅ: "yu", ょ: "yo", っ: "", ゕ: "ka", ゖ: "ka", ゎ: "wa", "　": " ", んあ: "n'a", んい: "n'i", んう: "n'u", んえ: "n'e", んお: "n'o", んや: "n'ya", んゆ: "n'yu", んよ: "n'yo" };
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
