@@ -49,7 +49,8 @@
       text-align: center;
       padding: $unit-xs $unit-sm;
       max-width: 100%;
-      font-size: 2.5em;
+      font-size: responsive 26px 50px;
+      font-range: 300px 2000px;
       line-height: 1.5;
 
       &.-kanji {

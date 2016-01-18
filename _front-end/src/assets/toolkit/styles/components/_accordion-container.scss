@@ -43,6 +43,8 @@
     .author {
       &:before {
         content: '—';
+        position: relative;
+        left: -5px;
       }
     }
   }
