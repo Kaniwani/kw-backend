@@ -50,16 +50,25 @@ body {
 /* / sticky-footer */
 
 // matches .whatever-section, .something-section
-[class*="-section"] {
-
+[class*="-section"],
+.site-header,
+.site-footer {
   &:not(.-fullwidth) {
-    @include container($site-max-width);
-    margin-bottom: $unit-md;
-  }
 
-  > .inner {
-    padding-left: $unit-sm;
-    padding-right: $unit-sm;
+    > .inner {
+      @include container($site-max-width);
+      padding-left: $unit-sm;
+      padding-right: $unit-sm;
+
+      @include media($bp-md) {
+        padding-left: $unit-md;
+        padding-right: $unit-md;
+      }
+
+      p {
+        max-width: 800px;
+      }
+    }
   }
 
 }

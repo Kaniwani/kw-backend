@@ -1,0 +1,2614 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title></title>
+
+	<link rel="stylesheet" href="/assets/fabricator/styles/f.css">
+
+	<!-- toolkit styles -->
+	<link rel="stylesheet" href="/assets/styles/main.css">
+
+	<!-- google fonts -->
+	<link href='https://fonts.googleapis.com/css?family=Ubuntu:700|Open+Sans:300,700,400' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+		<!-- fabricator icons -->
+		<svg style="display: none;">
+			<symbol id="f-icon-code" viewBox="0 0 512 512">
+				<path d="M377.3 121.3l-40.5 40.4 94.4 94.3-94.4 94.3 40.5 40.4L512 256zM134.7 121.3L0 256l134.7 134.7 40.5-40.4L80.8 256l94.4-94.3zM281.8 103.8zM230.183 408.16l-29.233-7.97 80.85-296.484 29.234 7.972z"/>
+			</symbol>
+			<symbol id="f-icon-notes" viewBox="0 0 512 512">
+				<path d="M443.8 0H68.2C30.6 0 0 30.5 0 68v264.2c0 16.6 8.9 29.5 25.9 37.5 15.3 7.2 33.1 8.4 40.1 8.5V512l201.6-134h176.1c37.6 0 68.2-30.3 68.2-67.8V68c.1-37.5-30.5-68-68.1-68zM114 438V330H68.2c-11.1 0-19.2-8.8-19.2-19.8V68c0-11 8.2-20 19.2-20h375.5c11.1 0 19.2 9 19.2 20v242.2c0 11-8.2 19.8-19.2 19.8H244.2L114 438z"/>
+			</symbol>
+			<symbol id="f-icon-labels" viewBox="0 0 512 512">
+				<path d="M304 280c0 13.2-10.8 24-24 24h-48c-13.2 0-24-10.8-24-24v-48c0-13.2 10.8-24 24-24h48c13.2 0 24 10.8 24 24v48zM464 280c0 13.2-10.8 24-24 24h-48c-13.2 0-24-10.8-24-24v-48c0-13.2 10.8-24 24-24h48c13.2 0 24 10.8 24 24v48zM144 280c0 13.2-10.8 24-24 24H72c-13.2 0-24-10.8-24-24v-48c0-13.2 10.8-24 24-24h48c13.2 0 24 10.8 24 24v48z"/>
+			</symbol>
+			<symbol id="f-icon-menu" viewBox="0 0 512 512">
+				<path d="M512 100c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12V76c0-6.6 5.4-12 12-12h488c6.6 0 12 5.4 12 12v24zM512 212c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12v-24c0-6.6 5.4-12 12-12h488c6.6 0 12 5.4 12 12v24zM512 324c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12v-24c0-6.6 5.4-12 12-12h488c6.6 0 12 5.4 12 12v24zM512 436c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12v-24c0-6.6 5.4-12 12-12h488c6.6 0 12 5.4 12 12v24z"/>
+			</symbol>
+			<symbol id="f-icon-settings" viewBox="0 0 512 512">
+				<path d="M256 377.3c-67.5 0-121.6-53.9-121.6-121.3s54-121.3 121.6-121.3S377.6 188.6 377.6 256 323.5 377.3 256 377.3zm0-215.6c-52.7 0-94.6 41.8-94.6 94.3s41.9 94.3 94.6 94.3 94.6-41.8 94.6-94.3-41.9-94.3-94.6-94.3zM293.2 512h-72.9L200 450c-13.5-4-27-9.4-39.2-16.2l-59.4 29.6L50 412.3 79.7 353c-6.8-12.1-12.2-25.6-16.2-39.1L0 292.4v-72.8l62.1-20.2c4.1-13.5 9.5-26.9 16.2-39.1L48.6 101 100 49.9l59.4 29.6c12.2-6.7 25.7-12.1 39.2-16.2L220.2 0h72.9l20.3 62c13.5 4 27 9.4 39.2 16.2L412 48.5l51.3 51.2-29.7 59.3c6.8 12.1 12.2 25.6 16.2 39.1l62.1 20.2V291l-62.1 20.2c-4.1 13.5-9.5 26.9-16.2 39.1l29.7 59.3-51.3 51.2-59.4-29.6c-12.2 6.7-25.7 12.1-39.2 16.2L293.2 512zm-54.1-26.9h35.1l18.9-57.9 6.8-1.3c16.2-4 31.1-10.8 45.9-18.9l6.8-4 54 26.9 24.3-24.3-27-53.9 4.1-6.7c8.1-13.5 14.9-29.6 18.9-45.8l1.4-6.7 58.1-18.9v-35l-58.1-18.9-1.4-6.7c-4.1-16.2-10.8-31-18.9-45.8l-4.1-6.7 27-53.9-24.3-24.3-54 26.9-6.8-4c-14.8-8.2-29.7-14.9-45.9-19l-6.8-1.3L274.2 27h-35.1l-18.9 57.9-6.8 1.3c-16.2 4-31.1 10.8-45.9 18.9l-6.8 4-54-26.9-24.3 24.3 27 53.9-4.1 6.7c-8.1 13.5-14.9 29.6-18.9 45.8l-1.4 6.7-58 18.9v35l58.1 18.9 1.4 6.7c4.1 16.2 10.8 31 18.9 45.8l4.1 6.7-27 53.9 24.3 24.3 54-26.9 6.8 4c14.9 8.1 29.7 14.8 45.9 18.9l6.8 1.3 18.8 58z"/>
+			</symbol>
+		</svg>
+		<!-- /fabricator icons -->
+		<!-- fabricator menu -->
+		<div class="f-menu">
+		
+			<div class="f-controls">
+				<div class="f-control f-global-control" data-f-toggle-control="labels" title="Toggle Labels">
+					<svg>
+						<use xlink:href="#f-icon-labels" />
+					</svg>
+				</div>
+				<div class="f-control f-global-control" data-f-toggle-control="notes" title="Toggle Notes">
+					<svg>
+						<use xlink:href="#f-icon-notes" />
+					</svg>
+				</div>
+				<div class="f-control f-global-control" data-f-toggle-control="code" title="Toggle Code">
+					<svg>
+						<use xlink:href="#f-icon-code" />
+					</svg>
+				</div>
+			</div>
+		
+			<ul>
+		
+				<li>
+					<a href="index.html" class="f-menu__heading">Overview</a>
+				</li>
+		
+				<li>
+					<a href="base.html" class="f-menu__heading">Base</a>
+					<ul>
+						<li>
+							<a href="base.html#button">Button</a>
+						</li>
+						<li>
+							<a href="base.html#checkbox">Checkbox</a>
+						</li>
+						<li>
+							<a href="base.html#icons">Icons</a>
+						</li>
+						<li>
+							<a href="base.html#lists">Lists</a>
+						</li>
+						<li>
+							<a href="base.html#paragraph">Paragraph</a>
+						</li>
+						<li>
+							<a href="base.html#radio">Radio</a>
+						</li>
+						<li>
+							<a href="base.html#select">Select</a>
+						</li>
+						<li>
+							<a href="base.html#table">Table</a>
+						</li>
+						<li>
+							<a href="base.html#text-input">Text Input</a>
+						</li>
+						<li>
+							<a href="base.html#textarea">Textarea</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="components.html" class="f-menu__heading">Components</a>
+					<ul>
+						<li>
+							<a href="components.html#accordion-container">Accordion Container</a>
+						</li>
+						<li>
+							<a href="components.html#accordion-list">Accordion List</a>
+						</li>
+						<li>
+							<a href="components.html#lattice-list">Lattice List</a>
+						</li>
+						<li>
+							<a href="components.html#level-card">Level Card</a>
+						</li>
+						<li>
+							<a href="components.html#level-list">Level List</a>
+						</li>
+						<li>
+							<a href="components.html#progress-bar">Progress Bar</a>
+						</li>
+						<li>
+							<a href="components.html#review-extra">Review Extra</a>
+						</li>
+						<li>
+							<a href="components.html#review-header">Review Header</a>
+						</li>
+						<li>
+							<a href="components.html#review-quiz">Review Quiz</a>
+						</li>
+						<li>
+							<a href="components.html#section-heading">Section Heading</a>
+						</li>
+						<li>
+							<a href="components.html#site-logo">Site Logo</a>
+						</li>
+						<li>
+							<a href="components.html#site-nav">Site Nav</a>
+						</li>
+						<li>
+							<a href="components.html#user-details">User Details</a>
+						</li>
+						<li>
+							<a href="components.html#user-overview">User Overview</a>
+						</li>
+						<li>
+							<a href="components.html#vocab-block">Vocab Block</a>
+						</li>
+						<li>
+							<a href="components.html#vocab-card">Vocab Card</a>
+						</li>
+						<li>
+							<a href="components.html#vocab-extra">Vocab Extra</a>
+						</li>
+						<li>
+							<a href="components.html#vocab-list">Vocab List</a>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<a href="sections.html" class="f-menu__heading">Sections</a>
+					<ul>
+						<li>
+							<a href="sections.html#announcements">Announcements</a>
+						</li>
+						<li>
+							<a href="sections.html#form">Form</a>
+						</li>
+						<li>
+							<a href="sections.html#login">Login</a>
+						</li>
+						<li>
+							<a href="sections.html#review">Review</a>
+						</li>
+						<li>
+							<a href="sections.html#site-footer">Site Footer</a>
+						</li>
+						<li>
+							<a href="sections.html#site-header">Site Header</a>
+						</li>
+						<li>
+							<a href="sections.html#summary">Summary</a>
+						</li>
+						<li>
+							<a href="sections.html#user">User</a>
+						</li>
+					</ul>
+				</li>
+		
+				<li>
+					<a href="pages.html" class="f-menu__heading">Pages</a>
+					<ul>
+						<li>
+							<a href="pages/404.html" target="_blank">404</a>
+						</li>
+						<li>
+							<a href="pages/about.html" target="_blank">About</a>
+						</li>
+						<li>
+							<a href="pages/contact.html" target="_blank">Contact</a>
+						</li>
+						<li>
+							<a href="pages/home.html" target="_blank">Home</a>
+						</li>
+						<li>
+							<a href="pages/levels.html" target="_blank">Levels</a>
+						</li>
+						<li>
+							<a href="pages/login.html" target="_blank">Login</a>
+						</li>
+						<li>
+							<a href="pages/register.html" target="_blank">Register</a>
+						</li>
+						<li>
+							<a href="pages/review.html" target="_blank">Review</a>
+						</li>
+						<li>
+							<a href="pages/settings.html" target="_blank">Settings</a>
+						</li>
+						<li>
+							<a href="pages/unlocks.html" target="_blank">Unlocks</a>
+						</li>
+						<li>
+							<a href="pages/vocab.html" target="_blank">Vocab</a>
+						</li>
+					</ul>
+				</li>
+		
+				<li>
+					<a href="docs.html" class="f-menu__heading">Docs</a>
+					<ul>
+						<li>
+							<a href="docs.html#makeFake">Makefake</a>
+						</li>
+					</ul>
+				</li>
+		
+			</ul>
+		
+		
+		</div>
+		<!-- /fabricator menu -->
+		<div class="f-container">
+			<div class="f-control-bar">
+				<div class="f-control f-menu-toggle">
+					<svg>
+						<use xlink:href="#f-icon-menu" />
+					</svg>
+				</div>
+			</div>
+
+
+	
+<h1 data-f-toggle="labels">Components</h1>
+
+
+<div class="f-item-group" id="accordion-container">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Accordion Container</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-preview">
+	<article class="accordion-container">
+	<header class="header -toggle">
+		<h4 class="title">Content title <time class="time" datetime="2016-05-15T19:00">(2016-05-15)</time></h4>
+		<span class="icon i-downarrow" aria-hidden="true"></span>
+	</header>
+
+	<div class="wrap">
+		<div class="content">
+			<p>Urban tattoo RAF claymore mine table sensory woman pen assassin human nodality systema systemic convenience store. Garage chrome savant media assassin denim nodal point Legba pre-post-footage soul-delay. Drugs j-pop meta-modem industrial grade nodal
+				point boy 3D-printed refrigerator semiotics. Chrome euro-pop-ware tanto RAF receding sentient Kowloon bridge shanty town grenade nodality car otaku augmented reality ablative crypto. Office hotdog 8-bit bomb receding car sensory.</p>
+			<p class="author">
+				author
+			</p>
+		</div>
+	</div>
+
+</article>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;article class=&quot;accordion-container&quot;&gt;
+	&lt;header class=&quot;header -toggle&quot;&gt;
+		&lt;h4 class=&quot;title&quot;&gt;Content title &lt;time class=&quot;time&quot; datetime=&quot;2016-05-15T19:00&quot;&gt;(2016-05-15)&lt;/time&gt;&lt;/h4&gt;
+		&lt;span class=&quot;icon i-downarrow&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;
+	&lt;/header&gt;
+
+	&lt;div class=&quot;wrap&quot;&gt;
+		&lt;div class=&quot;content&quot;&gt;
+			&lt;p&gt;Urban tattoo RAF claymore mine table sensory woman pen assassin human nodality systema systemic convenience store. Garage chrome savant media assassin denim nodal point Legba pre-post-footage soul-delay. Drugs j-pop meta-modem industrial grade nodal
+				point boy 3D-printed refrigerator semiotics. Chrome euro-pop-ware tanto RAF receding sentient Kowloon bridge shanty town grenade nodality car otaku augmented reality ablative crypto. Office hotdog 8-bit bomb receding car sensory.&lt;/p&gt;
+			&lt;p class=&quot;author&quot;&gt;
+				author
+			&lt;/p&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+
+&lt;/article&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="accordion-list">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Accordion List</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-preview">
+	<ul class="accordion-list">
+	<li class="item">
+		<article class="accordion-container">
+			<header class="header -toggle">
+				<h4 class="title">Content title <time class="time" datetime="2016-05-15T19:00">(2016-05-15)</time></h4>
+				<span class="icon i-downarrow" aria-hidden="true"></span>
+			</header>
+
+			<div class="wrap">
+				<div class="content">
+					<p>Urban tattoo RAF claymore mine table sensory woman pen assassin human nodality systema systemic convenience store. Garage chrome savant media assassin denim nodal point Legba pre-post-footage soul-delay. Drugs j-pop meta-modem industrial grade nodal
+						point boy 3D-printed refrigerator semiotics. Chrome euro-pop-ware tanto RAF receding sentient Kowloon bridge shanty town grenade nodality car otaku augmented reality ablative crypto. Office hotdog 8-bit bomb receding car sensory.</p>
+					<p class="author">
+						author
+					</p>
+				</div>
+			</div>
+
+		</article>
+	</li>
+	<li class="item">
+		<article class="accordion-container">
+			<header class="header -toggle">
+				<h4 class="title">Content title <time class="time" datetime="2016-05-15T19:00">(2016-05-15)</time></h4>
+				<span class="icon i-downarrow" aria-hidden="true"></span>
+			</header>
+
+			<div class="wrap">
+				<div class="content">
+					<p>Urban tattoo RAF claymore mine table sensory woman pen assassin human nodality systema systemic convenience store. Garage chrome savant media assassin denim nodal point Legba pre-post-footage soul-delay. Drugs j-pop meta-modem industrial grade nodal
+						point boy 3D-printed refrigerator semiotics. Chrome euro-pop-ware tanto RAF receding sentient Kowloon bridge shanty town grenade nodality car otaku augmented reality ablative crypto. Office hotdog 8-bit bomb receding car sensory.</p>
+					<p class="author">
+						author
+					</p>
+				</div>
+			</div>
+
+		</article>
+	</li>
+	<li class="item">
+		<article class="accordion-container">
+			<header class="header -toggle">
+				<h4 class="title">Content title <time class="time" datetime="2016-05-15T19:00">(2016-05-15)</time></h4>
+				<span class="icon i-downarrow" aria-hidden="true"></span>
+			</header>
+
+			<div class="wrap">
+				<div class="content">
+					<p>Urban tattoo RAF claymore mine table sensory woman pen assassin human nodality systema systemic convenience store. Garage chrome savant media assassin denim nodal point Legba pre-post-footage soul-delay. Drugs j-pop meta-modem industrial grade nodal
+						point boy 3D-printed refrigerator semiotics. Chrome euro-pop-ware tanto RAF receding sentient Kowloon bridge shanty town grenade nodality car otaku augmented reality ablative crypto. Office hotdog 8-bit bomb receding car sensory.</p>
+					<p class="author">
+						author
+					</p>
+				</div>
+			</div>
+
+		</article>
+	</li>
+</ul>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;ul class=&quot;accordion-list&quot;&gt;
+	&lt;li class=&quot;item&quot;&gt;
+		&lt;article class=&quot;accordion-container&quot;&gt;
+			&lt;header class=&quot;header -toggle&quot;&gt;
+				&lt;h4 class=&quot;title&quot;&gt;Content title &lt;time class=&quot;time&quot; datetime=&quot;2016-05-15T19:00&quot;&gt;(2016-05-15)&lt;/time&gt;&lt;/h4&gt;
+				&lt;span class=&quot;icon i-downarrow&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;
+			&lt;/header&gt;
+
+			&lt;div class=&quot;wrap&quot;&gt;
+				&lt;div class=&quot;content&quot;&gt;
+					&lt;p&gt;Urban tattoo RAF claymore mine table sensory woman pen assassin human nodality systema systemic convenience store. Garage chrome savant media assassin denim nodal point Legba pre-post-footage soul-delay. Drugs j-pop meta-modem industrial grade nodal
+						point boy 3D-printed refrigerator semiotics. Chrome euro-pop-ware tanto RAF receding sentient Kowloon bridge shanty town grenade nodality car otaku augmented reality ablative crypto. Office hotdog 8-bit bomb receding car sensory.&lt;/p&gt;
+					&lt;p class=&quot;author&quot;&gt;
+						author
+					&lt;/p&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+
+		&lt;/article&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot;&gt;
+		&lt;article class=&quot;accordion-container&quot;&gt;
+			&lt;header class=&quot;header -toggle&quot;&gt;
+				&lt;h4 class=&quot;title&quot;&gt;Content title &lt;time class=&quot;time&quot; datetime=&quot;2016-05-15T19:00&quot;&gt;(2016-05-15)&lt;/time&gt;&lt;/h4&gt;
+				&lt;span class=&quot;icon i-downarrow&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;
+			&lt;/header&gt;
+
+			&lt;div class=&quot;wrap&quot;&gt;
+				&lt;div class=&quot;content&quot;&gt;
+					&lt;p&gt;Urban tattoo RAF claymore mine table sensory woman pen assassin human nodality systema systemic convenience store. Garage chrome savant media assassin denim nodal point Legba pre-post-footage soul-delay. Drugs j-pop meta-modem industrial grade nodal
+						point boy 3D-printed refrigerator semiotics. Chrome euro-pop-ware tanto RAF receding sentient Kowloon bridge shanty town grenade nodality car otaku augmented reality ablative crypto. Office hotdog 8-bit bomb receding car sensory.&lt;/p&gt;
+					&lt;p class=&quot;author&quot;&gt;
+						author
+					&lt;/p&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+
+		&lt;/article&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot;&gt;
+		&lt;article class=&quot;accordion-container&quot;&gt;
+			&lt;header class=&quot;header -toggle&quot;&gt;
+				&lt;h4 class=&quot;title&quot;&gt;Content title &lt;time class=&quot;time&quot; datetime=&quot;2016-05-15T19:00&quot;&gt;(2016-05-15)&lt;/time&gt;&lt;/h4&gt;
+				&lt;span class=&quot;icon i-downarrow&quot; aria-hidden=&quot;true&quot;&gt;&lt;/span&gt;
+			&lt;/header&gt;
+
+			&lt;div class=&quot;wrap&quot;&gt;
+				&lt;div class=&quot;content&quot;&gt;
+					&lt;p&gt;Urban tattoo RAF claymore mine table sensory woman pen assassin human nodality systema systemic convenience store. Garage chrome savant media assassin denim nodal point Legba pre-post-footage soul-delay. Drugs j-pop meta-modem industrial grade nodal
+						point boy 3D-printed refrigerator semiotics. Chrome euro-pop-ware tanto RAF receding sentient Kowloon bridge shanty town grenade nodality car otaku augmented reality ablative crypto. Office hotdog 8-bit bomb receding car sensory.&lt;/p&gt;
+					&lt;p class=&quot;author&quot;&gt;
+						author
+					&lt;/p&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+
+		&lt;/article&gt;
+	&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="lattice-list">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Lattice List</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
+				<svg>
+					<use xlink:href="#f-icon-notes" />
+				</svg>
+			</span>
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-notes" data-f-toggle="notes">
+	<p>Just an idea component, perhaps to be used for correct items in summary only.
+Or could provide a toggle that changes classes, for users to choose which format they prefer!
+<code>data-en</code> and <code>data-ja</code> are for use in mouseover tooltip (not yet implemented!)</p>
+<p>Modifier classes for <code>lattice-list</code> include <code>-correct</code> &amp; <code>-incorrect</code></p>
+
+</div>
+<div class="f-item-preview">
+	<ul class="lattice-list">
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+</ul>
+
+<pre>-correct</pre>
+<ul class="lattice-list -correct">
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+</ul>
+<pre>-incorrect</pre>
+<ul class="lattice-list -incorrect">
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やくそく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約束</a>
+	</li>
+	<li class="item" data-en="Reservation" data-ja="よやく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">予約</a>
+	</li>
+	<li class="item" data-en="Promise" data-ja="やく">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約</a>
+	</li>
+	<li class="item" data-en="To Promise" data-ja="やくする">
+		<a lang="ja" class="link" href="{% url " kw:vocab " %}#">約する</a>
+	</li>
+</ul>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;ul class=&quot;lattice-list&quot;&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;pre&gt;-correct&lt;/pre&gt;
+&lt;ul class=&quot;lattice-list -correct&quot;&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;-incorrect&lt;/pre&gt;
+&lt;ul class=&quot;lattice-list -incorrect&quot;&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やくそく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約束&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Reservation&quot; data-ja=&quot;よやく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;予約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;Promise&quot; data-ja=&quot;やく&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約&lt;/a&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;item&quot; data-en=&quot;To Promise&quot; data-ja=&quot;やくする&quot;&gt;
+		&lt;a lang=&quot;ja&quot; class=&quot;link&quot; href=&quot;{% url &quot; kw:vocab &quot; %}#&quot;&gt;約する&lt;/a&gt;
+	&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="level-card">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Level Card</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
+				<svg>
+					<use xlink:href="#f-icon-notes" />
+				</svg>
+			</span>
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-notes" data-f-toggle="notes">
+	<p>Modifier classes and icons alter this component, see them in action in <a href="/components.html#level-list">level-list</a>.</p>
+
+</div>
+<div class="f-item-preview">
+	<li class="level-card -unlocked" data-level-id="#0">
+	<div class="wrap">
+		<span class="levelnum">1</span>
+		<span class="icon i-link -hidden" title="View vocab">
+        <a href="#0"></a>
+      </span>
+		<span class="icon i-unlocked" title="Relock"></span>
+	</div>
+</li>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;li class=&quot;level-card -unlocked&quot; data-level-id=&quot;#0&quot;&gt;
+	&lt;div class=&quot;wrap&quot;&gt;
+		&lt;span class=&quot;levelnum&quot;&gt;1&lt;/span&gt;
+		&lt;span class=&quot;icon i-link -hidden&quot; title=&quot;View vocab&quot;&gt;
+        &lt;a href=&quot;#0&quot;&gt;&lt;/a&gt;
+      &lt;/span&gt;
+		&lt;span class=&quot;icon i-unlocked&quot; title=&quot;Relock&quot;&gt;&lt;/span&gt;
+	&lt;/div&gt;
+&lt;/li&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="level-list">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Level List</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
+				<svg>
+					<use xlink:href="#f-icon-notes" />
+				</svg>
+			</span>
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-notes" data-f-toggle="notes">
+	<p>TODO: -unlocked card is link to level vocab &amp; has title with &quot;view vocab&quot;. Only icons should have cursor on -locked.</p>
+
+</div>
+<div class="f-item-preview">
+	<ul class="level-list">
+	<li class="level-card -locked -unlockable" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">1</span>
+			<a class="icon i-link -hidden" href="#0" title="View vocab"></a>
+			<span class="icon i-unlock"></span>
+		</div>
+	</li>
+	<li class="level-card -unlocked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">2</span>
+			<a class="icon i-link" href="#0" title="View vocab"></a>
+			<span class="icon i-unlocked" title="Relock"></span>
+		</div>
+	</li>
+	<li class="level-card" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">3</span>
+			<a class="icon i-link -hidden" href="#0" title="View vocab"></a>
+			<span class="icon -loading"></span>
+		</div>
+	</li>
+	<li class="level-card -locked -unlockable" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">4</span>
+			<a class="icon i-link -hidden" href="#0" title="View vocab"></a>
+			<span class="icon i-unlock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked -unlockable" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">5</span>
+			<a class="icon i-link -hidden" href="#0" title="View vocab"></a>
+			<span class="icon i-unlock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked -unlockable" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">6</span>
+			<a class="icon i-link -hidden" href="#0" title="View vocab"></a>
+			<span class="icon i-unlock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">7</span>
+			<a class="icon i-link -hidden" href="#0" title="View vocab"></a>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">8</span>
+			<a class="icon i-link -hidden" href="#0" title="View vocab"></a>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">9</span>
+			<a class="icon i-link -hidden" href="#0" title="View vocab"></a>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">10</span>
+			<a class="icon i-link -hidden" href="#0" title="View vocab"></a>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">11</span>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">12</span>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">13</span>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">14</span>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">15</span>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">16</span>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">17</span>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">18</span>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">19</span>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+	<li class="level-card -locked" data-level-id="#0">
+		<div class="wrap">
+			<span class="levelnum">20</span>
+			<span class="icon i-lock"></span>
+		</div>
+	</li>
+</ul>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;ul class=&quot;level-list&quot;&gt;
+	&lt;li class=&quot;level-card -locked -unlockable&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;1&lt;/span&gt;
+			&lt;a class=&quot;icon i-link -hidden&quot; href=&quot;#0&quot; title=&quot;View vocab&quot;&gt;&lt;/a&gt;
+			&lt;span class=&quot;icon i-unlock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -unlocked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;2&lt;/span&gt;
+			&lt;a class=&quot;icon i-link&quot; href=&quot;#0&quot; title=&quot;View vocab&quot;&gt;&lt;/a&gt;
+			&lt;span class=&quot;icon i-unlocked&quot; title=&quot;Relock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;3&lt;/span&gt;
+			&lt;a class=&quot;icon i-link -hidden&quot; href=&quot;#0&quot; title=&quot;View vocab&quot;&gt;&lt;/a&gt;
+			&lt;span class=&quot;icon -loading&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked -unlockable&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;4&lt;/span&gt;
+			&lt;a class=&quot;icon i-link -hidden&quot; href=&quot;#0&quot; title=&quot;View vocab&quot;&gt;&lt;/a&gt;
+			&lt;span class=&quot;icon i-unlock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked -unlockable&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;5&lt;/span&gt;
+			&lt;a class=&quot;icon i-link -hidden&quot; href=&quot;#0&quot; title=&quot;View vocab&quot;&gt;&lt;/a&gt;
+			&lt;span class=&quot;icon i-unlock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked -unlockable&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;6&lt;/span&gt;
+			&lt;a class=&quot;icon i-link -hidden&quot; href=&quot;#0&quot; title=&quot;View vocab&quot;&gt;&lt;/a&gt;
+			&lt;span class=&quot;icon i-unlock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;7&lt;/span&gt;
+			&lt;a class=&quot;icon i-link -hidden&quot; href=&quot;#0&quot; title=&quot;View vocab&quot;&gt;&lt;/a&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;8&lt;/span&gt;
+			&lt;a class=&quot;icon i-link -hidden&quot; href=&quot;#0&quot; title=&quot;View vocab&quot;&gt;&lt;/a&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;9&lt;/span&gt;
+			&lt;a class=&quot;icon i-link -hidden&quot; href=&quot;#0&quot; title=&quot;View vocab&quot;&gt;&lt;/a&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;10&lt;/span&gt;
+			&lt;a class=&quot;icon i-link -hidden&quot; href=&quot;#0&quot; title=&quot;View vocab&quot;&gt;&lt;/a&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;11&lt;/span&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;12&lt;/span&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;13&lt;/span&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;14&lt;/span&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;15&lt;/span&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;16&lt;/span&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;17&lt;/span&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;18&lt;/span&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;19&lt;/span&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;level-card -locked&quot; data-level-id=&quot;#0&quot;&gt;
+		&lt;div class=&quot;wrap&quot;&gt;
+			&lt;span class=&quot;levelnum&quot;&gt;20&lt;/span&gt;
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="progress-bar">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Progress Bar</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-preview">
+	<div class="progress-bar">
+	<span class="value"></span>
+</div>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;div class=&quot;progress-bar&quot;&gt;
+	&lt;span class=&quot;value&quot;&gt;&lt;/span&gt;
+&lt;/div&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="review-extra">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Review Extra</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-preview">
+	<div class="review-extra">
+
+	<!--   <div class="row">
+
+    <div id="detailSynonym" class="reveal-block col">
+      <button type="button" class="button revealToggle"><strong>U</strong>ser Synonyms</button>
+      <div class="reveal -hidden revealTarget">
+        <p class="text -synonyms">watermiddle, insidewater, verywater</p>
+      </div>
+    </div>
+
+  </div> -->
+
+	<div class="row">
+		<div id="detailKanji" class="reveal-block col col-half">
+			<button type="button" class="button revealToggle -disabled"><strong>K</strong>anji</button>
+			<div class="reveal -hidden revealTarget">
+				<p lang="ja" class="text -kanji">水中</p>
+			</div>
+		</div>
+
+		<div id="detailKana" class="reveal-block col col-half">
+			<button type="button" class="button revealToggle -disabled"><strong>P</strong>honetic</button>
+			<div class="reveal -hidden revealTarget">
+				<p lang="ja" class="text -kana">すいちゅう</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- STYLEGUIDE EXAMPLE - BUTTONS NOT DISABLED-->
+	<div class="row">
+		<div id="detailKanji" class="reveal-block col col-half">
+			<button type="button" class="button revealToggle"><strong>K</strong>anji</button>
+			<div class="reveal -hidden revealTarget">
+				<p lang="ja" class="text -kanji">水中</p>
+			</div>
+		</div>
+
+		<div id="detailKana" class="reveal-block col col-half">
+			<button type="button" class="button revealToggle"><strong>P</strong>honetic</button>
+			<div class="reveal -hidden revealTarget">
+				<p lang="ja" class="text -kana">すいちゅう</p>
+			</div>
+		</div>
+	</div>
+	<!-- / STYLEGUIDE EXAMPLE -->
+</div>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;div class=&quot;review-extra&quot;&gt;
+
+	&lt;!--   &lt;div class=&quot;row&quot;&gt;
+
+    &lt;div id=&quot;detailSynonym&quot; class=&quot;reveal-block col&quot;&gt;
+      &lt;button type=&quot;button&quot; class=&quot;button revealToggle&quot;&gt;&lt;strong&gt;U&lt;/strong&gt;ser Synonyms&lt;/button&gt;
+      &lt;div class=&quot;reveal -hidden revealTarget&quot;&gt;
+        &lt;p class=&quot;text -synonyms&quot;&gt;watermiddle, insidewater, verywater&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt; --&gt;
+
+	&lt;div class=&quot;row&quot;&gt;
+		&lt;div id=&quot;detailKanji&quot; class=&quot;reveal-block col col-half&quot;&gt;
+			&lt;button type=&quot;button&quot; class=&quot;button revealToggle -disabled&quot;&gt;&lt;strong&gt;K&lt;/strong&gt;anji&lt;/button&gt;
+			&lt;div class=&quot;reveal -hidden revealTarget&quot;&gt;
+				&lt;p lang=&quot;ja&quot; class=&quot;text -kanji&quot;&gt;水中&lt;/p&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+
+		&lt;div id=&quot;detailKana&quot; class=&quot;reveal-block col col-half&quot;&gt;
+			&lt;button type=&quot;button&quot; class=&quot;button revealToggle -disabled&quot;&gt;&lt;strong&gt;P&lt;/strong&gt;honetic&lt;/button&gt;
+			&lt;div class=&quot;reveal -hidden revealTarget&quot;&gt;
+				&lt;p lang=&quot;ja&quot; class=&quot;text -kana&quot;&gt;すいちゅう&lt;/p&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+
+	&lt;!-- STYLEGUIDE EXAMPLE - BUTTONS NOT DISABLED--&gt;
+	&lt;div class=&quot;row&quot;&gt;
+		&lt;div id=&quot;detailKanji&quot; class=&quot;reveal-block col col-half&quot;&gt;
+			&lt;button type=&quot;button&quot; class=&quot;button revealToggle&quot;&gt;&lt;strong&gt;K&lt;/strong&gt;anji&lt;/button&gt;
+			&lt;div class=&quot;reveal -hidden revealTarget&quot;&gt;
+				&lt;p lang=&quot;ja&quot; class=&quot;text -kanji&quot;&gt;水中&lt;/p&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+
+		&lt;div id=&quot;detailKana&quot; class=&quot;reveal-block col col-half&quot;&gt;
+			&lt;button type=&quot;button&quot; class=&quot;button revealToggle&quot;&gt;&lt;strong&gt;P&lt;/strong&gt;honetic&lt;/button&gt;
+			&lt;div class=&quot;reveal -hidden revealTarget&quot;&gt;
+				&lt;p lang=&quot;ja&quot; class=&quot;text -kana&quot;&gt;すいちゅう&lt;/p&gt;
+			&lt;/div&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+	&lt;!-- / STYLEGUIDE EXAMPLE --&gt;
+&lt;/div&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="review-header">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Review Header</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-preview">
+	<div class="review-header">
+	<div class="inner">
+		<!-- not <progress> due to inconsistent browser implementation -->
+		<div class="progress-bar">
+			<span class="value"></span>
+		</div> <a href="{% url " kw:home " %}" class="homelink"><span class="icon i-home"></span></a>
+		<ul class="statslist">
+			<li class="item"><span class="icon i-thumbsup"></span><span id="reviewsCorrect">0</span>%</li>
+			<li class="item"><span class="icon i-ok"></span><span id="reviewsDone">0</span></li>
+			<li class="item"><span class="icon i-inbox"></span><span id="reviewsLeft"></span></li>
+		</ul>
+	</div>
+</div>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;div class=&quot;review-header&quot;&gt;
+	&lt;div class=&quot;inner&quot;&gt;
+		&lt;!-- not &lt;progress&gt; due to inconsistent browser implementation --&gt;
+		&lt;div class=&quot;progress-bar&quot;&gt;
+			&lt;span class=&quot;value&quot;&gt;&lt;/span&gt;
+		&lt;/div&gt; &lt;a href=&quot;{% url &quot; kw:home &quot; %}&quot; class=&quot;homelink&quot;&gt;&lt;span class=&quot;icon i-home&quot;&gt;&lt;/span&gt;&lt;/a&gt;
+		&lt;ul class=&quot;statslist&quot;&gt;
+			&lt;li class=&quot;item&quot;&gt;&lt;span class=&quot;icon i-thumbsup&quot;&gt;&lt;/span&gt;&lt;span id=&quot;reviewsCorrect&quot;&gt;0&lt;/span&gt;%&lt;/li&gt;
+			&lt;li class=&quot;item&quot;&gt;&lt;span class=&quot;icon i-ok&quot;&gt;&lt;/span&gt;&lt;span id=&quot;reviewsDone&quot;&gt;0&lt;/span&gt;&lt;/li&gt;
+			&lt;li class=&quot;item&quot;&gt;&lt;span class=&quot;icon i-inbox&quot;&gt;&lt;/span&gt;&lt;span id=&quot;reviewsLeft&quot;&gt;&lt;/span&gt;&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="review-quiz">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Review Quiz</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-preview">
+	<div class="review-quiz">
+	<div class="upper">
+		<h1 id="meaning" class="meaning"><span class="icon -loading"></span></h1>
+	</div>
+
+	<div class="lower">
+
+		<form class="answerpanel">
+			<div class="streak">
+				<span class="icon i-enlightened"></span>
+			</div>
+
+			<label for="userAnswer" class="question _visuallyhidden">Vocabulary <strong>reading</strong></label>
+			<input id="userAnswer" lang="ja" class="answer" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
+
+			<button id="submitAnswer" type="submit" class="submit">
+				<!-- wrap because <button> can't display:flex in safari properly -->
+				<span class="submitwrap">
+          <span class="icon i-rightarrow"></span>
+				</span>
+			</button>
+
+			<input type="hidden" id="us-id" value="Nothing!">
+		</form>
+
+		<div class="review-extra">
+
+			<!--   <div class="row">
+    
+        <div id="detailSynonym" class="reveal-block col">
+          <button type="button" class="button revealToggle"><strong>U</strong>ser Synonyms</button>
+          <div class="reveal -hidden revealTarget">
+            <p class="text -synonyms">watermiddle, insidewater, verywater</p>
+          </div>
+        </div>
+    
+      </div> -->
+
+			<div class="row">
+				<div id="detailKanji" class="reveal-block col col-half">
+					<button type="button" class="button revealToggle -disabled"><strong>K</strong>anji</button>
+					<div class="reveal -hidden revealTarget">
+						<p lang="ja" class="text -kanji">水中</p>
+					</div>
+				</div>
+
+				<div id="detailKana" class="reveal-block col col-half">
+					<button type="button" class="button revealToggle -disabled"><strong>P</strong>honetic</button>
+					<div class="reveal -hidden revealTarget">
+						<p lang="ja" class="text -kana">すいちゅう</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- STYLEGUIDE EXAMPLE - BUTTONS NOT DISABLED-->
+			<div class="row">
+				<div id="detailKanji" class="reveal-block col col-half">
+					<button type="button" class="button revealToggle"><strong>K</strong>anji</button>
+					<div class="reveal -hidden revealTarget">
+						<p lang="ja" class="text -kanji">水中</p>
+					</div>
+				</div>
+
+				<div id="detailKana" class="reveal-block col col-half">
+					<button type="button" class="button revealToggle"><strong>P</strong>honetic</button>
+					<div class="reveal -hidden revealTarget">
+						<p lang="ja" class="text -kana">すいちゅう</p>
+					</div>
+				</div>
+			</div>
+			<!-- / STYLEGUIDE EXAMPLE -->
+		</div>
+	</div>
+</div>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;div class=&quot;review-quiz&quot;&gt;
+	&lt;div class=&quot;upper&quot;&gt;
+		&lt;h1 id=&quot;meaning&quot; class=&quot;meaning&quot;&gt;&lt;span class=&quot;icon -loading&quot;&gt;&lt;/span&gt;&lt;/h1&gt;
+	&lt;/div&gt;
+
+	&lt;div class=&quot;lower&quot;&gt;
+
+		&lt;form class=&quot;answerpanel&quot;&gt;
+			&lt;div class=&quot;streak&quot;&gt;
+				&lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
+			&lt;/div&gt;
+
+			&lt;label for=&quot;userAnswer&quot; class=&quot;question _visuallyhidden&quot;&gt;Vocabulary &lt;strong&gt;reading&lt;/strong&gt;&lt;/label&gt;
+			&lt;input id=&quot;userAnswer&quot; lang=&quot;ja&quot; class=&quot;answer&quot; type=&quot;text&quot; placeholder=&quot;答え&quot; autocapitalize=&quot;off&quot; autocorrect=&quot;off&quot; spellcheck=&quot;false&quot; autocomplete=&quot;off&quot;&gt;
+
+			&lt;button id=&quot;submitAnswer&quot; type=&quot;submit&quot; class=&quot;submit&quot;&gt;
+				&lt;!-- wrap because &lt;button&gt; can&#x27;t display:flex in safari properly --&gt;
+				&lt;span class=&quot;submitwrap&quot;&gt;
+          &lt;span class=&quot;icon i-rightarrow&quot;&gt;&lt;/span&gt;
+				&lt;/span&gt;
+			&lt;/button&gt;
+
+			&lt;input type=&quot;hidden&quot; id=&quot;us-id&quot; value=&quot;Nothing!&quot;&gt;
+		&lt;/form&gt;
+
+		&lt;div class=&quot;review-extra&quot;&gt;
+
+			&lt;!--   &lt;div class=&quot;row&quot;&gt;
+    
+        &lt;div id=&quot;detailSynonym&quot; class=&quot;reveal-block col&quot;&gt;
+          &lt;button type=&quot;button&quot; class=&quot;button revealToggle&quot;&gt;&lt;strong&gt;U&lt;/strong&gt;ser Synonyms&lt;/button&gt;
+          &lt;div class=&quot;reveal -hidden revealTarget&quot;&gt;
+            &lt;p class=&quot;text -synonyms&quot;&gt;watermiddle, insidewater, verywater&lt;/p&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+    
+      &lt;/div&gt; --&gt;
+
+			&lt;div class=&quot;row&quot;&gt;
+				&lt;div id=&quot;detailKanji&quot; class=&quot;reveal-block col col-half&quot;&gt;
+					&lt;button type=&quot;button&quot; class=&quot;button revealToggle -disabled&quot;&gt;&lt;strong&gt;K&lt;/strong&gt;anji&lt;/button&gt;
+					&lt;div class=&quot;reveal -hidden revealTarget&quot;&gt;
+						&lt;p lang=&quot;ja&quot; class=&quot;text -kanji&quot;&gt;水中&lt;/p&gt;
+					&lt;/div&gt;
+				&lt;/div&gt;
+
+				&lt;div id=&quot;detailKana&quot; class=&quot;reveal-block col col-half&quot;&gt;
+					&lt;button type=&quot;button&quot; class=&quot;button revealToggle -disabled&quot;&gt;&lt;strong&gt;P&lt;/strong&gt;honetic&lt;/button&gt;
+					&lt;div class=&quot;reveal -hidden revealTarget&quot;&gt;
+						&lt;p lang=&quot;ja&quot; class=&quot;text -kana&quot;&gt;すいちゅう&lt;/p&gt;
+					&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+
+			&lt;!-- STYLEGUIDE EXAMPLE - BUTTONS NOT DISABLED--&gt;
+			&lt;div class=&quot;row&quot;&gt;
+				&lt;div id=&quot;detailKanji&quot; class=&quot;reveal-block col col-half&quot;&gt;
+					&lt;button type=&quot;button&quot; class=&quot;button revealToggle&quot;&gt;&lt;strong&gt;K&lt;/strong&gt;anji&lt;/button&gt;
+					&lt;div class=&quot;reveal -hidden revealTarget&quot;&gt;
+						&lt;p lang=&quot;ja&quot; class=&quot;text -kanji&quot;&gt;水中&lt;/p&gt;
+					&lt;/div&gt;
+				&lt;/div&gt;
+
+				&lt;div id=&quot;detailKana&quot; class=&quot;reveal-block col col-half&quot;&gt;
+					&lt;button type=&quot;button&quot; class=&quot;button revealToggle&quot;&gt;&lt;strong&gt;P&lt;/strong&gt;honetic&lt;/button&gt;
+					&lt;div class=&quot;reveal -hidden revealTarget&quot;&gt;
+						&lt;p lang=&quot;ja&quot; class=&quot;text -kana&quot;&gt;すいちゅう&lt;/p&gt;
+					&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+			&lt;!-- / STYLEGUIDE EXAMPLE --&gt;
+		&lt;/div&gt;
+	&lt;/div&gt;
+&lt;/div&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="section-heading">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Section Heading</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
+				<svg>
+					<use xlink:href="#f-icon-notes" />
+				</svg>
+			</span>
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-notes" data-f-toggle="notes">
+	<p><code>span.breadcrumb</code> automatically adds a &quot;&gt;&quot; as well as spacing, to the left of each span</p>
+
+</div>
+<div class="f-item-preview">
+	<h1 class="section-heading">
+  Vocabulary<span class="breadcrumb">Level 6</span><span class="breadcrumb">おめでとう</span>
+</h1>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;h1 class=&quot;section-heading&quot;&gt;
+  Vocabulary&lt;span class=&quot;breadcrumb&quot;&gt;Level 6&lt;/span&gt;&lt;span class=&quot;breadcrumb&quot;&gt;おめでとう&lt;/span&gt;
+&lt;/h1&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="site-logo">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Site Logo</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-preview">
+	<a href="/" class="site-logo">
+	<span class="text">
+  <!-- &#8202; is a hairspace; minor space between kana to align with kanji nicer -->
+    <span lang="ja" class="kana">かに&#8202;わに</span>
+	<span lang="ja" class="kanji">蟹鰐</span>
+	<span class="_visuallyhidden">Wanikani</span>
+	</span>
+</a>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;a href=&quot;/&quot; class=&quot;site-logo&quot;&gt;
+	&lt;span class=&quot;text&quot;&gt;
+  &lt;!-- &amp;#8202; is a hairspace; minor space between kana to align with kanji nicer --&gt;
+    &lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;かに&amp;#8202;わに&lt;/span&gt;
+	&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;蟹鰐&lt;/span&gt;
+	&lt;span class=&quot;_visuallyhidden&quot;&gt;Wanikani&lt;/span&gt;
+	&lt;/span&gt;
+&lt;/a&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="site-nav">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Site Nav</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
+				<svg>
+					<use xlink:href="#f-icon-notes" />
+				</svg>
+			</span>
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-notes" data-f-toggle="notes">
+	<p>Converts to expandable menu on narrow viewports.</p>
+<p>If there are no reviews, add <code>_visuallyhidden</code> class to <code>span.count</code>.</p>
+
+</div>
+<div class="f-item-preview">
+	<nav class="site-nav">
+	<a href="#0" class="expandToggle">☰ Menu</a>
+	<ul class="nav-list toggleTarget">
+		<li class="item">
+			<a href="#" class="nav-link">
+				<span class="text">Reviews <span class="count">42+</span></span>
+			</a>
+		</li>
+		<li class="item -active">
+			<a href="#" class="nav-link">
+				<span class="text">Vocab</span>
+			</a>
+		</li>
+		<li class="item">
+			<a href="#" class="nav-link">
+				<span class="text">About</span>
+			</a>
+		</li>
+		<li class="item">
+			<a href="#" class="nav-link">
+				<span class="text">Contact</span>
+			</a>
+		</li>
+		<li class="item">
+			<a href="#" class="nav-link">
+				<span class="text">Settings</span>
+			</a>
+		</li>
+		<li class="item">
+			<a href="#" class="nav-link">
+				<span class="text">Logout</span>
+			</a>
+		</li>
+	</ul>
+</nav>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;nav class=&quot;site-nav&quot;&gt;
+	&lt;a href=&quot;#0&quot; class=&quot;expandToggle&quot;&gt;☰ Menu&lt;/a&gt;
+	&lt;ul class=&quot;nav-list toggleTarget&quot;&gt;
+		&lt;li class=&quot;item&quot;&gt;
+			&lt;a href=&quot;#&quot; class=&quot;nav-link&quot;&gt;
+				&lt;span class=&quot;text&quot;&gt;Reviews &lt;span class=&quot;count&quot;&gt;42+&lt;/span&gt;&lt;/span&gt;
+			&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;li class=&quot;item -active&quot;&gt;
+			&lt;a href=&quot;#&quot; class=&quot;nav-link&quot;&gt;
+				&lt;span class=&quot;text&quot;&gt;Vocab&lt;/span&gt;
+			&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;li class=&quot;item&quot;&gt;
+			&lt;a href=&quot;#&quot; class=&quot;nav-link&quot;&gt;
+				&lt;span class=&quot;text&quot;&gt;About&lt;/span&gt;
+			&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;li class=&quot;item&quot;&gt;
+			&lt;a href=&quot;#&quot; class=&quot;nav-link&quot;&gt;
+				&lt;span class=&quot;text&quot;&gt;Contact&lt;/span&gt;
+			&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;li class=&quot;item&quot;&gt;
+			&lt;a href=&quot;#&quot; class=&quot;nav-link&quot;&gt;
+				&lt;span class=&quot;text&quot;&gt;Settings&lt;/span&gt;
+			&lt;/a&gt;
+		&lt;/li&gt;
+		&lt;li class=&quot;item&quot;&gt;
+			&lt;a href=&quot;#&quot; class=&quot;nav-link&quot;&gt;
+				&lt;span class=&quot;text&quot;&gt;Logout&lt;/span&gt;
+			&lt;/a&gt;
+		&lt;/li&gt;
+	&lt;/ul&gt;
+&lt;/nav&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="user-details">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">User Details</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-preview">
+	<div class="user-details">
+
+	<div class="wkinfo">
+		<h3 class="title">Crabigator Apprentice Info</h3>
+		<ul class="list">
+			<li class="item">
+				<strong><span class="username">Subversity</span></strong> of <strong>Sect Turtles</strong>
+			</li>
+			<li class="item">
+				<strong>Level <span class="level">20</span></strong> Apprentice
+			</li>
+			<li class="item">
+				Scribed <strong><span class="topics-count">6</span> topics</strong> &amp; <strong><span class="posts-count">78</span> posts</strong>
+			</li>
+			<li class="item">
+				Serving the Crabigator since <strong><span class="join-date">May 26, 2012</span></strong>
+			</li>
+		</ul>
+	</div>
+
+	<div class="userinfo">
+		<h3 class="title">About Subversity</h3>
+		<p class="text">Learns the things.</p>
+		<p class="text">Has visited every 県 in Japan.</p>
+		<ul class="list">
+			<li class="item">
+				<a href="http://www.twitter.com/djtbay" class="link"><span class="icon i-twitter"></span>@djtbay</a>
+			</li>
+			<li class="item">
+				<a href="http://flickr.com/djtbay" class="link"><span class="icon i-link"></span>Website</a>
+			</li>
+		</ul>
+	</div>
+
+</div>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;div class=&quot;user-details&quot;&gt;
+
+	&lt;div class=&quot;wkinfo&quot;&gt;
+		&lt;h3 class=&quot;title&quot;&gt;Crabigator Apprentice Info&lt;/h3&gt;
+		&lt;ul class=&quot;list&quot;&gt;
+			&lt;li class=&quot;item&quot;&gt;
+				&lt;strong&gt;&lt;span class=&quot;username&quot;&gt;Subversity&lt;/span&gt;&lt;/strong&gt; of &lt;strong&gt;Sect Turtles&lt;/strong&gt;
+			&lt;/li&gt;
+			&lt;li class=&quot;item&quot;&gt;
+				&lt;strong&gt;Level &lt;span class=&quot;level&quot;&gt;20&lt;/span&gt;&lt;/strong&gt; Apprentice
+			&lt;/li&gt;
+			&lt;li class=&quot;item&quot;&gt;
+				Scribed &lt;strong&gt;&lt;span class=&quot;topics-count&quot;&gt;6&lt;/span&gt; topics&lt;/strong&gt; &amp;amp; &lt;strong&gt;&lt;span class=&quot;posts-count&quot;&gt;78&lt;/span&gt; posts&lt;/strong&gt;
+			&lt;/li&gt;
+			&lt;li class=&quot;item&quot;&gt;
+				Serving the Crabigator since &lt;strong&gt;&lt;span class=&quot;join-date&quot;&gt;May 26, 2012&lt;/span&gt;&lt;/strong&gt;
+			&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/div&gt;
+
+	&lt;div class=&quot;userinfo&quot;&gt;
+		&lt;h3 class=&quot;title&quot;&gt;About Subversity&lt;/h3&gt;
+		&lt;p class=&quot;text&quot;&gt;Learns the things.&lt;/p&gt;
+		&lt;p class=&quot;text&quot;&gt;Has visited every 県 in Japan.&lt;/p&gt;
+		&lt;ul class=&quot;list&quot;&gt;
+			&lt;li class=&quot;item&quot;&gt;
+				&lt;a href=&quot;http://www.twitter.com/djtbay&quot; class=&quot;link&quot;&gt;&lt;span class=&quot;icon i-twitter&quot;&gt;&lt;/span&gt;@djtbay&lt;/a&gt;
+			&lt;/li&gt;
+			&lt;li class=&quot;item&quot;&gt;
+				&lt;a href=&quot;http://flickr.com/djtbay&quot; class=&quot;link&quot;&gt;&lt;span class=&quot;icon i-link&quot;&gt;&lt;/span&gt;Website&lt;/a&gt;
+			&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/div&gt;
+
+&lt;/div&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="user-overview">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">User Overview</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-preview">
+	<div class="user-overview">
+
+	<h2 class="name">Subversity</h2>
+	<div class="gravatar">
+		<img alt="User Gravatar" src="//www.gravatar.com/avatar/c8b3772c4c10399c249ec96df63633c7?s=300">
+	</div>
+
+	<div class="reviews">
+		<button type="button" id="forceSrs" class="pure-button button">
+			<span class="_visuallyhidden">Refresh reviews</span>
+			<span class="i-refresh"></span>
+		</button>
+		<a id="reviewCount" href="#" role="button" class="pure-button button -disabled">354 Reviews</a>
+	</div>
+
+</div>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;div class=&quot;user-overview&quot;&gt;
+
+	&lt;h2 class=&quot;name&quot;&gt;Subversity&lt;/h2&gt;
+	&lt;div class=&quot;gravatar&quot;&gt;
+		&lt;img alt=&quot;User Gravatar&quot; src=&quot;//www.gravatar.com/avatar/c8b3772c4c10399c249ec96df63633c7?s=300&quot;&gt;
+	&lt;/div&gt;
+
+	&lt;div class=&quot;reviews&quot;&gt;
+		&lt;button type=&quot;button&quot; id=&quot;forceSrs&quot; class=&quot;pure-button button&quot;&gt;
+			&lt;span class=&quot;_visuallyhidden&quot;&gt;Refresh reviews&lt;/span&gt;
+			&lt;span class=&quot;i-refresh&quot;&gt;&lt;/span&gt;
+		&lt;/button&gt;
+		&lt;a id=&quot;reviewCount&quot; href=&quot;#&quot; role=&quot;button&quot; class=&quot;pure-button button -disabled&quot;&gt;354 Reviews&lt;/a&gt;
+	&lt;/div&gt;
+
+&lt;/div&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="vocab-block">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Vocab Block</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
+				<svg>
+					<use xlink:href="#f-icon-notes" />
+				</svg>
+			</span>
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-notes" data-f-toggle="notes">
+	<p>Wrap the kanji, kana, meaning in a <code>&lt;div class=&quot;readingset&quot;&gt;&lt;/div&gt;</code> if there will be multiple entries</p>
+
+</div>
+<div class="f-item-preview">
+	<li class="vocab-block">
+	<div class="vocab-base">
+		<!-- <div class="readingset"> -->
+		<span lang="ja" class="kanji">お誕生日おめでとう</span>
+		<span lang="ja" class="kana">おたんじょうびおめでとう</span>
+		<span class="meaning">Happy Birthday</span>
+		<!-- </div> -->
+	</div>
+</li>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;li class=&quot;vocab-block&quot;&gt;
+	&lt;div class=&quot;vocab-base&quot;&gt;
+		&lt;!-- &lt;div class=&quot;readingset&quot;&gt; --&gt;
+		&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/span&gt;
+		&lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/span&gt;
+		&lt;span class=&quot;meaning&quot;&gt;Happy Birthday&lt;/span&gt;
+		&lt;!-- &lt;/div&gt; --&gt;
+	&lt;/div&gt;
+&lt;/li&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="vocab-card">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Vocab Card</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
+				<svg>
+					<use xlink:href="#f-icon-notes" />
+				</svg>
+			</span>
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-notes" data-f-toggle="notes">
+	<p>Has Vocab-Extra tucked away inside (toggle via bottom right).
+Modifier classes and icons alter this component, see them in action in <a href="/components.html#vocab-list">vocab-list</a>.</p>
+<p>Classes: <code>-locked -unlockable -expanded</code></p>
+<p>Icons: <code>.icon i-lock .icon i-unlocked .icon i-unlock</code></p>
+<p>When used in review summary, <code>.readingset</code> is a link not a div!</p>
+
+</div>
+<div class="f-item-preview">
+	<li class="vocab-card ">
+	<div class="vocab-base">
+
+		<div class="readingset">
+			<span lang="ja" class="kanji">お誕生日おめでとう</span>
+			<span lang="ja" class="kana">おたんじょうびおめでとう</span>
+			<span class="meaning">Happy Birthday</span>
+		</div>
+
+		<span class=""></span>
+
+	</div>
+
+	<div class="vocab-extra">
+		<span class="icon i-enlightened"></span>
+
+		<div class="synonyms">
+			<span class="text">User synonyms:</span>
+			<ul class="list">
+				<li class="item" contentEditable="true">Birth anniversary</li>
+				<li class="item" contentEditable="true">That day of the year</li>
+			</ul>
+		</div>
+
+		<button class="button extraToggle i-downarrow" title="More Info"></button>
+	</div>
+</li>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;li class=&quot;vocab-card &quot;&gt;
+	&lt;div class=&quot;vocab-base&quot;&gt;
+
+		&lt;div class=&quot;readingset&quot;&gt;
+			&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/span&gt;
+			&lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/span&gt;
+			&lt;span class=&quot;meaning&quot;&gt;Happy Birthday&lt;/span&gt;
+		&lt;/div&gt;
+
+		&lt;span class=&quot;&quot;&gt;&lt;/span&gt;
+
+	&lt;/div&gt;
+
+	&lt;div class=&quot;vocab-extra&quot;&gt;
+		&lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
+
+		&lt;div class=&quot;synonyms&quot;&gt;
+			&lt;span class=&quot;text&quot;&gt;User synonyms:&lt;/span&gt;
+			&lt;ul class=&quot;list&quot;&gt;
+				&lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;Birth anniversary&lt;/li&gt;
+				&lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;That day of the year&lt;/li&gt;
+			&lt;/ul&gt;
+		&lt;/div&gt;
+
+		&lt;button class=&quot;button extraToggle i-downarrow&quot; title=&quot;More Info&quot;&gt;&lt;/button&gt;
+	&lt;/div&gt;
+&lt;/li&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="vocab-extra">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Vocab Extra</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-preview">
+	<div class="vocab-extra">
+	<span class="icon i-enlightened"></span>
+
+	<div class="synonyms">
+		<span class="text">User synonyms:</span>
+		<ul class="list">
+			<li class="item" contentEditable="true">Birth anniversary</li>
+			<li class="item" contentEditable="true">That day of the year</li>
+		</ul>
+	</div>
+
+	<button class="button extraToggle i-downarrow" title="More Info"></button>
+</div>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;div class=&quot;vocab-extra&quot;&gt;
+	&lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
+
+	&lt;div class=&quot;synonyms&quot;&gt;
+		&lt;span class=&quot;text&quot;&gt;User synonyms:&lt;/span&gt;
+		&lt;ul class=&quot;list&quot;&gt;
+			&lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;Birth anniversary&lt;/li&gt;
+			&lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;That day of the year&lt;/li&gt;
+		&lt;/ul&gt;
+	&lt;/div&gt;
+
+	&lt;button class=&quot;button extraToggle i-downarrow&quot; title=&quot;More Info&quot;&gt;&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+<div class="f-item-group" id="vocab-list">
+
+	<div class="f-item-heading-group" data-f-toggle="labels">
+		<h2 class="f-item-heading">Vocab List</h2>
+		<div class="f-item-controls">
+			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
+				<svg>
+					<use xlink:href="#f-icon-notes" />
+				</svg>
+			</span>
+			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
+				<svg>
+					<use xlink:href="#f-icon-code" />
+				</svg>
+			</span>
+		</div>
+	</div><div class="f-item-notes" data-f-toggle="notes">
+	<p>Modifiers in use starting with first card: <code>'-locked -unlockable'</code>, <code>'-locked'</code>.</p>
+
+</div>
+<div class="f-item-preview">
+	<ul class="vocab-list">
+
+	<li class="vocab-card ">
+		<div class="vocab-base">
+
+			<div class="readingset">
+				<span lang="ja" class="kanji">お誕生日おめでとう</span>
+				<span lang="ja" class="kana">おたんじょうびおめでとう</span>
+				<span class="meaning">Happy Birthday</span>
+			</div>
+
+			<span class="icon i-unlocked"></span>
+
+		</div>
+
+		<div class="vocab-extra">
+			<span class="icon i-enlightened"></span>
+
+			<div class="synonyms">
+				<span class="text">User synonyms:</span>
+				<ul class="list">
+					<li class="item" contentEditable="true">Birth anniversary</li>
+					<li class="item" contentEditable="true">That day of the year</li>
+				</ul>
+			</div>
+
+			<button class="button extraToggle i-downarrow" title="More Info"></button>
+		</div>
+	</li>
+	<li class="vocab-card -locked -unlockable">
+		<div class="vocab-base">
+
+			<div class="readingset">
+				<span lang="ja" class="kanji">お誕生日おめでとう</span>
+				<span lang="ja" class="kana">おたんじょうびおめでとう</span>
+				<span class="meaning">Happy Birthday</span>
+			</div>
+
+			<span class="icon i-unlock"></span>
+
+		</div>
+
+		<div class="vocab-extra">
+			<span class="icon i-enlightened"></span>
+
+			<div class="synonyms">
+				<span class="text">User synonyms:</span>
+				<ul class="list">
+					<li class="item" contentEditable="true">Birth anniversary</li>
+					<li class="item" contentEditable="true">That day of the year</li>
+				</ul>
+			</div>
+
+			<button class="button extraToggle i-downarrow" title="More Info"></button>
+		</div>
+	</li>
+	<li class="vocab-card -locked">
+		<div class="vocab-base">
+
+			<div class="readingset">
+				<span lang="ja" class="kanji">お誕生日おめでとう</span>
+				<span lang="ja" class="kana">おたんじょうびおめでとう</span>
+				<span class="meaning">Happy Birthday</span>
+			</div>
+
+			<span class="icon i-lock"></span>
+
+		</div>
+
+		<div class="vocab-extra">
+			<span class="icon i-enlightened"></span>
+
+			<div class="synonyms">
+				<span class="text">User synonyms:</span>
+				<ul class="list">
+					<li class="item" contentEditable="true">Birth anniversary</li>
+					<li class="item" contentEditable="true">That day of the year</li>
+				</ul>
+			</div>
+
+			<button class="button extraToggle i-downarrow" title="More Info"></button>
+		</div>
+	</li>
+</ul>
+</div>
+<div class="f-item-code f-item-hidden" data-f-toggle="code">
+	<pre><code class="language-markup">&lt;ul class=&quot;vocab-list&quot;&gt;
+
+	&lt;li class=&quot;vocab-card &quot;&gt;
+		&lt;div class=&quot;vocab-base&quot;&gt;
+
+			&lt;div class=&quot;readingset&quot;&gt;
+				&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/span&gt;
+				&lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/span&gt;
+				&lt;span class=&quot;meaning&quot;&gt;Happy Birthday&lt;/span&gt;
+			&lt;/div&gt;
+
+			&lt;span class=&quot;icon i-unlocked&quot;&gt;&lt;/span&gt;
+
+		&lt;/div&gt;
+
+		&lt;div class=&quot;vocab-extra&quot;&gt;
+			&lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
+
+			&lt;div class=&quot;synonyms&quot;&gt;
+				&lt;span class=&quot;text&quot;&gt;User synonyms:&lt;/span&gt;
+				&lt;ul class=&quot;list&quot;&gt;
+					&lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;Birth anniversary&lt;/li&gt;
+					&lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;That day of the year&lt;/li&gt;
+				&lt;/ul&gt;
+			&lt;/div&gt;
+
+			&lt;button class=&quot;button extraToggle i-downarrow&quot; title=&quot;More Info&quot;&gt;&lt;/button&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;vocab-card -locked -unlockable&quot;&gt;
+		&lt;div class=&quot;vocab-base&quot;&gt;
+
+			&lt;div class=&quot;readingset&quot;&gt;
+				&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/span&gt;
+				&lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/span&gt;
+				&lt;span class=&quot;meaning&quot;&gt;Happy Birthday&lt;/span&gt;
+			&lt;/div&gt;
+
+			&lt;span class=&quot;icon i-unlock&quot;&gt;&lt;/span&gt;
+
+		&lt;/div&gt;
+
+		&lt;div class=&quot;vocab-extra&quot;&gt;
+			&lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
+
+			&lt;div class=&quot;synonyms&quot;&gt;
+				&lt;span class=&quot;text&quot;&gt;User synonyms:&lt;/span&gt;
+				&lt;ul class=&quot;list&quot;&gt;
+					&lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;Birth anniversary&lt;/li&gt;
+					&lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;That day of the year&lt;/li&gt;
+				&lt;/ul&gt;
+			&lt;/div&gt;
+
+			&lt;button class=&quot;button extraToggle i-downarrow&quot; title=&quot;More Info&quot;&gt;&lt;/button&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+	&lt;li class=&quot;vocab-card -locked&quot;&gt;
+		&lt;div class=&quot;vocab-base&quot;&gt;
+
+			&lt;div class=&quot;readingset&quot;&gt;
+				&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/span&gt;
+				&lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/span&gt;
+				&lt;span class=&quot;meaning&quot;&gt;Happy Birthday&lt;/span&gt;
+			&lt;/div&gt;
+
+			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
+
+		&lt;/div&gt;
+
+		&lt;div class=&quot;vocab-extra&quot;&gt;
+			&lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
+
+			&lt;div class=&quot;synonyms&quot;&gt;
+				&lt;span class=&quot;text&quot;&gt;User synonyms:&lt;/span&gt;
+				&lt;ul class=&quot;list&quot;&gt;
+					&lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;Birth anniversary&lt;/li&gt;
+					&lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;That day of the year&lt;/li&gt;
+				&lt;/ul&gt;
+			&lt;/div&gt;
+
+			&lt;button class=&quot;button extraToggle i-downarrow&quot; title=&quot;More Info&quot;&gt;&lt;/button&gt;
+		&lt;/div&gt;
+	&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+</div>
+
+
+</div>
+
+
+
+
+		</div>
+	<script src="/assets/fabricator/scripts/f.js"></script>
+
+	<!-- toolkit scripts -->
+	<script src="/assets/scripts/global.js"></script>
+
+</body>
+</html>

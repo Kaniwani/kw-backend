@@ -1,15 +1,15 @@
 .announcements-section {
+  // should match user-details.scss
+  $bp-user-details: '>=650px';
   text-align: left;
   padding-top: $unit-md;
 
-  // should match $bp-user-details in user-details
-  @include media('>=670px') {
+  @include media($bp-user-details) {
     text-align: center;
-    padding-bottom: $unit-md;
 
-    .accordion-list > .item > .content {
-      @include container(800px);
-      padding-left: 0;
+    .accordion-container .content {
+      // p is constrained to 800px - keep centered/line length nice
+      @include container(700px);
     }
   }
 

@@ -147,8 +147,10 @@ class LockRequested(View):
     def post(self, request, *args, **kwargs):
         user = self.request.user
         requested_level = request.POST['level']
-
-
+        #if user locks their current level, prevent WK syncing new stuff.
+        if user.profile.level == int(requested_level):
+            user.profile.follow_me = False
+            user.profile.save()
         removed_count = lock_level_for_user(requested_level, user)
 
         return HttpResponse("{} items removed from your study queue.".format(removed_count))
@@ -197,7 +199,7 @@ class UnlockRequested(View):
             return HttpResponse("{} vocabulary unlocked".format(ul_count))
         else:
             return HttpResponse(
-                "{} vocabulary unlocked.\nHowever, you still have {} vocabulary locked in WaniKani".format(ul_count,
+                "{} vocabulary unlocked.<br/>You still have {} upcoming vocabulary to unlock on WaniKani for your current level.".format(ul_count,
                                                                                                            l_count))
 
     @method_decorator(login_required)

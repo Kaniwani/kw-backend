@@ -51,6 +51,7 @@ let refreshReviews = function({forceGet} = {forceGet: false}) {
   storageCount = simpleStorage.get('reviewCount') || 0;
   sessionFinished = simpleStorage.get('sessionFinished');
   recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
+
   console.log(`
     recentlyRefreshed: ${!recentlyRefreshed},
     forceGet: ${forceGet},
