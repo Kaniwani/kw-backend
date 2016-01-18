@@ -1,7 +1,5 @@
 /* https://github.com/IonicaBizau/gridly/ */
 
-$unstack-bp: 500px;
-
 .row {
   display: flex;
 }
@@ -10,7 +8,7 @@ $unstack-bp: 500px;
   flex: 1;
 }
 
-@media(max-width: $unstack-bp) {
+@include media('<=768px') {
   .row {
     flex-direction: column;
   }

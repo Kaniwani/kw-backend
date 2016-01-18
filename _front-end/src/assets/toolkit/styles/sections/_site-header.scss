@@ -11,16 +11,27 @@
     align-items: center;
 
     > .site-logo {
+      // no-flex
+      display: inline-block;
+      float: left;
+      vertical-align: middle;
+      //
       margin: 10px;
       flex-shrink: 0;
-      align-self: flex-start;
+      align-self: center;
       @include media($bp-nav-1) {
         align-self: center;
       }
     }
 
     > .site-nav {
-      align-self: flex-start;
+      // no-flex fallbacks
+      display: inline-block;
+      float: right;
+      vertical-align: middle;
+      //
+      max-width: calc(100% - 90px);
+      align-self: center;
       font-size: 14px;
 
       @include media($bp-nav-1) {
