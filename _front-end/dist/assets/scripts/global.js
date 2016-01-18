@@ -80,13 +80,13 @@
 
 	var _sectionsHome2 = _interopRequireDefault(_sectionsHome);
 
-	var _sectionsVocab = __webpack_require__(15);
+	var _sectionsVocabulary = __webpack_require__(15);
 
-	var _sectionsVocab2 = _interopRequireDefault(_sectionsVocab);
+	var _sectionsVocabulary2 = _interopRequireDefault(_sectionsVocabulary);
 
-	var _sectionsUnlocks = __webpack_require__(16);
+	var _sectionsLevelVocab = __webpack_require__(16);
 
-	var _sectionsUnlocks2 = _interopRequireDefault(_sectionsUnlocks);
+	var _sectionsLevelVocab2 = _interopRequireDefault(_sectionsLevelVocab);
 
 	var _sectionsReviews = __webpack_require__(17);
 
@@ -100,8 +100,8 @@
 	  _componentsAccordionContainer2['default'].init();
 	  _sectionsLogin2['default'].init();
 	  _sectionsHome2['default'].init();
-	  _sectionsVocab2['default'].init();
-	  _sectionsUnlocks2['default'].init();
+	  _sectionsVocabulary2['default'].init();
+	  _sectionsLevelVocab2['default'].init();
 	  _sectionsReviews2['default'].init();
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
@@ -11322,6 +11322,7 @@
 	  storageCount = simpleStorage.get('reviewCount') || 0;
 	  sessionFinished = simpleStorage.get('sessionFinished');
 	  recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
+
 	  console.log("\n    recentlyRefreshed: " + !recentlyRefreshed + ",\n    forceGet: " + forceGet + ",\n    sessionFinished: " + sessionFinished + ",\n    storageCount: " + (storageCount < 1));
 
 	  if (!recentlyRefreshed || /*sessionFinished && storageCount < 1 && */forceGet) {
@@ -11344,6 +11345,117 @@
 
 /***/ },
 /* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($, notie, simpleStorage) {'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+	  value: true
+	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _componentsRefreshReviewsJs = __webpack_require__(13);
+
+	var _componentsRefreshReviewsJs2 = _interopRequireDefault(_componentsRefreshReviewsJs);
+
+	// setup variables inside module closure, but functions in this file can modify and access them
+	var CSRF = undefined,
+	    $reviewCount = undefined,
+	    $levelList = undefined,
+	    $levels = undefined,
+	    $icon = undefined,
+	    $card = undefined,
+	    level = undefined,
+	    currentLevel = undefined,
+	    reviews = undefined;
+
+	function init() {
+	  $levelList = $('.level-list');
+
+	  // if container element exists on current page
+	  if ($levelList.length) {
+
+	    // cache selector elements/unchanging vars
+	    CSRF = $('#csrf').val();
+	    currentLevel = parseInt($('#currentLevel').val(), 10);
+	    console.log(currentLevel);
+	    $levels = $levelList.find('.level-card');
+	    $reviewCount = $('.nav-link > .text > .count');
+
+	    // Attach events
+	    $levelList.on('click', '[class*="i-unlock"]', handleLockClick);
+	    $levelList.on('click', '[class*="i-lock"]', function () {
+	      return notie.alert(3, 'Level is locked. No cheating!', 1);
+	    });
+	  }
+	}
+
+	function handleLockClick(event) {
+	  event.preventDefault();
+
+	  $icon = $(this), $card = $icon.closest(".level-card"), level = $card.data("level-id"), reviews = parseInt($reviewCount.text(), 10);
+
+	  if ($card.hasClass('-unlocked')) {
+	    notie.confirm('Are you sure you want to relock level ' + level + '?\n      </br>This will reset the SRS for all items in this level.', 'Yeah!', 'Nope', reLockLevel);
+	  } else {
+	    unLockLevel();
+	  }
+	}
+
+	function unLockLevel() {
+	  $icon.removeClass("i-unlock i-unlocked").addClass('-loading');
+
+	  $.post("/kw/levelunlock/", { level: level, csrfmiddlewaretoken: CSRF }).done(function (res) {
+	    notie.alert(1, res, 8);
+
+	    $icon.removeClass("-loading").addClass('i-unlocked');
+	    $card.removeClass("-locked -unlockable");
+	    $card.addClass("-unlocked");
+	    $card.find('.i-link').removeClass('-hidden');
+
+	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
+	  }).fail(handleAjaxFail);
+	}
+
+	function reLockLevel() {
+	  $icon.removeClass("i-unlock i-unlocked").addClass('-loading');
+
+	  $.post("/kw/levellock/", { level: level, csrfmiddlewaretoken: CSRF }).done(function (res) {
+
+	    var currentLevelMsg = '<br/> We noticed that you just locked your current level. <br/>Newly unlocked vocab on WaniKani will no longer be added to your reviews.<br/> You can toggle <b>Follow WaniKani</b> back on in the <a href="/kw/settings"><b>Settings page</b></a>.';
+
+	    if (level === currentLevel) res += currentLevelMsg;
+
+	    notie.alert(1, res, 20);
+
+	    $icon.removeClass("-loading").addClass("i-unlock");
+	    $card.removeClass("-unlocked");
+	    $card.addClass("-locked -unlockable");
+	    $card.find('.i-link').addClass('-hidden');
+
+	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
+	  }).fail(handleAjaxFail);
+	}
+
+	function handleAjaxFail(res) {
+	  var message = 'Something went wrong - please try again. If the problem persists, submit a bug report via <a href="/contact"> the contact form</a> with the following information: <q>' + res.responseText + ' - ' + res.status + ': ' + res.statusText + '</q>.';
+
+	  notie.alert(3, message, 60);
+	}
+
+	var api = {
+	  init: init
+	};
+
+	exports['default'] = api;
+	module.exports = exports['default'];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(9), __webpack_require__(14)))
+
+/***/ },
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
@@ -11400,111 +11512,6 @@
 	exports['default'] = api;
 	module.exports = exports['default'];
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function($, notie, simpleStorage) {'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-	var _componentsRefreshReviewsJs = __webpack_require__(13);
-
-	var _componentsRefreshReviewsJs2 = _interopRequireDefault(_componentsRefreshReviewsJs);
-
-	// setup variables inside module closure, but functions in this file can modify and access them
-	var CSRF = undefined,
-	    $reviewCount = undefined,
-	    $levelList = undefined,
-	    $levels = undefined,
-	    $icon = undefined,
-	    $card = undefined,
-	    level = undefined,
-	    reviews = undefined;
-
-	function init() {
-	  $levelList = $('.level-list');
-
-	  // if container element exists on current page
-	  if ($levelList.length) {
-
-	    // cache selector elements/unchanging vars
-	    CSRF = $('#csrf').val();
-	    $levels = $levelList.find('.level-card');
-	    $reviewCount = $('.nav-link > .text > .count');
-
-	    // Attach events
-	    $levelList.on('click', '[class*="i-unlock"]', handleLockClick);
-	    $levelList.on('click', '[class*="i-lock"]', function () {
-	      return notie.alert(3, 'Level is locked. No cheating!', 1);
-	    });
-	  }
-	}
-
-	function handleLockClick(event) {
-	  event.preventDefault();
-
-	  $icon = $(this), $card = $icon.closest(".level-card"), level = $card.data("level-id"), reviews = parseInt($reviewCount.text(), 10);
-
-	  if ($card.hasClass('-unlocked')) {
-	    notie.confirm('Are you sure you want to relock level ' + level + '?\n      </br>This will reset the SRS for all items in this level.', 'Yeah!', 'Nope', reLockLevel);
-	  } else {
-	    unLockLevel();
-	  }
-	}
-
-	function unLockLevel() {
-	  $icon.removeClass("i-unlock i-unlocked").addClass('-loading');
-
-	  $.post("/kw/levelunlock/", { level: level, csrfmiddlewaretoken: CSRF }).done(function (res) {
-
-	    notie.alert(1, res, 1.5);
-
-	    $icon.removeClass("-loading").addClass('i-unlocked');
-	    $card.removeClass("-locked -unlockable");
-	    $card.addClass("-unlocked");
-	    $card.find('.i-link').removeClass('-hidden');
-
-	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
-	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
-	  }).fail(handleAjaxFail);
-	}
-
-	function reLockLevel() {
-	  $icon.removeClass("i-unlock i-unlocked").addClass('-loading');
-
-	  $.post("/kw/levellock/", { level: level, csrfmiddlewaretoken: CSRF }).done(function (res) {
-
-	    notie.alert(1, res, 1.5);
-
-	    $icon.removeClass("-loading").addClass("i-unlock");
-	    $card.removeClass("-unlocked");
-	    $card.addClass("-locked -unlockable");
-	    $card.find('.i-link').addClass('-hidden');
-
-	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
-	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
-	  }).fail(handleAjaxFail);
-	}
-
-	function handleAjaxFail(res) {
-	  var message = 'Something went wrong - please try again. If the problem persists, submit a bug report via <a href="/contact"> the contact form</a> with the following information: <q>' + res.responseText + ' - ' + res.status + ': ' + res.statusText + '</q>.';
-
-	  notie.alert(3, message, 60);
-	}
-
-	var api = {
-	  init: init
-	};
-
-	exports['default'] = api;
-	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(9), __webpack_require__(14)))
 
 /***/ },
 /* 17 */
