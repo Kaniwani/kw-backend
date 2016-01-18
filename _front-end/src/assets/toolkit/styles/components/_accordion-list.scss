@@ -8,11 +8,8 @@
 
   > .item {
     flex: 1 1 100%;
-    > .accordion-container {
-      .wrap {
-        padding: 0 $unit-md;
-      }
+    &:not(:last-child) {
+      margin-bottom: $unit-xs;
     }
   }
-
 }

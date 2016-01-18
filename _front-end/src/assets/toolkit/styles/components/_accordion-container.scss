@@ -15,7 +15,7 @@
     }
 
     .title {
-      margin-top: 0;
+      margin: 0;
     }
 
     .time {
@@ -37,14 +37,15 @@
     transition: max-height .4s ease-out;
     max-height: 0;
     overflow: hidden;
-  }
 
-  .content {
-    .author {
-      &:before {
-        content: '—';
-        position: relative;
-        left: -5px;
+  > .content {
+      padding: $unit-xs $unit-sm 0;
+      .author {
+        &:before {
+          content: '—';
+          position: relative;
+          left: -5px;
+        }
       }
     }
   }

@@ -5,6 +5,10 @@
 
   @include media($bp-user-details) {
     text-align: center;
+    .accordion-container .content {
+      // p is constrained to 800px - keep centered/line length nice
+      @include container(700px);
+    }
   }
 
 }

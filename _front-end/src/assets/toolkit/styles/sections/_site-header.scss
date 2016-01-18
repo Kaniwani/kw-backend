@@ -3,7 +3,6 @@
   box-shadow: $shadow-bottom-light;
 
   > .inner {
-    @include container($site-max-width);
     display: flex;
     flex-wrap: nowrap;
     flex-direction: row;
@@ -17,6 +16,7 @@
       vertical-align: middle;
       //
       margin: 10px;
+      margin-left: 0;
       flex-shrink: 0;
       align-self: center;
       @include media($bp-nav-1) {

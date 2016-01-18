@@ -1,0 +1,18 @@
+.about-section {
+
+  .row .col {
+    @include media($bp-md) {
+      margin-bottom: $unit-md;
+    }
+  }
+  .row .col-half {
+    @include media($bp-md) {
+      &:first-child {
+        padding-right: $unit-md;
+      }
+      &:last-child {
+        padding-left: $unit-md;
+      }
+    }
+  }
+}
