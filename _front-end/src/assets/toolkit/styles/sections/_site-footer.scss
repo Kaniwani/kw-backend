@@ -29,6 +29,10 @@
 
     .site-logo {
       flex: 0 0 #{$logo-avatar-size}px;
+      &:only-child {
+        margin-left: auto;
+        margin-right: auto;
+      }
 
       > .text {
         width: #{$logo-avatar-size}px;

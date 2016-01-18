@@ -39,6 +39,14 @@ body {
 .site-content {
   flex: 1 0 auto; /* 2 */
   width: 100%;
+  & > [class*="-section"]:not(.-no-section-spacing) {
+    margin-top: $unit-md;
+    margin-bottom: $unit-md;
+    @include media($bp-lg) {
+      margin-top: $unit-lg;
+      margin-bottom: $unit-lg;
+    }
+  }
 }
 
 .site-content::after {
@@ -69,8 +77,8 @@ body {
         max-width: 800px;
       }
     }
-  }
 
+  }
 }
 
 [contenteditable="true"] {

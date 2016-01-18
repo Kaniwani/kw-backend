@@ -110,6 +110,9 @@
 							<a href="components.html#accordion-list">Accordion List</a>
 						</li>
 						<li>
+							<a href="components.html#hexagon-box">Hexagon Box</a>
+						</li>
+						<li>
 							<a href="components.html#lattice-list">Lattice List</a>
 						</li>
 						<li>
@@ -790,58 +793,59 @@
 	<div class="f-item-heading-group" data-f-toggle="labels">
 		<h2 class="f-item-heading">Site Footer</h2>
 		<div class="f-item-controls">
-			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
-				<svg>
-					<use xlink:href="#f-icon-notes" />
-				</svg>
-			</span>
 			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
 				<svg>
 					<use xlink:href="#f-icon-code" />
 				</svg>
 			</span>
 		</div>
-	</div><div class="f-item-notes" data-f-toggle="notes">
-	<p>not a real footer, just here as a placeholder if we want to add some kind of footer later</p>
+	</div><div class="f-item-preview">
+	<footer class="section site-footer" role="contentinfo">
 
-</div>
-<div class="f-item-preview">
-	<footer class="site-footer" role="contentinfo">
-
-	<div class="row">
-		<div class="col col-half">
-			<a href="/" class="site-logo">
-				<span class="text">
-        <!-- &#8202; is a hairspace; minor space between kana to align with kanji nicer -->
-          <span lang="ja" class="kana">かに&#8202;わに</span>
-				<span lang="ja" class="kanji">蟹鰐</span>
-				<span class="_visuallyhidden">Wanikani</span>
-				</span>
+	<div class="inner">
+		<div class="hexagon-box -black">
+			<a href="//github.com/djtb" class="inner">
+				<div class="avatar -djtb"></div>
 			</a>
 		</div>
-		<div class="col col-half">
-			<h2 class="title">I ams a foot</h2>
+		<a href="/about/" class="site-logo">
+			<span class="text">
+      <!-- &#8202; is a hairspace; minor space between kana to align with kanji nicer -->
+        <span lang="ja" class="kana">かに&#8202;わに</span>
+			<span lang="ja" class="kanji">蟹鰐</span>
+			<span class="_visuallyhidden">Wanikani</span>
+			</span>
+		</a>
+		<div class="hexagon-box -black">
+			<a href="//github.com/tadgh" class="inner">
+				<div class="avatar -tadgh"></div>
+			</a>
 		</div>
 	</div>
 
 </footer>
 </div>
 <div class="f-item-code f-item-hidden" data-f-toggle="code">
-	<pre><code class="language-markup">&lt;footer class=&quot;site-footer&quot; role=&quot;contentinfo&quot;&gt;
+	<pre><code class="language-markup">&lt;footer class=&quot;section site-footer&quot; role=&quot;contentinfo&quot;&gt;
 
-	&lt;div class=&quot;row&quot;&gt;
-		&lt;div class=&quot;col col-half&quot;&gt;
-			&lt;a href=&quot;/&quot; class=&quot;site-logo&quot;&gt;
-				&lt;span class=&quot;text&quot;&gt;
-        &lt;!-- &amp;#8202; is a hairspace; minor space between kana to align with kanji nicer --&gt;
-          &lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;かに&amp;#8202;わに&lt;/span&gt;
-				&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;蟹鰐&lt;/span&gt;
-				&lt;span class=&quot;_visuallyhidden&quot;&gt;Wanikani&lt;/span&gt;
-				&lt;/span&gt;
+	&lt;div class=&quot;inner&quot;&gt;
+		&lt;div class=&quot;hexagon-box -black&quot;&gt;
+			&lt;a href=&quot;//github.com/djtb&quot; class=&quot;inner&quot;&gt;
+				&lt;div class=&quot;avatar -djtb&quot;&gt;&lt;/div&gt;
 			&lt;/a&gt;
 		&lt;/div&gt;
-		&lt;div class=&quot;col col-half&quot;&gt;
-			&lt;h2 class=&quot;title&quot;&gt;I ams a foot&lt;/h2&gt;
+		&lt;a href=&quot;/about/&quot; class=&quot;site-logo&quot;&gt;
+			&lt;span class=&quot;text&quot;&gt;
+      &lt;!-- &amp;#8202; is a hairspace; minor space between kana to align with kanji nicer --&gt;
+        &lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;かに&amp;#8202;わに&lt;/span&gt;
+			&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;蟹鰐&lt;/span&gt;
+			&lt;span class=&quot;_visuallyhidden&quot;&gt;Wanikani&lt;/span&gt;
+			&lt;/span&gt;
+		&lt;/a&gt;
+		&lt;div class=&quot;hexagon-box -black&quot;&gt;
+			&lt;a href=&quot;//github.com/tadgh&quot; class=&quot;inner&quot;&gt;
+				&lt;div class=&quot;avatar -tadgh&quot;&gt;&lt;/div&gt;
+			&lt;/a&gt;
 		&lt;/div&gt;
 	&lt;/div&gt;
 
@@ -1508,7 +1512,7 @@
 			</span>
 		</div>
 	</div><div class="f-item-preview">
-	<section class="user-section -fullwidth">
+	<section class="user-section -fullwidth -no-section-spacing">
 
 	<div class="user-overview">
 
@@ -1564,7 +1568,7 @@
 </section>
 </div>
 <div class="f-item-code f-item-hidden" data-f-toggle="code">
-	<pre><code class="language-markup">&lt;section class=&quot;user-section -fullwidth&quot;&gt;
+	<pre><code class="language-markup">&lt;section class=&quot;user-section -fullwidth -no-section-spacing&quot;&gt;
 
 	&lt;div class=&quot;user-overview&quot;&gt;
 
