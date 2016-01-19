@@ -29,7 +29,7 @@
   .meaning {
     color: $white;
     text-shadow: 1px 2px 4px $purple-dark;
-    padding: $unit-xl $unit-sm $unit-sm;
+    padding: 50px 15px 30px;
     display: table-cell;
     font-size: responsive 20px 50px;
     font-range: 300px 2000px;
@@ -115,7 +115,7 @@
       .icon {
         font-size: responsive 18px 36px;
         font-range: 300px 1600px;
-        line-height: 0;
+        line-height: normal;
         color: $grey-dark;
         &.-marked {
           color: $white;

@@ -59,7 +59,7 @@ gulp.task('styles:fabricator', function () {
 	gulp.src(config.src.styles.fabricator)
 		.pipe(sourcemaps.init())
 		.pipe(sass().on('error', sass.logError))
-		.pipe(prefix('last 1 version'))
+		.pipe(prefix('> 1%'))
 		.pipe(gulpif(config.prod, csso()))
 		.pipe(rename('f.css'))
 		.pipe(sourcemaps.write())

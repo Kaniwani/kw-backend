@@ -1,7 +1,7 @@
 .review-header {
-
   > .inner {
     position: relative;
+    @include clearfix();
 
     > .progress-bar {
       position: absolute;

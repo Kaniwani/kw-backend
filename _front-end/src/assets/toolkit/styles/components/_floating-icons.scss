@@ -47,8 +47,8 @@
     }
 
     @include media('<768px') {
-      // hide all but first 6
-      &:nth-last-child(-n+6) {
+      // hide all but first 4
+      &:nth-last-child(-n+4) {
         display: none;
       }
     }

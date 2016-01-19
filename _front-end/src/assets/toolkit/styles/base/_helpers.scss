@@ -10,6 +10,14 @@
   }
 }
 
+@mixin clearfix() {
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
 // limits width and centers item
 @mixin container($width: 1260px) {
   max-width: $width;
