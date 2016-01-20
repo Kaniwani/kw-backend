@@ -275,7 +275,8 @@ STATICFILES_DIRS = (
 )
 
 #For cache-busting in production mode.
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+if not DEBUG:
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 
 TEMPLATE_DIRS = (
