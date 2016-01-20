@@ -270,7 +270,7 @@ def get_or_create_vocab_by_json(vocab_json):
 def add_synonyms_from_api_call_to_review(review, user_specific_json):
     new_synonym_count = 0
     if user_specific_json["user_synonyms"] is None:
-        return review
+        return review, new_synonym_count
 
     for synonym in user_specific_json["user_synonyms"]:
         _, created = review.synonym_set.get_or_create(text=synonym)

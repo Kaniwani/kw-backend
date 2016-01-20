@@ -1,7 +1,7 @@
 from datetime import timedelta
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
 from django.shortcuts import get_object_or_404, render_to_response, render
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
@@ -214,7 +214,10 @@ class SyncRequested(View):
 
     def post(self, request, *args, **kwargs):
         should_full_sync = request.POST["full_sync"]
-        profile_sync_succeeded = sync_with_wk(self.request.user, should_full_sync)
+        profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(self.request.user, should_full_sync)
+        return JsonResponse({"profile_sync_succeeded": profile_sync_succeeded,
+                             "new_review_count": new_review_count,
+                             "new_synonym_count": new_synonym_count})
 
 
 class UnlockLevels(TemplateView):
