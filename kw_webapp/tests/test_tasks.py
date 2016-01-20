@@ -34,8 +34,12 @@ class TestCeleryTasks(TestCase):
         self.assertRaises(Vocabulary.DoesNotExist, get_vocab_by_meaning, "dog!")
 
     def test_associate_vocab_to_user_successfully_creates_review(self):
-        review = associate_vocab_to_user(self.vocabulary, self.user)
+        new_vocab = create_vocab("dishwasher")
+
+        review, created = associate_vocab_to_user(new_vocab, self.user)
+
         self.assertTrue(review.needs_review is True)
+        self.assertTrue(created)
 
     def test_building_api_string_adds_correct_levels(self):
         self.user.profile.unlocked_levels.get_or_create(level=5)
