@@ -212,6 +212,9 @@ class SyncRequested(View):
     Ajax view so that the user can request a sync of their profile and vocabulary
     """
 
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect(reverse_lazy('kw:home'))
+
     def post(self, request, *args, **kwargs):
         should_full_sync = request.POST["full_sync"]
         profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(self.request.user, should_full_sync)
