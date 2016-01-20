@@ -11732,9 +11732,9 @@
 	}
 
 	function wrongAnswer() {
-	  markWrong();
 	  answeredTotal += 1;
 	  remainingVocab.push(currentVocab);
+	  markWrong();
 	}
 
 	function markRight() {
@@ -11746,9 +11746,9 @@
 	}
 
 	function rightAnswer() {
-	  markRight();
 	  correctTotal += 1;
 	  answeredTotal += 1;
+	  markRight();
 	}
 
 	function newVocab() {
