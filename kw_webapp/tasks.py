@@ -170,6 +170,18 @@ def unlock_eligible_vocab_from_levels(user, levels):
         return unlocked, locked
 
 
+def get_wanikani_level_by_api_key(api_key):
+    api_string = "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
+    r = requests.get(api_string)
+    if r.status_code == 200:
+        json_data = r.json()
+        try:
+            user_info = json_data["user_information"]
+            level = user_info["level"]
+            return level
+        except KeyError:
+            return None
+        return
 @celery_app.task()
 def sync_user_profile_with_wk(user):
     '''

@@ -9984,15 +9984,21 @@
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+	var revealToggle = function revealToggle($el) {
+	  $el.siblings('.revealTarget').toggleClass('-hidden');
+	};
+
+	var init = function init() {
+	  $('.revealToggle').click(function (ev) {
+	    ev.preventDefault();
+	    var $this = $(this);
+	    if (!$this.hasClass('-disabled')) revealToggle($this);
+	  });
+	};
+
 	var api = {
-	  init: function init() {
-	    $('.revealToggle').click(function (ev) {
-	      ev.preventDefault();
-	      if (!$(this).hasClass('-disabled')) {
-	        $(this).siblings('.revealTarget').toggleClass('-hidden');
-	      }
-	    });
-	  }
+	  init: init,
+	  revealToggle: revealToggle
 	};
 
 	exports['default'] = api;
@@ -11208,7 +11214,8 @@
 		$reviewButton = $("#reviewCount");
 
 		// are we on home page?
-		if ($refreshButton.length) {
+		if (window.location.pathname === '/kw/') {
+
 			// event handlers
 			$refreshButton.click(function () {
 				return (0, _componentsRefreshReviews2["default"])({ forceGet: true });
@@ -11529,13 +11536,15 @@
 
 	var _vendorWanakanaMin2 = _interopRequireDefault(_vendorWanakanaMin);
 
+	var _componentsRevealToggle = __webpack_require__(4);
+
 	// cache jquery objects instead of querying dom all the time
 	var CSRF = $('#csrf').val(),
 	    //Grab CSRF token off of dummy form.
 	sessionFinished = undefined,
+	    userSettings = undefined,
 	    remainingVocab = undefined,
 	    currentVocab = undefined,
-	    startCount = undefined,
 	    correctTotal = 0,
 	    answeredTotal = 0,
 	    answerCorrectness = [],
@@ -11554,22 +11563,53 @@
 	    $progressBar = $('.progress-bar > .value');
 
 	function init() {
-	  // if not on reviews page then exit
+	  // if not on reviews page do nothing
 	  if (!$meaning.length) return;
+
+	  // map python True/False passed from view as strings to JS true/false booleans
+	  window.KWusersettings = strToBoolean(window.KWuserSettings);
+	  function strToBoolean(o) {
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
+	    try {
+	      for (var _iterator = Object.keys(o)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var k = _step.value;
+
+	        var v = o[k];
+	        o[k] = v === 'True' ? true : false;
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator['return']) {
+	          _iterator['return']();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
+	      }
+	    }
+	  }
 
 	  // TODO: for mid-review drops, we should submit previous answerCorrectness, and THEN get ask for reviews again from server? or get previous sessionVocab state and merge with the server provided sessionVocab?
 	  // if (simpleStorage.get('prevSessionAnswers') != null) {
 	  //  submit dem done answers
 	  //  get prev sessionvocab, add to a set, add in server ones, re-update sessionvocab with union
 	  // }
-	  var updateVocab = simpleStorage.set('sessionVocab', window.KWinitialVocab);
-	  var updateCount = simpleStorage.set('reviewCount', window.KWinitialVocab.length);
+	  var updateVocab = simpleStorage.set('sessionVocab', window.KWsessionVocab);
+	  var updateCount = simpleStorage.set('reviewCount', window.KWsessionVocab.length);
+	  var updateSettings = simpleStorage.set('userSettings', window.KWuserSettings);
 
 	  // set initial values
 	  remainingVocab = simpleStorage.get('sessionVocab');
-	  startCount = remainingVocab.length;
+	  userSettings = simpleStorage.get('userSettings');
 
-	  console.log('\nUpdate session vocab:', updateVocab, '\nUpdate count:', updateCount, '\nLength:', window.KWinitialVocab.length, '\nSession Finished:', simpleStorage.get('sessionFinished'));
+	  console.log('\nUpdate session vocab:', updateVocab, '\nUpdate count:', updateCount, '\nLength:', window.KWsessionVocab.length, '\nUser settings:', updateSettings, '\nSession Finished:', simpleStorage.get('sessionFinished'));
 
 	  $reviewsLeft.text(remainingVocab.length);
 	  currentVocab = remainingVocab.shift();
@@ -11671,7 +11711,7 @@
 	      rightAnswer();
 	      var answerIndex = $.inArray(answer, currentVocab.readings);
 	      //Fills the correct kanji into the input field based on the user's answers
-	      replaceAnswerWithKanji(currentVocab.readings.indexOf(answer));
+	      $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
 	    }
 	    //answer was not in the known readings.
 	    else {
@@ -11686,6 +11726,12 @@
 	        correct = false;
 	      }
 
+	  console.log(correct, userSettings.showCorrectOnFail, userSettings.autoAdvanceCorrect);
+	  if (!correct && userSettings.showCorrectOnFail) revealAnswers();
+	  if (correct && userSettings.autoAdvanceCorrect) setTimeout(function () {
+	    return enterPressed();
+	  }, 800);
+
 	  recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
 	  simpleStorage.set('sessionFinished', false, { TTL: 3600000 });
 	  enableButtons();
@@ -11694,7 +11740,7 @@
 	// TODO: @djtb - use storage, update local storage, expires 1 week, use post only at end of review (OR ANY NAVIGATION)
 	function recordAnswer(userID, correctness, previouslyWrong) {
 	  //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
-	  // TODO: @djtb record in a localStorage list instead, post that list at review end.
+	  // TODO: @djtb record these details in a localStorage list instead, post that list at review end.
 	  $.post('/kw/record_answer/', {
 	    user_specific_id: userID,
 	    user_correct: correctness,
@@ -11708,6 +11754,7 @@
 	}
 
 	function updateStorage() {
+	  /* TODO: update with recordAnswer details */
 	  simpleStorage.set('sessionVocab', remainingVocab);
 	  simpleStorage.set('reviewCount', remainingVocab.length);
 	  console.log('Storage is now:\n    reviewCount: ' + simpleStorage.get('reviewCount') + '\n    sessionFinished: ' + simpleStorage.get('sessionFinished') + '\n    sessionVocab: ' + simpleStorage.get('sessionVocab').map(function (x) {
@@ -11725,30 +11772,19 @@
 	  $userAnswer.addClass('-invalid');
 	}
 
-	function markWrong() {
-	  clearColors();
-	  $userAnswer.addClass('-marked -incorrect');
-	  $streakIcon.addClass('-marked');
-	}
-
 	function wrongAnswer() {
+	  clearColors();
 	  answeredTotal += 1;
 	  remainingVocab.push(currentVocab);
-	  markWrong();
-	}
-
-	function markRight() {
-	  var progress = correctTotal / startCount * 100;
-	  updateProgressBar(progress);
-	  clearColors();
-	  $userAnswer.addClass('-marked -correct');
-	  $streakIcon.addClass('-marked');
+	  $userAnswer.addClass('-marked -incorrect');
 	}
 
 	function rightAnswer() {
+	  clearColors();
 	  correctTotal += 1;
 	  answeredTotal += 1;
-	  markRight();
+	  $userAnswer.addClass('-marked -correct');
+	  $streakIcon.addClass('-marked');
 	}
 
 	function newVocab() {
@@ -11758,17 +11794,18 @@
 	}
 
 	function disableButtons() {
-	  $detailKana.find('.button').addClass('-disabled');
 	  $detailKanji.find('.button').addClass('-disabled');
+	  $detailKana.find('.button').addClass('-disabled');
 	}
 
 	function enableButtons() {
-	  $detailKana.find('.button').removeClass('-disabled');
 	  $detailKanji.find('.button').removeClass('-disabled');
+	  $detailKana.find('.button').removeClass('-disabled');
 	}
 
-	function replaceAnswerWithKanji(index) {
-	  $userAnswer.val(currentVocab.characters[index]);
+	function revealAnswers() {
+	  (0, _componentsRevealToggle.revealToggle)($detailKanji.find('.button'));
+	  (0, _componentsRevealToggle.revealToggle)($detailKana.find('.button'));
 	}
 
 	function updateProgressBar(percent) {
@@ -11803,7 +11840,6 @@
 	    event.stopPropagation();
 	    event.preventDefault();
 	  }
-
 	  $userAnswer.hasClass('-marked') ? rotateVocab() : compareAnswer();
 	}
 

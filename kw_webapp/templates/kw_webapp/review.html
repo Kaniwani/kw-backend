@@ -13,7 +13,11 @@
 <!-- / .site-content -->
 
     <script>
-        window.KWinitialVocab = [
+        window.KWuserSettings = {
+          showCorrectOnFail: '{{ user.profile.auto_expand_answer_on_failure }}',
+          autoAdvanceCorrect: '{{ user.profile.auto_advance_on_success }}'
+        };
+        window.KWsessionVocab = [
             {% for item in object_list %}
             {
                 'user_specific_id':'{{ item.id }}',
