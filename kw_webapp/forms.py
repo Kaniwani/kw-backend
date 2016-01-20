@@ -78,8 +78,8 @@ class SettingsForm(ModelForm):
         }
         labels = {
             "follow_me": "Follow Wanikani Progress",
-            "auto_advance_on_success": "Automatically advance to next review if correct.",
-            "auto_expand_answer_on_failure": "Automatically show the correct answer if you answer incorrectly",
+            "auto_advance_on_success": "Automatically advance to next item in review if answer was correct.",
+            "auto_expand_answer_on_failure": "Automatically show kanji and kana if you answer incorrectly.",
         }
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()

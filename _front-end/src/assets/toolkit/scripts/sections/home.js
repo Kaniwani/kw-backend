@@ -8,7 +8,8 @@ function init() {
 	$reviewButton = $("#reviewCount");
 
 	// are we on home page?
-	if ($refreshButton.length) {
+	if (window.location.pathname === '/kw/') {
+
 		// event handlers
 		$refreshButton.click(() => refreshReviews({forceGet: true}) );
 		$reviewButton.click(ev => {

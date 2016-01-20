@@ -3,15 +3,21 @@
 // TODO: replace expand-toggle with this
 // might need opacity / overflow:hidden involved in the css
 
+const revealToggle = ($el) => {
+  $el.siblings('.revealTarget').toggleClass('-hidden');
+};
+
+const init = () => {
+  $('.revealToggle').click(function(ev) {
+    ev.preventDefault();
+    let $this = $(this);
+    if (!$this.hasClass('-disabled')) revealToggle($this);
+  });
+};
+
 const api = {
-  init() {
-    $('.revealToggle').click(function(ev) {
-      ev.preventDefault();
-      if (!$(this).hasClass('-disabled')) {
-        $(this).siblings('.revealTarget').toggleClass('-hidden');
-      }
-    });
-  }
+  init: init,
+  revealToggle: revealToggle
 }
 
 export default api;
