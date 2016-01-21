@@ -40,6 +40,20 @@
 
   > .content {
       padding: $unit-xs $unit-sm 0;
+      ol,
+      ul {
+        @extend %plainlist;
+        li {
+          margin-bottom: 15px;
+          &:before {
+            content: '(/^▽^)/';
+            font-weight: 700;
+            display: inline-block;
+            margin-right: .5em;
+          }
+        }
+      }
+
       .author {
         &:before {
           content: '—';
