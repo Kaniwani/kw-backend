@@ -1,4 +1,4 @@
-import refreshReviews from '../components/refreshReviews';
+import { refreshReviews } from '../components/refreshReviews';
 
 let $refreshButton,
 		$reviewButton;

@@ -1,4 +1,4 @@
-import refreshReviews from '../components/refreshReviews.js';
+import {refreshReviews} from '../components/refreshReviews.js';
 
 // setup variables inside module closure, but functions in this file can modify and access them
 let CSRF,

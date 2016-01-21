@@ -27,7 +27,7 @@ let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
 
 function init() {
   // if not on reviews page do nothing
-  if (!$meaning.length) return;
+  if (!/review/.test(window.location.pathname)) return;
 
   // map python True/False passed from view as strings to JS true/false booleans
   window.KWusersettings = strToBoolean(window.KWuserSettings);
@@ -281,6 +281,8 @@ function rotateVocab() {
   if (remainingVocab.length === 0) {
     updateStorage();
     simpleStorage.set('sessionFinished', true);
+    // on summary page we can update review counts from localstorage by faking recently refreshed
+    simpleStorage.set('recentlyRefreshed', true, {TTL: 30000});
     console.log('Summary post data', answerCorrectness);
     return makePost('/kw/summary/', answerCorrectness);
   }

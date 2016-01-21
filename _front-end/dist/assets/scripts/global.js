@@ -92,6 +92,10 @@
 
 	var _sectionsReviews2 = _interopRequireDefault(_sectionsReviews);
 
+	var _sectionsSummary = __webpack_require__(20);
+
+	var _sectionsSummary2 = _interopRequireDefault(_sectionsSummary);
+
 	$(document).ready(function () {
 
 	  _componentsInvalidApiKey2['default'].init();
@@ -103,6 +107,7 @@
 	  _sectionsVocabulary2['default'].init();
 	  _sectionsLevelVocab2['default'].init();
 	  _sectionsReviews2['default'].init();
+	  _sectionsSummary2['default'].init();
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
@@ -11200,11 +11205,7 @@
 		value: true
 	});
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 	var _componentsRefreshReviews = __webpack_require__(13);
-
-	var _componentsRefreshReviews2 = _interopRequireDefault(_componentsRefreshReviews);
 
 	var $refreshButton = undefined,
 	    $reviewButton = undefined;
@@ -11218,7 +11219,7 @@
 
 			// event handlers
 			$refreshButton.click(function () {
-				return (0, _componentsRefreshReviews2["default"])({ forceGet: true });
+				return (0, _componentsRefreshReviews.refreshReviews)({ forceGet: true });
 			});
 			$reviewButton.click(function (ev) {
 				if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
@@ -11227,7 +11228,7 @@
 		}
 
 		// update from sessionstorage, if nothing there then hit server
-		(0, _componentsRefreshReviews2["default"])();
+		(0, _componentsRefreshReviews.refreshReviews)();
 	}
 
 	// shortcut to section based on R/S/U/H/C
@@ -11240,7 +11241,7 @@
 				break;
 			case k == 83 || k == 115:
 				// S
-				(0, _componentsRefreshReviews2["default"])();
+				(0, _componentsRefreshReviews.refreshReviews)();
 				break;
 			case k == 85 || k == 117:
 				// U
@@ -11310,7 +11311,7 @@
 	  if (storageCount > 0) {
 	    $navCount.text(storageCount);
 	    $navCount.closest('.nav-link');
-	    // if on home page update the reviews button too
+	    // if there's a refresh review button - update that count too
 	    if ($buttonCount.length) {
 	      $buttonCount.text(pluralize(' Review', storageCount)).removeClass('-disabled');
 	    }
@@ -11339,7 +11340,11 @@
 	  }
 	};
 
-	exports["default"] = refreshReviews;
+	var api = {
+	  refreshReviews: refreshReviews
+	};
+
+	exports["default"] = api;
 	module.exports = exports["default"];
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(14)))
 
@@ -11360,11 +11365,7 @@
 	  value: true
 	});
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 	var _componentsRefreshReviewsJs = __webpack_require__(13);
-
-	var _componentsRefreshReviewsJs2 = _interopRequireDefault(_componentsRefreshReviewsJs);
 
 	// setup variables inside module closure, but functions in this file can modify and access them
 	var CSRF = undefined,
@@ -11422,7 +11423,7 @@
 	    $card.addClass("-unlocked");
 	    $card.find('.i-link').removeClass('-hidden');
 
-	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
+	    (0, _componentsRefreshReviewsJs.refreshReviews)({ forceGet: true });
 	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
 	  }).fail(handleAjaxFail);
 	}
@@ -11443,7 +11444,7 @@
 	    $card.addClass("-locked -unlockable");
 	    $card.find('.i-link').addClass('-hidden');
 
-	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
+	    (0, _componentsRefreshReviewsJs.refreshReviews)({ forceGet: true });
 	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
 	  }).fail(handleAjaxFail);
 	}
@@ -11566,7 +11567,7 @@
 
 	function init() {
 	  // if not on reviews page do nothing
-	  if (!$meaning.length) return;
+	  if (!/review/.test(window.location.pathname)) return;
 
 	  // map python True/False passed from view as strings to JS true/false booleans
 	  window.KWusersettings = strToBoolean(window.KWuserSettings);
@@ -11833,6 +11834,8 @@
 	  if (remainingVocab.length === 0) {
 	    updateStorage();
 	    simpleStorage.set('sessionFinished', true);
+	    // on summary page we can update review counts from localstorage by faking recently refreshed
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 30000 });
 	    console.log('Summary post data', answerCorrectness);
 	    return makePost('/kw/summary/', answerCorrectness);
 	  }
@@ -11994,6 +11997,33 @@
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
 
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+
+	var _componentsRefreshReviews = __webpack_require__(13);
+
+	var init = function init() {
+		// are we on summary page?
+		if (/summary/.test(window.location.pathname)) {
+			// update from sessionstorage, we fake recentlyRefreshed at end of review'
+			(0, _componentsRefreshReviews.refreshReviews)();
+		}
+	};
+
+	var api = {
+		init: init
+	};
+
+	exports['default'] = api;
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);
