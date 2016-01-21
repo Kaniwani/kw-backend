@@ -229,6 +229,7 @@ function nonHiraganaAnswer() {
 function wrongAnswer() {
   clearColors();
   $userAnswer.addClass('-marked -incorrect');
+  $streakIcon.addClass('-marked');
   answeredTotal += 1;
   remainingVocab.push(currentVocab);
 }
