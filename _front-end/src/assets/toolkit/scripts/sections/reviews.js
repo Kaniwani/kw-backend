@@ -7,6 +7,7 @@ let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
   userSettings,
   remainingVocab,
   currentVocab,
+  startCount,
   correctTotal = 0,
   answeredTotal = 0,
   answerCorrectness = [],
@@ -58,7 +59,8 @@ function init() {
       '\nSession Finished:', simpleStorage.get('sessionFinished')
   );
 
-  $reviewsLeft.text(remainingVocab.length)
+  startCount = remainingVocab.length;
+  $reviewsLeft.text(startCount);
   currentVocab = remainingVocab.shift();
   $userID.val(currentVocab.user_specific_id);
 
@@ -141,8 +143,10 @@ function compareAnswer() {
   }
 
   //Ensure answer is full hiragana
-  if (!wanakana.isHiragana(answer) || answer === '') {
+  if (!wanakana.isHiragana(answer)) {
     return nonHiraganaAnswer();
+  } else if(answer === '') {
+    return;
   }
 
   //Checking if the user's answer exists in valid readings.
@@ -175,7 +179,6 @@ function compareAnswer() {
     correct = false;
   }
 
-  console.log(correct, userSettings.showCorrectOnFail, userSettings.autoAdvanceCorrect);
   if (!correct && userSettings.showCorrectOnFail) revealAnswers();
   if (correct && userSettings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 800);
 
@@ -225,18 +228,24 @@ function nonHiraganaAnswer() {
 
 function wrongAnswer() {
   clearColors();
+  $userAnswer.addClass('-marked -incorrect');
   answeredTotal += 1;
   remainingVocab.push(currentVocab);
-  $userAnswer.addClass('-marked -incorrect');
 }
 
 function rightAnswer() {
   clearColors();
-  correctTotal += 1;
-  answeredTotal += 1;
   $userAnswer.addClass('-marked -correct');
   $streakIcon.addClass('-marked');
+  correctTotal += 1;
+  answeredTotal += 1;
+  updateProgressBar(correctTotal / startCount * 100);
 }
+
+function updateProgressBar(percent) {
+  $progressBar.css('width', percent + '%');
+}
+
 
 function newVocab() {
   clearColors();
@@ -257,10 +266,6 @@ function enableButtons() {
 function revealAnswers() {
   revealToggle($detailKanji.find('.button'));
   revealToggle($detailKana.find('.button'));
-}
-
-function updateProgressBar(percent) {
-  $progressBar.css('width', percent + '%');
 }
 
 function rotateVocab() {

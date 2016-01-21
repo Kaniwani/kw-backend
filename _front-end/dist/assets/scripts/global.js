@@ -11354,7 +11354,7 @@
 /* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($, notie, simpleStorage) {'use strict';
+	/* WEBPACK VAR INJECTION */(function($, simpleStorage, notie) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
@@ -11380,6 +11380,7 @@
 	function init() {
 	  $levelList = $('.level-list');
 
+	  console.log(simpleStorage.get('userSettings'));
 	  // if container element exists on current page
 	  if ($levelList.length) {
 
@@ -11459,7 +11460,7 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(9), __webpack_require__(14)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(14), __webpack_require__(9)))
 
 /***/ },
 /* 16 */
@@ -11545,6 +11546,7 @@
 	    userSettings = undefined,
 	    remainingVocab = undefined,
 	    currentVocab = undefined,
+	    startCount = undefined,
 	    correctTotal = 0,
 	    answeredTotal = 0,
 	    answerCorrectness = [],
@@ -11611,7 +11613,8 @@
 
 	  console.log('\nUpdate session vocab:', updateVocab, '\nUpdate count:', updateCount, '\nLength:', window.KWsessionVocab.length, '\nUser settings:', updateSettings, '\nSession Finished:', simpleStorage.get('sessionFinished'));
 
-	  $reviewsLeft.text(remainingVocab.length);
+	  startCount = remainingVocab.length;
+	  $reviewsLeft.text(startCount);
 	  currentVocab = remainingVocab.shift();
 	  $userID.val(currentVocab.user_specific_id);
 
@@ -11693,8 +11696,10 @@
 	  }
 
 	  //Ensure answer is full hiragana
-	  if (!_vendorWanakanaMin2['default'].isHiragana(answer) || answer === '') {
+	  if (!_vendorWanakanaMin2['default'].isHiragana(answer)) {
 	    return nonHiraganaAnswer();
+	  } else if (answer === '') {
+	    return;
 	  }
 
 	  //Checking if the user's answer exists in valid readings.
@@ -11726,7 +11731,6 @@
 	        correct = false;
 	      }
 
-	  console.log(correct, userSettings.showCorrectOnFail, userSettings.autoAdvanceCorrect);
 	  if (!correct && userSettings.showCorrectOnFail) revealAnswers();
 	  if (correct && userSettings.autoAdvanceCorrect) setTimeout(function () {
 	    return enterPressed();
@@ -11774,17 +11778,22 @@
 
 	function wrongAnswer() {
 	  clearColors();
+	  $userAnswer.addClass('-marked -incorrect');
 	  answeredTotal += 1;
 	  remainingVocab.push(currentVocab);
-	  $userAnswer.addClass('-marked -incorrect');
 	}
 
 	function rightAnswer() {
 	  clearColors();
-	  correctTotal += 1;
-	  answeredTotal += 1;
 	  $userAnswer.addClass('-marked -correct');
 	  $streakIcon.addClass('-marked');
+	  correctTotal += 1;
+	  answeredTotal += 1;
+	  updateProgressBar(correctTotal / startCount * 100);
+	}
+
+	function updateProgressBar(percent) {
+	  $progressBar.css('width', percent + '%');
 	}
 
 	function newVocab() {
@@ -11806,10 +11815,6 @@
 	function revealAnswers() {
 	  (0, _componentsRevealToggle.revealToggle)($detailKanji.find('.button'));
 	  (0, _componentsRevealToggle.revealToggle)($detailKana.find('.button'));
-	}
-
-	function updateProgressBar(percent) {
-	  $progressBar.css('width', percent + '%');
 	}
 
 	function rotateVocab() {

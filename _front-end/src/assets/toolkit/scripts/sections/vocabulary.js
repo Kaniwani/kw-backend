@@ -14,6 +14,7 @@ let CSRF,
 function init() {
   $levelList = $('.level-list');
 
+  console.log(simpleStorage.get('userSettings'))
   // if container element exists on current page
   if($levelList.length) {
 

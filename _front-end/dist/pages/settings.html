@@ -72,38 +72,36 @@
   </header>
   <main class="main">
     
-<section class="settings-section">
-  <div class="inner">
-    <h1>Settings</h1>
+<!-- current crispy form output... ughh -->
+  <section class="settings-section">
+    <div class="inner">
+      <h1 class="section-heading">Settings</h1>
 
-    <!-- this is the current crispy form output -->
-    <!-- TODO: changes classes in forms.py and style -->
-    <form  class="pure-form pure-form-stacked" method="post" >
-      <input type='hidden' name='csrfmiddlewaretoken' value='6wxemc6gGXpMw2jSxfXZthIip35UjAs3' /> <div id="div_id_api_key" class="form-group">
-      <label for="id_api_key" class="control-label  requiredField"> Api key<span class="asteriskField">*</span></label>
-      <div class="controls pure-input-1">
-        <input class="textinput textInput form-control" id="id_api_key" maxlength="255" name="api_key" type="text" value="5fa2d9c257dda131a54018f5c3f5ff90" /> </div>
-      </div>
-      <div id="div_id_level" class="form-group">
-        <label for="id_level" class="control-label  requiredField"> Level<span class="asteriskField">*</span></label>
-        <div class="controls pure-input-1">
-          <input class="numberinput form-control" id="id_level" min="0" name="level" readonly="True" type="number" value="15" />
-        </div>
-      </div>
-      <div class="form-group">
-        <div id="div_id_follow_me" class="checkbox">
-          <label for="id_follow_me" class="">
-            <input checked="checked" class="checkboxinput checkbox" id="id_follow_me" name="follow_me" type="checkbox" />Follow Wanikani Progress<span id="hint_id_follow_me" class="help-block">If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani.</span>
-          </label>
-        </div>
-      </div>
-      <div class="form-actions">
-        <input type="submit" name="submit" value="Save" class="btn btn-primary pure-button pure-button-primary" id="submit-id-submit"/>
-      </div>
-    </form>
 
-  </div>
-</section>
+<form  class="pure-form pure-form-stacked" method="post" ><input type='hidden' name='csrfmiddlewaretoken' value='ivTZmxrzAfJdT1bFTg0DMNKswqYA2FQZ' /> <div id="div_id_api_key" class="form-group"><label for="id_api_key" class="control-label  requiredField">
+        Api key<span class="asteriskField">*</span></label><div class="controls pure-input-1"><input class="textinput textInput form-control" id="id_api_key" maxlength="255" name="api_key" type="text" value="5fa2d9c257dda131a54018f5c3f5ff90" /> </div></div><div id="div_id_level" class="form-group"><label for="id_level" class="control-label  requiredField">
+        Level<span class="asteriskField">*</span></label><div class="controls pure-input-1"><input class="numberinput form-control" id="id_level" min="0" name="level" readonly="True" type="number" value="17" /> </div></div><div class="form-group"><div id="div_id_follow_me" class="checkbox"><label for="id_follow_me" class=""><input class="checkboxinput checkbox" id="id_follow_me" name="follow_me" type="checkbox" />
+                    Follow Wanikani Progress
+
+
+
+        <span id="hint_id_follow_me" class="help-block">If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani.</span></label></div></div><div class="form-group"><div id="div_id_auto_advance_on_success" class="checkbox"><label for="id_auto_advance_on_success" class=""><input checked="checked" class="checkboxinput checkbox" id="id_auto_advance_on_success" name="auto_advance_on_success" type="checkbox" />
+                    Automatically advance to next item in review if answer was correct.
+                </label></div></div><div class="form-group"><div id="div_id_auto_expand_answer_on_failure" class="checkbox"><label for="id_auto_expand_answer_on_failure" class=""><input checked="checked" class="checkboxinput checkbox" id="id_auto_expand_answer_on_failure" name="auto_expand_answer_on_failure" type="checkbox" />
+                    Automatically show kanji and kana if you answer incorrectly.
+
+                </label></div></div><div class="form-actions"><input type="submit"
+    name="submit"
+    value="Save"
+
+        class="btn btn-primary pure-button pure-button-primary"
+        id="submit-id-submit"
+
+
+    /> </div></form>
+
+    </div>
+  </section>
 
   </main>
 
