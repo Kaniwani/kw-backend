@@ -16,8 +16,8 @@ const init = () => {
 };
 
 const api = {
-  init: init,
-  revealToggle: revealToggle
+  init,
+  revealToggle,
 }
 
 export default api;

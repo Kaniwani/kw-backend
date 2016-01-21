@@ -1,9 +1,12 @@
 .summary-section {
+
   > .inner {
+    text-align: center;
+
     .section-heading {
-       text-align: center;
-       position: relative;
-       &:after {
+      position: relative;
+
+      &:after {
         content: '';
         position: absolute;
         bottom: -.2em;
@@ -11,8 +14,12 @@
         width: 60%;
         height: 2px;
         background-color: rgba($black-light, .2);
-       }
+      }
+    }
 
+    > .title {
+      margin-top: 25px;
+      margin-bottom: 25px;
     }
   }
 }

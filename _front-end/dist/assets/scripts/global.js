@@ -92,6 +92,10 @@
 
 	var _sectionsReviews2 = _interopRequireDefault(_sectionsReviews);
 
+	var _sectionsSummary = __webpack_require__(20);
+
+	var _sectionsSummary2 = _interopRequireDefault(_sectionsSummary);
+
 	$(document).ready(function () {
 
 	  _componentsInvalidApiKey2['default'].init();
@@ -103,6 +107,7 @@
 	  _sectionsVocabulary2['default'].init();
 	  _sectionsLevelVocab2['default'].init();
 	  _sectionsReviews2['default'].init();
+	  _sectionsSummary2['default'].init();
 	});
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
@@ -11200,11 +11205,7 @@
 		value: true
 	});
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
 	var _componentsRefreshReviews = __webpack_require__(13);
-
-	var _componentsRefreshReviews2 = _interopRequireDefault(_componentsRefreshReviews);
 
 	var $refreshButton = undefined,
 	    $reviewButton = undefined;
@@ -11218,7 +11219,7 @@
 
 			// event handlers
 			$refreshButton.click(function () {
-				return (0, _componentsRefreshReviews2["default"])({ forceGet: true });
+				return (0, _componentsRefreshReviews.refreshReviews)({ forceGet: true });
 			});
 			$reviewButton.click(function (ev) {
 				if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
@@ -11227,7 +11228,7 @@
 		}
 
 		// update from sessionstorage, if nothing there then hit server
-		(0, _componentsRefreshReviews2["default"])();
+		(0, _componentsRefreshReviews.refreshReviews)();
 	}
 
 	// shortcut to section based on R/S/U/H/C
@@ -11240,7 +11241,7 @@
 				break;
 			case k == 83 || k == 115:
 				// S
-				(0, _componentsRefreshReviews2["default"])();
+				(0, _componentsRefreshReviews.refreshReviews)();
 				break;
 			case k == 85 || k == 117:
 				// U
@@ -11310,7 +11311,7 @@
 	  if (storageCount > 0) {
 	    $navCount.text(storageCount);
 	    $navCount.closest('.nav-link');
-	    // if on home page update the reviews button too
+	    // if there's a refresh review button - update that count too
 	    if ($buttonCount.length) {
 	      $buttonCount.text(pluralize(' Review', storageCount)).removeClass('-disabled');
 	    }
@@ -11339,7 +11340,11 @@
 	  }
 	};
 
-	exports["default"] = refreshReviews;
+	var api = {
+	  refreshReviews: refreshReviews
+	};
+
+	exports["default"] = api;
 	module.exports = exports["default"];
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(14)))
 
@@ -11354,17 +11359,13 @@
 /* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($, notie, simpleStorage) {'use strict';
+	/* WEBPACK VAR INJECTION */(function($, simpleStorage, notie) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
 	var _componentsRefreshReviewsJs = __webpack_require__(13);
-
-	var _componentsRefreshReviewsJs2 = _interopRequireDefault(_componentsRefreshReviewsJs);
 
 	// setup variables inside module closure, but functions in this file can modify and access them
 	var CSRF = undefined,
@@ -11380,6 +11381,7 @@
 	function init() {
 	  $levelList = $('.level-list');
 
+	  console.log(simpleStorage.get('userSettings'));
 	  // if container element exists on current page
 	  if ($levelList.length) {
 
@@ -11421,7 +11423,7 @@
 	    $card.addClass("-unlocked");
 	    $card.find('.i-link').removeClass('-hidden');
 
-	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
+	    (0, _componentsRefreshReviewsJs.refreshReviews)({ forceGet: true });
 	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
 	  }).fail(handleAjaxFail);
 	}
@@ -11442,7 +11444,7 @@
 	    $card.addClass("-locked -unlockable");
 	    $card.find('.i-link').addClass('-hidden');
 
-	    (0, _componentsRefreshReviewsJs2['default'])({ forceGet: true });
+	    (0, _componentsRefreshReviewsJs.refreshReviews)({ forceGet: true });
 	    simpleStorage.set('recentlyRefreshed', true, { TTL: 5000 });
 	  }).fail(handleAjaxFail);
 	}
@@ -11459,7 +11461,7 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(9), __webpack_require__(14)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(14), __webpack_require__(9)))
 
 /***/ },
 /* 16 */
@@ -11545,6 +11547,7 @@
 	    userSettings = undefined,
 	    remainingVocab = undefined,
 	    currentVocab = undefined,
+	    startCount = undefined,
 	    correctTotal = 0,
 	    answeredTotal = 0,
 	    answerCorrectness = [],
@@ -11564,7 +11567,7 @@
 
 	function init() {
 	  // if not on reviews page do nothing
-	  if (!$meaning.length) return;
+	  if (!/review/.test(window.location.pathname)) return;
 
 	  // map python True/False passed from view as strings to JS true/false booleans
 	  window.KWusersettings = strToBoolean(window.KWuserSettings);
@@ -11611,7 +11614,8 @@
 
 	  console.log('\nUpdate session vocab:', updateVocab, '\nUpdate count:', updateCount, '\nLength:', window.KWsessionVocab.length, '\nUser settings:', updateSettings, '\nSession Finished:', simpleStorage.get('sessionFinished'));
 
-	  $reviewsLeft.text(remainingVocab.length);
+	  startCount = remainingVocab.length;
+	  $reviewsLeft.text(startCount);
 	  currentVocab = remainingVocab.shift();
 	  $userID.val(currentVocab.user_specific_id);
 
@@ -11693,8 +11697,10 @@
 	  }
 
 	  //Ensure answer is full hiragana
-	  if (!_vendorWanakanaMin2['default'].isHiragana(answer) || answer === '') {
+	  if (!_vendorWanakanaMin2['default'].isHiragana(answer)) {
 	    return nonHiraganaAnswer();
+	  } else if (answer === '') {
+	    return;
 	  }
 
 	  //Checking if the user's answer exists in valid readings.
@@ -11726,7 +11732,6 @@
 	        correct = false;
 	      }
 
-	  console.log(correct, userSettings.showCorrectOnFail, userSettings.autoAdvanceCorrect);
 	  if (!correct && userSettings.showCorrectOnFail) revealAnswers();
 	  if (correct && userSettings.autoAdvanceCorrect) setTimeout(function () {
 	    return enterPressed();
@@ -11774,17 +11779,23 @@
 
 	function wrongAnswer() {
 	  clearColors();
+	  $userAnswer.addClass('-marked -incorrect');
+	  $streakIcon.addClass('-marked');
 	  answeredTotal += 1;
 	  remainingVocab.push(currentVocab);
-	  $userAnswer.addClass('-marked -incorrect');
 	}
 
 	function rightAnswer() {
 	  clearColors();
-	  correctTotal += 1;
-	  answeredTotal += 1;
 	  $userAnswer.addClass('-marked -correct');
 	  $streakIcon.addClass('-marked');
+	  correctTotal += 1;
+	  answeredTotal += 1;
+	  updateProgressBar(correctTotal / startCount * 100);
+	}
+
+	function updateProgressBar(percent) {
+	  $progressBar.css('width', percent + '%');
 	}
 
 	function newVocab() {
@@ -11804,12 +11815,15 @@
 	}
 
 	function revealAnswers() {
-	  (0, _componentsRevealToggle.revealToggle)($detailKanji.find('.button'));
-	  (0, _componentsRevealToggle.revealToggle)($detailKana.find('.button'));
-	}
+	  var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-	function updateProgressBar(percent) {
-	  $progressBar.css('width', percent + '%');
+	  var kana = _ref.kana;
+	  var kanji = _ref.kanji;
+
+	  if (!!kana) (0, _componentsRevealToggle.revealToggle)($detailKana.find('.button'));else if (!!kanji) (0, _componentsRevealToggle.revealToggle)($detailKanji.find('.button'));else {
+	    (0, _componentsRevealToggle.revealToggle)($detailKana.find('.button'));
+	    (0, _componentsRevealToggle.revealToggle)($detailKanji.find('.button'));
+	  }
 	}
 
 	function rotateVocab() {
@@ -11820,6 +11834,8 @@
 	  if (remainingVocab.length === 0) {
 	    updateStorage();
 	    simpleStorage.set('sessionFinished', true);
+	    // on summary page we can update review counts from localstorage by faking recently refreshed
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 30000 });
 	    console.log('Summary post data', answerCorrectness);
 	    return makePost('/kw/summary/', answerCorrectness);
 	  }
@@ -11855,16 +11871,15 @@
 
 	    //Pressing P toggles phonetic reading
 	    if (event.which == 80 || event.which == 112) {
-	      $('#detailKana .revealToggle').click();
+	      revealAnswers({ kana: true });
 	    }
 	    //Pressing K toggles the actual kanji reading.
 	    else if (event.which == 75 || event.which == 107) {
-	        $('#detailKanji .revealToggle').click();
+	        revealAnswers({ kanji: true });
 	      }
 	      //Pressing F toggles both item info boxes.
 	      else if (event.which == 70 || event.which == 102) {
-	          $('#detailKana .revealToggle').click();
-	          $('#detailKanji .revealToggle').click();
+	          revealAnswers();
 	        }
 	  }
 	}
@@ -11982,6 +11997,33 @@
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
 
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, '__esModule', {
+		value: true
+	});
+
+	var _componentsRefreshReviews = __webpack_require__(13);
+
+	var init = function init() {
+		// are we on summary page?
+		if (/summary/.test(window.location.pathname)) {
+			// update from sessionstorage, we fake recentlyRefreshed at end of review'
+			(0, _componentsRefreshReviews.refreshReviews)();
+		}
+	};
+
+	var api = {
+		init: init
+	};
+
+	exports['default'] = api;
+	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);
