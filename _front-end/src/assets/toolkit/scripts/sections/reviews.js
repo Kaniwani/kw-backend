@@ -264,9 +264,13 @@ function enableButtons() {
   $detailKana.find('.button').removeClass('-disabled');
 }
 
-function revealAnswers() {
-  revealToggle($detailKanji.find('.button'));
-  revealToggle($detailKana.find('.button'));
+function revealAnswers({kana, kanji} = {}) {
+  if (!!kana) revealToggle($detailKana.find('.button'));
+  else if (!!kanji) revealToggle($detailKanji.find('.button'));
+  else {
+    revealToggle($detailKana.find('.button'));
+    revealToggle($detailKanji.find('.button'));
+  }
 }
 
 function rotateVocab() {
@@ -313,16 +317,15 @@ function handleShortcuts(event) {
 
     //Pressing P toggles phonetic reading
     if (event.which == 80 || event.which == 112) {
-      $('#detailKana .revealToggle').click();
+      revealAnswers({kana: true});
     }
     //Pressing K toggles the actual kanji reading.
     else if (event.which == 75 || event.which == 107) {
-      $('#detailKanji .revealToggle').click();
+      revealAnswers({kanji: true});
     }
     //Pressing F toggles both item info boxes.
     else if (event.which == 70 || event.which == 102) {
-      $('#detailKana .revealToggle').click();
-      $('#detailKanji .revealToggle').click();
+      revealAnswers();
     }
   }
 }

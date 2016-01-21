@@ -11814,8 +11814,15 @@
 	}
 
 	function revealAnswers() {
-	  (0, _componentsRevealToggle.revealToggle)($detailKanji.find('.button'));
-	  (0, _componentsRevealToggle.revealToggle)($detailKana.find('.button'));
+	  var _ref = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+	  var kana = _ref.kana;
+	  var kanji = _ref.kanji;
+
+	  if (!!kana) (0, _componentsRevealToggle.revealToggle)($detailKana.find('.button'));else if (!!kanji) (0, _componentsRevealToggle.revealToggle)($detailKanji.find('.button'));else {
+	    (0, _componentsRevealToggle.revealToggle)($detailKana.find('.button'));
+	    (0, _componentsRevealToggle.revealToggle)($detailKanji.find('.button'));
+	  }
 	}
 
 	function rotateVocab() {
@@ -11861,16 +11868,15 @@
 
 	    //Pressing P toggles phonetic reading
 	    if (event.which == 80 || event.which == 112) {
-	      $('#detailKana .revealToggle').click();
+	      revealAnswers({ kana: true });
 	    }
 	    //Pressing K toggles the actual kanji reading.
 	    else if (event.which == 75 || event.which == 107) {
-	        $('#detailKanji .revealToggle').click();
+	        revealAnswers({ kanji: true });
 	      }
 	      //Pressing F toggles both item info boxes.
 	      else if (event.which == 70 || event.which == 102) {
-	          $('#detailKana .revealToggle').click();
-	          $('#detailKanji .revealToggle').click();
+	          revealAnswers();
 	        }
 	  }
 	}
