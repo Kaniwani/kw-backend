@@ -11478,23 +11478,16 @@
 	  $vocabList = $('.vocab-list');
 	  // only run on vocab page
 	  if (/vocabulary\/\d+/.test(window.location.pathname)) {
-	    (function () {
-	      CSRF = $('#csrf').val();
-	      $cards = $vocabList.find('.vocab-card');
+	    CSRF = $('#csrf').val();
+	    $cards = $vocabList.find('.vocab-card');
 
-	      // if user has deeplinked from summary or elsewhere let's draw attention to the card
-	      var specificVocab = window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/)[1];
-	      if (specificVocab) {
-	        $(specificVocab).addClass('-standout -ghost');
-	        setTimeout(function () {
-	          return $(specificVocab).removeClass('-ghost');
-	        }, 200);
-	      }
+	    // if user has deeplinked from summary or elsewhere let's draw attention to the card
+	    var specificVocab = window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/)[1];
+	    if (specificVocab) $(specificVocab).addClass('-standout');
 
-	      // Attach events
-	      $cards.on('click', '.extraToggle', toggleVocabExpand); // refactor accordionToggle
-	      $cards.on('click', '.icon', handleIconClick);
-	    })();
+	    // Attach events
+	    $cards.on('click', '.extraToggle', toggleVocabExpand); // refactor accordionToggle
+	    $cards.on('click', '.icon', handleIconClick);
 	  }
 	}
 

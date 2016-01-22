@@ -11,10 +11,7 @@ function init() {
 
     // if user has deeplinked from summary or elsewhere let's draw attention to the card
     let specificVocab = window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/)[1];
-    if (specificVocab) {
-      $(specificVocab).addClass('-standout -ghost');
-      setTimeout(() => $(specificVocab).removeClass('-ghost'), 200);
-    }
+    if (specificVocab) $(specificVocab).addClass('-standout');
 
     // Attach events
     $cards.on('click', '.extraToggle', toggleVocabExpand); // refactor accordionToggle
