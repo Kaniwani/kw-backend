@@ -11359,7 +11359,7 @@
 /* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($, simpleStorage, notie) {'use strict';
+	/* WEBPACK VAR INJECTION */(function($, notie, simpleStorage) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
@@ -11381,14 +11381,12 @@
 	function init() {
 	  $levelList = $('.level-list');
 
-	  console.log(simpleStorage.get('userSettings'));
 	  // if container element exists on current page
 	  if ($levelList.length) {
 
 	    // cache selector elements/unchanging vars
 	    CSRF = $('#csrf').val();
 	    currentLevel = parseInt($('#currentLevel').val(), 10);
-	    console.log(currentLevel);
 	    $levels = $levelList.find('.level-card');
 	    $reviewCount = $('.nav-link > .text > .count');
 
@@ -11461,7 +11459,7 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(14), __webpack_require__(9)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(9), __webpack_require__(14)))
 
 /***/ },
 /* 16 */
@@ -11478,20 +11476,29 @@
 
 	function init() {
 	  $vocabList = $('.vocab-list');
+	  // only run on vocab page
+	  if (/vocabulary\/\d+/.test(window.location.pathname)) {
+	    (function () {
+	      CSRF = $('#csrf').val();
+	      $cards = $vocabList.find('.vocab-card');
 
-	  // if container element exists on current page
-	  if ($vocabList.length) {
+	      // if user has deeplinked from summary or elsewhere let's draw attention to the card
+	      var specificVocab = window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/)[1];
+	      if (specificVocab) {
+	        $(specificVocab).addClass('-standout -ghost');
+	        setTimeout(function () {
+	          return $(specificVocab).removeClass('-ghost');
+	        }, 200);
+	      }
 
-	    // cache elements/setup vars
-	    CSRF = $('#csrf').val();
-	    $cards = $vocabList.find('.vocab-card');
-
-	    // Attach events
-	    $cards.on('click', '.extraToggle', toggleVocabExpand);
-	    $cards.on('click', '.icon', handleIconClick);
+	      // Attach events
+	      $cards.on('click', '.extraToggle', toggleVocabExpand); // refactor accordionToggle
+	      $cards.on('click', '.icon', handleIconClick);
+	    })();
 	  }
 	}
 
+	// refactor to use accordiontoggle
 	function toggleVocabExpand(event) {
 	  event.preventDefault();
 	  $(this).closest('.vocab-card').toggleClass('-expanded');
