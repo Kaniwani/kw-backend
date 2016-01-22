@@ -303,10 +303,13 @@ def process_vocabulary_response_for_user(user, response):
                 vocab = get_or_create_vocab_by_json(vocabulary_json)
                 new_review = associate_vocab_to_user(vocab, user)
                 add_synonyms_from_api_call_to_review(new_review, user_specific)
+                new_review.wanikani_srs = user_specific["srs"]
+                new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
                 new_review.save()
             logger.info("Synced Vocabulary for {}".format(user.username))
     else:
         logger.error("{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
+
 
 def sync_recent_unlocked_vocab_with_wk(user):
     if user.profile.unlocked_levels_list():
