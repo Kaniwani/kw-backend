@@ -92,7 +92,7 @@
 
 	var _sectionsReviews2 = _interopRequireDefault(_sectionsReviews);
 
-	var _sectionsSummary = __webpack_require__(20);
+	var _sectionsSummary = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./sections/summary\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	var _sectionsSummary2 = _interopRequireDefault(_sectionsSummary);
 
@@ -11298,11 +11298,13 @@
 	      $navCount.text(res);
 	      $navCount.closest('.nav-link');
 
-	      if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
+	      if ($buttonCount.length) {
+	        $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
+	      }
 	    }
 
 	    console.log('Review count updated from server:', res);
-	    simpleStorage.set('recentlyRefreshed', true, { TTL: 300000 });
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 60000 });
 	    simpleStorage.set('reviewCount', res);
 	  });
 	}
@@ -11834,8 +11836,6 @@
 	  if (remainingVocab.length === 0) {
 	    updateStorage();
 	    simpleStorage.set('sessionFinished', true);
-	    // on summary page we can update review counts from localstorage by faking recently refreshed
-	    simpleStorage.set('recentlyRefreshed', true, { TTL: 30000 });
 	    console.log('Summary post data', answerCorrectness);
 	    return makePost('/kw/summary/', answerCorrectness);
 	  }
@@ -11997,33 +11997,6 @@
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
 
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
-
-/***/ },
-/* 20 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, '__esModule', {
-		value: true
-	});
-
-	var _componentsRefreshReviews = __webpack_require__(13);
-
-	var init = function init() {
-		// are we on summary page?
-		if (/summary/.test(window.location.pathname)) {
-			// update from sessionstorage, we fake recentlyRefreshed at end of review'
-			(0, _componentsRefreshReviews.refreshReviews)();
-		}
-	};
-
-	var api = {
-		init: init
-	};
-
-	exports['default'] = api;
-	module.exports = exports['default'];
 
 /***/ }
 /******/ ]);

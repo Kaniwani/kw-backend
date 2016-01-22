@@ -22,11 +22,13 @@ function ajaxReviewCount() {
         $navCount.text(res)
         $navCount.closest('.nav-link');
 
-        if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
+        if ($buttonCount.length) {
+          $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
+        }
       }
 
       console.log('Review count updated from server:', res)
-      simpleStorage.set('recentlyRefreshed', true, {TTL: 300000});
+      simpleStorage.set('recentlyRefreshed', true, {TTL: 60000});
       simpleStorage.set('reviewCount', res);
   });
 
