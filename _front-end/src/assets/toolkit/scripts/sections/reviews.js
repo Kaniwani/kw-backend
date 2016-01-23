@@ -281,8 +281,6 @@ function rotateVocab() {
   if (remainingVocab.length === 0) {
     updateStorage();
     simpleStorage.set('sessionFinished', true);
-    // on summary page we can update review counts from localstorage by faking recently refreshed
-    simpleStorage.set('recentlyRefreshed', true, {TTL: 30000});
     console.log('Summary post data', answerCorrectness);
     return makePost('/kw/summary/', answerCorrectness);
   }
