@@ -43,8 +43,34 @@ function handleKeyPress(key) {
 	}
 }
 
+function animateSyncing() {
+	$('.site').addClass('_blurry');
+	const container = $('.sync-loader .title').get(0);
+	const [green, blue, purple, pink] = [
+		'hsl(107, 56%, 62%)',
+		'hsl(217, 63%, 57%)',
+		'hsl(282, 100%, 47%)',
+		'hsl(314, 100%, 50%)'
+	];
+	const palette = [ blue, green, purple, pink]
+	let paletteIndex = 0;
+
+	setInterval( function() {
+
+	  // Debounce change to allow for css changes
+	  setTimeout( function() {
+	    container.style.color = palette[paletteIndex];
+	    container.className = 'title -animating';
+	    paletteIndex += 1;
+	    paletteIndex %= palette.length;
+	  }, 10 );
+
+	}, 2500 );
+}
+
 const api = {
-	init: init
+	init,
+	animateSyncing,
 }
 
 export default api;

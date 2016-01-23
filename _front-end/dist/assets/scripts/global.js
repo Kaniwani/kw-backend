@@ -11250,8 +11250,32 @@
 		}
 	}
 
+	function animateSyncing() {
+		$('.site').addClass('_blurry');
+		var container = $('.sync-loader .title').get(0);
+		var green = 'hsl(107, 56%, 62%)';
+		var blue = 'hsl(217, 63%, 57%)';
+		var purple = 'hsl(282, 100%, 47%)';
+		var pink = 'hsl(314, 100%, 50%)';
+
+		var palette = [blue, green, purple, pink];
+		var paletteIndex = 0;
+
+		setInterval(function () {
+
+			// Debounce change to allow for css changes
+			setTimeout(function () {
+				container.style.color = palette[paletteIndex];
+				container.className = 'title -animating';
+				paletteIndex += 1;
+				paletteIndex %= palette.length;
+			}, 10);
+		}, 2500);
+	}
+
 	var api = {
-		init: init
+		init: init,
+		animateSyncing: animateSyncing
 	};
 
 	exports["default"] = api;
