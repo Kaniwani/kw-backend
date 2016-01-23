@@ -5,6 +5,9 @@
  *
  */
 
+// safari fix zzzzzz
+import "babel-polyfill";
+
 // components
 import expandToggle from './components/expandToggle';
 import revealToggle from './components/revealToggle';
