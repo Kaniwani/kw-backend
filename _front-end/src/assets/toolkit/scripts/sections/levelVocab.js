@@ -10,7 +10,7 @@ function init() {
     $cards = $vocabList.find('.vocab-card');
 
     // if user has deeplinked from summary or elsewhere let's draw attention to the card
-    let specificVocab = window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/)[1];
+    let specificVocab = (window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/) || [])[1];
     if (specificVocab) $(specificVocab).addClass('-standout');
 
     // Attach events

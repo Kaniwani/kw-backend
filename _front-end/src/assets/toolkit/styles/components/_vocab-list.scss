@@ -9,6 +9,7 @@
     margin: 0 0 $unit-sm;
     display: inline-block;
     vertical-align: top;
+    width: 100%;
 
     @include media($bp-lg) {
       width: calc(50% - #{$unit-xs} / 2);
