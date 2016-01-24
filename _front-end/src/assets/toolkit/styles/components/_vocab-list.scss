@@ -12,15 +12,7 @@
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
-    flex: 1 1 100%;
-
-    @include media($bp-md) {
-      flex: 1 1 47%;
-    }
-
-    @include media($bp-lg) {
-      flex: 1 1 30%;
-    }
+    flex: 1 1 auto;
 
     > .vocab-base {
       display: flex;

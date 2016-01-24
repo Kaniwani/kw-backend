@@ -16757,7 +16757,7 @@
 	    CSRF = $('#csrf').val();
 	    $cards = $vocabList.find('.vocab-card');
 
-	    if (_vendorIncludeMediaJs2['default'].greaterThan('md')) adjustCardHeight($cards);
+	    //    if(im.greaterThan('md')) adjustCardHeight($cards);
 
 	    // if user has deeplinked from summary or elsewhere let's draw attention to the card
 	    var specificVocab = (window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/) || [])[1];
