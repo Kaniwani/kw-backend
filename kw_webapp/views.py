@@ -246,7 +246,7 @@ class LevelVocab(TemplateView):
         context = super(LevelVocab, self).get_context_data()
         level = self.kwargs['level']
         user = self.request.user
-        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level).distinct()
+        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level).distinct().order_by("vocabulary__meaning")
         context['reviews'] = level_vocab
         context['selected_level'] = level
         return context
