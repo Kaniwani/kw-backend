@@ -33,7 +33,7 @@ function toggleVocabExpand(event) {
 function adjustCardHeight($list) {
   $list.each((i, el) => {
     let $text = $(el).find('.meaning').text();
-    if($text.length > 75) {
+    if($text.length >= 70) {
       $(el).css('flex', '2 1 60%');
     }
   });

@@ -16779,7 +16779,7 @@
 	function adjustCardHeight($list) {
 	  $list.each(function (i, el) {
 	    var $text = $(el).find('.meaning').text();
-	    if ($text.length > 75) {
+	    if ($text.length >= 70) {
 	      $(el).css('flex', '2 1 60%');
 	    }
 	  });

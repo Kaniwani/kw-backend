@@ -20,6 +20,9 @@
       flex: 1 0 100%;
       width: 100%;
       padding: $unit-sm;
+      @include media($bp-lg) {
+        padding: 20px $unit-sm;
+      }
 
       // horizontal separator between readings if more than 1
       &:not(:only-child):not(:last-of-type) {
