@@ -29,8 +29,8 @@ $bp-level-card-2: '>=680px';
       @include tap-target(5px, 10px);
       position: absolute;
       font-size: 22px;
-      left: calc(100% - 30px);
-      bottom: 10px;
+      left: calc(100% - 32px);
+      bottom: 12px;
 
       &.i-lock {
         color: $black;
@@ -39,7 +39,7 @@ $bp-level-card-2: '>=680px';
       }
 
       &.i-link {
-        left: 18px;
+        left: 22px;
         bottom: 10px;
         transition: color .3s ease-out;
         color: $white-light;
@@ -51,8 +51,8 @@ $bp-level-card-2: '>=680px';
       }
 
       &.-loading {
-        left: calc(100% - 34px);
-        bottom: 12px;
+        left: calc(100% - 36px);
+        bottom: 15px;
       }
     }
   }

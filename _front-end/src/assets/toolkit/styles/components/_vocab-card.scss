@@ -17,9 +17,12 @@
       display: flex;
       flex-flow: row wrap;
       justify-content: center;
-      padding: $unit-sm 0;
       flex: 1 0 100%;
       width: 100%;
+      padding: $unit-sm;
+      @include media($bp-md) {
+        padding: $unit-sm 0;
+      }
 
       // horizontal separator between readings if more than 1
       &:not(:only-child):not(:last-of-type) {
@@ -45,7 +48,7 @@
         @extend %flexcenter;
         flex: 0 1 60%;
         text-align: center;
-        padding: $unit-xs;
+        padding: 0 $unit-xs;
         margin: 0;
       }
     }
@@ -53,11 +56,18 @@
     .kanji,
     .kana {
       word-break: keep-all;
-      padding: $unit-xs / 2 $unit-xs;
+      padding: 0 $unit-xs;
+      line-height: 1.4;
+      @include media($bp-lg) {
+        line-height: 1.25;
+      }
+      @include media($bp-xxl) {
+        line-height: 1.3;
+      }
     }
 
     .kanji {
-      font-size: responsive 26px 44px;
+      font-size: responsive 28px 45px;
       text-shadow: 0 2px 2px rgba($purple-dark, .7);
     }
 

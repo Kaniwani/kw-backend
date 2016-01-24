@@ -21,17 +21,17 @@
           {% for reading in review.vocabulary.reading_set.all %}
             <dl class="readingset">
               <span class="ja">
-                <dt lang="ja" class="kanji">{{ reading.character }}</dt>
                 <dt lang="ja" class="kana">{{ reading.kana }}</dt>
+                <dt lang="ja" class="kanji">{{ reading.character }}</dt>
               </span>
               <dd class="meaning">{{ reading.vocabulary.meaning }}</dd>
             </dl>
           {% endfor %}
 
           {% if review.hidden %}
-            <span class="icon i-unlock" title="Unlock"></span>
+            <span class="icon i-unlock"></span>
           {% else %}
-            <span class="icon i-unlocked" title="Relock"></span>
+            <span class="icon i-unlocked"></span>
           {% endif %}
 
         </div>
