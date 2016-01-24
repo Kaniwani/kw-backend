@@ -61,7 +61,7 @@ class TestViews(TestCase):
         self.user.profile.only_review_burned = True
         self.user.profile.save()
         another_review = create_userspecific(word, self.user)
-        another_review.burnt = True
+        another_review.wanikani_burned = True
         another_review.save()
 
         request = self.factory.get('/kw/review')
@@ -72,12 +72,13 @@ class TestViews(TestCase):
         self.assertNotContains(response, "cat")
         self.assertContains(response, "phlange")
 
-    def test_review_page_shows_only_burnt_items_when_setting_is_enabled(self):
+
+    def test_review_page_shows_all_items_when_burnt_setting_is_disabled(self):
         word = create_vocab("phlange")
         self.user.profile.only_review_burned = False
         self.user.profile.save()
         another_review = create_userspecific(word, self.user)
-        another_review.burnt = True
+        another_review.wanikani_burned = True
         another_review.save()
 
         request = self.factory.get('/kw/review')

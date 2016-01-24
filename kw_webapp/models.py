@@ -107,10 +107,11 @@ class UserSpecific(models.Model):
     needs_review = models.BooleanField(default=True)
     unlock_date = models.DateTimeField(default=timezone.now, blank=True)
     next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
-    burnt = models.BooleanField(default=False)
+    burned = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
     wanikani_srs = models.CharField(max_length=255, default="unknown")
     wanikani_srs_numeric = models.IntegerField(default=0)
+    wanikani_burned = models.BooleanField(default=False)
 
     def can_be_managed_by(self, user):
         return self.user == user or user.is_superuser

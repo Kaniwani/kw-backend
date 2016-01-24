@@ -290,9 +290,10 @@ def add_synonyms_from_api_call_to_review(review, user_specific_json):
         review.synonym_set.get_or_create(text=synonym)
     return review
 
+
 def get_users_current_reviews(user):
     if user.profile.only_review_burned:
-        return UserSpecific.objects.filter(user=user, needs_review=True, burnt=True, hidden=False)
+        return UserSpecific.objects.filter(user=user, needs_review=True, wanikani_burned=True, hidden=False)
     else:
         return UserSpecific.objects.filter(user=user, needs_review=True, hidden=False)
 
@@ -317,7 +318,7 @@ def process_vocabulary_response_for_user(user, response):
                 add_synonyms_from_api_call_to_review(new_review, user_specific)
                 new_review.wanikani_srs = user_specific["srs"]
                 new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
-                new_review.burnt = user_specific["burned"]
+                new_review.wanikani_burned = user_specific["burned"]
                 new_review.save()
             logger.info("Synced Vocabulary for {}".format(user.username))
             return unlocked, locked

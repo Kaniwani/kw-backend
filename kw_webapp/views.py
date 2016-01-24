@@ -304,7 +304,7 @@ class RecordAnswer(View):
                 review.correct += 1
                 review.streak += 1
                 if review.streak >= 9:
-                    review.burnt = True
+                    review.burned = True
             review.needs_review = False
             review.last_studied = timezone.now()
             review.next_review_date = timezone.now() + timedelta(hours=RecordAnswer.srs_times[review.streak])
