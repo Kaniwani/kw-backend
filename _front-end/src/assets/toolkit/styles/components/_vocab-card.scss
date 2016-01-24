@@ -1,23 +1,81 @@
 .vocab-card {
   $bp-vocab: '<=600px';
-  @extend .vocab-block;
 
-  &.-standout {
-    box-shadow: 0 4px 10px 0 rgba($purple-dark, .5);
-    > .vocab-base {
-      background: $purple-dark;
-    }
-  }
+  list-style-type: none;
+  background: $white-light;
+  border-radius: 3px;
 
   > .vocab-base {
-    transition: background-color .5s ease-out;
+    position: relative;
     background-color: $purple-light;
+    color: $white-light;
+    border-radius: 3px;
+    transition: background-color .5s ease-out;
+
+    .readingset {
+      margin: 0;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: center;
+      padding: $unit-sm 0;
+      flex: 1 0 100%;
+      width: 100%;
+
+      // horizontal separator between readings if more than 1
+      &:not(:only-child):not(:last-of-type) {
+        position: relative;
+        &:after {
+          content: '';
+          position: absolute;
+          left: 5%;
+          bottom: -1px;
+          width: 90%;
+          height: 2px;
+          background-color: transparentize($purple-dark, .7);
+        }
+      }
+
+      > .ja {
+        @extend %flexcenter;
+        flex-flow: column nowrap;
+        flex: 0 1 auto;
+      }
+
+      > .meaning {
+        @extend %flexcenter;
+        flex: 0 1 60%;
+        text-align: center;
+        padding: $unit-xs;
+        margin: 0;
+      }
+    }
+
+    .kanji,
+    .kana {
+      word-break: keep-all;
+      padding: $unit-xs / 2 $unit-xs;
+    }
+
+    .kanji {
+      font-size: responsive 26px 44px;
+      text-shadow: 0 2px 2px rgba($purple-dark, .7);
+    }
+
+    .kana {
+      font-size: responsive 18px 20px;
+    }
+
+    .meaning {
+      font-size: responsive 16px 20px;
+      line-height: 1.3;
+      text-shadow: 0 1px 2px rgba($purple-dark, .7);
+    }
 
     > .icon {
       position: absolute;
-      bottom: 0;
+      bottom: -4px;
       color: $white-light;
-      left: 5px;
+      left: calc(100% - 42px);
       padding: 10px 15px;
       font-size: 20px;
       cursor: pointer;
@@ -26,33 +84,14 @@
     > .i-lock {
       color: $black-light;
       cursor: not-allowed;
+      font-size: 22px;
     }
   }
 
-  // FIXME: margin-top hard-coded... what if user has loads of synonyms resulting in greater height?
-  > .vocab-extra {
-    transition: margin-top .33s ease;
-    margin-top: -56px;
-    overflow: hidden;
-
-    @include media($bp-vocab) {
-      margin-top: -99px;
-      text-align: center;
-    }
-
-    *:not(.extraToggle) {
-      transition: opacity .33s ease;
-      opacity: 0;
-    }
-  }
-
-  &.-expanded {
-    .vocab-extra {
-      margin-top: 0;
-
-      * {
-        opacity: 1;
-      }
+  &.-standout {
+    box-shadow: 0 4px 10px 0 rgba($purple-dark, .5);
+    > .vocab-base {
+      background: $purple-dark;
     }
   }
 

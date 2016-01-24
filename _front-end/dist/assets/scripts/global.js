@@ -16750,6 +16750,8 @@
 	    CSRF = $('#csrf').val();
 	    $cards = $vocabList.find('.vocab-card');
 
+	    adjustCardHeight($cards);
+
 	    // if user has deeplinked from summary or elsewhere let's draw attention to the card
 	    var specificVocab = (window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/) || [])[1];
 	    if (specificVocab) $(specificVocab).addClass('-standout');
@@ -16764,6 +16766,14 @@
 	function toggleVocabExpand(event) {
 	  event.preventDefault();
 	  $(this).closest('.vocab-card').toggleClass('-expanded');
+	}
+
+	// force really tall cards to layout horizontal
+	function adjustCardHeight($list) {
+	  $list.each(function (i, el) {
+	    var $el = $(el);
+	    if ($el.height() > 300) $el.css('flex', '1 1 50%');
+	  });
 	}
 
 	function handleIconClick(event) {
@@ -16784,7 +16794,8 @@
 	}
 
 	var api = {
-	  init: init
+	  init: init,
+	  adjustCardHeight: adjustCardHeight
 	};
 
 	exports['default'] = api;
@@ -17269,7 +17280,7 @@
 /* 210 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	/* WEBPACK VAR INJECTION */(function($) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 		value: true
@@ -17277,10 +17288,13 @@
 
 	var _componentsRefreshReviews = __webpack_require__(203);
 
+	var _sectionsLevelVocab = __webpack_require__(206);
+
 	var init = function init() {
 		// are we on summary page?
 		if (/summary/.test(window.location.pathname)) {
 			(0, _componentsRefreshReviews.refreshReviews)({ forceGet: true });
+			(0, _sectionsLevelVocab.adjustCardHeight)($('.vocab-list .vocab-card'));
 		}
 	};
 
@@ -17290,6 +17304,7 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ }
 /******/ ]);

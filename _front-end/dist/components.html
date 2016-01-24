@@ -149,9 +149,6 @@
 							<a href="components.html#user-overview">User Overview</a>
 						</li>
 						<li>
-							<a href="components.html#vocab-block">Vocab Block</a>
-						</li>
-						<li>
 							<a href="components.html#vocab-card">Vocab Card</a>
 						</li>
 						<li>
@@ -1348,22 +1345,13 @@ if statements are just for styleguide. In production just use <code>-white -djtb
 	<div class="f-item-heading-group" data-f-toggle="labels">
 		<h2 class="f-item-heading">Level List</h2>
 		<div class="f-item-controls">
-			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
-				<svg>
-					<use xlink:href="#f-icon-notes" />
-				</svg>
-			</span>
 			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
 				<svg>
 					<use xlink:href="#f-icon-code" />
 				</svg>
 			</span>
 		</div>
-	</div><div class="f-item-notes" data-f-toggle="notes">
-	<p>TODO: -unlocked card is link to level vocab &amp; has title with &quot;view vocab&quot;. Only icons should have cursor on -locked.</p>
-
-</div>
-<div class="f-item-preview">
+	</div><div class="f-item-preview">
 	<ul class="level-list">
 	<li class="level-card -locked -unlockable" data-level-id="#0">
 		<div class="wrap">
@@ -2303,53 +2291,6 @@ if statements are just for styleguide. In production just use <code>-white -djtb
 </div>
 
 
-<div class="f-item-group" id="vocab-block">
-
-	<div class="f-item-heading-group" data-f-toggle="labels">
-		<h2 class="f-item-heading">Vocab Block</h2>
-		<div class="f-item-controls">
-			<span class="f-control f-icon" data-f-toggle-control="notes" title="Toggle Notes">
-				<svg>
-					<use xlink:href="#f-icon-notes" />
-				</svg>
-			</span>
-			<span class="f-control f-icon" data-f-toggle-control="code" title="Toggle Code">
-				<svg>
-					<use xlink:href="#f-icon-code" />
-				</svg>
-			</span>
-		</div>
-	</div><div class="f-item-notes" data-f-toggle="notes">
-	<p>Wrap the kanji, kana, meaning in a <code>&lt;div class=&quot;readingset&quot;&gt;&lt;/div&gt;</code> if there will be multiple entries</p>
-
-</div>
-<div class="f-item-preview">
-	<li class="vocab-block">
-	<div class="vocab-base">
-		<!-- <div class="readingset"> -->
-		<span lang="ja" class="kanji">お誕生日おめでとう</span>
-		<span lang="ja" class="kana">おたんじょうびおめでとう</span>
-		<span class="meaning">Happy Birthday</span>
-		<!-- </div> -->
-	</div>
-</li>
-</div>
-<div class="f-item-code f-item-hidden" data-f-toggle="code">
-	<pre><code class="language-markup">&lt;li class=&quot;vocab-block&quot;&gt;
-	&lt;div class=&quot;vocab-base&quot;&gt;
-		&lt;!-- &lt;div class=&quot;readingset&quot;&gt; --&gt;
-		&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/span&gt;
-		&lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/span&gt;
-		&lt;span class=&quot;meaning&quot;&gt;Happy Birthday&lt;/span&gt;
-		&lt;!-- &lt;/div&gt; --&gt;
-	&lt;/div&gt;
-&lt;/li&gt;</code></pre>
-</div>
-
-
-</div>
-
-
 <div class="f-item-group" id="vocab-card">
 
 	<div class="f-item-heading-group" data-f-toggle="labels">
@@ -2378,29 +2319,17 @@ Modifier classes and icons alter this component, see them in action in <a href="
 	<li class="vocab-card ">
 	<div class="vocab-base">
 
-		<div class="readingset">
-			<span lang="ja" class="kanji">お誕生日おめでとう</span>
-			<span lang="ja" class="kana">おたんじょうびおめでとう</span>
-			<span class="meaning">Happy Birthday</span>
-		</div>
+		<dl class="readingset">
+			<span class="ja">
+        <dt lang="ja" class="kanji">お誕生日おめでとう</dt>
+        <dt lang="ja" class="kana">おたんじょうびおめでとう</dt>
+      </span>
+			<dd class="meaning">Happy Birthday</dd>
+		</dl>
 
 		<span class=""></span>
 
 	</div>
-
-	<!-- <div class="vocab-extra">
-  <span class="icon i-enlightened"></span>
-
-  <div class="synonyms">
-    <span class="text">User synonyms:</span>
-    <ul class="list">
-      <li class="item" contentEditable="true">Birth anniversary</li>
-      <li class="item" contentEditable="true">That day of the year</li>
-    </ul>
-  </div>
-
-  <button class="button extraToggle i-downarrow" title="More Info"></button>
-</div> -->
 
 </li>
 </div>
@@ -2408,29 +2337,17 @@ Modifier classes and icons alter this component, see them in action in <a href="
 	<pre><code class="language-markup">&lt;li class=&quot;vocab-card &quot;&gt;
 	&lt;div class=&quot;vocab-base&quot;&gt;
 
-		&lt;div class=&quot;readingset&quot;&gt;
-			&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/span&gt;
-			&lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/span&gt;
-			&lt;span class=&quot;meaning&quot;&gt;Happy Birthday&lt;/span&gt;
-		&lt;/div&gt;
+		&lt;dl class=&quot;readingset&quot;&gt;
+			&lt;span class=&quot;ja&quot;&gt;
+        &lt;dt lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/dt&gt;
+        &lt;dt lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/dt&gt;
+      &lt;/span&gt;
+			&lt;dd class=&quot;meaning&quot;&gt;Happy Birthday&lt;/dd&gt;
+		&lt;/dl&gt;
 
 		&lt;span class=&quot;&quot;&gt;&lt;/span&gt;
 
 	&lt;/div&gt;
-
-	&lt;!-- &lt;div class=&quot;vocab-extra&quot;&gt;
-  &lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
-
-  &lt;div class=&quot;synonyms&quot;&gt;
-    &lt;span class=&quot;text&quot;&gt;User synonyms:&lt;/span&gt;
-    &lt;ul class=&quot;list&quot;&gt;
-      &lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;Birth anniversary&lt;/li&gt;
-      &lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;That day of the year&lt;/li&gt;
-    &lt;/ul&gt;
-  &lt;/div&gt;
-
-  &lt;button class=&quot;button extraToggle i-downarrow&quot; title=&quot;More Info&quot;&gt;&lt;/button&gt;
-&lt;/div&gt; --&gt;
 
 &lt;/li&gt;</code></pre>
 </div>
@@ -2511,85 +2428,49 @@ Modifier classes and icons alter this component, see them in action in <a href="
 	<li class="vocab-card ">
 		<div class="vocab-base">
 
-			<div class="readingset">
-				<span lang="ja" class="kanji">お誕生日おめでとう</span>
-				<span lang="ja" class="kana">おたんじょうびおめでとう</span>
-				<span class="meaning">Happy Birthday</span>
-			</div>
+			<dl class="readingset">
+				<span class="ja">
+          <dt lang="ja" class="kanji">お誕生日おめでとう</dt>
+          <dt lang="ja" class="kana">おたんじょうびおめでとう</dt>
+        </span>
+				<dd class="meaning">Happy Birthday</dd>
+			</dl>
 
 			<span class="icon i-unlocked"></span>
 
 		</div>
 
-		<!-- <div class="vocab-extra">
-    <span class="icon i-enlightened"></span>
-  
-    <div class="synonyms">
-      <span class="text">User synonyms:</span>
-      <ul class="list">
-        <li class="item" contentEditable="true">Birth anniversary</li>
-        <li class="item" contentEditable="true">That day of the year</li>
-      </ul>
-    </div>
-  
-    <button class="button extraToggle i-downarrow" title="More Info"></button>
-  </div> -->
-
 	</li>
 	<li class="vocab-card -locked -unlockable">
 		<div class="vocab-base">
 
-			<div class="readingset">
-				<span lang="ja" class="kanji">お誕生日おめでとう</span>
-				<span lang="ja" class="kana">おたんじょうびおめでとう</span>
-				<span class="meaning">Happy Birthday</span>
-			</div>
+			<dl class="readingset">
+				<span class="ja">
+          <dt lang="ja" class="kanji">お誕生日おめでとう</dt>
+          <dt lang="ja" class="kana">おたんじょうびおめでとう</dt>
+        </span>
+				<dd class="meaning">Happy Birthday</dd>
+			</dl>
 
 			<span class="icon i-unlock"></span>
 
 		</div>
 
-		<!-- <div class="vocab-extra">
-    <span class="icon i-enlightened"></span>
-  
-    <div class="synonyms">
-      <span class="text">User synonyms:</span>
-      <ul class="list">
-        <li class="item" contentEditable="true">Birth anniversary</li>
-        <li class="item" contentEditable="true">That day of the year</li>
-      </ul>
-    </div>
-  
-    <button class="button extraToggle i-downarrow" title="More Info"></button>
-  </div> -->
-
 	</li>
 	<li class="vocab-card -locked">
 		<div class="vocab-base">
 
-			<div class="readingset">
-				<span lang="ja" class="kanji">お誕生日おめでとう</span>
-				<span lang="ja" class="kana">おたんじょうびおめでとう</span>
-				<span class="meaning">Happy Birthday</span>
-			</div>
+			<dl class="readingset">
+				<span class="ja">
+          <dt lang="ja" class="kanji">お誕生日おめでとう</dt>
+          <dt lang="ja" class="kana">おたんじょうびおめでとう</dt>
+        </span>
+				<dd class="meaning">Happy Birthday</dd>
+			</dl>
 
 			<span class="icon i-lock"></span>
 
 		</div>
-
-		<!-- <div class="vocab-extra">
-    <span class="icon i-enlightened"></span>
-  
-    <div class="synonyms">
-      <span class="text">User synonyms:</span>
-      <ul class="list">
-        <li class="item" contentEditable="true">Birth anniversary</li>
-        <li class="item" contentEditable="true">That day of the year</li>
-      </ul>
-    </div>
-  
-    <button class="button extraToggle i-downarrow" title="More Info"></button>
-  </div> -->
 
 	</li>
 </ul>
@@ -2600,85 +2481,49 @@ Modifier classes and icons alter this component, see them in action in <a href="
 	&lt;li class=&quot;vocab-card &quot;&gt;
 		&lt;div class=&quot;vocab-base&quot;&gt;
 
-			&lt;div class=&quot;readingset&quot;&gt;
-				&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/span&gt;
-				&lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/span&gt;
-				&lt;span class=&quot;meaning&quot;&gt;Happy Birthday&lt;/span&gt;
-			&lt;/div&gt;
+			&lt;dl class=&quot;readingset&quot;&gt;
+				&lt;span class=&quot;ja&quot;&gt;
+          &lt;dt lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/dt&gt;
+          &lt;dt lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/dt&gt;
+        &lt;/span&gt;
+				&lt;dd class=&quot;meaning&quot;&gt;Happy Birthday&lt;/dd&gt;
+			&lt;/dl&gt;
 
 			&lt;span class=&quot;icon i-unlocked&quot;&gt;&lt;/span&gt;
 
 		&lt;/div&gt;
 
-		&lt;!-- &lt;div class=&quot;vocab-extra&quot;&gt;
-    &lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
-  
-    &lt;div class=&quot;synonyms&quot;&gt;
-      &lt;span class=&quot;text&quot;&gt;User synonyms:&lt;/span&gt;
-      &lt;ul class=&quot;list&quot;&gt;
-        &lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;Birth anniversary&lt;/li&gt;
-        &lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;That day of the year&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/div&gt;
-  
-    &lt;button class=&quot;button extraToggle i-downarrow&quot; title=&quot;More Info&quot;&gt;&lt;/button&gt;
-  &lt;/div&gt; --&gt;
-
 	&lt;/li&gt;
 	&lt;li class=&quot;vocab-card -locked -unlockable&quot;&gt;
 		&lt;div class=&quot;vocab-base&quot;&gt;
 
-			&lt;div class=&quot;readingset&quot;&gt;
-				&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/span&gt;
-				&lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/span&gt;
-				&lt;span class=&quot;meaning&quot;&gt;Happy Birthday&lt;/span&gt;
-			&lt;/div&gt;
+			&lt;dl class=&quot;readingset&quot;&gt;
+				&lt;span class=&quot;ja&quot;&gt;
+          &lt;dt lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/dt&gt;
+          &lt;dt lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/dt&gt;
+        &lt;/span&gt;
+				&lt;dd class=&quot;meaning&quot;&gt;Happy Birthday&lt;/dd&gt;
+			&lt;/dl&gt;
 
 			&lt;span class=&quot;icon i-unlock&quot;&gt;&lt;/span&gt;
 
 		&lt;/div&gt;
 
-		&lt;!-- &lt;div class=&quot;vocab-extra&quot;&gt;
-    &lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
-  
-    &lt;div class=&quot;synonyms&quot;&gt;
-      &lt;span class=&quot;text&quot;&gt;User synonyms:&lt;/span&gt;
-      &lt;ul class=&quot;list&quot;&gt;
-        &lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;Birth anniversary&lt;/li&gt;
-        &lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;That day of the year&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/div&gt;
-  
-    &lt;button class=&quot;button extraToggle i-downarrow&quot; title=&quot;More Info&quot;&gt;&lt;/button&gt;
-  &lt;/div&gt; --&gt;
-
 	&lt;/li&gt;
 	&lt;li class=&quot;vocab-card -locked&quot;&gt;
 		&lt;div class=&quot;vocab-base&quot;&gt;
 
-			&lt;div class=&quot;readingset&quot;&gt;
-				&lt;span lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/span&gt;
-				&lt;span lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/span&gt;
-				&lt;span class=&quot;meaning&quot;&gt;Happy Birthday&lt;/span&gt;
-			&lt;/div&gt;
+			&lt;dl class=&quot;readingset&quot;&gt;
+				&lt;span class=&quot;ja&quot;&gt;
+          &lt;dt lang=&quot;ja&quot; class=&quot;kanji&quot;&gt;お誕生日おめでとう&lt;/dt&gt;
+          &lt;dt lang=&quot;ja&quot; class=&quot;kana&quot;&gt;おたんじょうびおめでとう&lt;/dt&gt;
+        &lt;/span&gt;
+				&lt;dd class=&quot;meaning&quot;&gt;Happy Birthday&lt;/dd&gt;
+			&lt;/dl&gt;
 
 			&lt;span class=&quot;icon i-lock&quot;&gt;&lt;/span&gt;
 
 		&lt;/div&gt;
-
-		&lt;!-- &lt;div class=&quot;vocab-extra&quot;&gt;
-    &lt;span class=&quot;icon i-enlightened&quot;&gt;&lt;/span&gt;
-  
-    &lt;div class=&quot;synonyms&quot;&gt;
-      &lt;span class=&quot;text&quot;&gt;User synonyms:&lt;/span&gt;
-      &lt;ul class=&quot;list&quot;&gt;
-        &lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;Birth anniversary&lt;/li&gt;
-        &lt;li class=&quot;item&quot; contentEditable=&quot;true&quot;&gt;That day of the year&lt;/li&gt;
-      &lt;/ul&gt;
-    &lt;/div&gt;
-  
-    &lt;button class=&quot;button extraToggle i-downarrow&quot; title=&quot;More Info&quot;&gt;&lt;/button&gt;
-  &lt;/div&gt; --&gt;
 
 	&lt;/li&gt;
 &lt;/ul&gt;</code></pre>
