@@ -20,9 +20,6 @@
       flex: 1 0 100%;
       width: 100%;
       padding: $unit-sm;
-      @include media($bp-md) {
-        padding: $unit-sm 0;
-      }
 
       // horizontal separator between readings if more than 1
       &:not(:only-child):not(:last-of-type) {
@@ -46,7 +43,7 @@
 
       > .meaning {
         @extend %flexcenter;
-        flex: 0 1 60%;
+        flex: 0 1 55%;
         text-align: center;
         padding: 0 $unit-xs;
         margin: 0;

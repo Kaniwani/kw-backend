@@ -1,3 +1,5 @@
+import im from '../vendor/include-media.js';
+
 let CSRF,
     $vocabList,
     $cards;
@@ -9,7 +11,7 @@ function init() {
     CSRF = $('#csrf').val();
     $cards = $vocabList.find('.vocab-card');
 
-    adjustCardHeight($cards);
+    if(im.greaterThan('md')) adjustCardHeight($cards);
 
     // if user has deeplinked from summary or elsewhere let's draw attention to the card
     let specificVocab = (window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/) || [])[1];
@@ -30,8 +32,10 @@ function toggleVocabExpand(event) {
 // force really tall cards to layout horizontal
 function adjustCardHeight($list) {
   $list.each((i, el) => {
-    let $el = $(el);
-    if($el.height() > 300) $el.css('flex', '1 1 50%');
+    let $text = $(el).find('.meaning').text();
+    if($text.length > 75) {
+      $(el).css('flex', '2 1 60%');
+    }
   });
 }
 
