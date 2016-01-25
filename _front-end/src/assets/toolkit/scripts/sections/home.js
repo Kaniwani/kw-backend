@@ -1,6 +1,7 @@
 import refreshReviews from '../components/refreshReviews';
+import pluralize from '../util/pluralize';
 
-let prevSync,
+let recentlySynced,
 		$refreshButton,
 		$reviewButton;
 
@@ -9,22 +10,21 @@ function init() {
 	if (window.location.pathname === '/kw/') {
 		$refreshButton = $("#forceSrs");
 		$reviewButton = $("#reviewCount");
-		prevSync = simpleStorage.get('prevSync');
-		console.log('prevSync?', prevSync);
-		if (prevSync !== true) syncUser();
+		recentlySynced = simpleStorage.get('recentlySynced');
+
+		if (recentlySynced !== true) syncUser();
 
 		// event handlers
-		$refreshButton.click(() => refreshReviews({forceGet: true}));
+		$refreshButton.click(() => refreshReviews());
 		$reviewButton.click(ev => {
 			if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
 		});
 		$(document).keypress(handleKeyPress);
+
+		// update from sessionstorage, if nothing there then hit server
+		refreshReviews();
 	}
-
-	// update from sessionstorage, if nothing there then hit server
-	refreshReviews();
 }
-
 
 function syncUser() {
 	animateSync();
@@ -32,11 +32,9 @@ function syncUser() {
 	$.getJSON('/kw/sync/', {full_sync: false})
 		.done(res => {
 			const message = `Account synced with Wanikani!`,
-					  newMaterial = `</br>You have ${res.new_review_count} new reviews & ${res.new_synonym_count} new synonyms.`;
+					  newMaterial = `</br>You have unlocked ${pluralize('new vocab item', res.new_review_count)} & ${pluralize('new synonym', res.new_synonym_count)}.`;
 
-			console.log(res);
-
- 			simpleStorage.set('prevSync', res.profile_sync_succeeded, {TTL: 180000}) // expire after 30mins
+ 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: 1800000}) // expire after 30mins
  			notie.alert(1, (newMaterial ? message + newMaterial : message), 5);
 		})
 		.fail(() => {

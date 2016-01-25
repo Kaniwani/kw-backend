@@ -80,15 +80,15 @@
 
 	var _sectionsHome2 = _interopRequireDefault(_sectionsHome);
 
-	var _sectionsVocabulary = __webpack_require__(15);
+	var _sectionsVocabulary = __webpack_require__(16);
 
 	var _sectionsVocabulary2 = _interopRequireDefault(_sectionsVocabulary);
 
-	var _sectionsLevelVocab = __webpack_require__(16);
+	var _sectionsLevelVocab = __webpack_require__(17);
 
 	var _sectionsLevelVocab2 = _interopRequireDefault(_sectionsLevelVocab);
 
-	var _sectionsReviews = __webpack_require__(17);
+	var _sectionsReviews = __webpack_require__(18);
 
 	var _sectionsReviews2 = _interopRequireDefault(_sectionsReviews);
 
@@ -10378,7 +10378,7 @@
 
 	    // SETTINGS
 	    // *********************************************
-
+	    
 	    // General
 	    var shadow = true;
 	    var font_size_small = '18px';
@@ -10386,7 +10386,7 @@
 	    var font_change_screen_width = 600;
 	    var animation_delay = 0.3;
 	    var background_click_dismiss = true;
-
+	    
 	    // notie.alert colors
 	    var alert_color_success_background = '#57BF57';
 	    var alert_color_warning_background = '#E3B771';
@@ -10401,7 +10401,7 @@
 	    var confirm_and_input_color_text = '#FFF';
 	    var confirm_and_input_color_yes_text = '#FFF';
 	    var confirm_and_input_color_no_text = '#FFF';
-
+	    
 	    // ID's for use within your own .css file (OPTIONAL)
 	    // (Be sure to use !important to override the javascript)
 	    // Example: #notie-alert-inner { padding: 30px !important; }
@@ -10426,23 +10426,23 @@
 	    var input_text_id = 'notie-input-text';
 	    var input_yes_text_id = 'notie-input-yes-text';
 	    var input_no_text_id = 'notie-input-no-text';
-
+	    
 	    // *********************************************
-
-
-
-
-
+	    
+	    
+	    
+	    
+	    
 	    // HELPERS
 	    // *********************************************
-
+	    
 	    // Function for resize listeners for font-size
 	    var resizeListener = function resizeListener(ele) {
 	        if (window.innerWidth <= font_change_screen_width) { ele.style.fontSize = font_size_small; }
 	        else { ele.style.fontSize = font_size_big; }
 	    };
-
-
+	    
+	    
 	    // Debounce function (credit to Underscore.js)
 	    var debounce_time = 500;
 	    var debounce = function debounce(func, wait, immediate) {
@@ -10459,8 +10459,8 @@
 	            if (callNow) func.apply(context, args);
 	        };
 	    }
-
-
+	    
+	    
 	    // Event listener for enter and escape keys
 	    window.addEventListener('keydown', function(event) {
 	        var enter_clicked = (event.which == 13 || event.keyCode == 13);
@@ -10489,8 +10489,8 @@
 	            }
 	        }
 	    });
-
-
+	    
+	    
 	    // addEventListener polyfill, fixes a style.height issue for IE8
 	    if (typeof Element.prototype.addEventListener === 'undefined') {
 	        Element.prototype.addEventListener = Window.prototype.addEventListener = function (e, callback) {
@@ -10513,9 +10513,9 @@
 	        document.body.style.overflow = original_body_overflow;
 	    }
 	    // *********************************************
-
-
-
+	    
+	    
+	    
 	    // NOTIE.ALERT
 	    // *********************************************
 
@@ -10535,21 +10535,21 @@
 	    alert_outer.style.WebkitTransition = '';
 	    alert_outer.style.transition = '';
 	    alert_outer.style.cursor = 'pointer';
-
+	    
 	    // Hide alert on click
 	    alert_outer.onclick = function() {
 	        clearTimeout(alert_timeout_1);
 	        clearTimeout(alert_timeout_2);
 	        alert_hide();
 	    };
-
+	    
 	    var alert_inner = document.createElement('div');
 	    alert_inner.id = alert_inner_id;
 	    alert_inner.style.padding = '20px';
 	    alert_inner.style.display = 'table-cell';
 	    alert_inner.style.verticalAlign = 'middle';
 	    alert_outer.appendChild(alert_inner);
-
+	    
 	    // Initialize notie text
 	    var alert_text = document.createElement('span');
 	    alert_text.id = alert_text_id;
@@ -10570,7 +10570,7 @@
 	    var was_clicked_counter = 0;
 
 	    function alert(type, message, seconds) {
-
+	        
 	        // Blur active element for use of enter key, focus input
 	        document.activeElement.blur();
 
@@ -10670,7 +10670,7 @@
 	            alert_outer.style.MozTransition = '';
 	            alert_outer.style.WebkitTransition = '';
 	            alert_outer.style.transition = '';
-
+	            
 	            alert_outer.style.top = '-10000px';
 
 	            alert_is_showing = false;
@@ -10715,7 +10715,7 @@
 	    confirm_background.style.WebkitTransition = 'all ' + animation_delay + 's ease';
 	    confirm_background.style.transition = 'all ' + animation_delay + 's ease';
 	    confirm_background.style.opacity = '0';
-
+	    
 	    // Hide notie.confirm on background click
 	    confirm_background.onclick = function() {
 	        if (background_click_dismiss) {
@@ -10788,10 +10788,10 @@
 	    var confirm_is_showing = false;
 
 	    function confirm(title, yes_text, no_text, yes_callback) {
-
+	        
 	        // Blur active element for use of enter key
 	        document.activeElement.blur();
-
+	        
 	        if (alert_is_showing) {
 	            // Hide notie.alert
 	            clearTimeout(alert_timeout_1);
@@ -10803,7 +10803,7 @@
 	        else {
 	            confirm_show(title, yes_text, no_text, yes_callback);
 	        }
-
+	        
 
 	    }
 	    function confirm_show(title, yes_text, no_text, yes_callback) {
@@ -10873,7 +10873,7 @@
 	            confirm_outer.style.WebkitTransition = '';
 	            confirm_outer.style.transition = '';
 	            confirm_background.style.display = 'none';
-
+	            
 	            confirm_outer.style.top = '-10000px';
 
 	            scroll_enable();
@@ -10883,10 +10883,10 @@
 	        }, (animation_delay * 1000 + 10));
 
 	    }
-
-
-
-
+	    
+	    
+	    
+	    
 	    // NOTIE.INPUT
 	    // *********************************************
 
@@ -10919,7 +10919,7 @@
 	    input_background.style.WebkitTransition = 'all ' + animation_delay + 's ease';
 	    input_background.style.transition = 'all ' + animation_delay + 's ease';
 	    input_background.style.opacity = '0';
-
+	    
 	    // Hide notie.input on background click
 	    input_background.onclick = function() {
 	        if (background_click_dismiss) {
@@ -10936,7 +10936,7 @@
 	    input_inner.style.cursor = 'default';
 	    input_inner.style.backgroundColor = confirm_and_input_color_background;
 	    input_outer.appendChild(input_inner);
-
+	    
 	    var input_div = document.createElement('div');
 	    input_div.id = input_div_id;
 	    input_div.style.boxSizing = 'border-box';
@@ -10946,9 +10946,9 @@
 	    input_div.style.cursor = 'default';
 	    input_div.style.backgroundColor = '#FFF';
 	    input_outer.appendChild(input_div);
-
+	    
 	    var input_field = document.createElement('input');
-	    input_field.id = input_field_id;
+	    input_field.id = input_field_id;    
 	    input_field.setAttribute('autocomplete', 'off');
 	    input_field.setAttribute('autocorrect', 'off');
 	    input_field.setAttribute('autocapitalize', 'off');
@@ -11023,16 +11023,16 @@
 	    var input_is_showing = false;
 
 	    function input(title, submit_text, cancel_text, type, placeholder, submit_callback, prefilled_value_optional) {
-
+	        
 	        // Blur active element for use of enter key, focus input
 	        document.activeElement.blur();
 	        setTimeout(function() { input_field.focus(); }, (animation_delay * 1000));
-
+	        
 	        input_field.setAttribute('type', type);
 	        input_field.setAttribute('placeholder', placeholder);
 	        input_field.value = '';
 	        if (typeof prefilled_value_optional !== 'undefined' && prefilled_value_optional.length > 0) { input_field.value = prefilled_value_optional }
-
+	        
 	        if (alert_is_showing) {
 	            // Hide notie.alert
 	            clearTimeout(alert_timeout_1);
@@ -11113,7 +11113,7 @@
 	            input_outer.style.WebkitTransition = '';
 	            input_outer.style.transition = '';
 	            input_background.style.display = 'none';
-
+	            
 	            input_outer.style.top = '-10000px';
 
 	            scroll_enable();
@@ -11123,9 +11123,9 @@
 	        }, (animation_delay * 1000 + 10));
 
 	    }
-
-
-
+	    
+	    
+	    
 	    return {
 	        alert: alert,
 	        confirm: confirm,
@@ -11172,7 +11172,7 @@
 	    // login animation
 	    setTimeout(function () {
 	      $(_this).closest('.login-section').addClass('-pending');
-	    }, 750);
+	    }, 600);
 	  });
 	}
 
@@ -11200,7 +11200,11 @@
 
 	var _componentsRefreshReviews2 = _interopRequireDefault(_componentsRefreshReviews);
 
-	var prevSync = undefined,
+	var _utilPluralize = __webpack_require__(15);
+
+	var _utilPluralize2 = _interopRequireDefault(_utilPluralize);
+
+	var recentlySynced = undefined,
 	    $refreshButton = undefined,
 	    $reviewButton = undefined;
 
@@ -11209,37 +11213,32 @@
 		if (window.location.pathname === '/kw/') {
 			$refreshButton = $("#forceSrs");
 			$reviewButton = $("#reviewCount");
-			prevSync = simpleStorage.get('prevSync');
-			console.log('prevSync?', prevSync);
-			if (prevSync !== true) syncUser();
+			recentlySynced = simpleStorage.get('recentlySynced');
+
+			if (recentlySynced !== true) syncUser();
 
 			// event handlers
 			$refreshButton.click(function () {
-				return (0, _componentsRefreshReviews2['default'])({ forceGet: true });
+				return (0, _componentsRefreshReviews2['default'])();
 			});
 			$reviewButton.click(function (ev) {
 				if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
 			});
 			$(document).keypress(handleKeyPress);
-		}
 
-		// update from sessionstorage, if nothing there then hit server
-		(0, _componentsRefreshReviews2['default'])();
+			// update from sessionstorage, if nothing there then hit server
+			(0, _componentsRefreshReviews2['default'])();
+		}
 	}
 
 	function syncUser() {
 		animateSync();
 
-		// FIXME: @tadgh I'm not getting any json responses, I think I'm getting redirected to /kw/ if I try
-		// getJSON no proper response, post fails.
-		// maybe I don't have my local server setup correctly and this works fine on live?
-		$.getJSON('/kw/sync/').done(function (res) {
+		$.getJSON('/kw/sync/', { full_sync: false }).done(function (res) {
 			var message = 'Account synced with Wanikani!',
-			    newMaterial = '</br>You have ' + res.new_review_count + ' new reviews & ' + res.new_synonym_count + ' new synonyms.';
+			    newMaterial = '</br>You have unlocked ' + (0, _utilPluralize2['default'])('new vocab item', res.new_review_count) + ' & ' + (0, _utilPluralize2['default'])('new synonym', res.new_synonym_count) + '.';
 
-			console.log(res);
-
-			simpleStorage.set('prevSync', res.profile_sync_succeeded, { TTL: 180000 }); // expire after 30mins
+			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, { TTL: 1800000 }); // expire after 30mins
 			notie.alert(1, newMaterial ? message + newMaterial : message, 5);
 		}).fail(function () {
 			notie.alert(3, 'Something went wrong while trying to sync with Wanikani. If the problem persists, send us a <a href="/contact/">contact message</a>!', 10);
@@ -11333,54 +11332,36 @@
 /* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($, simpleStorage) {"use strict";
+	/* WEBPACK VAR INJECTION */(function($, simpleStorage) {'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
+	Object.defineProperty(exports, '__esModule', {
 	  value: true
 	});
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+	var _utilPluralizeJs = __webpack_require__(15);
+
+	var _utilPluralizeJs2 = _interopRequireDefault(_utilPluralizeJs);
+
 	var $navCount = undefined,
 	    $buttonCount = undefined,
 	    storageCount = undefined,
 	    recentlyRefreshed = undefined,
 	    sessionFinished = undefined;
 
-	function pluralize(text, num) {
-	  return num + text + (num > 1 ? "s" : "");
-	}
-
 	function ajaxReviewCount() {
 	  $.get("/kw/force_srs/").done(function (res) {
 	    res = parseInt(res, 10);
 
-	    if (sessionFinished) {
-	      $navCount.text('');
-	    }
+	    $navCount.text(res);
+	    $navCount.closest('.nav-link');
 
-	    if (res > 0) {
-	      simpleStorage.set('reviewCount', res);
-	      $navCount.text(res);
-	      $navCount.closest('.nav-link');
-
-	      if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
-	    }
+	    if ($buttonCount.length) $buttonCount.text((0, _utilPluralizeJs2['default'])('Review', res)).removeClass('-disabled');
 
 	    console.log('Review count updated from server:', res);
-	    simpleStorage.set('recentlyRefreshed', true, { TTL: 300000 });
-	    simpleStorage.set('reviewCount', res);
+	    simpleStorage.set('recentlyRefreshed', true, { TTL: 45000 }); // 45 seconds
 	  });
-	}
-
-	function storageReviewCount() {
-	  if (storageCount > 0) {
-	    $navCount.text(storageCount);
-	    $navCount.closest('.nav-link');
-	    // if on home page update the reviews button too
-	    if ($buttonCount.length) {
-	      $buttonCount.text(pluralize(' Review', storageCount)).removeClass('-disabled');
-	    }
-	  }
-
-	  console.log('Review count updated from local storage:', storageCount);
 	}
 
 	var refreshReviews = function refreshReviews() {
@@ -11390,25 +11371,37 @@
 
 	  $navCount = $("#navReviewCount");
 	  $buttonCount = $("#reviewCount");
-	  storageCount = simpleStorage.get('reviewCount') || 0;
-	  sessionFinished = simpleStorage.get('sessionFinished');
 	  recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
 
-	  console.log("\n    recentlyRefreshed: " + !recentlyRefreshed + ",\n    forceGet: " + forceGet + ",\n    sessionFinished: " + sessionFinished + ",\n    storageCount: " + (storageCount < 1));
+	  console.log('\n    recentlyRefreshed: ' + recentlyRefreshed + ',\n    forceGet: ' + forceGet);
 
-	  if (!recentlyRefreshed || /*sessionFinished && storageCount < 1 && */forceGet) {
-	    ajaxReviewCount();
-	  } else {
-	    storageReviewCount();
-	  }
+	  if (!recentlyRefreshed || forceGet) ajaxReviewCount();
 	};
 
-	exports["default"] = refreshReviews;
-	module.exports = exports["default"];
+	exports['default'] = refreshReviews;
+	module.exports = exports['default'];
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(13)))
 
 /***/ },
 /* 15 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var pluralize = function pluralize(text, num) {
+	  num = +num;
+	  if (Number.isNaN(num)) console.warn('pluralize received non-number');
+	  return num + " " + (text + (num > 1 || num == 0 ? "s" : ""));
+	};
+
+	exports["default"] = pluralize;
+	module.exports = exports["default"];
+
+/***/ },
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($, notie, simpleStorage) {'use strict';
@@ -11519,7 +11512,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(9), __webpack_require__(13)))
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
@@ -11542,14 +11535,8 @@
 	    $cards = $vocabList.find('.vocab-card');
 
 	    // Attach events
-	    $cards.on('click', '.extraToggle', toggleVocabExpand);
 	    $cards.on('click', '.icon', handleIconClick);
 	  }
-	}
-
-	function toggleVocabExpand(event) {
-	  event.preventDefault();
-	  $(this).closest('.vocab-card').toggleClass('-expanded');
 	}
 
 	function handleIconClick(event) {
@@ -11578,10 +11565,10 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($, simpleStorage) {'use strict';
+	/* WEBPACK VAR INJECTION */(function($) {'use strict';
 
 	Object.defineProperty(exports, '__esModule', {
 	  value: true
@@ -11589,17 +11576,16 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
-	var _vendorWanakanaMin = __webpack_require__(18);
+	var _vendorWanakanaMin = __webpack_require__(19);
 
 	var _vendorWanakanaMin2 = _interopRequireDefault(_vendorWanakanaMin);
 
 	// cache jquery objects instead of querying dom all the time
 	var CSRF = $('#csrf').val(),
 	    //Grab CSRF token off of dummy form.
-	sessionFinished = undefined,
-	    remainingVocab = undefined,
-	    currentVocab = undefined,
+	remainingVocab = undefined,
 	    startCount = undefined,
+	    currentVocab = undefined,
 	    correctTotal = 0,
 	    answeredTotal = 0,
 	    answerCorrectness = [],
@@ -11621,22 +11607,15 @@
 	  // if not on reviews page then exit
 	  if (!$meaning.length) return;
 
-	  // TODO: for mid-review drops, we should submit previous answerCorrectness, and THEN get ask for reviews again from server? or get previous sessionVocab state and merge with the server provided sessionVocab?
-	  // if (simpleStorage.get('prevSessionAnswers') != null) {
-	  //  submit dem done answers
-	  //  get prev sessionvocab, add to a set, add in server ones, re-update sessionvocab with union
-	  // }
-	  var updateVocab = simpleStorage.set('sessionVocab', window.KWinitialVocab);
-	  var updateCount = simpleStorage.set('reviewCount', window.KWinitialVocab.length);
-
 	  // set initial values
-	  remainingVocab = simpleStorage.get('sessionVocab');
+	  remainingVocab = window.KWinitialVocab;
 	  startCount = remainingVocab.length;
 
-	  console.log('\nUpdate session vocab:', updateVocab, '\nUpdate count:', updateCount, '\nLength:', window.KWinitialVocab.length, '\nSession Finished:', simpleStorage.get('sessionFinished'));
+	  console.log('\nLength:', startCount);
 
-	  $reviewsLeft.text(remainingVocab.length);
+	  $reviewsLeft.text(startCount);
 	  currentVocab = remainingVocab.shift();
+	  console.log(currentVocab);
 	  $userID.val(currentVocab.user_specific_id);
 
 	  $detailKana.kana = $detailKana.find('.-kana');
@@ -11751,14 +11730,10 @@
 	      }
 
 	  recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
-	  simpleStorage.set('sessionFinished', false, { TTL: 3600000 });
 	  enableButtons();
 	}
 
-	// TODO: @djtb - use storage, update local storage, expires 1 week, use post only at end of review (OR ANY NAVIGATION)
 	function recordAnswer(userID, correctness, previouslyWrong) {
-	  //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
-	  // TODO: @djtb record in a localStorage list instead, post that list at review end.
 	  $.post('/kw/record_answer/', {
 	    user_specific_id: userID,
 	    user_correct: correctness,
@@ -11769,14 +11744,6 @@
 	  }).always(function (res) {
 	    console.log(res);
 	  });
-	}
-
-	function updateStorage() {
-	  simpleStorage.set('sessionVocab', remainingVocab);
-	  simpleStorage.set('reviewCount', remainingVocab.length);
-	  console.log('Storage is now:\n    reviewCount: ' + simpleStorage.get('reviewCount') + '\n    sessionFinished: ' + simpleStorage.get('sessionFinished') + '\n    sessionVocab: ' + simpleStorage.get('sessionVocab').map(function (x) {
-	    return x.meaning.split(',')[0];
-	  }) + '\n  ');
 	}
 
 	function clearColors() {
@@ -11840,13 +11807,11 @@
 	}
 
 	function rotateVocab() {
-	  $reviewsLeft.html(simpleStorage.get('reviewCount'));
+	  $reviewsLeft.html(remainingVocab.length);
 	  $reviewsDone.html(correctTotal);
 	  $reviewsCorrect.html(Math.floor(correctTotal / answeredTotal * 100));
 
 	  if (remainingVocab.length === 0) {
-	    updateStorage();
-	    simpleStorage.set('sessionFinished', true);
 	    console.log('Summary post data', answerCorrectness);
 	    return makePost('/kw/summary/', answerCorrectness);
 	  }
@@ -11867,7 +11832,6 @@
 	    event.stopPropagation();
 	    event.preventDefault();
 	  }
-
 	  $userAnswer.hasClass('-marked') ? rotateVocab() : compareAnswer();
 	}
 
@@ -11903,10 +11867,10 @@
 
 	exports['default'] = api;
 	module.exports = exports['default'];
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2), __webpack_require__(13)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;// this is a custom modified version of wanakana that overcomes the isHiragana failure bug for long hyphens (on entries like ハート形)
@@ -11915,7 +11879,7 @@
 	var wanakana,
 	    __indexOf = [].indexOf || function (a) {
 	  for (var b = 0, c = this.length; c > b; b++) if (b in this && this[b] === a) return b;return -1;
-	};wanakana = wanakana || {}, wanakana.version = "1.3.6", "function" == "function" && __webpack_require__(19) && !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
+	};wanakana = wanakana || {}, wanakana.version = "1.3.6", "function" == "function" && __webpack_require__(20) && !(__WEBPACK_AMD_DEFINE_ARRAY__ = [], __WEBPACK_AMD_DEFINE_RESULT__ = function () {
 	  return wanakana;
 	}.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__)), wanakana.LOWERCASE_START = 97, wanakana.LOWERCASE_END = 122, wanakana.UPPERCASE_START = 65, wanakana.UPPERCASE_END = 90, wanakana.HIRAGANA_START = 12353, wanakana.HIRAGANA_END = 12438, wanakana.KATAKANA_START = 12449, wanakana.KATAKANA_END = 12538, wanakana.LOWERCASE_FULLWIDTH_START = 65345, wanakana.LOWERCASE_FULLWIDTH_END = 65370, wanakana.UPPERCASE_FULLWIDTH_START = 65313, wanakana.UPPERCASE_FULLWIDTH_END = 65338, wanakana.defaultOptions = { useObseleteKana: !1, IMEMode: !1 }, wanakana.bind = function (a) {
 	  return a.addEventListener("input", wanakana._onInput);
@@ -12004,7 +11968,7 @@
 	}, wanakana.R_to_J = { a: "あ", i: "い", u: "う", e: "え", o: "お", yi: "い", wu: "う", whu: "う", xa: "ぁ", xi: "ぃ", xu: "ぅ", xe: "ぇ", xo: "ぉ", xyi: "ぃ", xye: "ぇ", ye: "いぇ", wha: "うぁ", whi: "うぃ", whe: "うぇ", who: "うぉ", wi: "うぃ", we: "うぇ", va: "ゔぁ", vi: "ゔぃ", vu: "ゔ", ve: "ゔぇ", vo: "ゔぉ", vya: "ゔゃ", vyi: "ゔぃ", vyu: "ゔゅ", vye: "ゔぇ", vyo: "ゔょ", ka: "か", ki: "き", ku: "く", ke: "け", ko: "こ", lka: "ヵ", lke: "ヶ", xka: "ヵ", xke: "ヶ", kya: "きゃ", kyi: "きぃ", kyu: "きゅ", kye: "きぇ", kyo: "きょ", ca: "か", ci: "き", cu: "く", ce: "け", co: "こ", lca: "ヵ", lce: "ヶ", xca: "ヵ", xce: "ヶ", qya: "くゃ", qyu: "くゅ", qyo: "くょ", qwa: "くぁ", qwi: "くぃ", qwu: "くぅ", qwe: "くぇ", qwo: "くぉ", qa: "くぁ", qi: "くぃ", qe: "くぇ", qo: "くぉ", kwa: "くぁ", qyi: "くぃ", qye: "くぇ", ga: "が", gi: "ぎ", gu: "ぐ", ge: "げ", go: "ご", gya: "ぎゃ", gyi: "ぎぃ", gyu: "ぎゅ", gye: "ぎぇ", gyo: "ぎょ", gwa: "ぐぁ", gwi: "ぐぃ", gwu: "ぐぅ", gwe: "ぐぇ", gwo: "ぐぉ", sa: "さ", si: "し", shi: "し", su: "す", se: "せ", so: "そ", za: "ざ", zi: "じ", zu: "ず", ze: "ぜ", zo: "ぞ", ji: "じ", sya: "しゃ", syi: "しぃ", syu: "しゅ", sye: "しぇ", syo: "しょ", sha: "しゃ", shu: "しゅ", she: "しぇ", sho: "しょ", shya: "しゃ", shyu: "しゅ", shye: "しぇ", shyo: "しょ", swa: "すぁ", swi: "すぃ", swu: "すぅ", swe: "すぇ", swo: "すぉ", zya: "じゃ", zyi: "じぃ", zyu: "じゅ", zye: "じぇ", zyo: "じょ", ja: "じゃ", ju: "じゅ", je: "じぇ", jo: "じょ", jya: "じゃ", jyi: "じぃ", jyu: "じゅ", jye: "じぇ", jyo: "じょ", ta: "た", ti: "ち", tu: "つ", te: "て", to: "と", chi: "ち", tsu: "つ", ltu: "っ", xtu: "っ", tya: "ちゃ", tyi: "ちぃ", tyu: "ちゅ", tye: "ちぇ", tyo: "ちょ", cha: "ちゃ", chu: "ちゅ", che: "ちぇ", cho: "ちょ", cya: "ちゃ", cyi: "ちぃ", cyu: "ちゅ", cye: "ちぇ", cyo: "ちょ", chya: "ちゃ", chyu: "ちゅ", chye: "ちぇ", chyo: "ちょ", tsa: "つぁ", tsi: "つぃ", tse: "つぇ", tso: "つぉ", tha: "てゃ", thi: "てぃ", thu: "てゅ", the: "てぇ", tho: "てょ", twa: "とぁ", twi: "とぃ", twu: "とぅ", twe: "とぇ", two: "とぉ", da: "だ", di: "ぢ", du: "づ", de: "で", "do": "ど", dya: "ぢゃ", dyi: "ぢぃ", dyu: "ぢゅ", dye: "ぢぇ", dyo: "ぢょ", dha: "でゃ", dhi: "でぃ", dhu: "でゅ", dhe: "でぇ", dho: "でょ", dwa: "どぁ", dwi: "どぃ", dwu: "どぅ", dwe: "どぇ", dwo: "どぉ", na: "な", ni: "に", nu: "ぬ", ne: "ね", no: "の", nya: "にゃ", nyi: "にぃ", nyu: "にゅ", nye: "にぇ", nyo: "にょ", ha: "は", hi: "ひ", hu: "ふ", he: "へ", ho: "ほ", fu: "ふ", hya: "ひゃ", hyi: "ひぃ", hyu: "ひゅ", hye: "ひぇ", hyo: "ひょ", fya: "ふゃ", fyu: "ふゅ", fyo: "ふょ", fwa: "ふぁ", fwi: "ふぃ", fwu: "ふぅ", fwe: "ふぇ", fwo: "ふぉ", fa: "ふぁ", fi: "ふぃ", fe: "ふぇ", fo: "ふぉ", fyi: "ふぃ", fye: "ふぇ", ba: "ば", bi: "び", bu: "ぶ", be: "べ", bo: "ぼ", bya: "びゃ", byi: "びぃ", byu: "びゅ", bye: "びぇ", byo: "びょ", pa: "ぱ", pi: "ぴ", pu: "ぷ", pe: "ぺ", po: "ぽ", pya: "ぴゃ", pyi: "ぴぃ", pyu: "ぴゅ", pye: "ぴぇ", pyo: "ぴょ", ma: "ま", mi: "み", mu: "む", me: "め", mo: "も", mya: "みゃ", myi: "みぃ", myu: "みゅ", mye: "みぇ", myo: "みょ", ya: "や", yu: "ゆ", yo: "よ", xya: "ゃ", xyu: "ゅ", xyo: "ょ", ra: "ら", ri: "り", ru: "る", re: "れ", ro: "ろ", rya: "りゃ", ryi: "りぃ", ryu: "りゅ", rye: "りぇ", ryo: "りょ", la: "ら", li: "り", lu: "る", le: "れ", lo: "ろ", lya: "りゃ", lyi: "りぃ", lyu: "りゅ", lye: "りぇ", lyo: "りょ", wa: "わ", wo: "を", lwe: "ゎ", xwa: "ゎ", n: "ん", nn: "ん", "n ": "ん", xn: "ん", ltsu: "っ" }, wanakana.FOUR_CHARACTER_EDGE_CASES = ["lts", "chy", "shy"], wanakana.J_to_R = { あ: "a", い: "i", う: "u", え: "e", お: "o", ゔぁ: "va", ゔぃ: "vi", ゔ: "vu", ゔぇ: "ve", ゔぉ: "vo", か: "ka", き: "ki", きゃ: "kya", きぃ: "kyi", きゅ: "kyu", く: "ku", け: "ke", こ: "ko", が: "ga", ぎ: "gi", ぐ: "gu", げ: "ge", ご: "go", ぎゃ: "gya", ぎぃ: "gyi", ぎゅ: "gyu", ぎぇ: "gye", ぎょ: "gyo", さ: "sa", す: "su", せ: "se", そ: "so", ざ: "za", ず: "zu", ぜ: "ze", ぞ: "zo", し: "shi", しゃ: "sha", しゅ: "shu", しょ: "sho", じ: "ji", じゃ: "ja", じゅ: "ju", じょ: "jo", た: "ta", ち: "chi", ちゃ: "cha", ちゅ: "chu", ちょ: "cho", つ: "tsu", て: "te", と: "to", だ: "da", ぢ: "di", づ: "du", で: "de", ど: "do", な: "na", に: "ni", にゃ: "nya", にゅ: "nyu", にょ: "nyo", ぬ: "nu", ね: "ne", の: "no", は: "ha", ひ: "hi", ふ: "fu", へ: "he", ほ: "ho", ひゃ: "hya", ひゅ: "hyu", ひょ: "hyo", ふぁ: "fa", ふぃ: "fi", ふぇ: "fe", ふぉ: "fo", ば: "ba", び: "bi", ぶ: "bu", べ: "be", ぼ: "bo", びゃ: "bya", びゅ: "byu", びょ: "byo", ぱ: "pa", ぴ: "pi", ぷ: "pu", ぺ: "pe", ぽ: "po", ぴゃ: "pya", ぴゅ: "pyu", ぴょ: "pyo", ま: "ma", み: "mi", む: "mu", め: "me", も: "mo", みゃ: "mya", みゅ: "myu", みょ: "myo", や: "ya", ゆ: "yu", よ: "yo", ら: "ra", り: "ri", る: "ru", れ: "re", ろ: "ro", りゃ: "rya", りゅ: "ryu", りょ: "ryo", わ: "wa", を: "wo", ん: "n", ゐ: "wi", ゑ: "we", きぇ: "kye", きょ: "kyo", じぃ: "jyi", じぇ: "jye", ちぃ: "cyi", ちぇ: "che", ひぃ: "hyi", ひぇ: "hye", びぃ: "byi", びぇ: "bye", ぴぃ: "pyi", ぴぇ: "pye", みぇ: "mye", みぃ: "myi", りぃ: "ryi", りぇ: "rye", にぃ: "nyi", にぇ: "nye", しぃ: "syi", しぇ: "she", いぇ: "ye", うぁ: "wha", うぉ: "who", うぃ: "wi", うぇ: "we", ゔゃ: "vya", ゔゅ: "vyu", ゔょ: "vyo", すぁ: "swa", すぃ: "swi", すぅ: "swu", すぇ: "swe", すぉ: "swo", くゃ: "qya", くゅ: "qyu", くょ: "qyo", くぁ: "qwa", くぃ: "qwi", くぅ: "qwu", くぇ: "qwe", くぉ: "qwo", ぐぁ: "gwa", ぐぃ: "gwi", ぐぅ: "gwu", ぐぇ: "gwe", ぐぉ: "gwo", つぁ: "tsa", つぃ: "tsi", つぇ: "tse", つぉ: "tso", てゃ: "tha", てぃ: "thi", てゅ: "thu", てぇ: "the", てょ: "tho", とぁ: "twa", とぃ: "twi", とぅ: "twu", とぇ: "twe", とぉ: "two", ぢゃ: "dya", ぢぃ: "dyi", ぢゅ: "dyu", ぢぇ: "dye", ぢょ: "dyo", でゃ: "dha", でぃ: "dhi", でゅ: "dhu", でぇ: "dhe", でょ: "dho", どぁ: "dwa", どぃ: "dwi", どぅ: "dwu", どぇ: "dwe", どぉ: "dwo", ふぅ: "fwu", ふゃ: "fya", ふゅ: "fyu", ふょ: "fyo", ぁ: "a", ぃ: "i", ぇ: "e", ぅ: "u", ぉ: "o", ゃ: "ya", ゅ: "yu", ょ: "yo", っ: "", ゕ: "ka", ゖ: "ka", ゎ: "wa", "　": " ", んあ: "n'a", んい: "n'i", んう: "n'u", んえ: "n'e", んお: "n'o", んや: "n'ya", んゆ: "n'yu", んよ: "n'yo" };
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;

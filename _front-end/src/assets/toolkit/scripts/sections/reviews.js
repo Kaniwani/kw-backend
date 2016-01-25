@@ -2,10 +2,9 @@ import wanakana from '../vendor/wanakana.min';
 
 // cache jquery objects instead of querying dom all the time
 let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
-  sessionFinished,
   remainingVocab,
-  currentVocab,
   startCount,
+  currentVocab,
   correctTotal = 0,
   answeredTotal = 0,
   answerCorrectness = [],
@@ -27,27 +26,15 @@ function init() {
   // if not on reviews page then exit
   if (!$meaning.length) return;
 
-  // TODO: for mid-review drops, we should submit previous answerCorrectness, and THEN get ask for reviews again from server? or get previous sessionVocab state and merge with the server provided sessionVocab?
-  // if (simpleStorage.get('prevSessionAnswers') != null) {
-  //  submit dem done answers
-  //  get prev sessionvocab, add to a set, add in server ones, re-update sessionvocab with union
-  // }
-  let updateVocab = simpleStorage.set('sessionVocab', window.KWinitialVocab);
-  let updateCount = simpleStorage.set('reviewCount', window.KWinitialVocab.length);
-
   // set initial values
-  remainingVocab = simpleStorage.get('sessionVocab');
+  remainingVocab = window.KWinitialVocab;
   startCount = remainingVocab.length;
 
-  console.log(
-      '\nUpdate session vocab:', updateVocab,
-      '\nUpdate count:', updateCount,
-      '\nLength:', window.KWinitialVocab.length,
-      '\nSession Finished:', simpleStorage.get('sessionFinished')
-  );
+  console.log('\nLength:', startCount);
 
-  $reviewsLeft.text(remainingVocab.length)
+  $reviewsLeft.text(startCount)
   currentVocab = remainingVocab.shift();
+  console.log(currentVocab);
   $userID.val(currentVocab.user_specific_id);
 
   $detailKana.kana = $detailKana.find('.-kana');
@@ -164,14 +151,10 @@ function compareAnswer() {
   }
 
   recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
-  simpleStorage.set('sessionFinished', false, {TTL: 3600000});
   enableButtons();
 }
 
-// TODO: @djtb - use storage, update local storage, expires 1 week, use post only at end of review (OR ANY NAVIGATION)
 function recordAnswer(userID, correctness, previouslyWrong) {
-  //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
-  // TODO: @djtb record in a localStorage list instead, post that list at review end.
   $.post('/kw/record_answer/', {
       user_specific_id: userID,
       user_correct: correctness,
@@ -184,16 +167,6 @@ function recordAnswer(userID, correctness, previouslyWrong) {
     .always(res => {
       console.log(res);
     });
-}
-
-function updateStorage() {
-  simpleStorage.set('sessionVocab', remainingVocab);
-  simpleStorage.set('reviewCount', remainingVocab.length);
-  console.log(`Storage is now:
-    reviewCount: ${simpleStorage.get('reviewCount')}
-    sessionFinished: ${simpleStorage.get('sessionFinished')}
-    sessionVocab: ${simpleStorage.get('sessionVocab').map( x => x.meaning.split(',')[0] )}
-  `);
 }
 
 function clearColors() {
@@ -257,13 +230,11 @@ function updateProgressBar(percent) {
 }
 
 function rotateVocab() {
-  $reviewsLeft.html(simpleStorage.get('reviewCount'));
+  $reviewsLeft.html(remainingVocab.length);
   $reviewsDone.html(correctTotal);
   $reviewsCorrect.html(Math.floor((correctTotal / answeredTotal) * 100));
 
   if (remainingVocab.length === 0) {
-    updateStorage();
-    simpleStorage.set('sessionFinished', true);
     console.log('Summary post data', answerCorrectness);
     return makePost('/kw/summary/', answerCorrectness);
   }
@@ -285,7 +256,6 @@ function enterPressed(event) {
     event.stopPropagation();
     event.preventDefault();
   }
-
   $userAnswer.hasClass('-marked') ? rotateVocab() : compareAnswer();
 }
 

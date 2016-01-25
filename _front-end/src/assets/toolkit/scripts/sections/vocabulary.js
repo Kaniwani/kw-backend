@@ -83,7 +83,6 @@ function reLockLevel() {
 
       refreshReviews({forceGet:true});
       simpleStorage.set('recentlyRefreshed', true, {TTL: 5000});
-
     })
    .fail(handleAjaxFail);
 }

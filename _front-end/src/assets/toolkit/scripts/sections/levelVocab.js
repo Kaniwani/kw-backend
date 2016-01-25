@@ -13,14 +13,8 @@ function init() {
     $cards = $vocabList.find('.vocab-card');
 
     // Attach events
-    $cards.on('click', '.extraToggle', toggleVocabExpand);
     $cards.on('click', '.icon', handleIconClick);
   }
-}
-
-function toggleVocabExpand(event) {
-  event.preventDefault();
-  $(this).closest('.vocab-card').toggleClass('-expanded');
 }
 
 function handleIconClick(event) {
