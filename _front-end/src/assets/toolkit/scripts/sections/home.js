@@ -97,7 +97,7 @@ function animateSync({clear = false} = {}) {
 	    paletteIndex %= palette.length;
 	  }, 10 );
 
-	}, 2000 );
+	}, 1600 );
 }
 
 const api = {

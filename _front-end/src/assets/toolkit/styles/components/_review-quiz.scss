@@ -73,7 +73,6 @@
 
       &.-marked {
         color: $white;
-        text-shadow: $shadow-text-thin;
 
         + .submit .icon {
           color: $white;
@@ -94,10 +93,12 @@
 
       &.-incorrect {
         background-color: $red;
+        text-shadow: 1px 1px 0 rgba(darken($red, 20%), .75);
       }
 
       &.-correct {
         background-color: $green;
+        text-shadow: 1px 1px 0 rgba(darken($green, 20%), .75);
       }
     }
 
@@ -121,6 +122,7 @@
         color: $grey-dark;
         &.-marked {
           color: $white;
+          text-shadow: $shadow-text-thin;
         }
       }
     }

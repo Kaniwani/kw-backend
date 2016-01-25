@@ -11309,7 +11309,7 @@
 				paletteIndex += 1;
 				paletteIndex %= palette.length;
 			}, 10);
-		}, 2000);
+		}, 1600);
 	}
 
 	var api = {
@@ -11584,8 +11584,8 @@
 	var CSRF = $('#csrf').val(),
 	    //Grab CSRF token off of dummy form.
 	remainingVocab = undefined,
-	    startCount = undefined,
 	    currentVocab = undefined,
+	    startCount = undefined,
 	    correctTotal = 0,
 	    answeredTotal = 0,
 	    answerCorrectness = [],
@@ -11740,7 +11740,7 @@
 	    csrfmiddlewaretoken: CSRF,
 	    wrong_before: previouslyWrong
 	  }).done(function () {
-	    updateStorage();
+	    // anything need
 	  }).always(function (res) {
 	    console.log(res);
 	  });

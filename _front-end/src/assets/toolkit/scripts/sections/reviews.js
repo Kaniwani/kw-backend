@@ -3,8 +3,8 @@ import wanakana from '../vendor/wanakana.min';
 // cache jquery objects instead of querying dom all the time
 let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
   remainingVocab,
-  startCount,
   currentVocab,
+  startCount,
   correctTotal = 0,
   answeredTotal = 0,
   answerCorrectness = [],
@@ -162,7 +162,7 @@ function recordAnswer(userID, correctness, previouslyWrong) {
       wrong_before: previouslyWrong
     })
     .done(() => {
-      updateStorage();
+      // anything need
     })
     .always(res => {
       console.log(res);
