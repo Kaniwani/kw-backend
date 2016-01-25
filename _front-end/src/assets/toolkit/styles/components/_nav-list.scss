@@ -31,3 +31,9 @@
     }
   }
 }
+
+// ugghh IE fix your flexbox >_<
+@media all and (-ms-high-contrast:none) {
+  // .nav-list > .item { height: 45px; width: 110px; } /* IE10 */
+  // *::-ms-backdrop, .nav-list > .item {height: 45px; width: 110px; } /* IE11 */
+}
