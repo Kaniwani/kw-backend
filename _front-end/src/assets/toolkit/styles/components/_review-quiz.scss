@@ -71,6 +71,9 @@
       text-align: center;
       transition: all .1s ease-out;
 
+      // hide stupid X on IE
+      ::-ms-clear {;}
+
       &.-marked {
         color: $white;
         text-shadow: $shadow-text-thin;

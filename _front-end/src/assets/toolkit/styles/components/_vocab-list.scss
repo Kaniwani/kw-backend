@@ -1,6 +1,5 @@
 .vocab-list {
   @extend %plainlist;
-  display: inline-block;
   display: flex;
   flex-flow: row wrap;
   justify-content: center;
@@ -20,6 +19,7 @@
       align-content: center;
       justify-content: center;
       align-items: center;
+      max-width: 100%;
       flex: 1 0 100%;
     }
   }
@@ -58,4 +58,10 @@
       }
     }
   }
+}
+
+// ugghh IE fix your flexbox >_<
+@media all and (-ms-high-contrast:none) {
+  .vocab-list > .vocab-card { height: 280px; width: 400px; } /* IE10 */
+  *::-ms-backdrop, .vocab-list > .vocab-card {height: 280px; width: 400px; } /* IE11 */
 }
