@@ -213,14 +213,16 @@ class SyncRequested(View):
     """
 
     def get(self, request, *args, **kwargs):
-        return HttpResponseRedirect(reverse_lazy('kw:home'))
 
-    def post(self, request, *args, **kwargs):
-        should_full_sync = request.POST["full_sync"]
+        should_full_sync = request.GET["full_sync"] if hasattr(request.GET, "full_sync") else True
         profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(self.request.user, should_full_sync)
         return JsonResponse({"profile_sync_succeeded": profile_sync_succeeded,
                              "new_review_count": new_review_count,
                              "new_synonym_count": new_synonym_count})
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(SyncRequested, self).dispatch(*args, **kwargs)
 
 
 class UnlockLevels(TemplateView):

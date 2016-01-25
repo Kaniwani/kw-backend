@@ -210,7 +210,7 @@ def sync_user_profile_with_wk(user):
 
 
 @celery_app.task()
-def sync_with_wk(user, recent_only=False):
+def sync_with_wk(user, full_sync=False):
     '''
     Takes a user. Checks the vocab list from WK for all levels. If anything new has been unlocked on the WK side,
     it also unlocks it here on Kaniwani and creates a new review for the user.
@@ -222,8 +222,8 @@ def sync_with_wk(user, recent_only=False):
     # We split this into two seperate API calls as we do not necessarily know the current level until
     # For the love of god don't delete this next line
     profile_sync_succeeded = sync_user_profile_with_wk(user)
-    if user.profile.api_valid and user.profile.follow_me:
-        if recent_only:
+    if user.profile.api_valid:
+        if not full_sync:
             new_review_count, new_synonym_count = sync_recent_unlocked_vocab_with_wk(user)
         else:
             new_review_count, new_synonym_count = sync_unlocked_vocab_with_wk(user)
@@ -279,6 +279,19 @@ def add_synonyms_from_api_call_to_review(review, user_specific_json):
     return review, new_synonym_count
 
 
+def associate_synonyms_to_vocab(user, vocab, user_specific):
+    review = None
+    new_synonym_count = 0
+
+    try:
+        review = UserSpecific.objects.get(user=user, vocabulary=vocab)
+        _, new_synonym_count = add_synonyms_from_api_call_to_review(review, user_specific)
+    except UserSpecific.DoesNotExist:
+        pass
+
+    return review, new_synonym_count
+
+
 def process_vocabulary_response_for_user(user, response):
     """
     Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
@@ -296,12 +309,16 @@ def process_vocabulary_response_for_user(user, response):
         for vocabulary_json in vocab_list:
             user_specific = vocabulary_json['user_specific']
             vocab = get_or_create_vocab_by_json(vocabulary_json)
-            new_review, created = associate_vocab_to_user(vocab, user)
-            if created:
-                new_review_count += 1
-            new_review, synonyms_added_count = add_synonyms_from_api_call_to_review(new_review, user_specific)
-            new_synonym_count += synonyms_added_count
-            new_review.save()
+            if user.profile.follow_me:
+                new_review, created = associate_vocab_to_user(vocab, user)
+                if created:
+                    new_review_count += 1
+                new_review, synonyms_added_count = add_synonyms_from_api_call_to_review(new_review, user_specific)
+                new_synonym_count += synonyms_added_count
+                new_review.save()
+            else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
+                _, synonyms_added_count = associate_synonyms_to_vocab(user, vocab, user_specific)
+                new_synonym_count += synonyms_added_count
         logger.info("Synced Vocabulary for {}".format(user.username))
         return new_review_count, new_synonym_count
     else:
@@ -429,7 +446,7 @@ def pull_user_synonyms_by_level(user, level):
                         for review in reviews:
                             logger.error(
                                     "Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(
-                                        review))
+                                            review))
         except KeyError:
             logger.error("NO requested info?: {}".format(json_data))
     else:

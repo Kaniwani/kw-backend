@@ -29,10 +29,7 @@ function init() {
 function syncUser() {
 	animateSync();
 
-	// FIXME: @tadgh I'm not getting any json responses, I think I'm getting redirected to /kw/ if I try
-	// getJSON no proper response, post fails.
-	// maybe I don't have my local server setup correctly and this works fine on live?
-	$.getJSON('/kw/sync/')
+	$.getJSON('/kw/sync/', {full_sync: false})
 		.done(res => {
 			const message = `Account synced with Wanikani!`,
 					  newMaterial = `</br>You have ${res.new_review_count} new reviews & ${res.new_synonym_count} new synonyms.`;

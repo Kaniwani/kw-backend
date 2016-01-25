@@ -39,3 +39,20 @@ single_vocab_response = {
                         }
                     }]
 }
+
+
+user_information_response = {
+    "user_information": {
+        "username": "Tadgh11",
+        "gravatar": "a9453be85d2e722fd7e3b3424a38be30",
+        "level": 17,
+        "title": "Turtles",
+        "about": "",
+        "website": "http://www.kaniwani.com",
+        "twitter": "@Tadgh11",
+        "topics_count": 1,
+        "posts_count": 81,
+        "creation_date": 1373371374,
+        "vacation_date": None
+    }
+}
