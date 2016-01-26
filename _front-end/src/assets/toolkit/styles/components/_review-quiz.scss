@@ -1,5 +1,3 @@
-// TODO this is a good candidate for flexbox column layout with meaning flex-grow > than other els
-// will have to test what happens on mobile keyboard open though
 .review-quiz {
   display: table;
   padding: 0;
@@ -70,6 +68,9 @@
       line-height: 2.5;
       text-align: center;
       transition: all .1s ease-out;
+
+      // hide stupid X on IE
+      ::-ms-clear {;}
 
       &.-marked {
         color: $white;
