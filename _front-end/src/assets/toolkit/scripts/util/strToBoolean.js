@@ -4,6 +4,7 @@ const strToBoolean = function(o) {
     let v = o[k];
     o[k] = (v === 'True' ? true : false);
   }
+  return o;
 };
 
 export default strToBoolean;

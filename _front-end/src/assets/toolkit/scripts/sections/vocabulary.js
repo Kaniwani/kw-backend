@@ -1,15 +1,14 @@
-import {refreshReviews} from '../components/refreshReviews.js';
+import refreshReviews from '../components/refreshReviews.js';
 
-// setup variables inside module closure, but functions in this file can modify and access them
 let CSRF,
+    user,
     $reviewCount,
     $levelList,
     $levels,
     $icon,
     $card,
     level,
-    currentLevel,
-    reviews;
+    currentLevel;
 
 function init() {
   $levelList = $('.level-list');
@@ -32,10 +31,9 @@ function init() {
 function handleLockClick(event) {
   event.preventDefault();
 
-  $icon = $(this),
-  $card = $icon.closest(".level-card"),
-  level = $card.data("level-id"),
-  reviews = parseInt($reviewCount.text(), 10);
+  $icon = $(this);
+  $card = $icon.closest(".level-card");
+  level = $card.data("level-id");
 
   if ($card.hasClass('-unlocked')) {
     notie.confirm(`Are you sure you want to relock level ${level}?
@@ -60,7 +58,7 @@ function unLockLevel() {
       refreshReviews({forceGet:true});
       simpleStorage.set('recentlyRefreshed', true, {TTL: 5000});
     })
-   .fail(handleAjaxFail);
+   .fail(res => handleAjaxFail(res, level, 'unlock'));
 }
 
 function reLockLevel() {
@@ -83,11 +81,11 @@ function reLockLevel() {
       refreshReviews({forceGet:true});
       simpleStorage.set('recentlyRefreshed', true, {TTL: 5000});
     })
-   .fail(handleAjaxFail);
+   .fail(res => handleAjaxFail(res, level, 'lock'));
 }
 
-function handleAjaxFail(res) {
-  let message = `Something went wrong - please try again. If the problem persists, submit a bug report via <a href="/contact"> the contact form</a> with the following information: <q>${res.responseText} - ${res.status}: ${res.statusText}</q>.`;
+function handleAjaxFail(res, level, action, user) {
+  let message = `Something went wrong - please try again. If the problem persists, submit a bug report via <a href="/contact"> the contact form</a> with the following information: <q class="failresponse">${res.status}: ${res.statusText} while trying to ${action} level ${level}.</q>`;
 
   notie.alert(3, message, 60);
 }
