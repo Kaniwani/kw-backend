@@ -2,6 +2,8 @@ from __future__ import absolute_import
 import logging
 from django.contrib.auth.models import User
 import requests
+from django.db.models import Min
+
 from KW.celery import app as celery_app
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
@@ -296,6 +298,13 @@ def get_users_current_reviews(user):
         return UserSpecific.objects.filter(user=user, needs_review=True, wanikani_burned=True, hidden=False)
     else:
         return UserSpecific.objects.filter(user=user, needs_review=True, hidden=False)
+
+def get_users_future_reviews(user):
+    if user.profile.only_review_burned:
+        return UserSpecific.objects.filter(user=user, needs_review=False, wanikani_burned=True, hidden=False).annotate(Min('next_review_date')).order_by('next_review_date')
+    else:
+        return UserSpecific.objects.filter(user=user, needs_review=False, hidden=False).annotate(Min('next_review_date')).order_by('next_review_date')
+
 
 def process_vocabulary_response_for_user(user, response):
     """
