@@ -149,25 +149,29 @@ def unlock_eligible_vocab_from_levels(user, levels):
 
     api_string = build_API_sync_string_for_user_for_levels(user, levels)
     r = requests.get(api_string)
-    if r.status_code == 200:
-        # parsing out the JSON data
-        json_data = r.json()
-        vocab_info = json_data['requested_information']
-        unlocked = locked = 0
+    unlocked, locked = process_vocabulary_response_for_user(user, r)
+    return unlocked, locked
 
-        for vocabulary in vocab_info:  # go through All vocab for the level
-            if vocabulary['user_specific'] is not None:  # if user has unlocked it in WK
-                try:
-                    vocab = get_vocab_by_meaning(vocabulary['meaning'])
-                except Vocabulary.DoesNotExist as e:
-                    logger.error(e)
-                    vocab = create_new_vocabulary(vocabulary)
-                unlocked += 1
-                associate_vocab_to_user(vocab,
-                                        user)  # gets or creates a review object. if created, set it to need review now.
-            else:
-                locked += 1
-        return unlocked, locked
+
+    #if r.status_code == 200:
+    #    # parsing out the JSON data
+    #    json_data = r.json()
+    #    vocab_info = json_data['requested_information']
+    #    unlocked = locked = 0##
+
+ #       for vocabulary in vocab_info:  # go through All vocab for the level
+  #          if vocabulary['user_specific'] is not None:  # if user has unlocked it in WK
+   #             try:
+    #                vocab = get_vocab_by_meaning(vocabulary['meaning'])
+     #           except Vocabulary.DoesNotExist as e:
+    #                logger.error(e)
+    #                vocab = create_new_vocabulary(vocabulary)
+    #            unlocked += 1
+    #            associate_vocab_to_user(vocab,
+    #                                    user)  # gets or creates a review object. if created, set it to need review now.
+    ##        else:
+    #            locked += 1
+    #    return unlocked, locked
 
 
 def get_wanikani_level_by_api_key(api_key):
@@ -286,6 +290,13 @@ def add_synonyms_from_api_call_to_review(review, user_specific_json):
         review.synonym_set.get_or_create(text=synonym)
     return review
 
+
+def get_users_current_reviews(user):
+    if user.profile.only_review_burned:
+        return UserSpecific.objects.filter(user=user, needs_review=True, wanikani_burned=True, hidden=False)
+    else:
+        return UserSpecific.objects.filter(user=user, needs_review=True, hidden=False)
+
 def process_vocabulary_response_for_user(user, response):
     """
     Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
@@ -298,15 +309,23 @@ def process_vocabulary_response_for_user(user, response):
             vocab_list = json_data['requested_information']
             vocab_list = [vocab_json for vocab_json in vocab_list if
                           vocab_json['user_specific'] is not None]  # filters out locked items.
+            unlocked = len(vocab_list)
+            locked = len(json_data['requested_information']) - unlocked
             for vocabulary_json in vocab_list:
                 user_specific = vocabulary_json['user_specific']
                 vocab = get_or_create_vocab_by_json(vocabulary_json)
                 new_review = associate_vocab_to_user(vocab, user)
                 add_synonyms_from_api_call_to_review(new_review, user_specific)
+                new_review.wanikani_srs = user_specific["srs"]
+                new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
+                new_review.wanikani_burned = user_specific["burned"]
                 new_review.save()
             logger.info("Synced Vocabulary for {}".format(user.username))
+            return unlocked, locked
     else:
         logger.error("{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
+        return 0, 0
+
 
 def sync_recent_unlocked_vocab_with_wk(user):
     if user.profile.unlocked_levels_list():

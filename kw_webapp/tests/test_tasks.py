@@ -110,3 +110,17 @@ class TestCeleryTasks(TestCase):
 
         self.assertListEqual(level_list, checked_levels)
         self.assertEqual(unlocked_count, 1)
+
+    @responses.activate
+    def test_syncing_vocabulary_pulls_srs_level_successfully(self):
+        resp_body = sample_api_responses.single_vocab_response
+        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+                      json=resp_body,
+                      status=200,
+                      content_type='application/json')
+
+        sync_unlocked_vocab_with_wk(self.user)
+        newly_synced_review = UserSpecific.objects.get(user=self.user, vocabulary__meaning=self.vocabulary.meaning)
+
+        self.assertEqual(newly_synced_review.wanikani_srs, "apprentice")
+        self.assertEqual(newly_synced_review.wanikani_srs_numeric, 3)
