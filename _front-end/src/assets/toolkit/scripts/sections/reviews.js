@@ -38,7 +38,7 @@ function init() {
   }
 
   // set initial values
-  remainingVocab = window.KWinitialVocab;
+  remainingVocab = window.KWsessionVocab;
   startCount = remainingVocab.length;
 
   console.log('\nLength:', startCount);
