@@ -1,22 +1,26 @@
 .vocab-list {
-  margin-top: 0;
-  margin-bottom: 0;
-  padding: 0;
-  clear: fix;
+  @extend %plainlist;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: stretch;
+  align-content: center;
 
   > .vocab-card {
-    margin: 0 0 $unit-sm;
+    margin: $unit-xs / 2;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    flex: 1 1 auto;
 
-    // TODO: flexbox instead for equal height pairs
-    @include media($bp-lg) {
-      width: calc(50% - #{$unit-xs} / 2);
-      float: left;
-      margin-bottom: $unit-xs;
-      margin-right: $unit-xs;
-
-      &:nth-child(even) {
-        margin-right: 0;
-      }
+    > .vocab-base {
+      display: flex;
+      flex-flow: column nowrap;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+      max-width: 100%;
+      flex: 1 0 100%;
     }
   }
 
@@ -24,7 +28,6 @@
   &.-incorrect {
     .vocab-base {
       .readingset {
-        display: block;
         color: $white;
       }
     }
@@ -55,4 +58,10 @@
       }
     }
   }
+}
+
+// ugghh IE fix your flexbox >_<
+@media all and (-ms-high-contrast:none) {
+  .vocab-list > .vocab-card { height: 280px; width: 400px; } /* IE10 */
+  *::-ms-backdrop, .vocab-list > .vocab-card {height: 280px; width: 400px; } /* IE11 */
 }

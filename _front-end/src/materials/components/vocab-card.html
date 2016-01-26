@@ -8,22 +8,22 @@ notes: |
   Icons: `.icon i-lock .icon i-unlocked .icon i-unlock`
 
   When used in review summary, `.readingset` is a link not a div!
-
 ---
 
 <li class="vocab-card {{modifiers}}">
   <div class="vocab-base">
 
-    <div class="readingset">
-      <span lang="ja" class="kanji">お誕生日おめでとう</span>
-      <span lang="ja" class="kana">おたんじょうびおめでとう</span>
-      <span class="meaning">Happy Birthday</span>
-    </div>
+    <dl class="readingset">
+      <span class="ja">
+        <dt lang="ja" class="kana">おたんじょうびおめでとう</dt>
+        <dt lang="ja" class="kanji">お誕生日おめでとう</dt>
+      </span>
+      <dd class="meaning">Happy Birthday</dd>
+    </dl>
 
-    <span class="{{icon}}"></span>
-
+    <span class="{{icon}} -lockstatus "></span>
+    <!-- <span class="icon i-burned -srslevel"></span> -->
   </div>
 
-  {{> vocab-extra }}
-
 </li>
+

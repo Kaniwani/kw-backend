@@ -22,11 +22,13 @@ function ajaxReviewCount() {
         $navCount.text(res)
         $navCount.closest('.nav-link');
 
-        if ($buttonCount.length) $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
+        if ($buttonCount.length) {
+          $buttonCount.text(pluralize(' Review', res)).removeClass('-disabled');
+        }
       }
 
       console.log('Review count updated from server:', res)
-      simpleStorage.set('recentlyRefreshed', true, {TTL: 300000});
+      simpleStorage.set('recentlyRefreshed', true, {TTL: 60000});
       simpleStorage.set('reviewCount', res);
   });
 
@@ -36,7 +38,7 @@ function storageReviewCount() {
   if (storageCount > 0) {
     $navCount.text(storageCount);
     $navCount.closest('.nav-link');
-    // if on home page update the reviews button too
+    // if there's a refresh review button - update that count too
     if ($buttonCount.length) {
       $buttonCount.text(pluralize(' Review', storageCount)).removeClass('-disabled');
     }
@@ -66,4 +68,8 @@ let refreshReviews = function({forceGet} = {forceGet: false}) {
   }
 }
 
-export default refreshReviews;
+const api = {
+  refreshReviews,
+}
+
+export default api;

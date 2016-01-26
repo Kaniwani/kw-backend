@@ -6,7 +6,8 @@ from django.shortcuts import get_object_or_404, render_to_response, render
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView, ListView, FormView, View
+from django.views.generic import TemplateView, ListView, View
+from django.views.generic.edit import FormView, UpdateView
 from rest_framework import viewsets
 from kw_webapp import constants
 from kw_webapp.decorators.ValidApiRequired import valid_api_required
@@ -15,37 +16,38 @@ from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
 from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    unlock_all_possible_levels_for_user, sync_user_profile_with_wk, sync_with_wk
+    unlock_all_possible_levels_for_user, sync_user_profile_with_wk, get_wanikani_level_by_api_key, \
+    get_users_current_reviews
 import logging
 
 logger = logging.getLogger("kw.views")
 data_logger = logging.getLogger("kw.review_data")
 
 
-class Settings(FormView):
+class Settings(UpdateView):
     template_name = "kw_webapp/settings.html"
     form_class = SettingsForm
+    model = Profile
 
-    def get_context_data(self, **kwargs):
-        context = super(Settings, self).get_context_data()
-        form = SettingsForm(instance=self.request.user.profile)
-        context['form'] = form
-        return context
+    def get_object(self, queryset=None):
+        return Profile.objects.get(user=self.request.user)
 
     def form_valid(self, form):
-        print(form.cleaned_data)
-        data = form.cleaned_data
-        user_profile = self.request.user.profile
-        user_profile.api_key = data['api_key']
-        user_profile.api_valid = True
+        # re-unlock current level is user now wants to be followed.
+        # if not self.request.user.profile.follow_me and form.cleaned_data['follow_me']:
+        was_following = self.request.user.profile.follow_me
+        self.object = form.save(commit=False)
+        self.object.api_valid = True
+        if not was_following and self.object.follow_me:  # if user swaps from non-following to following, sync them.
+            self.object.level = get_wanikani_level_by_api_key(self.object.api_key)
+            self.object.unlocked_levels.get_or_create(level=self.object.level)
+            self.object.save()
+            unlock_eligible_vocab_from_levels(self.object.user, self.object.level)
+            user = User.objects.get(username=self.request.user.username)
+            sync_user_profile_with_wk(user)
+        else:
+            self.object.save()
 
-        #re-unlock current level is user now wants to be followed.
-        if not user_profile.follow_me and data['follow_me']:
-            user_profile.unlocked_levels.get_or_create(level=user_profile.level)
-            unlock_eligible_vocab_from_levels(self.request.user, user_profile.level)
-        user_profile.follow_me = data['follow_me']
-        user_profile.save()
-        sync_user_profile_with_wk(self.request.user)
         logger.info("Saved Settings changes for {}.".format(self.request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:settings"))
 
@@ -147,13 +149,14 @@ class LockRequested(View):
     def post(self, request, *args, **kwargs):
         user = self.request.user
         requested_level = request.POST['level']
-        #if user locks their current level, prevent WK syncing new stuff.
+        # if user locks their current level, prevent WK syncing new stuff.
         if user.profile.level == int(requested_level):
             user.profile.follow_me = False
             user.profile.save()
         removed_count = lock_level_for_user(requested_level, user)
 
         return HttpResponse("{} items removed from your study queue.".format(removed_count))
+
 
 class UnlockAll(View):
     """
@@ -173,7 +176,6 @@ class UnlockAll(View):
             return HttpResponse("Unlocked {} levels, containing {} vocabulary.".format(len(level_list), unlocked_count))
         else:
             return HttpResponse("Everything has already been unlocked!")
-
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -199,8 +201,9 @@ class UnlockRequested(View):
             return HttpResponse("{} vocabulary unlocked".format(ul_count))
         else:
             return HttpResponse(
-                "{} vocabulary unlocked.<br/>You still have {} upcoming vocabulary to unlock on WaniKani for your current level.".format(ul_count,
-                                                                                                           l_count))
+                    "{} vocabulary unlocked.<br/>You still have {} upcoming vocabulary to unlock on WaniKani for your current level.".format(
+                        ul_count,
+                        l_count))
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -255,7 +258,7 @@ class LevelVocab(TemplateView):
         context = super(LevelVocab, self).get_context_data()
         level = self.kwargs['level']
         user = self.request.user
-        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level).distinct()
+        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level).distinct().order_by("vocabulary__meaning")
         context['reviews'] = level_vocab
         context['selected_level'] = level
         return context
@@ -312,13 +315,14 @@ class RecordAnswer(View):
             return HttpResponseForbidden("You can't modify that object!")
 
         data_logger.info(
-            "{}|{}|{}|{}".format(review.user.username, review.vocabulary.meaning, user_correct, review.streak, review.synonyms_string()))
+                "{}|{}|{}|{}".format(review.user.username, review.vocabulary.meaning, user_correct, review.streak,
+                                     review.synonyms_string()))
         if user_correct:
             if not previously_wrong:
                 review.correct += 1
                 review.streak += 1
                 if review.streak >= 9:
-                    review.burnt = True
+                    review.burned = True
             review.needs_review = False
             review.last_studied = timezone.now()
             review.next_review_date = timezone.now() + timedelta(hours=RecordAnswer.srs_times[review.streak])
@@ -336,7 +340,7 @@ class RecordAnswer(View):
             return HttpResponse("Incorrect!")
         else:
             logger.error(
-                "{} managed to post some bad data to RecordAnswer: {}".format(request.user.username, request.POST))
+                    "{} managed to post some bad data to RecordAnswer: {}".format(request.user.username, request.POST))
             return HttpResponse("Error!")
         return HttpResponse("Error!")
 
@@ -351,7 +355,7 @@ class Review(ListView):
 
     def get(self, request, *args, **kwargs):
         logger.info("{} has started a review session.".format(request.user.username))
-        if UserSpecific.objects.filter(user=self.request.user, needs_review=True, hidden=False).count() < 1:
+        if get_users_current_reviews(self.request.user).count() < 1:
             return HttpResponseRedirect(reverse_lazy("kw:home"))
         else:
             return super(Review, self).get(request)
@@ -359,7 +363,7 @@ class Review(ListView):
     def get_queryset(self):
 
         user = self.request.user
-        res = UserSpecific.objects.filter(user=user, needs_review=True, hidden=False).order_by('?')
+        res = get_users_current_reviews(user).order_by('?')
         return res
 
     @method_decorator(login_required)
@@ -399,9 +403,9 @@ class ReviewSummary(TemplateView):
                                                        "correct_count": len(correct),
                                                        "incorrect_count": len(incorrect),
                                                        "review_count": len(correct) + len(incorrect),
-                                                       "request": self.request}, #HOLY MOTHER OF GOD I NEED TO FIX THIS
-                                    )
-
+                                                       "request": self.request},
+                                  # HOLY MOTHER OF GOD I NEED TO FIX THIS
+                                  )
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -428,7 +432,7 @@ class Register(FormView):
         user = form.save()
         logger.info("New User Created: {}, with API key {}.".format(user.username, form.cleaned_data['api_key']))
         Profile.objects.create(
-            user=user, api_key=form.cleaned_data['api_key'], level=1)
+                user=user, api_key=form.cleaned_data['api_key'], level=1)
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
 

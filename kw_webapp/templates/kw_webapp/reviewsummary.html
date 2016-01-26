@@ -15,20 +15,22 @@
         {% for review in incorrect %}
           <li class="vocab-card">
             <div class="vocab-base">
-              <span class="meaning">{{ review.vocabulary.meaning }}</span>
-              {% for reading in review.vocabulary.reading_set.all %}
-                <a href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.id }}" class="readingset">
-                  {% ifchanged %}<span lang="ja" class="kanji">{{ reading.character }}</span> {% endifchanged %}
-                  <span lang="ja" class="kana">{{ reading.kana }}</span>
-                </a>
-              {% endfor %}
+              <a href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.id }}" class="readingset">
+                <div class="ja">
+                  {% for reading in review.vocabulary.reading_set.all %}
+                    <span lang="ja" class="kana">{{ reading.kana }}</span>
+                    {% ifchanged %}<span lang="ja" class="kanji">{{ reading.character }}</span> {% endifchanged %}
+                  {% endfor %}
+                </div>
+                <div class="meaning">{{ review.vocabulary.meaning }}</div>
+              </a>
             </div>
           </li>
         {% endfor %}
       </ul>
 
     {% else %}
-      <h3 class="title">完璧だった！</h3>
+      <h3 class="title">完璧だった！ (๑•̀ㅂ•́)و</h3>
     {% endif %}
 
     <h2 class="title">{{ correct_count }} Correct</h2>
@@ -46,7 +48,7 @@
       </ul>
 
     {% else %}
-      <h3>Well, that's unfortunate... しっかりしろよ</h3>
+      <h3>残念 (๑◕︵◕๑)</h3>
     {% endif %}
 
   </div>
