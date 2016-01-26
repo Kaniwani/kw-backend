@@ -51,6 +51,7 @@ class Profile(models.Model):
     follow_me = models.BooleanField(default=True)
     auto_expand_answer_on_failure = models.BooleanField(default=False)
     auto_advance_on_success = models.BooleanField(default=False)
+    only_review_burned = models.BooleanField(default=False)
 
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')
@@ -106,8 +107,11 @@ class UserSpecific(models.Model):
     needs_review = models.BooleanField(default=True)
     unlock_date = models.DateTimeField(default=timezone.now, blank=True)
     next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
-    burnt = models.BooleanField(default=False)
+    burned = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
+    wanikani_srs = models.CharField(max_length=255, default="unknown")
+    wanikani_srs_numeric = models.IntegerField(default=0)
+    wanikani_burned = models.BooleanField(default=False)
 
     def can_be_managed_by(self, user):
         return self.user == user or user.is_superuser

@@ -56,6 +56,41 @@ class TestViews(TestCase):
 
         self.assertContains(response, "cat, minou, chatte!")
 
+    def test_review_page_shows_only_burnt_items_when_setting_is_enabled(self):
+        word = create_vocab("phlange")
+        self.user.profile.only_review_burned = True
+        self.user.profile.save()
+        another_review = create_userspecific(word, self.user)
+        another_review.wanikani_burned = True
+        another_review.save()
+
+        request = self.factory.get('/kw/review')
+        request.user = self.user
+        view = kw_webapp.views.Review.as_view()
+        response = view(request)
+
+        self.assertNotContains(response, "cat")
+        self.assertContains(response, "phlange")
+
+
+    def test_review_page_shows_all_items_when_burnt_setting_is_disabled(self):
+        word = create_vocab("phlange")
+        self.user.profile.only_review_burned = False
+        self.user.profile.save()
+        another_review = create_userspecific(word, self.user)
+        another_review.wanikani_burned = True
+        another_review.save()
+
+        request = self.factory.get('/kw/review')
+        request.user = self.user
+        view = kw_webapp.views.Review.as_view()
+        response = view(request)
+
+        self.assertContains(response, "cat")
+        self.assertContains(response, "phlange")
+
+
+
     def test_recording_answer_works_on_correct_answer(self):
         us = create_userspecific(self.vocabulary, self.user)
 
