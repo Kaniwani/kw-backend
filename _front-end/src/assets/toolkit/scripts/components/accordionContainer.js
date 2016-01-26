@@ -39,7 +39,7 @@ function init() {
 };
 
 const api = {
-  init: init
+  init,
 }
 
 export default api;

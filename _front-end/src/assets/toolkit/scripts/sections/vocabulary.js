@@ -1,4 +1,4 @@
-import refreshReviews from '../components/refreshReviews.js';
+import {refreshReviews} from '../components/refreshReviews.js';
 
 // setup variables inside module closure, but functions in this file can modify and access them
 let CSRF,
@@ -20,7 +20,6 @@ function init() {
     // cache selector elements/unchanging vars
     CSRF = $('#csrf').val();
     currentLevel = parseInt($('#currentLevel').val(), 10);
-    console.log(currentLevel);
     $levels = $levelList.find('.level-card');
     $reviewCount = $('.nav-link > .text > .count')
 

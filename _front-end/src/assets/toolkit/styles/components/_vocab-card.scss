@@ -2,6 +2,13 @@
   $bp-vocab: '<=600px';
   @extend .vocab-block;
 
+  &.-standout {
+    box-shadow: 0 4px 10px 0 rgba($purple-dark, .5);
+    > .vocab-base {
+      background: $purple-dark;
+    }
+  }
+
   > .vocab-base {
     transition: background-color .5s ease-out;
     background-color: $purple-light;
