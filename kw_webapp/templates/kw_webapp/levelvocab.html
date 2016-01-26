@@ -34,6 +34,11 @@
             <span class="icon -lockstatus i-unlocked"></span>
           {% endif %}
 
+            <span class="icon -srslevel i-burned" title="Burned on WaniKani!"></span>
+          {% if review.wanikani_burned %}
+          {% endif %}
+
+
         {% comment 'not ready for production - need to decide on placement/sizing - maybe go in vocab extra' %}
           {% if review.streak > 8 %}
             <span class="icon -srslevel i-burned" title="KaniWani Level - Burned"></span>
