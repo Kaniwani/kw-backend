@@ -35,8 +35,4 @@ let refreshReviews = function({forceGet} = {forceGet: false}) {
   if (!recentlyRefreshed || forceGet) ajaxReviewCount();
 }
 
-const api = {
-  refreshReviews,
-}
-
-export default api;
+export default refreshReviews;

@@ -1,15 +1,21 @@
 import wanakana from '../vendor/wanakana.min';
+import strToBoolean from '../util/strToBoolean';
 import { revealToggle } from '../components/revealToggle';
 
-// cache jquery objects instead of querying dom all the time
-let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
-  userSettings,
-  remainingVocab,
+ //Grab CSRF token off of dummy form.
+const CSRF = $('#csrf').val();
+
+// extract to user = { settings } then can add more user details as needed?
+let userSettings,
+  // extract to session = { currentVocab } then call session.currentVocab etc?
   currentVocab,
+  remainingVocab,
   startCount,
   correctTotal = 0,
   answeredTotal = 0,
   answerCorrectness = [],
+  // extract to UI = { reviewsLeft: $('#reviewsLeft') } then call UI.reviewsLeft etc?
+  // cache jquery objects instead of querying dom all the time
   $reviewsLeft = $('#reviewsLeft'),
   $meaning = $('#meaning'),
   $streakIcon = $('.streak > .icon'),
@@ -28,20 +34,12 @@ function init() {
   // if not on reviews page do nothing
   if (!/review/.test(window.location.pathname)) return;
 
-  // map python True/False passed from view as strings to JS true/false booleans
-  window.KWusersettings = strToBoolean(window.KWuserSettings);
-  function strToBoolean(o) {
-    for (let k of Object.keys(o)) {
-      let v = o[k];
-      o[k] = (v === 'True' ? true : false);
-    }
-  }
-
   // set initial values
+  userSettings = strToBoolean(window.KWuserSettings);
   remainingVocab = window.KWsessionVocab;
   startCount = remainingVocab.length;
 
-  console.log('\nLength:', startCount);
+  console.log('\nLength:', startCount, '\nSettings:', userSettings);
 
   $reviewsLeft.text(startCount)
   currentVocab = remainingVocab.shift();

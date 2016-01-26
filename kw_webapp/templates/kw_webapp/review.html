@@ -16,7 +16,8 @@
         window.KWuserSettings = {
           showCorrectOnFail: '{{ user.profile.auto_expand_answer_on_failure }}',
           autoAdvanceCorrect: '{{ user.profile.auto_advance_on_success }}',
-          followWanikani: '{{ user.follow_me }}'
+          followWanikani: '{{ user.follow_me }}',
+          burnedOnly: '{{ user.only_review_burned }}'
         };
         window.KWsessionVocab = [
             {% for item in object_list %}

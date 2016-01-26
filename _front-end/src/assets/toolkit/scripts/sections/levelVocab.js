@@ -1,5 +1,3 @@
-import im from '../vendor/include-media.js';
-
 let CSRF,
     $vocabList,
     $cards;
@@ -11,6 +9,10 @@ function init() {
     CSRF = $('#csrf').val();
     $cards = $vocabList.find('.vocab-card');
 
+
+// im no longer imported at top of file.
+// seems flexbox is adjusting okay and we don't need this anymore
+// keeping it for a few commits then feel free to blow away the function
 //    if(im.greaterThan('md')) adjustCardHeight($cards);
 
     // if user has deeplinked from summary or elsewhere let's draw attention to the card
