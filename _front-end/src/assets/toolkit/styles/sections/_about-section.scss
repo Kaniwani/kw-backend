@@ -1,16 +1,21 @@
 .about-section {
-
+  @include media($bp-lg) {
+    .row + .row {
+      margin-top: $unit-md;
+    }
+  }
   .row .col {
     @include media($bp-md) {
       margin-bottom: $unit-md;
     }
   }
-  .row .col-half {
+  .row .col-half,
+  .row .col-third {
     @include media($bp-md) {
-      &:first-child {
+      &:not(:last-child) {
         padding-right: $unit-md;
       }
-      &:last-child {
+      &:not(:first-child) {
         padding-left: $unit-md;
       }
     }

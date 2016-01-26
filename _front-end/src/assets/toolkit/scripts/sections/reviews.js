@@ -1,7 +1,9 @@
 import wanakana from '../vendor/wanakana.min';
+import { revealToggle } from '../components/revealToggle';
 
 // cache jquery objects instead of querying dom all the time
 let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
+  userSettings,
   remainingVocab,
   currentVocab,
   startCount,
@@ -23,8 +25,17 @@ let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
   $progressBar = $('.progress-bar > .value');
 
 function init() {
-  // if not on reviews page then exit
-  if (!$meaning.length) return;
+  // if not on reviews page do nothing
+  if (!/review/.test(window.location.pathname)) return;
+
+  // map python True/False passed from view as strings to JS true/false booleans
+  window.KWusersettings = strToBoolean(window.KWuserSettings);
+  function strToBoolean(o) {
+    for (let k of Object.keys(o)) {
+      let v = o[k];
+      o[k] = (v === 'True' ? true : false);
+    }
+  }
 
   // set initial values
   remainingVocab = window.KWinitialVocab;
@@ -58,13 +69,13 @@ function init() {
 
 function updateStreak() {
   let streak = currentVocab.streak;
-  let iconClass = streak > 8 ? 'i-burned' :
-                  streak > 7 ? 'i-enlightened' :
-                  streak > 5 ? 'i-master' :
-                  streak > 2 ? 'i-guru'
-                             : 'i-apprentice';
+  let iconClass = 'icon ' + (streak > 8 ? 'i-burned' :
+                             streak > 7 ? 'i-enlightened' :
+                             streak > 5 ? 'i-master' :
+                             streak > 2 ? 'i-guru'
+                                        : 'i-apprentice');
 
-  $streakIcon.addClass(iconClass).attr('title', iconClass.slice(2));
+  $streakIcon.attr('class', iconClass).attr('title', iconClass.slice(2));
 }
 
 function updateKanaKanjiDetails() {
@@ -116,8 +127,10 @@ function compareAnswer() {
   }
 
   //Ensure answer is full hiragana
-  if (!wanakana.isHiragana(answer) || answer === '') {
+  if (!wanakana.isHiragana(answer)) {
     return nonHiraganaAnswer();
+  } else if(answer === '') {
+    return;
   }
 
   //Checking if the user's answer exists in valid readings.
@@ -135,7 +148,7 @@ function compareAnswer() {
     rightAnswer();
     var answerIndex = $.inArray(answer, currentVocab.readings);
     //Fills the correct kanji into the input field based on the user's answers
-    replaceAnswerWithKanji(currentVocab.readings.indexOf(answer));
+    $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
   }
   //answer was not in the known readings.
   else {
@@ -149,6 +162,9 @@ function compareAnswer() {
     wrongAnswer();
     correct = false;
   }
+
+  if (!correct && userSettings.showCorrectOnFail) revealAnswers();
+  if (correct && userSettings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 800);
 
   recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
   enableButtons();
@@ -171,7 +187,6 @@ function recordAnswer(userID, correctness, previouslyWrong) {
 
 function clearColors() {
   $userAnswer.removeClass('-marked -correct -incorrect -invalid');
-  $streakIcon.removeClass('-marked');
 }
 
 function nonHiraganaAnswer() {
@@ -179,54 +194,51 @@ function nonHiraganaAnswer() {
   $userAnswer.addClass('-invalid');
 }
 
-function markWrong() {
+function wrongAnswer() {
   clearColors();
   $userAnswer.addClass('-marked -incorrect');
   $streakIcon.addClass('-marked');
-}
-
-function wrongAnswer() {
-  markWrong();
   answeredTotal += 1;
   remainingVocab.push(currentVocab);
 }
 
-function markRight() {
-  let progress = (correctTotal / startCount) * 100;
-  updateProgressBar(progress);
+function rightAnswer() {
   clearColors();
   $userAnswer.addClass('-marked -correct');
   $streakIcon.addClass('-marked');
-}
-
-function rightAnswer() {
-  markRight();
   correctTotal += 1;
   answeredTotal += 1;
+  updateProgressBar(correctTotal / startCount * 100);
+}
+
+function updateProgressBar(percent) {
+  $progressBar.css('width', percent + '%');
 }
 
 function newVocab() {
   clearColors();
+  updateStreak();
   $userAnswer.val('');
   $userAnswer.focus();
 }
 
 function disableButtons() {
-  $detailKana.find('.button').addClass('-disabled');
   $detailKanji.find('.button').addClass('-disabled');
+  $detailKana.find('.button').addClass('-disabled');
 }
 
 function enableButtons() {
-  $detailKana.find('.button').removeClass('-disabled');
   $detailKanji.find('.button').removeClass('-disabled');
+  $detailKana.find('.button').removeClass('-disabled');
 }
 
-function replaceAnswerWithKanji(index) {
-  $userAnswer.val(currentVocab.characters[index]);
-}
-
-function updateProgressBar(percent) {
-  $progressBar.css('width', percent + '%');
+function revealAnswers({kana, kanji} = {}) {
+  if (!!kana) revealToggle($detailKana.find('.button'));
+  else if (!!kanji) revealToggle($detailKanji.find('.button'));
+  else {
+    revealToggle($detailKana.find('.button'));
+    revealToggle($detailKanji.find('.button'));
+  }
 }
 
 function rotateVocab() {
@@ -247,8 +259,6 @@ function rotateVocab() {
   disableButtons();
   updateKanaKanjiDetails();
   newVocab();
-  $userAnswer.removeClass('-marked');
-
 }
 
 function enterPressed(event) {
@@ -271,16 +281,15 @@ function handleShortcuts(event) {
 
     //Pressing P toggles phonetic reading
     if (event.which == 80 || event.which == 112) {
-      $('#detailKana .revealToggle').click();
+      revealAnswers({kana: true});
     }
     //Pressing K toggles the actual kanji reading.
     else if (event.which == 75 || event.which == 107) {
-      $('#detailKanji .revealToggle').click();
+      revealAnswers({kanji: true});
     }
     //Pressing F toggles both item info boxes.
     else if (event.which == 70 || event.which == 102) {
-      $('#detailKana .revealToggle').click();
-      $('#detailKanji .revealToggle').click();
+      revealAnswers();
     }
   }
 }

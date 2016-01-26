@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- in ./includes -->
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google" content="notranslate">
+  
+    <title>settings</title>
+  
+    <link rel="stylesheet" href="../assets/styles/main.css">
+  
+    <!-- google fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu:700|Open+Sans:300,700,400'
+          rel='stylesheet' type='text/css'>
+  
+    <!-- favicons -->
+    <link href="../assets/images/favicon/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" />
+    <link href="../assets/images/favicon/favicon-128.png" rel="shortcut icon" sizes="128x128" type="image/png" />
+    <link href="../assets/images/favicon/favicon-128.png" rel="apple-touch-icon" sizes="128x128" type="image/png" />
+    <link href="../assets/images/favicon/favicon-128.png" rel="apple-touch-icon-precomposed" sizes="128x128" type="image/png" />
+</head>
+<body>
+
+  <noscript>KaniWani requires JavaScript to function properly. Please re-enable JavaScript or try refreshing the page.</noscript>
+
+  <header class="site-header" role="banner">
+    <div class="inner">
+      <a href="/" class="site-logo">
+        <span class="text">
+        <!-- &#8202; is a hairspace; minor space between kana to align with kanji nicer -->
+          <span lang="ja" class="kana">かに&#8202;わに</span>
+          <span lang="ja" class="kanji">蟹鰐</span>
+          <span class="_visuallyhidden">Wanikani</span>
+        </span>
+      </a>    <nav class="site-nav">
+        <a href="#0" class="expandToggle">☰ Menu</a>
+        <ul class="nav-list toggleTarget">
+          <li class="item">
+            <a href="#" class="nav-link">
+              <span class="text">Reviews <span class="count">42+</span></span>
+            </a>
+          </li>
+          <li class="item -active">
+            <a href="#" class="nav-link">
+              <span class="text">Vocab</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="#" class="nav-link">
+              <span class="text">About</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="#" class="nav-link">
+              <span class="text">Contact</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="#" class="nav-link">
+              <span class="text">Settings</span>
+            </a>
+          </li>
+          <li class="item">
+            <a href="#" class="nav-link">
+              <span class="text">Logout</span>
+            </a>
+          </li>
+        </ul>
+      </nav>  </div>
+  </header>
+  <div class="site-content">
+    
+<!-- current crispy form output... ughh -->
+  <section class="settings-section">
+    <div class="inner">
+      <h1 class="section-heading">Settings</h1>
+
+
+<form  class="pure-form pure-form-stacked" method="post" ><input type='hidden' name='csrfmiddlewaretoken' value='ivTZmxrzAfJdT1bFTg0DMNKswqYA2FQZ' /> <div id="div_id_api_key" class="form-group"><label for="id_api_key" class="control-label  requiredField">
+        Api key<span class="asteriskField">*</span></label><div class="controls pure-input-1"><input class="textinput textInput form-control" id="id_api_key" maxlength="255" name="api_key" type="text" value="5fa2d9c257dda131a54018f5c3f5ff90" /> </div></div><div id="div_id_level" class="form-group"><label for="id_level" class="control-label  requiredField">
+        Level<span class="asteriskField">*</span></label><div class="controls pure-input-1"><input class="numberinput form-control" id="id_level" min="0" name="level" readonly="True" type="number" value="17" /> </div></div><div class="form-group"><div id="div_id_follow_me" class="checkbox"><label for="id_follow_me" class=""><input class="checkboxinput checkbox" id="id_follow_me" name="follow_me" type="checkbox" />
+                    Follow Wanikani Progress
+
+
+
+        <span id="hint_id_follow_me" class="help-block">If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani.</span></label></div></div><div class="form-group"><div id="div_id_auto_advance_on_success" class="checkbox"><label for="id_auto_advance_on_success" class=""><input checked="checked" class="checkboxinput checkbox" id="id_auto_advance_on_success" name="auto_advance_on_success" type="checkbox" />
+                    Automatically advance to next item in review if answer was correct.
+                </label></div></div><div class="form-group"><div id="div_id_auto_expand_answer_on_failure" class="checkbox"><label for="id_auto_expand_answer_on_failure" class=""><input checked="checked" class="checkboxinput checkbox" id="id_auto_expand_answer_on_failure" name="auto_expand_answer_on_failure" type="checkbox" />
+                    Automatically show kanji and kana if you answer incorrectly.
+
+                </label></div></div><div class="form-actions"><input type="submit"
+    name="submit"
+    value="Save"
+
+        class="btn btn-primary pure-button pure-button-primary"
+        id="submit-id-submit"
+
+
+    /> </div></form>
+
+    </div>
+  </section>
+
+  </div>
+
+  <footer class="section site-footer" role="contentinfo">
+  
+    <div class="inner">
+      <div class="hexagon-box -black">
+        <a href="//github.com/djtb" class="inner">
+          <div class="avatar -djtb"></div>
+        </a>
+      </div>    <a href="/about/" class="site-logo">
+        <span class="text">
+        <!-- &#8202; is a hairspace; minor space between kana to align with kanji nicer -->
+          <span lang="ja" class="kana">かに&#8202;わに</span>
+          <span lang="ja" class="kanji">蟹鰐</span>
+          <span class="_visuallyhidden">Wanikani</span>
+        </span>
+      </a>    <div class="hexagon-box -black">
+        <a href="//github.com/tadgh" class="inner">
+          <div class="avatar -tadgh"></div>
+        </a>
+      </div>  </div>
+  
+  </footer>
+  <script src="../assets/scripts/global.js"></script>
+</body>
+</html>
+

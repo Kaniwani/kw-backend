@@ -8,7 +8,7 @@ function init() {
 }
 
 let api = {
-  init: init
+  init,
 }
 
 export default api;

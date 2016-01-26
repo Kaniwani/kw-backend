@@ -4,13 +4,14 @@ let CSRF,
 
 function init() {
   $vocabList = $('.vocab-list');
-
-  // if container element exists on current page
-  if($vocabList.length) {
-
-    // cache elements/setup vars
+  // only run on vocab page
+  if(/vocabulary\/\d+/.test(window.location.pathname)) {
     CSRF = $('#csrf').val();
     $cards = $vocabList.find('.vocab-card');
+
+    // if user has deeplinked from summary or elsewhere let's draw attention to the card
+    let specificVocab = (window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/) || [])[1];
+    if (specificVocab) $(specificVocab).addClass('-standout');
 
     // Attach events
     $cards.on('click', '.icon', handleIconClick);

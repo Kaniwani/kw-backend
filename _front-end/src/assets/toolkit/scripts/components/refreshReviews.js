@@ -11,10 +11,10 @@ function ajaxReviewCount() {
    .done(res => {
       res = parseInt(res, 10);
 
-        $navCount.text(res)
-        $navCount.closest('.nav-link');
+      $navCount.text(res)
+      $navCount.closest('.nav-link');
 
-        if ($buttonCount.length) $buttonCount.text(pluralize('Review', res)).removeClass('-disabled');
+      if ($buttonCount.length) $buttonCount.text(pluralize('Review', res)).removeClass('-disabled');
 
       console.log('Review count updated from server:', res)
       simpleStorage.set('recentlyRefreshed', true, {TTL: 45000}); // 45 seconds
@@ -35,4 +35,8 @@ let refreshReviews = function({forceGet} = {forceGet: false}) {
   if (!recentlyRefreshed || forceGet) ajaxReviewCount();
 }
 
-export default refreshReviews;
+const api = {
+  refreshReviews,
+}
+
+export default api;
