@@ -1,7 +1,7 @@
 from datetime import timedelta
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
 from django.shortcuts import get_object_or_404, render_to_response, render
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
@@ -16,8 +16,7 @@ from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
 from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    unlock_all_possible_levels_for_user, sync_user_profile_with_wk, get_wanikani_level_by_api_key, \
-    get_users_current_reviews
+    unlock_all_possible_levels_for_user, sync_user_profile_with_wk, sync_with_wk, get_wanikani_level_by_api_key, get_users_current_reviews
 import logging
 
 logger = logging.getLogger("kw.views")
@@ -208,6 +207,23 @@ class UnlockRequested(View):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(UnlockRequested, self).dispatch(*args, **kwargs)
+
+class SyncRequested(View):
+    """
+    Ajax view so that the user can request a sync of their profile and vocabulary
+    """
+
+    def get(self, request, *args, **kwargs):
+
+        should_full_sync = request.GET["full_sync"] if hasattr(request.GET, "full_sync") else True
+        profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(self.request.user, should_full_sync)
+        return JsonResponse({"profile_sync_succeeded": profile_sync_succeeded,
+                             "new_review_count": new_review_count,
+                             "new_synonym_count": new_synonym_count})
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(SyncRequested, self).dispatch(*args, **kwargs)
 
 
 class UnlockLevels(TemplateView):
