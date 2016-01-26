@@ -1,3 +1,5 @@
+import im from '../vendor/include-media.js';
+
 let CSRF,
     $vocabList,
     $cards;
@@ -8,6 +10,8 @@ function init() {
   if(/vocabulary\/\d+/.test(window.location.pathname)) {
     CSRF = $('#csrf').val();
     $cards = $vocabList.find('.vocab-card');
+
+//    if(im.greaterThan('md')) adjustCardHeight($cards);
 
     // if user has deeplinked from summary or elsewhere let's draw attention to the card
     let specificVocab = (window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/) || [])[1];
@@ -23,6 +27,16 @@ function init() {
 function toggleVocabExpand(event) {
   event.preventDefault();
   $(this).closest('.vocab-card').toggleClass('-expanded');
+}
+
+// force really tall cards to layout horizontal
+function adjustCardHeight($list) {
+  $list.each((i, el) => {
+    let $text = $(el).find('.meaning').text();
+    if($text.length >= 70) {
+      $(el).css('flex', '2 1 60%');
+    }
+  });
 }
 
 function handleIconClick(event) {
@@ -44,7 +58,8 @@ function toggleClasses($icon, $card) {
 }
 
 const api = {
-  init: init
+  init,
+  adjustCardHeight,
 };
 
 export default api;
