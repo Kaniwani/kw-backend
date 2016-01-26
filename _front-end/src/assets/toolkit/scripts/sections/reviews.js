@@ -83,13 +83,13 @@ function init() {
 
 function updateStreak() {
   let streak = currentVocab.streak;
-  let iconClass = streak > 8 ? 'i-burned' :
-                  streak > 7 ? 'i-enlightened' :
-                  streak > 5 ? 'i-master' :
-                  streak > 2 ? 'i-guru'
-                             : 'i-apprentice';
+  let iconClass = 'icon ' + (streak > 8 ? 'i-burned' :
+                             streak > 7 ? 'i-enlightened' :
+                             streak > 5 ? 'i-master' :
+                             streak > 2 ? 'i-guru'
+                                        : 'i-apprentice');
 
-  $streakIcon.addClass(iconClass).attr('title', iconClass.slice(2));
+  $streakIcon.attr('class', iconClass).attr('title', iconClass.slice(2));
 }
 
 function updateKanaKanjiDetails() {
@@ -215,7 +215,6 @@ function updateStorage() {
 
 function clearColors() {
   $userAnswer.removeClass('-marked -correct -incorrect -invalid');
-  $streakIcon.removeClass('-marked');
 }
 
 function nonHiraganaAnswer() {
@@ -240,6 +239,7 @@ function rightAnswer() {
 
 function newVocab() {
   clearColors();
+  updateStreak();
   $userAnswer.val('');
   $userAnswer.focus();
 }
@@ -283,8 +283,6 @@ function rotateVocab() {
   disableButtons();
   updateKanaKanjiDetails();
   newVocab();
-  $userAnswer.removeClass('-marked');
-
 }
 
 function enterPressed(event) {
