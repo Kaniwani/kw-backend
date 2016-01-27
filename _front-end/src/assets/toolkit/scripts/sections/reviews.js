@@ -15,7 +15,6 @@ let userSettings,
   answeredTotal = 0,
   answerCorrectness = [],
   // extract to UI = { reviewsLeft: $('#reviewsLeft') } then call UI.reviewsLeft etc?
-  // cache jquery objects instead of querying dom all the time
   $reviewsLeft = $('#reviewsLeft'),
   $meaning = $('#meaning'),
   $streakIcon = $('.streak > .icon'),

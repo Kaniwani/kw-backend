@@ -12,7 +12,6 @@ function ajaxReviewCount() {
       res = parseInt(res, 10);
 
       $navCount.text(res)
-      $navCount.closest('.nav-link');
 
       if ($buttonCount.length) $buttonCount.text(pluralize('Review', res)).removeClass('-disabled');
 
