@@ -395,10 +395,12 @@ def sync_recent_unlocked_vocab_with_wk(user):
     if user.profile.unlocked_levels_list():
         levels = [level for level in range(user.profile.level - 2, user.profile.level + 1) if
                   level in user.profile.unlocked_levels_list()]
-        request_string = build_API_sync_string_for_user_for_levels(user, levels)
-        r = requests.get(request_string)
-        new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, r)
-        return new_review_count, new_synonym_count
+        if levels:
+            request_string = build_API_sync_string_for_user_for_levels(user, levels)
+            r = requests.get(request_string)
+            new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, r)
+            return new_review_count, new_synonym_count
+    return 0, 0
 
 
 def sync_unlocked_vocab_with_wk(user):
@@ -407,6 +409,8 @@ def sync_unlocked_vocab_with_wk(user):
         r = requests.get(request_string)
         new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, r)
         return new_review_count, new_synonym_count
+    else:
+        return 0, 0
 
 
 @celery_app.task()
