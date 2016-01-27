@@ -1,16 +1,21 @@
 import wanakana from '../vendor/wanakana.min';
+import strToBoolean from '../util/strToBoolean';
 import { revealToggle } from '../components/revealToggle';
 
-// cache jquery objects instead of querying dom all the time
-let CSRF = $('#csrf').val(), //Grab CSRF token off of dummy form.
-  sessionFinished,
-  userSettings,
-  remainingVocab,
+ //Grab CSRF token off of dummy form.
+const CSRF = $('#csrf').val();
+
+// extract to user = { settings } then can add more user details as needed?
+let userSettings,
+  // extract to session = { currentVocab } then call session.currentVocab etc?
   currentVocab,
+  remainingVocab,
   startCount,
   correctTotal = 0,
   answeredTotal = 0,
   answerCorrectness = [],
+  // extract to UI = { reviewsLeft: $('#reviewsLeft') } then call UI.reviewsLeft etc?
+  // cache jquery objects instead of querying dom all the time
   $reviewsLeft = $('#reviewsLeft'),
   $meaning = $('#meaning'),
   $streakIcon = $('.streak > .icon'),
@@ -29,39 +34,16 @@ function init() {
   // if not on reviews page do nothing
   if (!/review/.test(window.location.pathname)) return;
 
-  // map python True/False passed from view as strings to JS true/false booleans
-  window.KWusersettings = strToBoolean(window.KWuserSettings);
-  function strToBoolean(o) {
-    for (let k of Object.keys(o)) {
-      let v = o[k];
-      o[k] = (v === 'True' ? true : false);
-    }
-  }
-
-  // TODO: for mid-review drops, we should submit previous answerCorrectness, and THEN get ask for reviews again from server? or get previous sessionVocab state and merge with the server provided sessionVocab?
-  // if (simpleStorage.get('prevSessionAnswers') != null) {
-  //  submit dem done answers
-  //  get prev sessionvocab, add to a set, add in server ones, re-update sessionvocab with union
-  // }
-  let updateVocab = simpleStorage.set('sessionVocab', window.KWsessionVocab);
-  let updateCount = simpleStorage.set('reviewCount', window.KWsessionVocab.length);
-  let updateSettings = simpleStorage.set('userSettings', window.KWuserSettings);
-
   // set initial values
-  remainingVocab = simpleStorage.get('sessionVocab');
-  userSettings = simpleStorage.get('userSettings');
-
-  console.log(
-      '\nUpdate session vocab:', updateVocab,
-      '\nUpdate count:', updateCount,
-      '\nLength:', window.KWsessionVocab.length,
-      '\nUser settings:', updateSettings,
-      '\nSession Finished:', simpleStorage.get('sessionFinished')
-  );
-
+  userSettings = strToBoolean(window.KWuserSettings);
+  remainingVocab = window.KWsessionVocab;
   startCount = remainingVocab.length;
-  $reviewsLeft.text(startCount);
+
+  console.log('\nLength:', startCount, '\nSettings:', userSettings);
+
+  $reviewsLeft.text(startCount)
   currentVocab = remainingVocab.shift();
+  console.log(currentVocab);
   $userID.val(currentVocab.user_specific_id);
 
   $detailKana.kana = $detailKana.find('.-kana');
@@ -183,37 +165,22 @@ function compareAnswer() {
   if (correct && userSettings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 800);
 
   recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
-  simpleStorage.set('sessionFinished', false, {TTL: 3600000});
   enableButtons();
 }
 
-// TODO: @djtb - use storage, update local storage, expires 1 week, use post only at end of review (OR ANY NAVIGATION)
 function recordAnswer(userID, correctness, previouslyWrong) {
-  //record the answer dynamically to ensure that if the session dies the user doesn't lose their half-done review session.
-  // TODO: @djtb record these details in a localStorage list instead, post that list at review end.
   $.post('/kw/record_answer/', {
       user_specific_id: userID,
       user_correct: correctness,
       csrfmiddlewaretoken: CSRF,
       wrong_before: previouslyWrong
-  })
-  .done(() => {
-    updateStorage();
-  })
-  .always(res => {
-    console.log(res);
-  });
-}
-
-function updateStorage() {
-  /* TODO: update with recordAnswer details */
-  simpleStorage.set('sessionVocab', remainingVocab);
-  simpleStorage.set('reviewCount', remainingVocab.length);
-  console.log(`Storage is now:
-    reviewCount: ${simpleStorage.get('reviewCount')}
-    sessionFinished: ${simpleStorage.get('sessionFinished')}
-    sessionVocab: ${simpleStorage.get('sessionVocab').map( x => x.meaning.split(',')[0] )}
-  `);
+    })
+    .done(() => {
+      // anything need
+    })
+    .always(res => {
+      console.log(res);
+    });
 }
 
 function clearColors() {
@@ -246,7 +213,6 @@ function updateProgressBar(percent) {
   $progressBar.css('width', percent + '%');
 }
 
-
 function newVocab() {
   clearColors();
   updateStreak();
@@ -274,13 +240,11 @@ function revealAnswers({kana, kanji} = {}) {
 }
 
 function rotateVocab() {
-  $reviewsLeft.html(simpleStorage.get('reviewCount'));
+  $reviewsLeft.html(remainingVocab.length);
   $reviewsDone.html(correctTotal);
   $reviewsCorrect.html(Math.floor((correctTotal / answeredTotal) * 100));
 
   if (remainingVocab.length === 0) {
-    updateStorage();
-    simpleStorage.set('sessionFinished', true);
     console.log('Summary post data', answerCorrectness);
     return makePost('/kw/summary/', answerCorrectness);
   }
