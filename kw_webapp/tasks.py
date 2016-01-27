@@ -379,11 +379,11 @@ def process_vocabulary_response_for_user(user, response):
             else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
                 new_review, synonyms_added_count = associate_synonyms_to_vocab(user, vocab, user_specific)
                 new_synonym_count += synonyms_added_count
-
-            new_review.wanikani_srs = user_specific["srs"]
-            new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
-            new_review.wanikani_burned = user_specific["burned"]
-            new_review.save()
+            if new_review:
+                new_review.wanikani_srs = user_specific["srs"]
+                new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
+                new_review.wanikani_burned = user_specific["burned"]
+                new_review.save()
         logger.info("Synced Vocabulary for {}".format(user.username))
         return new_review_count, new_synonym_count
     else:
