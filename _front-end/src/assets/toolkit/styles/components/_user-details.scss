@@ -1,9 +1,9 @@
 $bp-user-details: '>=650px';
-
 .user-details {
+  $ud-grey: #ccc;
   display: flex;
   flex-direction: column;
-  background: $black-light;
+  background: rgba($black, .55);
   color: $white;
   font-family: $ff-heading;
   border-radius: 0 0 3px 3px;
@@ -16,7 +16,7 @@ $bp-user-details: '>=650px';
   .title {
     margin-top: 0;
     text-shadow: $shadow-text-light;
-    color: $grey-light;
+    color: $ud-grey;
   }
 
   strong {
@@ -49,7 +49,7 @@ $bp-user-details: '>=650px';
     }
 
     .item {
-      color: $grey-light;
+      color: $ud-grey;
     }
   }
 
@@ -97,7 +97,7 @@ $bp-user-details: '>=650px';
     }
 
     > .list > .item > .link {
-      color: $grey-light;
+      color: $ud-grey;
 
       &:hover {
         color: $white;
