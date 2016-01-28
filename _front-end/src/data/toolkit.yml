@@ -19,6 +19,7 @@ colors:
     pink: "hsl(314, 100%, 50%)"
     red: "hsl(346, 75%, 54%)"
     green: "hsl(107, 56%, 62%)"
+    golden: "hsl(60, 70%, 88%)"
     yellow: "hsl(53, 100%, 48%)"
     tan: "hsl(37, 67%, 65%)"
 
