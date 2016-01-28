@@ -1,9 +1,9 @@
 $bp-user-details: '>=650px';
 .user-details {
-  $ud-grey: #ccc;
+  $ud-grey: #cbcbcb;
   display: flex;
   flex-direction: column;
-  background: rgba($black, .55);
+  background: rgba($black, .66);
   color: $white;
   font-family: $ff-heading;
   border-radius: 0 0 3px 3px;

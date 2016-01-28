@@ -7,10 +7,10 @@
 
   // triangle
   &:after {
-    border-color: transparent transparent $black-light;
+    border-color: transparent transparent $black;
     border-style: none solid solid;
     border-width: 20px;
-    opacity: .5;
+    opacity: .66;
     bottom: 0;
     content: '';
     height: 0;
