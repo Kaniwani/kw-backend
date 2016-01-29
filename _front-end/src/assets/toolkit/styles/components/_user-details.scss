@@ -1,9 +1,9 @@
 $bp-user-details: '>=650px';
-
 .user-details {
+  $ud-grey: #ddd;
   display: flex;
   flex-direction: column;
-  background: $black-light;
+  background: rgba($black, .6);
   color: $white;
   font-family: $ff-heading;
   border-radius: 0 0 3px 3px;
@@ -16,13 +16,14 @@ $bp-user-details: '>=650px';
   .title {
     margin-top: 0;
     text-shadow: $shadow-text-light;
-    color: $grey-light;
+    color: lighten($ud-grey, 5%);
   }
 
   strong {
     color: $white;
     font-family: $ff-heading;
     font-weight: normal;
+    text-shadow: $shadow-text-thin;
   }
 
   .wkinfo,
@@ -49,7 +50,8 @@ $bp-user-details: '>=650px';
     }
 
     .item {
-      color: $grey-light;
+      color: $ud-grey;
+      text-shadow: $shadow-text-thin;
     }
   }
 
@@ -72,6 +74,7 @@ $bp-user-details: '>=650px';
 
     > .text {
       margin: 0;
+      text-shadow: $shadow-text-thin;
 
       @include media($bp-lg) {
         max-width: 600px;
@@ -97,7 +100,9 @@ $bp-user-details: '>=650px';
     }
 
     > .list > .item > .link {
-      color: $grey-light;
+      color: $ud-grey;
+      text-shadow: $shadow-text-thin;
+
 
       &:hover {
         color: $white;

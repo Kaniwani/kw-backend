@@ -1,15 +1,16 @@
 .user-overview {
   position: relative;
   padding: $unit-md $unit-md $unit-md*2;
-  background: $blue-light;
-  background: linear-gradient(to bottom right, $blue-light 33%, $blue 77%);
+  // background: $blue-light;
+  // background: linear-gradient(to bottom right, $blue-light 33%, $blue 77%);
   text-align: center;
 
   // triangle
   &:after {
-    border-color: transparent transparent $black-light;
+    border-color: transparent transparent $black;
     border-style: none solid solid;
     border-width: 20px;
+    opacity: .6;
     bottom: 0;
     content: '';
     height: 0;
@@ -62,11 +63,18 @@
   > .reviews {
     margin-top: $unit-md;
 
+    .button,
+    #forceSrs {
+      margin-top: $unit-xs;
+      opacity: .85;
+    }
+
     .button:not(.-disabled),
     #forceSrs {
-      transition: color .3s ease-out;
+      transition: all .3s ease-out;
 
       &:hover {
+        opacity: 1;
         color: $blue;
       }
     }
