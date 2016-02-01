@@ -252,6 +252,7 @@ def create_new_vocabulary(vocabulary_json):
     logger.info("Created new vocabulary with meaning {} and legal readings {}".format(meaning, kana_list))
     return vocab
 
+
 def associate_readings_to_vocab(vocab, vocabulary_json):
     kana_list = [reading.strip() for reading in
                  vocabulary_json["kana"].split(",")]  # Splits out multiple readings for one vocab.
@@ -264,6 +265,7 @@ def associate_readings_to_vocab(vocab, vocabulary_json):
                                      associated to vocab {}""".format(new_reading.kana, new_reading.level,
                                                                       new_reading.vocabulary.meaning))
     return vocab
+
 
 def get_or_create_vocab_by_json(vocab_json):
     '''
@@ -305,18 +307,30 @@ def associate_synonyms_to_vocab(user, vocab, user_specific):
 
 def get_users_current_reviews(user):
     if user.profile.only_review_burned:
-        return UserSpecific.objects.filter(user=user, needs_review=True, wanikani_burned=True, hidden=False)
+        return UserSpecific.objects.filter(user=user,
+                                           needs_review=True,
+                                           wanikani_burned=True,
+                                           hidden=False,
+                                           burned=False)
     else:
-        return UserSpecific.objects.filter(user=user, needs_review=True, hidden=False)
+        return UserSpecific.objects.filter(user=user,
+                                           needs_review=True,
+                                           hidden=False,
+                                           burned=False)
 
 
 def get_users_future_reviews(user):
     if user.profile.only_review_burned:
-        return UserSpecific.objects.filter(user=user, needs_review=False, wanikani_burned=True, hidden=False).annotate(
-            Min('next_review_date')).order_by('next_review_date')
+        return UserSpecific.objects.filter(user=user,
+                                           needs_review=False,
+                                           wanikani_burned=True,
+                                           hidden=False,
+                                           burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
     else:
-        return UserSpecific.objects.filter(user=user, needs_review=False, hidden=False).annotate(
-            Min('next_review_date')).order_by('next_review_date')
+        return UserSpecific.objects.filter(user=user,
+                                           needs_review=False,
+                                           hidden=False,
+                                           burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
 
 
 def process_vocabulary_response_for_unlock(user, response):
@@ -507,7 +521,7 @@ def pull_user_synonyms_by_level(user, level):
                         for review in reviews:
                             logger.error(
                                     "Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(
-                                        review))
+                                            review))
         except KeyError:
             logger.error("NO requested info?: {}".format(json_data))
     else:
