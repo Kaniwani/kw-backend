@@ -170,15 +170,15 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 # Application definition
 
 
-LOGIN_URL = reverse_lazy("kw:login")
+LOGIN_URL = reverse_lazy("login")
 LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 INSTALLED_APPS = (
+    'kw_webapp', #Make sure this is the top entry in order to correctly override template folders.
     'django.contrib.admin',
-    'kw_webapp',
     'django.contrib.auth',
     'django.contrib.humanize',
     'django.contrib.contenttypes',

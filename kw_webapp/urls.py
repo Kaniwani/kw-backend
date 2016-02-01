@@ -6,21 +6,6 @@ from kw_webapp.forms import UserLoginForm
 
 urlpatterns = patterns('',
                        url(r'^$', Dashboard.as_view(), name="home"),
-                       url(r'^auth/login/$', 'django.contrib.auth.views.login',
-                           {'template_name': 'kw_registration/login.html',
-                            'authentication_form': UserLoginForm},
-                           name="login"),
-                       url(r'^auth/register/$', Register.as_view(), name="register"),
-                       url(r'^auth/logout/$', Logout.as_view(), name="logout"),
-                       url(r'^auth/password_reset/$', 'django.contrib.auth.views.password_reset',
-                           name="password_reset",
-                           kwargs={"template_name": "kw_registration/password_reset_form.html"}),
-
-                       url(r'^auth/password_reset/done/$', 'django.contrib.auth.views.password_reset_done',
-                           name="password_reset_done",
-                           kwargs={"template_name": "kw_registration/password_reset_done.html"}),
-
-
                        url(r'^review/$', Review.as_view(), name="review"),
                        url(r'^summary/$', ReviewSummary.as_view(), name="summary"),
                        url(r'^record_answer/$', RecordAnswer.as_view(), name="record_answer"),
