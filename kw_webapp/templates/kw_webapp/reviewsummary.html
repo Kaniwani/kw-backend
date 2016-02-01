@@ -18,7 +18,7 @@
               <a href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.id }}" class="readingset">
                 <div class="ja">
                   {% for reading in review.vocabulary.reading_set.all %}
-                    <span lang="ja" class="kana">{{ reading.kana }}</span>
+                    {% ifchanged %}<span lang="ja" class="kana">{{ reading.kana }}</span> {% endifchanged %}
                     {% ifchanged %}<span lang="ja" class="kanji">{{ reading.character }}</span> {% endifchanged %}
                   {% endfor %}
                 </div>
