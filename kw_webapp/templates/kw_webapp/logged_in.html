@@ -12,41 +12,42 @@
       </span>
     </a>
 
-    <nav class="site-nav">
-      <a href="#0" class="expandToggle">☰ Menu</a>
-      <ul class="nav-list toggleTarget">
-        <li class="item {% ancestor 'kw:review' %}">
-          <a href="{% url "kw:review" %}" class="nav-link">
-            <span class="text">Reviews <span id="navReviewCount" class="count">{{ review_count }}</span></span>
-          </a>
-        </li>
-        <li class="item {% ancestor 'kw:vocab' %}">
-          <a href="{% url "kw:vocab" %}" class="nav-link">
-            <span class="text">Vocabulary</span>
-          </a>
-        </li>
-        <li class="item {% ancestor 'kw:about' %}">
-          <a href="{% url "kw:about" %}" class="nav-link">
-            <span class="text">About</span>
-          </a>
-        </li>
-        <li class="item {% ancestor 'contact:contact_form' %}">
-          <a href="{% url "contact:contact_form" %}" class="nav-link">
-            <span class="text">Contact</span>
-          </a>
-        </li>
-        <li class="item {% ancestor 'kw:settings' %}">
-          <a href="{% url "kw:settings" %}" class="nav-link">
-            <span class="text">Settings</span>
-          </a>
-        </li>
-        <li class="item {% ancestor 'kw:logout' %}">
-          <a href="{% url "kw:logout" %}" class="nav-link">
-            <span class="text">Logout</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
+  <nav class="site-nav">
+  <a href="#0" class="expandToggle">☰ Menu</a>
+  <ul class="nav-list toggleTarget">
+    <li class="item {% ancestor 'kw:review' %}">
+      <a href="{% url "kw:review" %}" class="nav-link">
+        <span class="text">Reviews <span id="navReviewCount" class="count">{% if review_count %}{{ review_count }}{% endif %}</span></span>
+      </a>
+    </li>
+    <li class="item {% ancestor 'kw:vocab' %}">
+      <a href="{% url "kw:vocab" %}" class="nav-link">
+        <span class="text">Vocabulary</span>
+      </a>
+    </li>
+    <li class="item {% ancestor 'kw:about' %}">
+      <a href="{% url "kw:about" %}" class="nav-link">
+        <span class="text">About</span>
+      </a>
+    </li>
+    <li class="item {% ancestor 'contact:contact_form' %}">
+      <a href="{% url "contact:contact_form" %}" class="nav-link">
+        <span class="text">Contact</span>
+      </a>
+    </li>
+    <li class="item {% ancestor 'kw:settings' %}">
+      <a href="{% url "kw:settings" %}" class="nav-link">
+        <span class="text">Settings</span>
+      </a>
+    </li>
+    <li class="item {% ancestor 'kw:logout' %}">
+      <a href="{% url "kw:logout" %}" class="nav-link">
+        <span class="text">Logout</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+
 
   </div>
 </header>

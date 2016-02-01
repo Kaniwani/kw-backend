@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from django.test import TestCase, RequestFactory
 import responses
 
@@ -34,8 +36,12 @@ class TestCeleryTasks(TestCase):
         self.assertRaises(Vocabulary.DoesNotExist, get_vocab_by_meaning, "dog!")
 
     def test_associate_vocab_to_user_successfully_creates_review(self):
-        review = associate_vocab_to_user(self.vocabulary, self.user)
+        new_vocab = create_vocab("dishwasher")
+
+        review, created = associate_vocab_to_user(new_vocab, self.user)
+
         self.assertTrue(review.needs_review is True)
+        self.assertTrue(created)
 
     def test_building_api_string_adds_correct_levels(self):
         self.user.profile.unlocked_levels.get_or_create(level=5)
@@ -78,7 +84,7 @@ class TestCeleryTasks(TestCase):
 
     @responses.activate
     def test_creating_new_synonyms_on_sync(self):
-        resp_body = sample_api_responses.single_vocab_response
+        resp_body = deepcopy(sample_api_responses.single_vocab_response)
         resp_body["requested_information"][0]["user_specific"]["user_synonyms"] = ["kitten", "large rat"]
         responses.add(responses.GET, build_API_sync_string_for_user(self.user),
                       json=resp_body,

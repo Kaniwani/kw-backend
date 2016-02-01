@@ -5,14 +5,14 @@
  *
  */
 
-// safari fix zzzzzz
+// safari fix zzzzzz - must come first in entrypoint
 import "babel-polyfill";
 
 // components
+import invalidApiKey from './components/invalidApiKey';
 import expandToggle from './components/expandToggle';
 import revealToggle from './components/revealToggle';
 import accordionContainer from './components/accordionContainer';
-import invalidApiKey from './components/invalidApiKey';
 import login from './sections/login';
 import home from './sections/home';
 import vocab from './sections/vocabulary';
