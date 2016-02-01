@@ -1,0 +1,95 @@
+/*! Hint.css - A CSS tooltip library - v2.0.0 - 2016-01-25
+* http://kushagragour.in/lab/hint/
+* Copyright (c) 2016 Kushagra Gour; Licensed  */
+
+/**
+ * Each tooltip is made of 2 parts:
+ *  1) body (:after)
+ *  2) arrow (:before)
+ **/
+[data-hint] {
+  position: relative;
+  display: inline-block;
+}
+[data-hint]:before, [data-hint]:after {
+  position: absolute;
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  visibility: hidden;
+  opacity: 0;
+  z-index: 1000000;
+  pointer-events: none;
+  -webkit-transition: 0.3s ease;
+  -moz-transition: 0.3s ease;
+  transition: 0.3s ease;
+  -webkit-transition-delay: 0ms;
+  -moz-transition-delay: 0ms;
+  transition-delay: 0ms; }
+[data-hint]:hover:before, [data-hint]:hover:after {
+  visibility: visible;
+  opacity: 1; }
+[data-hint]:hover:before, [data-hint]:hover:after {
+  -webkit-transition-delay: 100ms;
+  -moz-transition-delay: 100ms;
+  transition-delay: 100ms; }
+[data-hint]:before {
+  content: '';
+  position: absolute;
+  background: transparent;
+  border: 6px solid transparent;
+  z-index: 1000001; }
+[data-hint]:after {
+  content: attr(data-hint);
+  background: #383838;
+  color: white;
+  padding: 8px 10px;
+  font-size: 16px;
+  line-height: 16px;
+  white-space: nowrap; }
+
+[data-hint='']:before, [data-hint='']:after {
+  display: none !important; }
+
+.hint--top:before {
+  border-top-color: #383838; }
+
+.hint--bottom:before {
+  border-bottom-color: #383838; }
+
+
+.hint--rounded:after {
+  border-radius: 3px;
+}
+
+/**
+ * top tooltip
+ */
+.hint--top:before {
+  margin-bottom: -12px; }
+
+.hint--top:before, .hint--top:after {
+  bottom: 100%;
+  left: 50%; }
+
+.hint--top:after, .hint--top:before {
+  transform: translateX(-50%); }
+
+.hint--top:hover:after, .hint--top:hover:before, .hint--top:focus:after, .hint--top:focus:before {
+  transform: translateX(-50%) translateY(-8px); }
+
+/**
+ * bottom tooltip
+ */
+.hint--bottom:before {
+  margin-top: -12px; }
+
+.hint--bottom:before, .hint--bottom:after {
+  top: 100%;
+  left: 50%; }
+
+.hint--bottom:after, .hint--bottom:before {
+  transform: translateX(-50%); }
+
+.hint--bottom:hover:after, .hint--bottom:hover:before, .hint--bottom:focus:after, .hint--bottom:focus:before {
+  transform: translateX(-50%) translateY(8px); }

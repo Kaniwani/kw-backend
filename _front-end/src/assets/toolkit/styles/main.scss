@@ -3,9 +3,7 @@
  */
 
 // first so we can override
-@import "vendor/pure-forms";
-@import "vendor/pure-buttons";
-@import "vendor/notie";
+@import "vendor/*";
 
 // explicitly ordered to control cascade
 @import "base/normalize";
