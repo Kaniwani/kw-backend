@@ -96,10 +96,11 @@
         cursor: pointer;
       }
       &.-srslevel {
-        left: 4px;
-        top: -4px;
-        font-size: 30px;
-        opacity: .85;
+        right: 6px;
+        top: 1px;
+        bottom: auto;
+        font-size: 24px;
+        color: $golden;
       }
     }
 
