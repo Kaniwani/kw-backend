@@ -1,6 +1,7 @@
-import { refreshReviews } from '../components/refreshReviews';
+import refreshReviews from '../components/refreshReviews';
+import pluralize from '../util/pluralize';
 
-let prevSync,
+let recentlySynced,
 		$refreshButton,
 		$reviewButton;
 
@@ -9,22 +10,30 @@ function init() {
 	if (window.location.pathname === '/kw/') {
 		$refreshButton = $("#forceSrs");
 		$reviewButton = $("#reviewCount");
-		prevSync = simpleStorage.get('prevSync');
-		console.log('prevSync?', prevSync);
-		if (prevSync !== true) syncUser();
+		recentlySynced = simpleStorage.get('recentlySynced');
+
+		if (recentlySynced !== true) {
+			syncUser();
+		} else {
+			refreshReviews();
+		}
 
 		// event handlers
-		$refreshButton.click(() => refreshReviews({forceGet: true}));
+		$refreshButton.click(() => refreshReviews());
 		$reviewButton.click(ev => {
 			if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
 		});
+
 		$(document).keypress(handleKeyPress);
+
+		// TODO: we should also load settings if we want to prevent syncing for unfollow users
+		// settings should still be loaded in reviews in case user goes there directly after changing settings though
+		// unless we decided to blanket update user, settings etc on every important page via logged_in template
+		// that might be a better avenue to be honest
+		let user = simpleStorage.get('user');
+		if (user == null) simpleStorage.set('user', window.KWuserName);
 	}
-
-	// update from sessionstorage, if nothing there then hit server
-	refreshReviews();
 }
-
 
 function syncUser() {
 	animateSync();
@@ -32,15 +41,14 @@ function syncUser() {
 	$.getJSON('/kw/sync/', {full_sync: false})
 		.done(res => {
 			const message = `Account synced with Wanikani!`,
-					  newMaterial = `</br>You have ${res.new_review_count} new reviews & ${res.new_synonym_count} new synonyms.`;
+					  newMaterial = `</br>You have unlocked ${pluralize('new vocab item', res.new_review_count)} & ${pluralize('new synonym', res.new_synonym_count)}.`;
 
-			console.log(res);
-
- 			simpleStorage.set('prevSync', res.profile_sync_succeeded, {TTL: 180000}) // expire after 30mins
+ 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: 1800000}) // expire after 30mins
  			notie.alert(1, (newMaterial ? message + newMaterial : message), 5);
+ 			refreshReviews();
 		})
-		.fail(() => {
-			notie.alert(3, 'Something went wrong while trying to sync with Wanikani. If the problem persists, send us a <a href="/contact/">contact message</a>!', 10);
+		.fail((res) => {
+			notie.alert(3, `Something went wrong while trying to sync with Wanikani. If the problem persists, send us a <a href="/contact/">contact message</a>! with the following: <q class="failresponse">${res.status}: ${res.statusText}</q>`, 10);
 		})
 		.always(() => animateSync({clear: true}));
 }
@@ -99,12 +107,13 @@ function animateSync({clear = false} = {}) {
 	    paletteIndex %= palette.length;
 	  }, 10 );
 
-	}, 2000 );
+	}, 1600 );
 }
 
 const api = {
 	init,
 	animateSync,
+	syncUser,
 }
 
 export default api;

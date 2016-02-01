@@ -21,5 +21,9 @@
       margin-top: 25px;
       margin-bottom: 25px;
     }
+
+    .vocab-list.-incorrect .vocab-card:only-child {
+      flex: 0 1 50%;
+    }
   }
 }

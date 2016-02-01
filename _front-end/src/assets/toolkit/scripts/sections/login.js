@@ -4,7 +4,7 @@ function init() {
     // login animation
     setTimeout(() => {
       $(this).closest('.login-section').addClass('-pending');
-    }, 750);
+    }, 600);
   });
 }
 

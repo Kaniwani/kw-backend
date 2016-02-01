@@ -16,8 +16,7 @@ from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
 from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    unlock_all_possible_levels_for_user, sync_user_profile_with_wk, get_wanikani_level_by_api_key, \
-    get_users_current_reviews
+    unlock_all_possible_levels_for_user, sync_user_profile_with_wk, sync_with_wk, get_wanikani_level_by_api_key, get_users_current_reviews
 import logging
 
 logger = logging.getLogger("kw.views")
@@ -208,7 +207,6 @@ class UnlockRequested(View):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(UnlockRequested, self).dispatch(*args, **kwargs)
-
 
 class SyncRequested(View):
     """
