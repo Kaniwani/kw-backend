@@ -18,15 +18,15 @@
             data-pk="{{ review.id }}">
 
         <div class="vocab-base">
-          {% for reading in review.vocabulary.reading_set.all %}
-            <dl class="readingset">
-              <span class="ja">
+          <dl class="readingset">
+            <span class="ja">
+              {% for reading in review.vocabulary.reading_set.all %}
                 <dt lang="ja" class="kana">{{ reading.kana }}</dt>
-                <dt lang="ja" class="kanji">{{ reading.character }}</dt>
-              </span>
-              <dd class="meaning">{{ reading.vocabulary.meaning }}</dd>
-            </dl>
-          {% endfor %}
+                {% ifchanged %}<dt lang="ja" class="kanji">{{ reading.character }}</dt>{% endifchanged %}
+              {% endfor %}
+            </span>
+            <dd class="meaning">{{ review.vocabulary.meaning }}</dd>
+          </dl>
 
           {% if review.hidden %}
             <span class="icon -lockstatus i-unlock"></span>

@@ -72,7 +72,9 @@ function updateStreak() {
                              streak > 2 ? 'i-guru'
                                         : 'i-apprentice');
 
-  $streakIcon.attr('class', iconClass).attr('title', iconClass.slice(7));
+  $streakIcon.attr('class', iconClass);
+  console.log($streakIcon.closest('.streak').get(0));
+  $streakIcon.closest('.streak').attr('data-hint', iconClass.slice(7));
 }
 
 function updateKanaKanjiDetails() {
