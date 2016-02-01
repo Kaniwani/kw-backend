@@ -16,7 +16,8 @@
       pointer-events: none;
     }
     > .container > .title {
-      transform: translate(0%, -60vh);
+      animation: fadeOutUp 6s ease-in;
+      animation-fill-mode: forwards;
     }
     > .feedback {
       opacity: 1;
@@ -61,7 +62,6 @@
       opacity: .9;
       z-index: 2;
       color: $white;
-      transition: transform 8s ease-in;
       font-size: 40px;
 
       @include media($bp-lg) {

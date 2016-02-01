@@ -17,8 +17,11 @@
     color: $white;
     text-align: center;
     height: auto;
-    height: 45vh;
-    @include media($bp-xxl) {
+    height: 25vh;
+    @include media($bp-md) {
+      height: 33vh;
+    }
+    @include media($bp-lg) {
       height: 40vh;
     }
   }
@@ -26,13 +29,14 @@
   .meaning {
     color: $white;
     text-shadow: 1px 2px 4px $purple-dark;
-    padding: 1em $unit-sm;
+    padding: 50px 15px 30px;
     display: table-cell;
-    font-size: responsive 24px 50px;
+    font-size: responsive 20px 50px;
     font-range: 300px 2000px;
     vertical-align: middle;
     line-height: 1.3;
     letter-spacing: -1px;
+
     @include media($bp-lg) {
       padding-left: 10%;
       padding-right: 10%;
@@ -41,7 +45,7 @@
 
   .lower {
 
-    fieldset {
+    .answerpanel {
       position: relative;
       padding: 0;
       margin: 0;
@@ -59,32 +63,30 @@
       padding: 0;
       background-color: $white-light;
       box-shadow: $shadow-inner-medium;
-      font-size: responsive 24px 50px;
+      font-size: responsive 22px 50px;
       font-range: 300px 2000px;
       line-height: 2.5;
       text-align: center;
       transition: all .1s ease-out;
 
+      // hide stupid X on IE
+      ::-ms-clear {;}
+
       &.-marked {
         color: $white;
-        text-shadow: $shadow-text-thin;
-        + .submitwrap .icon {
+
+        + .submit .icon {
           color: $white;
           text-shadow: $shadow-text-thin;
         }
-
-        &::-webkit-input-placeholder { color: $white; }
-        &::-moz-placeholder { color: $white;  }
-        &:-ms-input-placeholder { color: $white; }
-        &:placeholder-shown { color: $white; }
-
       }
 
       &.-invalid {
         background-color: $yellow;
         color: $grey-dark;
         text-shadow: none;
-        + .submitwrap .icon {
+
+        + .submit .icon {
           color: $grey-dark;
           text-shadow: none;
         }
@@ -92,12 +94,19 @@
 
       &.-incorrect {
         background-color: $red;
+        text-shadow: 1px 1px 0 rgba(darken($red, 20%), .75);
       }
 
       &.-correct {
         background-color: $green;
+        text-shadow: 1px 1px 0 rgba(darken($green, 20%), .75);
       }
     }
+
+    .answer.-marked::-webkit-input-placeholder { color: $white; }
+    .answer.-marked::-moz-placeholder { color: $white;  }
+    .answer.-marked:-ms-input-placeholder { color: $white; }
+    .answer.-marked:placeholder-shown { color: $white; }
 
     .submitwrap,
     .streak {
@@ -105,13 +114,17 @@
       flex-direction: column;
       justify-content: center;
       align-content: center;
-      padding: 0 .75em;
+      margin: 0 .75em;
 
       .icon {
-        font-size: responsive 20px 36px;
+        font-size: responsive 18px 36px;
         font-range: 300px 1600px;
-        line-height: 0;
+        line-height: normal;
         color: $grey-dark;
+        &.-marked {
+          color: $white;
+          text-shadow: $shadow-text-thin;
+        }
       }
     }
 
@@ -133,6 +146,11 @@
       border: 0;
       border-radius: 0;
       box-shadow: none;
+      &:focus {
+        .submitwrap {
+          outline: 1px dashed $grey-light;
+        }
+      }
     }
   }
 }

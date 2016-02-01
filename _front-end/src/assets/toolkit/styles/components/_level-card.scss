@@ -28,29 +28,31 @@ $bp-level-card-2: '>=680px';
     > .icon {
       @include tap-target(5px, 10px);
       position: absolute;
-      font-size: .9em;
-      left: 20px;
-      bottom: 15px;
+      font-size: 22px;
+      left: calc(100% - 32px);
+      bottom: 12px;
 
       &.i-lock {
         color: $black;
+        font-size: 25px;
+        line-height: 22px;
       }
 
       &.i-link {
-        left: auto;
-        right: 20px;
+        left: 22px;
+        bottom: 10px;
         transition: color .3s ease-out;
         color: $white-light;
         font-size: .85em;
         &:hover {
-          color: $grey-dark;
+          color: $black;
           cursor: pointer;
         }
       }
 
       &.-loading {
-        left: 18px;
-        bottom: 18px;
+        left: calc(100% - 36px);
+        bottom: 15px;
       }
     }
   }

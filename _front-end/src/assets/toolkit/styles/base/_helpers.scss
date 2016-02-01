@@ -10,6 +10,14 @@
   }
 }
 
+@mixin clearfix() {
+  &:after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
 // limits width and centers item
 @mixin container($width: 1260px) {
   max-width: $width;
@@ -38,6 +46,35 @@
   padding: 0;
   list-style: none;
 }
+
+// reset [type="button"] styling
+%plainbutton {
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  line-height: normal;
+  overflow: visible;
+  padding: 0;
+  -webkit-appearance: button; /* for input */
+  -webkit-user-select: none; /* for button */
+     -moz-user-select: none;
+      -ms-user-select: none;
+  // pseudos
+  &::-moz-focus-inner,
+  &::-moz-focus-inner {
+      border: 0;
+      padding: 0;
+  }
+}
+
+%flexcenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
 
 %visuallyhidden {
   position: absolute;

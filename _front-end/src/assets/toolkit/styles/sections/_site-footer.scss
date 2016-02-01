@@ -1,25 +1,67 @@
 .site-footer {
-  padding-top: $unit-sm;
+  $logo-avatar-size: 80;
+
   background-color: $black;
+  // not sure why 4px... gotta be inline-blocks somewhere
+  padding-top: calc(#{$unit-xs} + 4px);
+  padding-bottom: $unit-xs;
 
-  .title {
-    color: $white;
-  }
+  > .inner {
+    @include container($site-max-width);
+    padding-left: $unit-sm;
+    padding-right: $unit-sm;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 
-  .site-logo {
-    > .text {
-      background-color: $pink;
-      color: $black-light;
+    @include media('<' + #{$logo-avatar-size * 4.5} + 'px') {
+      flex-direction: column;
+      > .hexagon-box {
+        &:first-child {
+          align-self: flex-start;
+        }
+        &:last-child {
+          align-self: flex-end;
+        }
+      }
     }
 
-    &:hover {
-      color: $black-light;
-      text-decoration: none;
+    .site-logo {
+      flex: 0 0 #{$logo-avatar-size}px;
+      &:only-child {
+        margin-left: auto;
+        margin-right: auto;
+      }
 
       > .text {
-        background: $purple;
+        width: #{$logo-avatar-size}px;
+        height: #{$logo-avatar-size}px;
+        background-color: $purple;
+
+        &:hover {
+          background-color: $pink;
+        }
+
+        .kana {
+          font-size: $logo-avatar-size / 3;
+        }
+        .kanji {
+          font-size: $logo-avatar-size / 2;
+        }
+      }
+    }
+
+    .hexagon-box {
+      @include hex-box($w: $logo-avatar-size + 5);
+      flex: 0 0 #{$logo-avatar-size + 5}px;
+      &.djtb {
+        align-self: flex-start;
+      }
+      &.-tadgh {
+        align-self: flex-end;
       }
     }
   }
-
 }
+

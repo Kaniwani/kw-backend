@@ -1,6 +1,5 @@
 .vocab-extra {
   $bp-vocab: '<=600px';
-  position: relative;
   z-index: 1;
 
   > .icon {
@@ -68,10 +67,8 @@
 
   > .extraToggle {
     @include tap-target(8px, 12px);
+    position: relative;
     padding: 4px 7px;
-    position: absolute;
-    bottom: 0;
-    right: 0;
     background: $white-light;
   }
 }

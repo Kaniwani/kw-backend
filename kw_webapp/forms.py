@@ -72,12 +72,15 @@ class   UserCreateForm(UserCreationForm):
 class SettingsForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['api_key', 'level',  'follow_me']
+        fields = ['api_key', 'level',  'follow_me', 'auto_advance_on_success', 'auto_expand_answer_on_failure', 'only_review_burned']
         help_texts = {
             "follow_me": ("If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani."),
         }
         labels = {
             "follow_me": "Follow Wanikani Progress",
+            "auto_advance_on_success": "Automatically advance to next item in review if answer was correct.",
+            "auto_expand_answer_on_failure": "Automatically show kanji and kana if you answer incorrectly.",
+            "only_review_burned": "Review only items that you have burned in Wanikani."
         }
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()

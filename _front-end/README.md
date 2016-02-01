@@ -11,7 +11,7 @@ HTML partials in `src/materials` and full example pages in `src/views`
 
 ## Quick Start
 
-Ensure you have *node.js* and *npm* installed. Node >4.2.2 and NPM >2.14.7 are known to work fine.
+Ensure you have *node.js* and *npm* installed. Node >=5.4.0 and NPM >=3.3.12 are known to work fine.
 
 ```shell
 $ npm start

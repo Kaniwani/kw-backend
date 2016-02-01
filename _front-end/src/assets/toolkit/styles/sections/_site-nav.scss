@@ -2,7 +2,7 @@
 
   > .expandToggle {
     display: block;
-    padding: 22px 10px;
+    padding: 26px 10px;
     font-size: 18px;
     text-decoration: none;
     text-align: right;
@@ -17,7 +17,7 @@
     transition: max-height .3s linear;
 
     @include media($bp-nav-1) {
-      max-height: initial;
+      max-height: 100%;
     }
 
     &.-open {

@@ -13,37 +13,72 @@
   }
 }
 
-@keyframes float-up {
-  0%   { transform: translateY(0) translateX(0); }
-  100% { transform: translateY(calc(-100vh - 180px)) translateX(-3vw); }
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-@keyframes float-up-left {
-  0%   { transform: translateY(0) rotate(0deg) translateX(0);}
-  100% { transform: translateY(calc(-100vh - 180px)) rotate(-18deg) translateX(-5vw); }
+@keyframes fadeOutUp {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, -200%, 0);
+  }
 }
 
-@keyframes float-up-right {
-  0%   { transform: translateY(0) rotate(0deg) translateX(0);}
-  100% { transform: translateY(calc(-100vh - 180px)) rotate(24deg) translateX(3vw); }
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 100%, 0);
+  }
+
+  10% {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-@keyframes rotate-left {
-  0%   { transform: translateY(0) rotate(0deg) translateX(0); }
-  100% { transform: translateY(calc(-100vh - 180px)) rotate(-160deg) translateX(-2vw); }
+@mixin turtle-animation($i, $imgSize, $opacity, $duration, $delay, $rotate, $drift) {
+  $left: random(100);
+
+  opacity: $opacity;
+  width: #{$imgSize}px;
+  height: #{$imgSize}px;
+  left: calc(#{$left}% - #{$imgSize}px);;
+  bottom: -#{$imgSize}px;
+  animation-name: turtle-float-#{$i};
+  animation-duration: #{$duration}s;
+  animation-delay: #{$delay}s;
+
+  @function plusMinus($n) {
+    @return if(random(2) > 1, -#{$n}, +#{$n});
+  }
+
+  @function calcDrift($L, $D) {
+    @return if($L > 50, #{-$D}vw, #{$D}vw);
+  }
+
+  @keyframes turtle-float-#{$i} {
+    33% {
+      // not DRY intentionally so we get different random() values with sass
+      opacity: if(random(2) > 1, #{$opacity - random(40) / 100}, #{$opacity + random(40) / 100});
+    }
+    66% {
+      opacity: if(random(2) > 1, #{$opacity - random(40) / 100}, #{$opacity + random(40) / 100}) ;
+    }
+    100% {
+      opacity: if(random(2) > 1, #{$opacity - random(40) / 100}, #{$opacity + random(40) / 100}) ;
+      transform: translateX(calcDrift($left, $drift))
+                 translateY(calc(-102vh - #{$imgSize}px))
+                 rotate(#{plusMinus($rotate)}deg)
+    }
+  }
 }
 
-@keyframes rotate-right {
-   0%   { transform: translateY(0) rotate(0deg) translateX(0); }
-  100% { transform: translateY(calc(-100vh - 180px)) rotate(140deg) translateX(4vw); }
-}
-
-@keyframes rotate-right-slow {
-  0%   { transform: translateY(0) rotate(0deg) translateX(0); }
-  100% { transform: translateY(calc(-100vh - 180px)) rotate(80deg) translateX(-6vw); }
-}
-
-@keyframes rotate-left-slow {
-  0%   { transform: translateY(0) rotate(0deg) translateX(0); }
-  100% { transform: translateY(calc(-100vh - 180px)) rotate(-70deg) translateX(-3vw); }
-}

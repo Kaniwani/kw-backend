@@ -17,16 +17,70 @@ body {
   height: 100%;
 }
 
-// matches .whatever-section, .something-section
-[class*="-section"] {
-  &:not(.-fullwidth) {
-    @include container($site-max-width);
-    margin-bottom: $unit-md;
+/**
+ * FLexbox Sticky Footer
+ * 1. Avoid the IE 10-11 `min-height` bug.
+ * 2. Set `flex-shrink` to `0` to prevent some browsers from
+ *    letting these items shrink to smaller than their content's default
+ *    minimum size. See http://bit.ly/1Mn35US for details.
+ * 3. Use `%` instead of `vh` since `vh` is buggy in older mobile Safari.
+ */
+.site {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* 1, 3 */
+  &.-syncing {
+    overflow: hidden;
   }
+}
 
-  > .inner {
-    padding-left: $unit-sm;
-    padding-right: $unit-sm;
+.site-header,
+.site-footer {
+  flex: none; /* 2 */
+}
+
+.site-content {
+  flex: 1 0 auto; /* 2 */
+  width: 100%;
+  & > [class*="-section"]:not(.-no-section-spacing) {
+    margin-top: $unit-md;
+    margin-bottom: $unit-md;
+    @include media($bp-lg) {
+      margin-top: $unit-lg;
+      margin-bottom: $unit-lg;
+    }
+  }
+}
+
+.site-content::after {
+  content: '\00a0'; /* &nbsp; */
+  display: block;
+  height: 0px;
+  visibility: hidden;
+}
+/* / sticky-footer */
+
+// matches .whatever-section, .something-section
+[class*="-section"],
+.site-header,
+.site-footer {
+  &:not(.-fullwidth) {
+
+    > .inner {
+      @include container($site-max-width);
+      padding-left: $unit-sm;
+      padding-right: $unit-sm;
+
+      @include media($bp-md) {
+        padding-left: $unit-md;
+        padding-right: $unit-md;
+      }
+
+      p {
+        max-width: 800px;
+      }
+    }
+
   }
 }
 

@@ -4,6 +4,7 @@
 {% block content %}
 {{ block.super }}
 <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
+<input type="hidden" id="currentLevel" value="{{ user.profile.level }}"></input>
 
 <section class="levels-section">
   <div class="inner">
@@ -18,7 +19,7 @@
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
               <a class="icon i-link -hidden" title="View vocab" href="{% url "kw:vocab_level" level.0 %}"></a>
-              <span class="icon i-lock"></span>
+              <span class="icon i-lock" title="Locked"></span>
             </div>
           </li>
         {% elif level.1 == True %}
@@ -34,7 +35,7 @@
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
               <a class="icon i-link -hidden" title="View vocab" href="{% url "kw:vocab_level" level.0 %}"></a>
-              <span class="icon i-unlock"></span>
+              <span class="icon i-unlock" title="Unlock"></span>
             </div>
           </li>
         {% endif %}
@@ -43,5 +44,9 @@
 
   </div>
 </section>
+
+</div>
+<!-- / .site-content -->
+{% include 'partials/site-footer.html' %}
 
 {% endblock %}

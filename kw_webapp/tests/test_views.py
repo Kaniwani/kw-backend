@@ -1,7 +1,7 @@
 from unittest import mock
 
 import responses
-from django.contrib.auth.models import AnonymousUser
+from django.contrib.auth.models import AnonymousUser, User
 from django.http import Http404, HttpResponseForbidden
 from django.test import TestCase, RequestFactory, Client
 
@@ -12,19 +12,19 @@ from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import create_user, create_userspecific, create_profile, create_reading
 from kw_webapp.tests.utils import create_vocab
 
+
 class TestViews(TestCase):
     def setUp(self):
         self.user = create_user("user1")
         self.user.set_password("password")
         self.user.save()
         create_profile(self.user, "some_key", 5)
-        #create a piece of vocab with one reading.
+        # create a piece of vocab with one reading.
         self.vocabulary = create_vocab("cat")
         self.cat_reading = create_reading(self.vocabulary, "kana", "kanji", 5)
 
-        #setup a review with two synonyms
+        # setup a review with two synonyms
         self.review = create_userspecific(self.vocabulary, self.user)
-
 
         self.client = Client()
         self.factory = RequestFactory()
@@ -55,6 +55,41 @@ class TestViews(TestCase):
         response = generic_view(request)
 
         self.assertContains(response, "cat, minou, chatte!")
+
+    def test_review_page_shows_only_burnt_items_when_setting_is_enabled(self):
+        word = create_vocab("phlange")
+        self.user.profile.only_review_burned = True
+        self.user.profile.save()
+        another_review = create_userspecific(word, self.user)
+        another_review.wanikani_burned = True
+        another_review.save()
+
+        request = self.factory.get('/kw/review')
+        request.user = self.user
+        view = kw_webapp.views.Review.as_view()
+        response = view(request)
+
+        self.assertNotContains(response, "cat")
+        self.assertContains(response, "phlange")
+
+
+    def test_review_page_shows_all_items_when_burnt_setting_is_disabled(self):
+        word = create_vocab("phlange")
+        self.user.profile.only_review_burned = False
+        self.user.profile.save()
+        another_review = create_userspecific(word, self.user)
+        another_review.wanikani_burned = True
+        another_review.save()
+
+        request = self.factory.get('/kw/review')
+        request.user = self.user
+        view = kw_webapp.views.Review.as_view()
+        response = view(request)
+
+        self.assertContains(response, "cat")
+        self.assertContains(response, "phlange")
+
+
 
     def test_recording_answer_works_on_correct_answer(self):
         us = create_userspecific(self.vocabulary, self.user)
@@ -102,13 +137,23 @@ class TestViews(TestCase):
 
         self.assertContains(response, "1 items removed from your study queue.")
 
+    def test_locking_current_level_disables_following_setting(self):
+        self.client.login(username="user1", password="password")
+        self.user.profile.follow_me = True
+        self.user.profile.level = 5
+        self.user.save()
+
+        response = self.client.post("/kw/levellock/", data={"level": 5})
+
+        user = User.objects.get(username="user1")
+        self.assertFalse(user.profile.follow_me)
+
     @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y: [1, 0])
     def test_unlocking_a_level_unlocks_all_vocab(self, unlock_call):
         self.client.login(username="user1", password="password")
 
         response = self.client.post("/kw/levelunlock/", data={"level": 5})
         self.assertContains(response, "1 vocabulary unlocked")
-
 
     def test_user_unlocking_too_high_level_fails(self):
         self.user.profile.level = 5
@@ -131,7 +176,34 @@ class TestViews(TestCase):
                       status=200,
                       content_type='application/json')
 
-
         unlock_ajax_view = kw_webapp.views.UnlockAll.as_view()
         response = unlock_ajax_view(request)
         self.assertListEqual(sorted(self.user.profile.unlocked_levels_list()), [1, 2, 3, 4, 5])
+
+    @responses.activate
+    def test_sync_now_endpoint_returns_correct_json(self):
+        request = self.factory.get("/kw/sync/?full_sync=True")
+
+        request.user = self.user
+
+        responses.add(responses.GET,
+                      "https://www.wanikani.com/api/user/{}/user-information".format(self.user.profile.api_key),
+                      json=sample_api_responses.user_information_response,
+                      status=200,
+                      content_type="application/json")
+
+        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, [5, 17]) + ",",
+                      json=sample_api_responses.single_vocab_response,
+                      status=200,
+                      content_type='application/json')
+        print(sample_api_responses.single_vocab_response)
+        view = kw_webapp.views.SyncRequested.as_view()
+        response = view(request)
+
+        correct_response = {
+            "new_review_count": 0,
+            "profile_sync_succeeded": True,
+            "new_synonym_count": 0
+        }
+
+        self.assertJSONEqual(str(response.content, encoding='utf8'), correct_response)

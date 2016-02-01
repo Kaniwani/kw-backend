@@ -3,7 +3,11 @@
   color: $black-light;
 
   > a {
-    color: $black-light;
+    color: rgba($black-light, .95);
+    transition: color .3s ease-out;
+    &:hover {
+      color: rgba($grey-dark, .85);
+    }
   }
 
   > .breadcrumb {

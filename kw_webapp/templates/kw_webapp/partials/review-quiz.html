@@ -1,28 +1,26 @@
 <div class="review-quiz">
   <div class="upper">
-    <h1 id="meaning" class="meaning">Meaning</h1>
+    <h1 id="meaning" class="meaning"><span class="icon -loading"></span></h1>
   </div>
 
   <div class="lower">
 
-    <form>
-      <fieldset>
-        <div class="streak">
-          <span class="icon"></span>
-        </div>
+    <form class="answerpanel">
+      <div class="streak hint--right hint--rounded" data-hint="enlightened">
+        <span class="icon i-enlightened"></span>
+      </div>
 
-        <label for="userAnswer" class="question _visuallyhidden">Vocabulary <strong>reading</strong></label>
-        <input id="userAnswer" lang="ja" class="answer" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" required>
+      <label for="userAnswer" class="question _visuallyhidden">Vocabulary <strong>reading</strong></label>
+      <input id="userAnswer" lang="ja" class="answer" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
 
-          <button id="submitAnswer" type="submit" class="submit">
-            <span class="submitwrap">
-              <span class="icon i-rightarrow"></span>
-            </span>
-          </button>
-        </div>
+      <button id="submitAnswer" type="submit" class="submit">
+        <!-- wrap because <button> can't display:flex in safari properly -->
+        <span class="submitwrap">
+          <span class="icon i-rightarrow"></span>
+        </span>
+      </button>
 
-        <input type="hidden" id="us-id" value="Nothing!">
-      </fieldset>
+      <input type="hidden" id="us-id" value="Nothing!">
     </form>
 
   {% include 'partials/review-extra.html' %}

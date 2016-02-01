@@ -18,36 +18,45 @@
             data-pk="{{ review.id }}">
 
         <div class="vocab-base">
-          {% for reading in review.vocabulary.reading_set.all %}
-            <div class="readingset">
-              <span lang="ja" class="kanji">{{ reading.character }}</span>
-              <span lang="ja" class="kana">{{ reading.kana }}</span>
-              <span class="meaning">{{ reading.vocabulary.meaning }}</span>
-            </div>
-          {% endfor %}
+          <dl class="readingset">
+            <span class="ja">
+              {% for reading in review.vocabulary.reading_set.all %}
+                <dt lang="ja" class="kana">{{ reading.kana }}</dt>
+                {% ifchanged %}<dt lang="ja" class="kanji">{{ reading.character }}</dt>{% endifchanged %}
+              {% endfor %}
+            </span>
+            <dd class="meaning">{{ review.vocabulary.meaning }}</dd>
+          </dl>
 
           {% if review.hidden %}
-            <span class="icon i-unlock" title="Unlock"></span>
+            <span class="icon -lockstatus i-unlock"></span>
           {% else %}
-            <span class="icon i-unlocked" title="Relock"></span>
+            <span class="icon -lockstatus i-unlocked"></span>
           {% endif %}
 
+          {% if review.wanikani_burned %}
+            <span class="icon -srslevel i-burned" title="Burned on WaniKani!"></span>
+          {% endif %}
+
+
+        {% comment 'not ready for production - need to decide on placement/sizing - maybe go in vocab extra' %}
+          {% if review.streak > 8 %}
+            <span class="icon -srslevel i-burned" title="KaniWani Level - Burned"></span>
+          {% elif review.streak > 7 %}
+            <span class="icon -srslevel i-enlightened" title="KaniWani Level - Enlightened"></span>
+          {% elif review.streak > 5 %}
+            <span class="icon -srslevel i-guru" title="KaniWani Level - Guru"></span>
+          {% elif review.streak > 2 %}
+            <span class="icon -srslevel i-master" title="KaniWani Level - Master"></span>
+          {% else %}
+            <span class="icon -srslevel i-apprentice" title="KaniWani Level - Apprentice"></span>
+          {% endif %}
+        {% endcomment %}
         </div>
 
 
-        {% comment 'not ready for production - also needs update from styleguide template' %}
+        {% comment 'not ready for production - also needs update from styleguide template - maybe this should be a second "meaning" like mutiple readings are displayed. Would look nice with the symmmetry' %}
         <div class="vocab-extra">
-          {% if review.streak > 8 %}
-            <span class="icon i-burned" title="KaniWani Level - Burned"></span>
-          {% elif review.streak > 7 %}
-            <span class="icon i-enlightened" title="KaniWani Level - Enlightened"></span>
-          {% elif review.streak > 5 %}
-            <span class="icon i-guru" title="KaniWani Level - Guru"></span>
-          {% elif review.streak > 2 %}
-            <span class="icon i-master" title="KaniWani Level - Master"></span>
-          {% else %}
-            <span class="icon i-apprentice" title="KaniWani Level - Apprentice"></span>
-          {% endif %}
 
           <div class="synonyms">
             <span class="text">User synonyms:</span>
@@ -73,5 +82,9 @@
 
   </div>
 </section>
+
+</div>
+<!-- / .site-content -->
+{% include 'partials/site-footer.html' %}
 
 {% endblock %}

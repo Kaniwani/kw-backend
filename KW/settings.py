@@ -269,10 +269,16 @@ LINEAGE_ANCESTOR_PHRASE = "-active"
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = "/opt/venvs/KaniWaniEnv/KW/kw_webapp/static"
-#STATICFILES_DIRS = (
-#    os.path.join(BASE_DIR, "../_front-end/dist/assets"),
-#)
+STATIC_ROOT = "/var/www/kaniwani.com/static"
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "_front-end/dist/assets"),
+)
+
+#For cache-busting in production mode.
+if not DEBUG:
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
+
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
     os.path.join(BASE_DIR,  'kw_webapp/templates/kw_webapp')

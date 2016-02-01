@@ -1,4 +1,5 @@
 /* Site Breakpoints - see _include-media.scss for usage */
+$bp-sm: '<md'; // 768px in include-media
 $bp-md: '>=md'; // 768px in include-media
 $bp-lg: '>=lg'; // 1024px in include-media
 $bp-xl: '>=xl'; // 1200px in include-media
@@ -7,10 +8,10 @@ $bp-xxl: '>=xxl'; // 2000px in include-media
 /* Custom Component Breakpoints */
 // should really be contained within components, not happy that these are used across several...
 // perhaps should only really be in site-header??
-$bp-nav-1: '>=590px';
+$bp-nav-1: '>=615px';
 $bp-nav-2: '>=850px';
 
-$site-max-width: 1200px;
+$site-max-width: 1300px;
 
 /* Units */
 $unit-xs: 10px;
@@ -30,22 +31,26 @@ $black-light: hsl(0, 0%, 30%);
 $black: hsl(0, 0%, 16%);
 $black-dark: hsl(0, 0%, 0%);
 
+$oldblue: hsl(220, 100%, 47%);
+
 /* KaniWani colors */
 $blue-light: hsl(200, 100%, 41%);
 $purple-light: hsl(280, 100%, 50%);
 $purple-dark: hsl(280, 80%, 36%);
 $blue-dark: hsl(228, 71%, 52%);
-$blue: hsl(220, 100%, 47%);
-$purple: hsl(282, 100%, 47%);
+$blue: hsl(217, 63%, 57%);
+$purple: hsl(282, 100%, 45%);
 $pink: hsl(314, 100%, 50%);
 $red: hsl(346, 75%, 54%);
 $green: hsl(107, 56%, 62%);
+$golden: hsl(60, 75%, 88%);
 $yellow: hsl(53, 100%, 48%);
+$tan: hsl(37, 67%, 65%);
 
 
 /* Shadows */
-$shadow-text-thin: 0 1px 0 rgba($black, .4);
-$shadow-text-light: 2px 2px 0 rgba($black, .5);
+$shadow-text-thin: 1px 1px 1px rgba($black, .4);
+$shadow-text-light: 2px 2px 1px rgba($black, .5);
 $shadow-inner-light: inset 3px 3px 8px 0 rgba($black, .25);
 $shadow-inner-medium: inset 0 3px 20px -3px rgba($black, .3);
 $shadow-outer-light: 0 0 25px -5px rgba($black, .25);

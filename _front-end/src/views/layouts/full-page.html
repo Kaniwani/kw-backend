@@ -4,17 +4,17 @@
   <!-- in ./includes -->
   {{> site-head }}
 </head>
-<body>
+<body class="site">
 
   <noscript>KaniWani requires JavaScript to function properly. Please re-enable JavaScript or try refreshing the page.</noscript>
 
   {{> site-header }}
 
-  <main class="main">
+  <div class="site-content">
     {% body %}
-  </main>
+  </div>
 
-  <!-- no footer for now -->
+  {{> site-footer }}
 
   <script src="{{baseurl}}/assets/scripts/global.js"></script>
 </body>

@@ -6,11 +6,17 @@
     <p id="invalidApiKey" class="_visuallyhidden">Woah your API key is invalid!</br> Fix it at the <a href="{% url "kw:settings" %}">Settings page</a>.</p>
   {% endif %}
 
-  <section class="user-section -fullwidth">
+  <section class="user-section -fullwidth -no-section-spacing">
     {% include 'partials/user-overview.html' %}
     {% include 'partials/user-details.html' %}
   </section>
 
   {% include 'partials/announcements.html' %}
+
+  <script> window.KWuserName = '{{ user.profile.user }}'; </script>
+
+</div>
+<!-- / .site-content -->
+{% include 'partials/site-footer.html' %}
 
 {% endblock %}

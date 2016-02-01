@@ -1,5 +1,5 @@
-// TODO: half of this isn't relevant to reveal blocks, but to review-extra ones
-// should refactor/extract non-base portions
+// TODO: half of this isn't relevant to reveal blocks, but to review-extra accordions specifically
+// should refactor/extract non-base portions if you have the time
 
 .reveal-block {
 
@@ -15,7 +15,6 @@
     padding-top: .75em;
     padding-bottom: .75em;
     border-radius: 0;
-    transition: all .1s ease-out;
     background-color: rgba($grey-dark, .75);
     color: $white;
 
@@ -23,8 +22,8 @@
       overflow: hidden;
       transition: all .1s ease-in;
       filter: blur(1px);
-      color: mix($white, $black, 70);
       cursor: not-allowed;
+      opacity: .85;
     }
 
     &:not(.-disabled):hover,
@@ -36,21 +35,23 @@
   }
 
   > .reveal {
-    transition: all .1s ease;
+    transition: all .15s ease;
     overflow-y: hidden;
     max-height: 300px;
 
     &.-hidden {
-      transition: all .1s ease;
+      transition: all .15s ease;
       max-height: 0;
     }
 
     > .text {
       background-color: $white;
       text-align: center;
-      padding: $unit-md $unit-sm;
+      padding: $unit-xs $unit-sm;
       max-width: 100%;
-      font-size: 2em;
+      font-size: responsive 26px 50px;
+      font-range: 300px 2000px;
+      line-height: 1.5;
 
       &.-kanji {
         box-shadow: inset 2px 0 10px -2px rgba($black-light, .15);
