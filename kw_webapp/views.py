@@ -129,7 +129,7 @@ class ForceSRSCheck(View):
     def get(self, request, *args, **kwargs):
         user = request.user
         number_of_reviews = all_srs(user)
-        new_review_count = get_users_current_reviews().count()
+        new_review_count = get_users_current_reviews(user).count()
         logger.info("{} has requested an SRS update. {} reviews added. {} reviews total.".format(user.username,
                                                                                                  number_of_reviews or 0,
                                                                                                  new_review_count or 0))
