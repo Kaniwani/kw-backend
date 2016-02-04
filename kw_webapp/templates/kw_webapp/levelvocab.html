@@ -18,21 +18,26 @@
             data-pk="{{ review.id }}">
 
         <div class="vocab-base">
-          {% for reading in review.vocabulary.reading_set.all %}
-            <dl class="readingset">
-              <span class="ja">
-                <dt lang="ja" class="kana">{{ reading.kana }}</dt>
-                <dt lang="ja" class="kanji">{{ reading.character }}</dt>
-              </span>
-              <dd class="meaning">{{ reading.vocabulary.meaning }}</dd>
-            </dl>
-          {% endfor %}
+          <dl class="readingset">
+            <span class="ja">
+              {% for reading in review.vocabulary.reading_set.all %}
+                {% ifchanged %}<dt lang="ja" class="kana">{{ reading.kana }}</dt>{% endifchanged %}
+                {% ifchanged %}<dt lang="ja" class="kanji">{{ reading.character }}</dt>{% endifchanged %}
+              {% endfor %}
+            </span>
+            <dd class="meaning">{{ review.vocabulary.meaning }}</dd>
+          </dl>
 
           {% if review.hidden %}
             <span class="icon -lockstatus i-unlock"></span>
           {% else %}
             <span class="icon -lockstatus i-unlocked"></span>
           {% endif %}
+
+          {% if review.wanikani_burned %}
+            <span class="icon -srslevel i-burned" title="Burned on WaniKani!"></span>
+          {% endif %}
+
 
         {% comment 'not ready for production - need to decide on placement/sizing - maybe go in vocab extra' %}
           {% if review.streak > 8 %}

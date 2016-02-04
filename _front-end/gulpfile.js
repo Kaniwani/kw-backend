@@ -73,7 +73,7 @@ gulp.task('styles:toolkit', function () {
     .pipe(sassGlob())
 		.pipe(sass().on('error', sass.logError))
     .pipe(rucksack())
-		.pipe(prefix('last 1 version'))
+		.pipe(prefix('> 1%'))
 		.pipe(gulpif(config.prod, csso()))
 		.pipe(gulpif(!config.prod, sourcemaps.write()))
 		.pipe(gulp.dest(config.dest + '/assets/styles'))

@@ -1,18 +1,17 @@
 .nav-link {
+  @include tap-target(8px, 18px);
   display: flex;
   position: relative;
   justify-content: flex-end;
   align-items: center;
   color: $black-light;
 
-  &:hover {
-    color: $black-light;
-  }
-
-  @include tap-target(8px, 18px);
-
   @include media($bp-nav-1) {
     justify-content: center;
+  }
+
+  &:hover {
+    color: $black-light;
   }
 
   &.-disabled {
@@ -20,7 +19,7 @@
     &:hover > .text {
       color: $grey-light !important;
       &:after {
-        height: 0 !important;
+        opacity: 0 !important;
         width: 0 !important;
       }
     }
@@ -45,15 +44,17 @@
 
     // underline
     &:after {
+      display: block;
       position: absolute;
       content: '';
+      width: 0;
       bottom: 0;
-      left: 0;
-      width: 100%;
+      left: 50%;
+      opacity: 0;
       height: 3px;
       background: $purple;
-      transition: transform .3s ease-out;
-      transform: translate3d(0, 150%, 0);
+      transition: all .3s ease-out;
+      transform: translateX(-50%);
     }
   }
 }

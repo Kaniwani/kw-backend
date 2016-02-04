@@ -62,7 +62,7 @@
 
     .kanji {
       font-size: responsive 30px 48px;
-      text-shadow: 0 2px 2px rgba($purple-dark, .7);
+      text-shadow: 2px 2px 2px rgba($purple-dark, .7);
       line-height: 1.4;
       @include media($bp-lg) {
         line-height: 1.25;
@@ -75,13 +75,13 @@
     .kana {
       line-height: normal;
       font-size: responsive 16px 19px;
-      text-shadow: 0 1px 1px rgba($purple-dark, .7);
+      text-shadow: 1px 1px 1px rgba($purple-dark, .7);
     }
 
     .meaning {
       font-size: responsive 16px 21px;
       line-height: 1.3;
-      text-shadow: 0 1px 1px rgba($purple-dark, .7);
+      text-shadow: 1px 1px 1px rgba($purple-dark, .7);
       font-weight: 600;
     }
 
@@ -96,10 +96,11 @@
         cursor: pointer;
       }
       &.-srslevel {
-        left: 4px;
-        top: -4px;
-        font-size: 30px;
-        opacity: .85;
+        right: 6px;
+        top: 1px;
+        bottom: auto;
+        font-size: 24px;
+        color: $golden;
       }
     }
 

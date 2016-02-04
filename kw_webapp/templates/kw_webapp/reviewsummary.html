@@ -15,15 +15,15 @@
         {% for review in incorrect %}
           <li class="vocab-card">
             <div class="vocab-base">
-              {% for reading in review.vocabulary.reading_set.all %}
-                <a href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.id }}" class="readingset">
-                  <div class="ja">
-                    <span lang="ja" class="kana">{{ reading.kana }}</span>
-                    <span lang="ja" class="kanji">{{ reading.character }}</span>
-                  </div>
-                  <span class="meaning">{{ review.vocabulary.meaning }}</span>
-                </a>
-              {% endfor %}
+              <a href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.id }}" class="readingset">
+                <div class="ja">
+                  {% for reading in review.vocabulary.reading_set.all %}
+                    {% ifchanged %}<span lang="ja" class="kana">{{ reading.kana }}</span> {% endifchanged %}
+                    {% ifchanged %}<span lang="ja" class="kanji">{{ reading.character }}</span> {% endifchanged %}
+                  {% endfor %}
+                </div>
+                <div class="meaning">{{ review.vocabulary.meaning }}</div>
+              </a>
             </div>
           </li>
         {% endfor %}
@@ -39,11 +39,11 @@
 
       <ul class="lattice-list -correct">
         {% for review in correct %}
-          {% for reading in review.vocabulary.reading_set.all %}
-            <li class="item" data-en="Promise" data-ja="{{ reading.kana }}">
-              <a lang="ja" class="link" title="{{ review.vocabulary.meaning }}" href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.id }}">{{ reading.character }}</a>
-            </li>
-          {% endfor %}
+        {% with review.vocabulary.reading_set.first as reading %}
+          <li class="item">
+            <a lang="ja" class="link hint--bottom hint--rounded" data-hint="{{ reading.kana }} | {{ review.vocabulary.meaning }}" href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ reading.id }}">{{ reading.character }}</a>
+          </li>
+        {% endwith %}
         {% endfor %}
       </ul>
 
