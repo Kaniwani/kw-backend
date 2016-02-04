@@ -8,6 +8,9 @@
   > .vocab-base {
     position: relative;
     background-color: $purple;
+    background-image: linear-gradient(to bottom, $purple-light, $purple);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFAA00FF, endColorstr=#FF9300DD, GradientType=0);
     color: $white-light;
     border-radius: 3px;
     transition: background-color .5s ease-out;
@@ -75,7 +78,7 @@
     .kana {
       line-height: normal;
       font-size: responsive 16px 19px;
-      text-shadow: 1px 1px 1px rgba($purple-dark, .7);
+      text-shadow: 1px 1px 2px rgba($purple-dark, .95);
     }
 
     .meaning {
@@ -124,8 +127,6 @@
   }
 
   &.-unlockable > .vocab-base:hover {
-    background-color: mix($purple-dark, $white, 95);
-
     .i-unlock {
       animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
     }
