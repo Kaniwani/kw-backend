@@ -5,6 +5,14 @@
   {% if not user.profile.api_valid %}
     <p id="invalidApiKey" class="_visuallyhidden">Woah your API key is invalid!</br> Fix it at the <a href="{% url "kw:settings" %}">Settings page</a>.</p>
   {% endif %}
+    {% comment %}
+    TODO @Subversity Yo dude, here is how you access this information. It is available on any page!
+    {% endcomment %}
+  {{ srs_apprentice_count }}
+  {{ srs_guru_count}}
+  {{ srs_master_count }}
+  {{ srs_enlightened_count }}
+  {{ srs_burned_count }}
 
   <section class="user-section -fullwidth -no-section-spacing">
     {% include 'partials/user-overview.html' %}

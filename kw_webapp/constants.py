@@ -12,6 +12,14 @@ SRS_TIMES = {
 }
 
 # The level arrangement I believe to be exposed by WK API.
+
+KANIWANI_SRS_LEVELS = {
+    "apprentice": [0, 1, 2],
+    "guru": [3, 4, 5],
+    "master": [6, 7],
+    "enlightened": [8],
+    "burned": [9]
+}
 WANIKANI_SRS_LEVELS = {
     "apprentice": [0, 1, 2, 3, 4],
     "guru": [5, 6],
