@@ -1,8 +1,3 @@
-@mixin bg-gradient($clr) {
-  background-color: $clr;
-  background-image: linear-gradient(to bottom, #{lighten($clr, 4%)}, #{darken($clr, 4%)});
-}
-
 .srs-dashboard {
   text-align: center;
   font-size: 0;
@@ -15,6 +10,7 @@
       vertical-align: middle;
       width: 50%;
       padding: .4em;
+      box-shadow: $shadow-outer-light;
       &:last-child {
         width: 100%;
       }

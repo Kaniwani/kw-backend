@@ -18,6 +18,14 @@
   }
 }
 
+
+@mixin bg-gradient($clr) {
+  background-color: $clr;
+  background-image: linear-gradient(to bottom, #{lighten($clr, 4%)}, #{darken($clr, 4%)});
+  background-repeat: repeat-x;
+}
+
+
 // limits width and centers item
 @mixin container($width: 1260px) {
   max-width: $width;
