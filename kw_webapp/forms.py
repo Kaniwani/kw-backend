@@ -26,7 +26,7 @@ class UserLoginForm(AuthenticationForm):
         self.helper.form_action = ''
 
 
-class   UserCreateForm(UserCreationForm):
+class UserCreateForm(UserCreationForm):
     email = forms.EmailField(required=True)
     api_key = forms.CharField(required=True, max_length=100)
 

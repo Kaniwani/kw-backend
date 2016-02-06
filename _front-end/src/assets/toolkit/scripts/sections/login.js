@@ -1,11 +1,13 @@
 function init() {
-  $(".login-form .button.-submit").click(function(ev){
-    $(this).val('Signing in...');
-    // login animation
-    setTimeout(() => {
-      $(this).closest('.login-section').addClass('-pending');
-    }, 600);
-  });
+  if (/login/.test(window.location.pathname)) {
+    $(".login-form .button.-submit").click(function(ev){
+      $(this).val('Signing in...');
+      // login animation
+      setTimeout(() => {
+        $(this).closest('.login-section').addClass('-pending');
+      }, 600);
+    });
+  }
 }
 
 const api = {
@@ -13,3 +15,4 @@ const api = {
 };
 
 export default api;
+
