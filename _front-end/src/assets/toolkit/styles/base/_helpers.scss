@@ -13,7 +13,7 @@
 @mixin clearfix() {
   &:after {
     content: '';
-    display: table;
+    display: block; // yep block, we want margin collapsing!
     clear: both;
   }
 }

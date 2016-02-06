@@ -16,9 +16,10 @@ var sassGlob = require('gulp-sass-glob');
 var sourcemaps = require('gulp-sourcemaps');
 var webpack = require('webpack');
 var changed = require('gulp-changed');
+var postcss = require('gulp-postcss');
 var responsiveType = require('postcss-responsive-type');
-var autoprefixer = require('autoprefixer');
 var lost = require('lost');
+var autoprefixer = require('autoprefixer');
 var browserSync = require('browser-sync');
 var reload = browserSync.reload;
 
