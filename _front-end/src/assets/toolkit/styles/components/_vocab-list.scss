@@ -33,12 +33,12 @@
     }
   }
 
-  &.-correct {
+   &.-correct {
     .vocab-base {
-      background-color: $green;
+      background: $green;
       // horizontal separator between readings if more than 1
       .reading-set:not(:only-child):not(:last-of-type):after {
-        background-color: rgba(darken($green, 20), .4);
+        background: rgba(darken($green, 20), .4);
       }
       .kanji {
         text-shadow: 0 2px 2px rgba(darken($green, 20), .7);
@@ -52,9 +52,9 @@
 
   &.-incorrect {
     .vocab-base {
-      background-color: $red;
+      background: $red;
       .reading-set:not(:only-child):not(:last-of-type):after {
-        background-color: rgba(darken($red, 10), .4);
+        background: rgba(darken($red, 10), .4);
       }
       .kanji {
         text-shadow: 1px 1px 1px rgba(darken($red, 10), .8);
