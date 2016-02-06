@@ -2,26 +2,28 @@
 {% block title %}| Review{% endblock %}
 {% block content %}
 
-    <input type="hidden" id="csrf" value="{{ csrf_token }}">
+  <input type="hidden" id="csrf" value="{{ csrf_token }}">
 
-    <section class="review-section -fullwidth">
-      {% include 'partials/review-header.html' %}
-      {% include 'partials/review-quiz.html' %}
-    </section>
+  <section class="review-section -fullwidth">
+    {% include 'partials/review-header.html' %}
+    {% include 'partials/review-quiz.html' %}
+  </section>
 
 </div>
 <!-- / .site-content -->
-    <script>
-        window.KWsessionVocab = [
-            {% for item in object_list %}
-            {
-                'user_specific_id':'{{ item.id }}',
-                'streak': {{ item.streak }},
-                'meaning':'{{ item.vocabulary.meaning }}{% if item.synonyms_string %}, {{ item.synonyms_string }}{% endif %}',
-                'readings':  [{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.kana }}',{% endif %}{% endfor %}],
-                'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
-            },
-            {% endfor %}
-        ];
-    </script>
+{% endblock %}
+{% block bottomscripts %}
+  <script>
+    window.KW.sessionVocab = [
+      {% for item in object_list %}
+        {
+        'user_specific_id':'{{ item.id }}',
+        'streak': {{ item.streak }},
+        'meaning':'{{ item.vocabulary.meaning }}{% if item.synonyms_string %}, {{ item.synonyms_string }}{% endif %}',
+        'readings':  [{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.kana }}',{% endif %}{% endfor %}],
+        'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
+        },
+      {% endfor %}
+    ];
+  </script>
 {% endblock %}

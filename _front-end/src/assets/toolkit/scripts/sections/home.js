@@ -2,22 +2,23 @@ import refreshReviews from '../components/refreshReviews';
 import pluralize from '../util/pluralize';
 import strToBoolean from '../util/strToBoolean';
 
+// locally scoped to this module
 let recentlySynced,
 		user,
 		$refreshButton,
 		$reviewButton;
 
 function init() {
-	// let's update user on all pages
-	window.KWuser.settings = strToBoolean(window.KWuser.settings);
-	simpleStorage.set('user', window.KWuser);
+	// let's update & make KW user available to all pages
+	window.KW.settings = strToBoolean(window.KW.settings);
+	simpleStorage.set('KW', window.KW);
 
 	// are we on home page?
 	if (window.location.pathname === '/kw/') {
 		$refreshButton = $("#forceSrs");
 		$reviewButton = $("#reviewCount");
 		recentlySynced = simpleStorage.get('recentlySynced');
-		user = simpleStorage.get('user');
+		KW = simpleStorage.get('KW');
 
 		if (recentlySynced !== true) {
 			syncUser();

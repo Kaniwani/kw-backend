@@ -1,44 +1,40 @@
 import wanakana from '../vendor/wanakana.min';
-import strToBoolean from '../util/strToBoolean';
 import { revealToggle } from '../components/revealToggle';
 
- //Grab CSRF token off of dummy form.
+//Grab CSRF token off of dummy form.
 const CSRF = $('#csrf').val();
 
-// extract to user = { settings } then can add more user details as needed?
-let userSettings,
-  // extract to session = { currentVocab } then call session.currentVocab etc?
-  currentVocab,
-  remainingVocab,
-  startCount,
-  correctTotal = 0,
-  answeredTotal = 0,
-  answerCorrectness = [],
-  // extract to UI = { reviewsLeft: $('#reviewsLeft') } then call UI.reviewsLeft etc?
-  $reviewsLeft = $('#reviewsLeft'),
-  $meaning = $('#meaning'),
-  $streakIcon = $('.streak > .icon'),
-  $userID = $('#us-id'),
-  $reviewsDone = $('#reviewsDone'),
-  $reviewsCorrect = $('#reviewsCorrect'),
-  $reveal = $('.reveal'),
-  $answerForm = $('.answerForm'),
-  $userAnswer = $('#userAnswer'),
-  $detailKana = $('#detailKana'),
-  $submitAnswer = $('#submitAnswer'),
-  $detailKanji = $('#detailKanji'),
-  $progressBar = $('.progress-bar > .value');
+let KW,
+    currentVocab,
+    remainingVocab,
+    startCount,
+    correctTotal = 0,
+    answeredTotal = 0,
+    answerCorrectness = [],
+    $reviewsLeft = $('#reviewsLeft'),
+    $meaning = $('#meaning'),
+    $streakIcon = $('.streak > .icon'),
+    $userID = $('#us-id'),
+    $reviewsDone = $('#reviewsDone'),
+    $reviewsCorrect = $('#reviewsCorrect'),
+    $reveal = $('.reveal'),
+    $answerForm = $('.answerForm'),
+    $userAnswer = $('#userAnswer'),
+    $detailKana = $('#detailKana'),
+    $submitAnswer = $('#submitAnswer'),
+    $detailKanji = $('#detailKanji'),
+    $progressBar = $('.progress-bar > .value');
 
 function init() {
   // if not on reviews page do nothing
   if (!/review/.test(window.location.pathname)) return;
 
   // set initial values
-  userSettings = strToBoolean(window.KWuserSettings);
-  remainingVocab = window.KWsessionVocab;
+  KW = simpleStorage.get('KW');
+  remainingVocab = window.KW.sessionVocab;
   startCount = remainingVocab.length;
 
-  console.log('\nLength:', startCount, '\nSettings:', userSettings);
+  console.log('\nLength:', startCount, '\nSettings:', KW.settings);
 
   $reviewsLeft.text(startCount)
   currentVocab = remainingVocab.shift();
@@ -73,7 +69,7 @@ function updateStreak() {
                                         : 'i-apprentice');
 
   $streakIcon.attr('class', iconClass);
-  console.log($streakIcon.closest('.streak').get(0));
+  // console.log($streakIcon.closest('.streak').get(0));
   $streakIcon.closest('.streak').attr('data-hint', iconClass.slice(7));
 }
 
@@ -162,8 +158,8 @@ function compareAnswer() {
     correct = false;
   }
 
-  if (!correct && userSettings.showCorrectOnFail) revealAnswers();
-  if (correct && userSettings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 800);
+  if (!correct && KW.settings.showCorrectOnFail) revealAnswers();
+  if (correct && KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 800);
 
   recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
   enableButtons();
