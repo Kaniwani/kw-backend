@@ -20,9 +20,9 @@ def review_count_preprocessor(request):
 
 
 def srs_count_preprocessor(request):
+    context_dict = {}
     if hasattr(request, 'user'):
         if hasattr(request.user, 'profile'):
-            context_dict = {}
             all_reviews = get_users_reviews(request.user)
             if all_reviews:
                 context_dict['srs_apprentice_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['apprentice']).count()
@@ -30,4 +30,4 @@ def srs_count_preprocessor(request):
                 context_dict['srs_master_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['master']).count()
                 context_dict['srs_enlightened_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['enlightened']).count()
                 context_dict['srs_burned_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['burned']).count()
-            return context_dict
+    return context_dict
