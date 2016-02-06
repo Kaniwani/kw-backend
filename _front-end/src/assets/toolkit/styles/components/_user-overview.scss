@@ -40,7 +40,7 @@
     width: 162px;
 
     &:before {
-      box-shadow: inset 3px 3px 8px 0 rgba(0, 0, 0, .26);
+      box-shadow: $shadow-outer-light;
       border-radius: 100%;
       content: '';
       display: block;
