@@ -35,8 +35,8 @@
       &.-enlightened { @include bg-gradient($blue-light); }
       &.-burned { @include bg-gradient($black-light); }
 
-      .title,
-      .count {
+      .count,
+      .title {
         display: inline-block;
         vertical-align: middle;
         font-weight: 600;
