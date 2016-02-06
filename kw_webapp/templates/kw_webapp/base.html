@@ -50,9 +50,19 @@
     </h5>
   </div>
 
-  {% block bottomscripts %}
-    <script src="{% static "scripts/global.js" %}"></script>
-  {% endblock bottomscripts %}
+  <script>
+    window.KW = {
+      username: '{{ user.profile.user }}',
+      settings: {
+        showCorrectOnFail: '{{ user.profile.auto_expand_answer_on_failure }}',
+        autoAdvanceCorrect: '{{ user.profile.auto_advance_on_success }}',
+        followWanikani: '{{ user.follow_me }}',
+        burnedOnly: '{{ user.only_review_burned }}'
+      },
+    };
+  </script>
+  {% block bottomscripts %}{% endblock bottomscripts %}
+  <script src="{% static "scripts/global.js" %}"></script>
 
 </body>
 </html>
