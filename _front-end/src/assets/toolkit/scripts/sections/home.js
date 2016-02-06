@@ -1,16 +1,23 @@
 import refreshReviews from '../components/refreshReviews';
 import pluralize from '../util/pluralize';
+import strToBoolean from '../util/strToBoolean';
 
 let recentlySynced,
+		user,
 		$refreshButton,
 		$reviewButton;
 
 function init() {
+	// let's update user on all pages
+	window.KWuser.settings = strToBoolean(window.KWuser.settings);
+	simpleStorage.set('user', window.KWuser);
+
 	// are we on home page?
 	if (window.location.pathname === '/kw/') {
 		$refreshButton = $("#forceSrs");
 		$reviewButton = $("#reviewCount");
 		recentlySynced = simpleStorage.get('recentlySynced');
+		user = simpleStorage.get('user');
 
 		if (recentlySynced !== true) {
 			syncUser();
@@ -25,25 +32,21 @@ function init() {
 		});
 
 		$(document).keypress(handleKeyPress);
-
-		// TODO: we should also load settings if we want to prevent syncing for unfollow users
-		// settings should still be loaded in reviews in case user goes there directly after changing settings though
-		// unless we decided to blanket update user, settings etc on every important page via logged_in template
-		// that might be a better avenue to be honest
-		let user = simpleStorage.get('user');
-		if (user == null) simpleStorage.set('user', window.KWuserName);
 	}
 }
 
 function syncUser() {
 	animateSync();
 
+	let extraThrottle = user.settings.followWanikani;
+
 	$.getJSON('/kw/sync/', {full_sync: false})
 		.done(res => {
 			const message = `Account synced with Wanikani!`,
 					  newMaterial = `</br>You have unlocked ${pluralize('new vocab item', res.new_review_count)} & ${pluralize('new synonym', res.new_synonym_count)}.`;
 
- 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: 1800000}) // expire after 30mins
+ 			// expire after 30mins if following WK - otherwise 12 hours
+ 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: (extraThrottle ? 43200000 : 1800000)})
  			notie.alert(1, (newMaterial ? message + newMaterial : message), 5);
  			refreshReviews();
 		})

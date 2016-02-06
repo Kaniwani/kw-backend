@@ -55,3 +55,17 @@
 <div class="site-content">
 
 {% endblock %}
+
+{% block bottomscripts %}
+  <script>
+    window.KWuser = {
+      name: '{{ user.profile.user }}',
+      settings: {
+        showCorrectOnFail: '{{ user.profile.auto_expand_answer_on_failure }}',
+        autoAdvanceCorrect: '{{ user.profile.auto_advance_on_success }}',
+        followWanikani: '{{ user.follow_me }}',
+        burnedOnly: '{{ user.only_review_burned }}'
+      },
+    };
+  </script>
+{% endblock %}
