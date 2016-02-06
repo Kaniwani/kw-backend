@@ -26,7 +26,7 @@ $bp-user-details: '>=480px';
     padding: $unit-md $unit-sm;
     @include media($bp-user-details) {
       lost-column: 1/2 0 0;
-      padding: $unit-md $unit-sm $unit-lg;
+      padding: $unit-md 22px $unit-lg ;
     }
   }
 
@@ -56,7 +56,7 @@ $bp-user-details: '>=480px';
       text-shadow: $shadow-text-thin;
 
       @include media($bp-lg) {
-        max-width: 600px;
+        max-width: 400px;
       }
     }
 
