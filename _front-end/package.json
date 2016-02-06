@@ -44,7 +44,6 @@
     "gulp-if": "^2.0.0",
     "gulp-imagemin": "^2.3.0",
     "gulp-rename": "^1.2.2",
-    "gulp-rucksack": "^0.1.2",
     "gulp-sass": "^2.0.4",
     "gulp-sass-glob": "0.0.2",
     "gulp-sourcemaps": "^1.5.2",
@@ -52,14 +51,14 @@
     "gulp-util": "^3.0.6",
     "imports-loader": "^0.6.4",
     "lost": "^6.7.1",
+    "postcss-responsive-type": "^0.3.2",
     "run-sequence": "^1.1.2",
     "script-loader": "^0.6.1",
-    "simplestorage.js": "^0.2.1",
     "webpack": "^1.12.1"
   },
   "dependencies": {
     "jquery": "^2.2.0",
     "notie": "^2.1.0",
-    "simplestorage.js": "^0.2.0"
+    "simplestorage.js": "^0.2.1"
   }
 }
