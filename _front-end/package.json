@@ -31,6 +31,7 @@
     "npm": ">=2.0.0"
   },
   "devDependencies": {
+    "autoprefixer": "^6.3.1",
     "babel-core": "^5.8.23",
     "babel-loader": "^5.3.2",
     "babel-polyfill": "^6.3.14",
@@ -43,6 +44,7 @@
     "gulp-csso": "^1.0.0",
     "gulp-if": "^2.0.0",
     "gulp-imagemin": "^2.3.0",
+    "gulp-postcss": "^6.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sass": "^2.0.4",
     "gulp-sass-glob": "0.0.2",

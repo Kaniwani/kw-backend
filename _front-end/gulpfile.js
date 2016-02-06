@@ -2,7 +2,6 @@
 
 // modules
 var assemble = require('fabricator-assemble');
-var browserSync = require('browser-sync');
 var csso = require('gulp-csso');
 var del = require('del');
 var gulp = require('gulp');
@@ -10,16 +9,18 @@ var gutil = require('gulp-util');
 var gulpif = require('gulp-if');
 var stripDebug = require('gulp-strip-debug');
 var imagemin = require('gulp-imagemin');
-var prefix = require('gulp-autoprefixer');
 var rename = require('gulp-rename');
-var reload = browserSync.reload;
 var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 var sassGlob = require('gulp-sass-glob');
 var sourcemaps = require('gulp-sourcemaps');
 var webpack = require('webpack');
 var changed = require('gulp-changed');
-var rucksack = require('gulp-rucksack');
+var responsiveType = require('postcss-responsive-type');
+var autoprefixer = require('autoprefixer');
+var lost = require('lost');
+var browserSync = require('browser-sync');
+var reload = browserSync.reload;
 
 
 // configuration
@@ -59,7 +60,7 @@ gulp.task('styles:fabricator', function () {
 	gulp.src(config.src.styles.fabricator)
 		.pipe(sourcemaps.init())
 		.pipe(sass().on('error', sass.logError))
-		.pipe(prefix('> 1%'))
+  	.pipe(postcss([autoprefixer('> 1%')]))
 		.pipe(gulpif(config.prod, csso()))
 		.pipe(rename('f.css'))
 		.pipe(sourcemaps.write())
@@ -72,8 +73,11 @@ gulp.task('styles:toolkit', function () {
 		.pipe(gulpif(!config.prod, sourcemaps.init()))
     .pipe(sassGlob())
 		.pipe(sass().on('error', sass.logError))
-    .pipe(rucksack())
-		.pipe(prefix('> 1%'))
+ 		.pipe(postcss([
+      lost(),
+      responsiveType(),
+      autoprefixer()
+    ]))
 		.pipe(gulpif(config.prod, csso()))
 		.pipe(gulpif(!config.prod, sourcemaps.write()))
 		.pipe(gulp.dest(config.dest + '/assets/styles'))
