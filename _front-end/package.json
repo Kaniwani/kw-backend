@@ -51,8 +51,10 @@
     "gulp-strip-debug": "^1.1.0",
     "gulp-util": "^3.0.6",
     "imports-loader": "^0.6.4",
+    "lost": "^6.7.1",
     "run-sequence": "^1.1.2",
     "script-loader": "^0.6.1",
+    "simplestorage.js": "^0.2.1",
     "webpack": "^1.12.1"
   },
   "dependencies": {
