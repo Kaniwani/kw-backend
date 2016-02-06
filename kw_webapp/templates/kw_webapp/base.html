@@ -52,7 +52,13 @@
 
   <script>
     window.KW = {
-      username: '{{ user.profile.user }}',
+      user: {
+        name: '{{ user.profile.user }}',
+        level: '{{ user.profile.level }}',
+        unlockedLevels: '{{ user.profile.unlocked_levels_list }}',
+      },
+      nextReview: '{{ next_review_date }}',
+      reviewCount: '{{ review_count }}',
       settings: {
         showCorrectOnFail: '{{ user.profile.auto_expand_answer_on_failure }}',
         autoAdvanceCorrect: '{{ user.profile.auto_advance_on_success }}',

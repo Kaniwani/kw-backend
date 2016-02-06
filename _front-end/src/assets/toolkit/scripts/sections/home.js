@@ -11,7 +11,10 @@ let recentlySynced,
 function init() {
 	// let's update & make KW user available to all pages
 	window.KW.settings = strToBoolean(window.KW.settings);
+	window.KW.nextReview = window.KW.nextReview;
 	simpleStorage.set('KW', window.KW);
+	console.log(simpleStorage.get('KW'));
+
 
 	// are we on home page?
 	if (window.location.pathname === '/kw/') {
