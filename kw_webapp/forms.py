@@ -34,8 +34,9 @@ class PasswordResetFormCustom(PasswordResetForm):
             widget=EmailInput(attrs={
                                  "type": "email",
                                  "id": "id_email",
+                                 "autofocus": "true",
                                  "placeholder": "Email Address",
-                                 "required": ''
+                                 "required": 'true'
             }))
 
 
