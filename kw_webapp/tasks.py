@@ -305,6 +305,13 @@ def associate_synonyms_to_vocab(user, vocab, user_specific):
     return review, new_synonym_count
 
 
+def get_users_reviews(user):
+    if user.profile.only_review_burned:
+        return UserSpecific.objects.filter(user=user, wanikani_burned=True, hidden=False)
+    else:
+        return UserSpecific.objects.filter(user=user, hidden=False)
+
+
 def get_users_current_reviews(user):
     if user.profile.only_review_burned:
         return UserSpecific.objects.filter(user=user,
