@@ -7,8 +7,8 @@ Object.assign($.timeago.settings, {
 	allowPast: false,
 });
 Object.assign($.timeago.settings.strings, {
-  prefixFromNow: '',
-  suffixFromNow: "from now",
+  prefixFromNow: '~',
+  suffixFromNow: "",
 	minute: 'a minute',
 	hour: 'an hour',
 	hours: '%d hours',
@@ -26,8 +26,9 @@ function init() {
 	// let's update storage KW with any template provided changes
 	KW = Object.assign(simpleStorage.get('KW') || {}, window.KW);
 	KW.settings = strToBoolean(KW.settings);
-	KW.nextReview = new Date(Math.floor(+KW.nextReview));
-	KW.nextReviewUTC = new Date(Math.floor(+KW.nextReviewUTC));
+	KW.nextReview = new Date(Math.ceil(+KW.nextReview));
+	KW.nextReviewUTC = new Date(Math.ceil(+KW.nextReviewUTC));
+	console.log('parsed toString() from epoch time:\n LOCAL:', KW.nextReview.toString(),'\n UTC', KW.nextReviewUTC.toString());
 	simpleStorage.set('KW', KW);
 
 	// are we on home page?
@@ -36,8 +37,7 @@ function init() {
 		$reviewButton = $("#reviewCount");
 		recentlySynced = simpleStorage.get('recentlySynced');
 		updateReviewTime();
-		KW.reviewTimer = setInterval(updateReviewTime, 15000); // every 15secs
-		setInterval(logTimes, 15000); // every 15secs
+		KW.reviewTimer = setInterval(updateReviewTime, 5000); // every 5 seconds
 
 		if (recentlySynced !== true) {
 			syncUser();
@@ -53,25 +53,17 @@ function init() {
 	}
 }
 
-function logTimes() {
-		let now = Date.now(),
-			next = Date.parse(KW.nextReview),
-			nextUTC = Date.parse(KW.nextReviewUTC);
-
-	console.log(`Next review: ${$.timeago(KW.nextReview)}`)
-	console.log(`UTC: Next review: ${$.timeago(KW.nextReviewUTC)}`)
-}
-
 function updateReviewTime() {
 	let now = Date.now(),
-			next = Date.parse(KW.nextReview);
-
-	if (now >= next) {
+			next = Date.parse(KW.nextReview)
+	if (now > next) {
 		refreshReviews();
 		clearInterval(KW.reviewTimer);
-		console.log('Timer cleared.');
+		console.log('Reviews supposedly ready; timer cleared');
 	} else {
-		$reviewButton.text(`Next review: ${$.timeago(KW.nextReview)}`);
+		console.log('Next (local) review supposedly in:', $.timeago(KW.nextReview));
+		console.log('Next (utc) review supposedly in:', $.timeago(KW.nextReviewUTC));
+		// $reviewButton.text(`Next review: ${$.timeago(KW.nextReview)}`);
 	}
 }
 

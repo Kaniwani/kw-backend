@@ -27,8 +27,11 @@ let refreshReviews = function({forceGet} = {forceGet: false}) {
   recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
 
   console.log(`
+    --- Refresh reviews attempted to be called ---
     recentlyRefreshed: ${recentlyRefreshed},
-    forceGet: ${forceGet}`
+    forceGet: ${forceGet}
+    Are we hitting server? ${!recentlyRefreshed || forceGet ? 'yes' : 'no'}
+    `
   );
 
   if (!recentlyRefreshed || forceGet) ajaxReviewCount();
