@@ -292,6 +292,33 @@ class ToggleVocabLockStatus(View):
         return super(ToggleVocabLockStatus, self).dispatch(*args, **kwargs)
 
 
+class AddSynonym(View):
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseForbidden()
+
+    def post(self, request, *args, **kwargs):
+        review_id = request.POST["user_specific_id"]
+        review = get_object_or_404(UserSpecific, pk=review_id)
+
+        if not review.can_be_managed_by(self.request.user):
+            return HttpResponseForbidden("You can't modify that object!")
+
+        review.answer_was_correct()
+        synonym_kana = request.POST["kana"]
+        synonym_kanji = request.POST["character"]
+        successfully_added = review.add_answer_synonym(synonym_kana, synonym_kanji)
+
+        return HttpResponse("Synonym added! {}".format(successfully_added or ""))
+
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(FlipToCorrectAndAddSynonym, self).dispatch(request, *args, **kwargs)
+
+
+
+
 class RecordAnswer(View):
     """
     Called via Ajax in reviews.js. Takes a UserSpecific object, and either True or False. Updates the DB in realtime
@@ -304,10 +331,10 @@ class RecordAnswer(View):
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
     def post(self, request, *args, **kwargs):
-        us_id = request.POST["user_specific_id"]
+        review_id = request.POST["user_specific_id"]
         user_correct = True if request.POST['user_correct'] == 'true' else False
         previously_wrong = True if request.POST['wrong_before'] == 'true' else False
-        review = get_object_or_404(UserSpecific, pk=us_id)
+        review = get_object_or_404(UserSpecific, pk=review_id)
 
         if not review.can_be_managed_by(self.request.user):
             return HttpResponseForbidden("You can't modify that object!")
@@ -381,20 +408,20 @@ class ReviewSummary(TemplateView):
         all_reviews = request.POST
         correct = []
         incorrect = []
-        for us_id in all_reviews:
+        for review_id in all_reviews:
             try:
-                if int(all_reviews[us_id]) > 0:
-                    related_review = UserSpecific.objects.get(pk=us_id)
+                if int(all_reviews[review_id]) > 0:
+                    related_review = UserSpecific.objects.get(pk=review_id)
                     correct.append(related_review)
-                elif int(all_reviews[us_id]) < 0:
-                    related_review = UserSpecific.objects.get(pk=us_id)
+                elif int(all_reviews[review_id]) < 0:
+                    related_review = UserSpecific.objects.get(pk=review_id)
                     incorrect.append(related_review)
                 else:
-                    # in case somehow the us_id value is zero. should be impossible.
-                    logging.error("Un-parseable: {}".format(us_id))
+                    # in case somehow the review_id value is zero. should be impossible.
+                    logging.error("Un-parseable: {}".format(review_id))
             except ValueError as e:
                 # this is here to catch the CSRF token essentially.
-                logging.debug("Un-parseable: {}".format(us_id))
+                logging.debug("Un-parseable: {}".format(review_id))
         # wow what a shit-ass hack. TODO figure out the proper way to render templates off a post.
         return render_to_response(self.template_name, {"correct": correct,
                                                        "incorrect": incorrect,

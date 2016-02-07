@@ -47,8 +47,8 @@ class TestViews(TestCase):
         self.assertRedirects(response, expected_url="/kw/")
 
     def test_review_page_populates_synonyms_next_to_meaning(self):
-        self.review.synonym_set.create(text="minou")
-        self.review.synonym_set.create(text="chatte!")
+        self.review.meaningsynonym_set.create(text="minou")
+        self.review.meaningsynonym_set.create(text="chatte!")
 
         request = self.factory.get('/kw/review/')
         request.user = self.user
@@ -225,4 +225,14 @@ class TestViews(TestCase):
         response = self.client.get("/kw/")
 
         self.assertEqual(response.context['next_review_date'], current_time)
+
+
+    def test_adding_synonym_adds_synonym(self):
+
+        request = self.factory.post("/kw/synonym/add", data={"user_specific_id":})
+        request.user = self.user
+
+
+        view = kw_webapp.views.AddSynonym.as_view()
+
 

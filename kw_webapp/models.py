@@ -117,13 +117,26 @@ class UserSpecific(models.Model):
         return self.user == user or user.is_superuser
 
     def synonyms_list(self):
-        return [synonym.text for synonym in self.synonym_set.all()]
+        return [synonym.text for synonym in self.meaningsynonym_set.all()]
 
     def synonyms_string(self):
-        return ", ".join([synonym.text for synonym in self.synonym_set.all()])
+        return ", ".join([synonym.text for synonym in self.meaningsynonym_set.all()])
 
     def remove_synonym(self, text):
-        self.synonym_set.remove(Synonym.objects.get(text=text))
+        self.meaningsynonym_set.remove(MeaningSynonym.objects.get(text=text))
+
+    def answer_synonyms(self):
+        return [synonym.kana for synonym in self.answersynonym_set.all()]
+
+    def answer_was_correct(self):
+        self.streak += 1
+        self.correct += 1
+        self.incorrect -=1
+        self.save()
+
+    def add_answer_synonym(self, kana, character):
+        synonym, created = self.answersynonym_set.get_or_create(kana=kana, character=character)
+        return created
 
     def __str__(self):
         return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
@@ -136,7 +149,12 @@ class UserSpecific(models.Model):
                                                                      self.unlock_date)
 
 
-class Synonym(models.Model):
+class AnswerSynonym(models.Model):
+    character = models.CharField(max_length=255, null=True)
+    kana = models.CharField(max_length=255, null=False)
+    review = models.ForeignKey(UserSpecific, null=True)
+
+class MeaningSynonym(models.Model):
     text = models.CharField(max_length=255, blank=False, null=False)
     review = models.ForeignKey(UserSpecific, null=True)
 
