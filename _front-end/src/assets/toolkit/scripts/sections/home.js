@@ -28,7 +28,7 @@ function init() {
 	KW.settings = strToBoolean(KW.settings);
 	KW.nextReview = new Date(Math.ceil(+KW.nextReview));
 	KW.nextReviewUTC = new Date(Math.ceil(+KW.nextReviewUTC));
-	console.log('parsed toString() from epoch time:\n LOCAL:', KW.nextReview.toString(),'\n UTC', KW.nextReviewUTC.toString());
+	console.log('parsed toString() from epoch time:\n LOCAL:', KW.nextReview.toString(),'\n UTC:', KW.nextReviewUTC.toString());
 	simpleStorage.set('KW', KW);
 
 	// are we on home page?
