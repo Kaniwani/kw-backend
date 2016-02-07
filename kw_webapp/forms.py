@@ -39,6 +39,10 @@ class PasswordResetFormCustom(PasswordResetForm):
                                  "required": 'true'
             }))
 
+    def save(self, *args, **kwargs):
+        domain = "kaniwani.com"
+        super(PasswordResetFormCustom, self).save(domain_override=domain)
+
 
 class UserCreateForm(UserCreationForm):
     email = forms.EmailField(required=True)
