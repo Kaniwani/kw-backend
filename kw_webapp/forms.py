@@ -1,7 +1,7 @@
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm
+from django.forms import ModelForm, EmailInput
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -24,6 +24,20 @@ class UserLoginForm(AuthenticationForm):
         self.helper.form_class = 'login-form'
         self.helper.form_method = 'post'
         self.helper.form_action = ''
+
+
+class PasswordResetFormCustom(PasswordResetForm):
+    email = forms.EmailField(
+            label=_("Email"),
+            max_length=254,
+            required=True,
+            widget=EmailInput(attrs={
+                                 "type": "email",
+                                 "id": "id_email",
+                                 "autofocus": "true",
+                                 "placeholder": "Email Address",
+                                 "required": 'true'
+            }))
 
 
 class UserCreateForm(UserCreationForm):

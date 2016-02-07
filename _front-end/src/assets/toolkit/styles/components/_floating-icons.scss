@@ -15,7 +15,7 @@
     backface-visibility: hidden;
     transform: translateX(0) translateY(0) translateZ(0) rotate(0deg);
 
-    @for $i from 1 through 8 {
+    @for $i from 1 through 6 {
       $M: random(5) + .25; // multiplier
       &:nth-child(#{$i}) {
          @include turtle-animation(
@@ -31,7 +31,7 @@
     }
 
     // a few bigger turtles
-    @for $i from 8 through 12 {
+    @for $i from 6 through 9 {
       $M: #{random(2) + 1.5}; // multiplier
       &:nth-child(#{$i}) {
          @include turtle-animation(

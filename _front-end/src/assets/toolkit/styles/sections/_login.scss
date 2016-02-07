@@ -8,7 +8,6 @@
   background: $blue-light;
   background: linear-gradient(to bottom, $blue-light 40%, $blue-dark 95%);
 
-
   &.-pending {
     > .container > .login-form,
     > .link {
@@ -58,7 +57,7 @@
     > .title {
       position: relative;
       margin-top: 0;
-      line-height: 1.2;
+      line-height: 1;
       opacity: .9;
       z-index: 2;
       color: $white;
@@ -67,6 +66,11 @@
       @include media($bp-lg) {
         font-size: 60px;
       }
+    }
+
+    > p {
+      max-width: 400px;
+      margin: 0 auto $unit-sm;
     }
 
     > .login-form {
@@ -95,8 +99,25 @@
       font-size: 16px;
       transition: opacity .2s ease-out;
       text-align: right;
+      &.-forgot {
+        top: $unit-lg;
+      }
     }
 
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .button.-signin {
+    display: block;
+    background-color: $white;
+    width: 200px;
+    margin: 10px auto;
+    color: $blue;
+    opacity: .85;
+
+    &:focus,
     &:hover {
       opacity: 1;
     }

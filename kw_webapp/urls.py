@@ -4,15 +4,8 @@ from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard, R
     Settings, LevelVocab, ToggleVocabLockStatus, LockRequested, UnlockAll, Error404, SyncRequested
 from kw_webapp.forms import UserLoginForm
 
-
 urlpatterns = patterns('',
                        url(r'^$', Dashboard.as_view(), name="home"),
-                       url(r'^login/$', 'django.contrib.auth.views.login',
-                           {'template_name': 'registration/login.html',
-                            'authentication_form': UserLoginForm},
-                           name="login"),
-                       url(r'^register/$', Register.as_view(), name="register"),
-                       url(r'^logout/$', Logout.as_view(), name="logout"),
                        url(r'^review/$', Review.as_view(), name="review"),
                        url(r'^summary/$', ReviewSummary.as_view(), name="summary"),
                        url(r'^record_answer/$', RecordAnswer.as_view(), name="record_answer"),
