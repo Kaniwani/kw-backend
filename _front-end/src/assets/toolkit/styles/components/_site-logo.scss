@@ -1,6 +1,7 @@
 .site-logo {
   display: inline-block;
   font-family: $ff-heading;
+  transition: all .3s ease-out;
 
   &:hover {
     color: $black-light;
