@@ -28,8 +28,7 @@ let refreshReviews = function({forceGet} = {forceGet: false}) {
 
   console.log(`
     --- Refresh reviews attempted to be called ---
-    recentlyRefreshed: ${recentlyRefreshed},
-    forceGet: ${forceGet}
+    recentlyRefreshed: ${recentlyRefreshed}, forceGet: ${forceGet}
     Are we hitting server? ${!recentlyRefreshed || forceGet ? 'yes' : 'no'}
     `
   );

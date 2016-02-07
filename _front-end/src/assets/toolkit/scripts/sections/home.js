@@ -28,7 +28,6 @@ function init() {
 	KW.settings = strToBoolean(KW.settings);
 	KW.nextReview = new Date(Math.ceil(+KW.nextReview));
 	KW.nextReviewUTC = new Date(Math.ceil(+KW.nextReviewUTC));
-	console.log('parsed toString() from epoch time:\n LOCAL:', KW.nextReview.toString(),'\n UTC:', KW.nextReviewUTC.toString());
 	simpleStorage.set('KW', KW);
 
 	// are we on home page?
@@ -36,8 +35,10 @@ function init() {
 		$refreshButton = $("#forceSrs");
 		$reviewButton = $("#reviewCount");
 		recentlySynced = simpleStorage.get('recentlySynced');
+		KW.reviewTimer = setInterval(updateReviewTime, 20000); // every 20 seconds
 		updateReviewTime();
-		KW.reviewTimer = setInterval(updateReviewTime, 5000); // every 5 seconds
+
+		console.log('Next reviews parsed toString() from epoch time:\n LOCAL:', KW.nextReview.toString(),'\n UTC:', KW.nextReviewUTC.toString());
 
 		if (recentlySynced !== true) {
 			syncUser();
@@ -57,12 +58,12 @@ function updateReviewTime() {
 	let now = Date.now(),
 			next = Date.parse(KW.nextReview)
 	if (now > next) {
+		console.log('Local review supposedly ready; timer would be cleared now & reviews refreshed');
 		refreshReviews();
-		clearInterval(KW.reviewTimer);
-		console.log('Reviews supposedly ready; timer cleared');
+		// clearInterval(KW.reviewTimer);
 	} else {
-		console.log('Next (local) review supposedly in:', $.timeago(KW.nextReview));
-		console.log('Next (utc) review supposedly in:', $.timeago(KW.nextReviewUTC));
+		console.log('Next (local) in:', $.timeago(KW.nextReview));
+		console.log('Next (utc) in:', $.timeago(KW.nextReviewUTC));
 		// $reviewButton.text(`Next review: ${$.timeago(KW.nextReview)}`);
 	}
 }
