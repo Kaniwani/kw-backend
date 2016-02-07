@@ -76,7 +76,7 @@
       &.-marked {
         color: $white;
 
-        + .submit .icon {
+        ~ .submit.-answer .icon {
           color: $white;
           text-shadow: $shadow-text-thin;
         }
@@ -115,7 +115,7 @@
       flex-direction: column;
       justify-content: center;
       align-content: center;
-      margin: 0 .75em;
+      margin: 0 .5em;
 
       .icon {
         font-size: responsive 18px 36px;
@@ -147,6 +147,24 @@
       border: 0;
       border-radius: 0;
       box-shadow: none;
+      &.-answer {
+        .icon:before {
+          display: inline-block;
+          vertical-align: middle;
+        }
+      }
+      &.-ignore {
+        right: 3em;
+        opacity: .5;
+        transition: opacity .3s ease-out;
+        .icon {
+          color: white;
+        }
+        &:hover,
+        &:focus {
+          opacity: 1;
+        }
+      }
       &:focus {
         .submitwrap {
           outline: 1px dashed $grey-light;
