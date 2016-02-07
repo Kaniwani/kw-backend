@@ -4,7 +4,7 @@ from django.contrib import admin
 from rest_framework import routers
 
 import kw_webapp
-from kw_webapp.forms import UserLoginForm
+from kw_webapp.forms import UserLoginForm, PasswordResetFormCustom
 from kw_webapp.views import Logout
 from kw_webapp.views import Register
 
@@ -27,7 +27,9 @@ urlpatterns = patterns('',
                        url(r'^auth/logout/$', Logout.as_view(), name="logout"),
                        url(r'^auth/password_reset/$', 'django.contrib.auth.views.password_reset',
                            name="password_reset",
-                           kwargs={"template_name": "registration/password_reset_form.html"}),
+                           kwargs={"template_name": "registration/password_reset_form.html",
+                                   "password_reset_form": PasswordResetFormCustom}),
+
 
                        url(r'^auth/password_reset/sent/$', 'django.contrib.auth.views.password_reset_done',
                            name="password_reset_done",
