@@ -228,7 +228,6 @@ EMAIL_PORT = 25
 MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
 DEFAULT_FROM_EMAIL = "garygrantgraham@yahoo.com"
 
-
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
