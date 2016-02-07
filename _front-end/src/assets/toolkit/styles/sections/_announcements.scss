@@ -7,7 +7,7 @@
     text-align: center;
 
     .accordion-container .content {
-      // p is constrained to 800px - keep centered/line length nice
+      // p is constrained to 700px - keep centered/line length nicer
       @include container(700px);
     }
   }

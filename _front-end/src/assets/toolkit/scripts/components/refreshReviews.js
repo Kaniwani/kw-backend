@@ -2,9 +2,7 @@ import pluralize from '../util/pluralize.js';
 
 let $navCount,
     $buttonCount,
-    storageCount,
-    recentlyRefreshed,
-    sessionFinished;
+    recentlyRefreshed;
 
 function ajaxReviewCount() {
   $.get("/kw/force_srs/")
@@ -18,7 +16,7 @@ function ajaxReviewCount() {
       }
 
       console.log('Review count updated from server:', res)
-      simpleStorage.set('recentlyRefreshed', true, {TTL: 45000}); // 45 seconds
+      simpleStorage.set('recentlyRefreshed', true, {TTL: 30000}); // 30 seconds
   });
 
 }
@@ -29,8 +27,10 @@ let refreshReviews = function({forceGet} = {forceGet: false}) {
   recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
 
   console.log(`
-    recentlyRefreshed: ${recentlyRefreshed},
-    forceGet: ${forceGet}`
+    --- Refresh reviews attempted to be called ---
+    recentlyRefreshed: ${recentlyRefreshed}, forceGet: ${forceGet}
+    Are we hitting server? ${!recentlyRefreshed || forceGet ? 'yes' : 'no'}
+    `
   );
 
   if (!recentlyRefreshed || forceGet) ajaxReviewCount();

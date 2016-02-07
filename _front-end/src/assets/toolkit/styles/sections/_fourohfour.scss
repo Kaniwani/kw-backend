@@ -10,6 +10,12 @@
     float: right;
     text-align: right;
 
+    // line break after 'and remember,'
+    h4 {
+      max-width: 24em;
+      margin-left: auto;
+    }
+
     > * {
       color: $grey-dark;
       text-shadow: 1px 1px 1px rgba($black, .2);

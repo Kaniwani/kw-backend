@@ -1,9 +1,11 @@
 from unittest import mock
 
 import responses
+from datetime import timedelta
 from django.contrib.auth.models import AnonymousUser, User
 from django.http import Http404, HttpResponseForbidden
 from django.test import TestCase, RequestFactory, Client
+from django.utils import timezone
 
 import kw_webapp
 from kw_webapp.models import UserSpecific
@@ -11,7 +13,6 @@ from kw_webapp.tasks import build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import create_user, create_userspecific, create_profile, create_reading
 from kw_webapp.tests.utils import create_vocab
-
 
 class TestViews(TestCase):
     def setUp(self):
@@ -207,3 +208,21 @@ class TestViews(TestCase):
         }
 
         self.assertJSONEqual(str(response.content, encoding='utf8'), correct_response)
+
+    def test_burnt_items_arent_included_when_getting_next_review_date(self):
+        current_time = timezone.now()
+        self.review.next_review_date = current_time
+        self.review.needs_review = False
+        self.review.save()
+        older_burnt_review = create_userspecific(create_vocab("test"), self.user)
+        older_burnt_review.burned = True
+        older_burnt_review.needs_review = False
+        an_hour_ago = current_time - timedelta(hours=1)
+        older_burnt_review.next_review_date = an_hour_ago
+        older_burnt_review.save()
+
+        self.client.login(username="user1", password="password")
+        response = self.client.get("/kw/")
+
+        self.assertEqual(response.context['next_review_date'], current_time)
+

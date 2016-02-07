@@ -1,21 +1,47 @@
 import refreshReviews from '../components/refreshReviews';
 import pluralize from '../util/pluralize';
+import strToBoolean from '../util/strToBoolean';
+import timeago from '../vendor/timeago';
+Object.assign($.timeago.settings, {
+	allowFuture: true,
+	allowPast: false,
+});
+Object.assign($.timeago.settings.strings, {
+  prefixFromNow: '~',
+  suffixFromNow: "",
+	minute: 'a minute',
+	hour: 'an hour',
+	hours: '%d hours',
+	month: 'a month',
+	year: 'a year',
+})
 
+// locally scoped to this module
 let recentlySynced,
+		KW,
 		$refreshButton,
 		$reviewButton;
 
 function init() {
+	// let's update storage KW with any template provided changes
+	KW = Object.assign(simpleStorage.get('KW') || {}, window.KW);
+	KW.settings = strToBoolean(KW.settings);
+	KW.nextReview = new Date(Math.ceil(+KW.nextReview));
+	KW.nextReviewUTC = new Date(Math.ceil(+KW.nextReviewUTC));
+	simpleStorage.set('KW', KW);
+
 	// are we on home page?
 	if (window.location.pathname === '/kw/') {
 		$refreshButton = $("#forceSrs");
 		$reviewButton = $("#reviewCount");
 		recentlySynced = simpleStorage.get('recentlySynced');
+		KW.reviewTimer = setInterval(updateReviewTime, 20000); // every 20 seconds
+		updateReviewTime();
+
+		console.log('Next reviews parsed toString() from epoch time:\n LOCAL:', KW.nextReview.toString(),'\n UTC:', KW.nextReviewUTC.toString());
 
 		if (recentlySynced !== true) {
 			syncUser();
-		} else {
-			refreshReviews();
 		}
 
 		// event handlers
@@ -25,25 +51,35 @@ function init() {
 		});
 
 		$(document).keypress(handleKeyPress);
+	}
+}
 
-		// TODO: we should also load settings if we want to prevent syncing for unfollow users
-		// settings should still be loaded in reviews in case user goes there directly after changing settings though
-		// unless we decided to blanket update user, settings etc on every important page via logged_in template
-		// that might be a better avenue to be honest
-		let user = simpleStorage.get('user');
-		if (user == null) simpleStorage.set('user', window.KWuserName);
+function updateReviewTime() {
+	let now = Date.now(),
+			next = Date.parse(KW.nextReview)
+	if (now > next) {
+		console.log('Local review supposedly ready; timer would be cleared now & reviews refreshed');
+		refreshReviews();
+		// clearInterval(KW.reviewTimer);
+	} else {
+		console.log('Next (local) in:', $.timeago(KW.nextReview));
+		console.log('Next (utc) in:', $.timeago(KW.nextReviewUTC));
+		// $reviewButton.text(`Next review: ${$.timeago(KW.nextReview)}`);
 	}
 }
 
 function syncUser() {
 	animateSync();
 
+	let extraThrottle = KW.settings.followWanikani;
+
 	$.getJSON('/kw/sync/', {full_sync: false})
 		.done(res => {
 			const message = `Account synced with Wanikani!`,
 					  newMaterial = `</br>You have unlocked ${pluralize('new vocab item', res.new_review_count)} & ${pluralize('new synonym', res.new_synonym_count)}.`;
 
- 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: 1800000}) // expire after 30mins
+ 			// expire after 30mins if following WK - otherwise 12 hours
+ 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: (extraThrottle ? 43200000 : 1800000)})
  			notie.alert(1, (newMaterial ? message + newMaterial : message), 5);
  			refreshReviews();
 		})

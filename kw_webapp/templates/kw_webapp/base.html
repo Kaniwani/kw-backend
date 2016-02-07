@@ -7,6 +7,7 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="google" content="notranslate">
+  <meta name="description" content="Companion site for WaniKani users to self-review Japanese vocabulary from English synonym prompts.">
 
   <title>KaniWani {% block title %}{% endblock title %}</title>
 
@@ -35,7 +36,6 @@
 </head>
 {% endblock %}
 <body>
-
   {% block scripts %}{% endblock scripts %}
   <div class="site">
     {% block content %}{% endblock content %}
@@ -52,9 +52,26 @@
     </h5>
   </div>
 
-  {% block bottomscripts %}
-    <script src="{% static "scripts/global.js" %}"></script>
-  {% endblock bottomscripts %}
+  <script>
+    window.KW = {
+      user: {
+        name: '{{ user.profile.user }}',
+        level: '{{ user.profile.level }}',
+        unlockedLevels: '{{ user.profile.unlocked_levels_list }}',
+      },
+      nextReview: '{{ next_review_timestamp_local }}',
+      nextReviewUTC: '{{ next_review_timestamp_utc }}',
+      reviewCount: '{{ review_count }}',
+      settings: {
+        showCorrectOnFail: '{{ user.profile.auto_expand_answer_on_failure }}',
+        autoAdvanceCorrect: '{{ user.profile.auto_advance_on_success }}',
+        followWanikani: '{{ user.follow_me }}',
+        burnedOnly: '{{ user.only_review_burned }}'
+      },
+    };
+  </script>
+  {% block bottomscripts %}{% endblock bottomscripts %}
+  <script src="{% static "scripts/global.js" %}"></script>
 
 </body>
 </html>

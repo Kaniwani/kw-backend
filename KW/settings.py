@@ -205,6 +205,7 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = {
     'django.contrib.auth.context_processors.auth',
     "KW.preprocessors.review_count_preprocessor",
+    "KW.preprocessors.srs_count_preprocessor",
     'django.core.context_processors.request', #TODO:  NOTE! This will change in 1.8 to django.template.context_processors.request
 }
 
