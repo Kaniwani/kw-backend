@@ -24,6 +24,8 @@ except ImportError:
     secrets.DEPLOY = False
     secrets.SECRET_KEY = "samplekey"
     secrets.RAVEN_DSN = "Whatever"
+    secrets.EMAIL_HOST_PASSWORD = "nope"
+    secrets.EMAIL_HOST_USER = "dontmatter@whatever.com"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -221,12 +223,15 @@ ROOT_URLCONF = 'KW.urls'
 WSGI_APPLICATION = 'KW.wsgi.application'
 
 #EMAIL BACKEND SETTINGS
-EMAIL_HOST = "127.0.0.1"
-EMAIL_PORT = 25
-#EMAIL_HOST_USER = "reports@kaniwani.com"
-#EMAIL_HOST_PASSWORD = ''
 MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
-DEFAULT_FROM_EMAIL = "garygrantgraham@yahoo.com"
+DEFAULT_FROM_EMAIL = "gary@kaniwani.com"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = secrets.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = secrets.EMAIL_HOST_PASSWORD
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
