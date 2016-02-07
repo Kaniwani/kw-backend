@@ -50,6 +50,12 @@
     </h5>
   </div>
 
+{% comment %}
+  temp for datetime checking
+{% endcomment %}
+{% load humanize %}
+
+
   <script>
     window.KW = {
       user: {
@@ -57,7 +63,10 @@
         level: '{{ user.profile.level }}',
         unlockedLevels: '{{ user.profile.unlocked_levels_list }}',
       },
-      nextReview: '{{ next_review_date }}',
+      nextReview: '{{ next_review_timestamp_local }}',
+      nextReviewUTC: '{{ next_review_timestamp_utc }}',
+      nextReviewDate: '{{ next_review_date }}',
+      nextReviewDateHumanized: '{{ next_review_date|naturaltime }}',
       reviewCount: '{{ review_count }}',
       settings: {
         showCorrectOnFail: '{{ user.profile.auto_expand_answer_on_failure }}',

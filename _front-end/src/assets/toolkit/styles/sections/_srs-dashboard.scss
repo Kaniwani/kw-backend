@@ -60,8 +60,9 @@
         color: lighten($grey-light, 23%);
         font-size: responsive 12px 16px;
         margin-left: 4px;
-       @include media($bp-lg) {
-        margin-left: auto;
+        margin-top: 3px;
+        @include media($bp-lg) {
+          margin-left: auto;
           padding-bottom: .3em;
         }
       }

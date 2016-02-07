@@ -1,32 +1,46 @@
 import refreshReviews from '../components/refreshReviews';
 import pluralize from '../util/pluralize';
 import strToBoolean from '../util/strToBoolean';
+import timeago from '../vendor/timeago';
+Object.assign($.timeago.settings, {
+	allowFuture: true,
+	allowPast: false,
+});
+Object.assign($.timeago.settings.strings, {
+  prefixFromNow: '',
+  suffixFromNow: "from now",
+	minute: 'a minute',
+	hour: 'an hour',
+	hours: '%d hours',
+	month: 'a month',
+	year: 'a year',
+})
 
 // locally scoped to this module
 let recentlySynced,
-		user,
+		KW,
 		$refreshButton,
 		$reviewButton;
 
 function init() {
-	// let's update & make KW user available to all pages
-	window.KW.settings = strToBoolean(window.KW.settings);
-	window.KW.nextReview = window.KW.nextReview;
-	simpleStorage.set('KW', window.KW);
-	console.log(simpleStorage.get('KW'));
-
+	// let's update storage KW with any template provided changes
+	KW = Object.assign(simpleStorage.get('KW') || {}, window.KW);
+	KW.settings = strToBoolean(KW.settings);
+	KW.nextReview = new Date(Math.floor(+KW.nextReview));
+	KW.nextReviewUTC = new Date(Math.floor(+KW.nextReviewUTC));
+	simpleStorage.set('KW', KW);
 
 	// are we on home page?
 	if (window.location.pathname === '/kw/') {
 		$refreshButton = $("#forceSrs");
 		$reviewButton = $("#reviewCount");
 		recentlySynced = simpleStorage.get('recentlySynced');
-		KW = simpleStorage.get('KW');
+		updateReviewTime();
+		KW.reviewTimer = setInterval(updateReviewTime, 15000); // every 15secs
+		setInterval(logTimes, 15000); // every 15secs
 
 		if (recentlySynced !== true) {
 			syncUser();
-		} else {
-			refreshReviews();
 		}
 
 		// event handlers
@@ -39,10 +53,32 @@ function init() {
 	}
 }
 
+function logTimes() {
+		let now = Date.now(),
+			next = Date.parse(KW.nextReview),
+			nextUTC = Date.parse(KW.nextReviewUTC);
+
+	console.log(`Next review: ${$.timeago(KW.nextReview)}`)
+	console.log(`UTC: Next review: ${$.timeago(KW.nextReviewUTC)}`)
+}
+
+function updateReviewTime() {
+	let now = Date.now(),
+			next = Date.parse(KW.nextReview);
+
+	if (now >= next) {
+		refreshReviews();
+		clearInterval(KW.reviewTimer);
+		console.log('Timer cleared.');
+	} else {
+		$reviewButton.text(`Next review: ${$.timeago(KW.nextReview)}`);
+	}
+}
+
 function syncUser() {
 	animateSync();
 
-	let extraThrottle = user.settings.followWanikani;
+	let extraThrottle = KW.settings.followWanikani;
 
 	$.getJSON('/kw/sync/', {full_sync: false})
 		.done(res => {

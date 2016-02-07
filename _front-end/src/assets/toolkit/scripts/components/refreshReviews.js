@@ -2,9 +2,7 @@ import pluralize from '../util/pluralize.js';
 
 let $navCount,
     $buttonCount,
-    storageCount,
-    recentlyRefreshed,
-    sessionFinished;
+    recentlyRefreshed;
 
 function ajaxReviewCount() {
   $.get("/kw/force_srs/")
@@ -18,7 +16,7 @@ function ajaxReviewCount() {
       }
 
       console.log('Review count updated from server:', res)
-      simpleStorage.set('recentlyRefreshed', true, {TTL: 45000}); // 45 seconds
+      simpleStorage.set('recentlyRefreshed', true, {TTL: 30000}); // 30 seconds
   });
 
 }
