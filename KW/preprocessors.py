@@ -1,3 +1,5 @@
+import time
+
 from kw_webapp.constants import KANIWANI_SRS_LEVELS
 from kw_webapp.tasks import get_users_future_reviews, get_users_current_reviews, get_users_reviews
 
@@ -12,8 +14,10 @@ def review_count_preprocessor(request):
             else:
                 reviews = get_users_future_reviews(request.user)
                 if reviews:
-                    next_review_timestamp = reviews[0].next_review_date
-                    context_dict['next_review_date'] = next_review_timestamp
+                    next_review_date = reviews[0].next_review_date
+                    context_dict['next_review_date'] = next_review_date
+                    context_dict['next_review_timestamp_local'] = next_review_date.timestamp() * 1000
+                    context_dict['next_review_timestamp_utc'] = int(time.mktime(next_review_date.timetuple())) * 1000
             return context_dict
 
     return {'review_count': 0}
