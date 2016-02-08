@@ -5,11 +5,9 @@ title: contact
 
 <section class="contact-section">
   <div class="inner">
-    <h1 class="section-heading">Drop us a line | 私たちに手紙を送ります</h1>
-    <p>Hello there Good Sir, Gentle Madam, or Venerable Crabigator!</p>
-    <p><a href="https://github.com/tadgh/" rel="external" target="_blank">Gary</a> and <a href="https://github.com/DJTB" rel="external" target="_blank">Duncan</a> would love to hear from you. </br>Send us your compliments, woes, dreams, and haikus.</p>
-    <p>If you find a bug in the site, <span class="_strikeout">smoosh it goood</span> submit a bug report below!</br>It'll only take a moment, and we'll get right onto fixing it.</p>
-    <p>100 internet points to you if you include your <a href="http://whatbrowser.org" target="_blank" rel="external">Browser version</a> and <a href="http://whatsmyos.com/" rel="external" target="_blank">Operating System version</a> so we can accurately replicate the problem in testing. ありがとうございます</p>
+    <h1 class="section-heading">Drop us a line <span lang="ja">私たちに手紙を送ります</span></h1>
+    <h2 class="h5">Hello there Good Sir, Gentle Madam, or Venerable Crabigator.</h2>
+    <p class="text"><a href="https://github.com/tadgh/" rel="external" target="_blank">Gary</a> and <a href="https://github.com/DJTB" rel="external" target="_blank">Duncan</a> would love to hear from you. Send us your compliments, woes, dreams, and haikus. If you find a bug in the site, <span class="_strikeout">smoosh it goood</span> send us a message below! It'll only take a moment, and we'll get back to you shortly. Bonus 100 internet points to you if you include your <a href="http://whatbrowser.org" target="_blank" rel="external">browser version</a> and <a href="http://whatsmyos.com/" rel="external" target="_blank">operating system version</a> so we can accurately replicate the problem in testing. ありがとうございます</p>
 
     <form class="contact-form pure-form pure-form-stacked" action={% url "contact:contact_form" %} method="post">
       {% csrf_token %}
