@@ -2,6 +2,8 @@ import refreshReviews from '../components/refreshReviews';
 import pluralize from '../util/pluralize';
 import strToBoolean from '../util/strToBoolean';
 import timeago from '../vendor/timeago';
+
+// overriding settings by merging objects
 Object.assign($.timeago.settings, {
 	allowFuture: true,
 	allowPast: false,
@@ -16,7 +18,6 @@ Object.assign($.timeago.settings.strings, {
 	year: 'a year',
 })
 
-// locally scoped to this module
 let recentlySynced,
 		KW,
 		$refreshButton,
@@ -27,7 +28,6 @@ function init() {
 	KW = Object.assign(simpleStorage.get('KW') || {}, window.KW);
 	KW.settings = strToBoolean(KW.settings);
 	KW.nextReview = new Date(Math.ceil(+KW.nextReview));
-	KW.nextReviewUTC = new Date(Math.ceil(+KW.nextReviewUTC));
 	simpleStorage.set('KW', KW);
 
 	// are we on home page?
@@ -36,13 +36,9 @@ function init() {
 		$reviewButton = $("#reviewCount");
 		recentlySynced = simpleStorage.get('recentlySynced');
 		KW.reviewTimer = setInterval(updateReviewTime, 20000); // every 20 seconds
+
+		if (recentlySynced !== true) syncUser();
 		updateReviewTime();
-
-		console.log('Next reviews parsed toString() from epoch time:\n LOCAL:', KW.nextReview.toString(),'\n UTC:', KW.nextReviewUTC.toString());
-
-		if (recentlySynced !== true) {
-			syncUser();
-		}
 
 		// event handlers
 		$refreshButton.click(() => refreshReviews());
@@ -57,14 +53,12 @@ function init() {
 function updateReviewTime() {
 	let now = Date.now(),
 			next = Date.parse(KW.nextReview)
+
 	if (now > next) {
-		console.log('Local review supposedly ready; timer would be cleared now & reviews refreshed');
 		refreshReviews();
-		// clearInterval(KW.reviewTimer);
+		clearInterval(KW.reviewTimer);
 	} else {
-		console.log('Next (local) in:', $.timeago(KW.nextReview));
-		console.log('Next (utc) in:', $.timeago(KW.nextReviewUTC));
-		// $reviewButton.text(`Next review: ${$.timeago(KW.nextReview)}`);
+		$reviewButton.text(`Next review: ${$.timeago(KW.nextReview)}`);
 	}
 }
 
@@ -81,7 +75,6 @@ function syncUser() {
  			// expire after 30mins if following WK - otherwise 12 hours
  			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: (extraThrottle ? 43200000 : 1800000)})
  			notie.alert(1, (newMaterial ? message + newMaterial : message), 5);
- 			refreshReviews();
 		})
 		.fail((res) => {
 			notie.alert(3, `Something went wrong while trying to sync with Wanikani. If the problem persists, send us a <a href="/contact/">contact message</a>! with the following: <q class="failresponse">${res.status}: ${res.statusText}</q>`, 10);
