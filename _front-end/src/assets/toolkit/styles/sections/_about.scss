@@ -1,22 +1,19 @@
 .about-section {
-  @include media($bp-lg) {
-    .row + .row {
-      margin-top: $unit-md;
-    }
+
+  .row {
+    @include clearfix;
   }
-  .row .col {
-    @include media($bp-md) {
-      margin-bottom: $unit-md;
-    }
+
+  .row + .row {
+      margin-top: $unit-sm;
   }
-  .row .col-half,
-  .row .col-third {
+
+  .col {
     @include media($bp-md) {
-      &:not(:last-child) {
-        padding-right: $unit-md;
-      }
-      &:not(:first-child) {
-        padding-left: $unit-md;
+      lost-column: 1/2;
+
+      &.-third {
+        lost-column: 1/3;
       }
     }
   }
