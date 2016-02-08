@@ -4,20 +4,20 @@
 {% block content %}
 
 <div class="login-section -fullwidth">
-
   <div class="container">
-    <h1 class="title">Welcome</h1>
+    <h1 class="title">KaniWani</h1>
+
     {% crispy form %}
+
   </div>
 
   <h1 class="feedback">Collecting turtles...<span class="icon -loading"></span></h1>
-  <a href="{% url "kw:register" %}" class="link">Not a member? Register here</a>
+
+  <a href="{% url "register" %}" class="link -register">Not a member? Register here</a>
+  <a href="{% url "password_reset" %}" class="link -forgot">Forgot your password?</a>
 
   <!-- dem turtles -->
   <ul class="floating-icons" aria-hidden="true" role="presentation">
-    <li class="icon"><span class="icon-turtle"></span></li>
-    <li class="icon"><span class="icon-turtle"></span></li>
-    <li class="icon"><span class="icon-turtle"></span></li>
     <li class="icon"><span class="icon-turtle"></span></li>
     <li class="icon"><span class="icon-turtle"></span></li>
     <li class="icon"><span class="icon-turtle"></span></li>

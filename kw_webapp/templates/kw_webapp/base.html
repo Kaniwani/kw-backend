@@ -1,7 +1,9 @@
 {% load staticfiles %}
 <!DOCTYPE html>
 <html lang="en">
+{% block head %}
 <head>
+  <meta name="google-site-verification" content="yMqdET_EPIeKfp5mu2_ds5NcM_NCjuxYf9zUSkVgA8k" />
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -33,6 +35,7 @@
   </script>
 
 </head>
+{% endblock %}
 <body>
   {% block scripts %}{% endblock scripts %}
   <div class="site">

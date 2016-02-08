@@ -5,62 +5,60 @@
 
   {{ block.super }}
 
-   <section class="about-section">
-    <div class="inner">
+<section class="about-section">
+  <div class="inner">
 
-      <div class="row">
-        <div class="col">
-          <h1>What’s this all about then?</h1>
-          <p>KaniWani is a companion website to <a href="http://www.wanikani.com" rel="external" target="_blank">WaniKani</a>, an SRS tool for kanji and vocabulary memorization. I found that WaniKani helped a lot with being able to recognize and read Kanji, but really didn’t help that much in trying to recall words without the visual stimulation of the Kanji. KaniWani attempts to bridge that gap by using your WaniKani information and force you to do the opposite of what you normally do.</p>
-        </div>
+    <div class="row">
+      <div class="col">
+        <h1>What’s this all about then?</h1>
+        <p>KaniWani is a companion website to <a href="http://www.wanikani.com" rel="external" target="_blank">WaniKani</a>, an SRS tool for kanji and vocabulary memorization. I found that WaniKani helped a lot with being able to recognize and read Kanji, but really didn’t help that much in trying to recall words without the visual stimulation of the Kanji. KaniWani attempts to bridge that gap by using your WaniKani information and force you to do the opposite of what you normally do.</p>
       </div>
-
-      <div class="row">
-        <div class="col col-third">
-          <h2>Moving Forward</h2>
-          <p>KaniWani starts off at your current WK level, so you don’t have to go through all the previous levels unless you want to.</p>
-        </div>
-        <div class="col col-third">
-          <h2>Unlocking the Past</h2>
-          <p>Manually <a href="{% url "kw:vocab" %}">unlock or relock previous levels</a> to manage the vocabulary in your review schedule.</p>
-        </div>
-        <div class="col col-third">
-         <h2>Keyboard Warrior</h2>
-          <p>During reviews, press <b>p</b> to show the Phonetic reading, <b>k</b> to show the actual Kanji in the vocabulary, and <b>f</b> shows both (a la WaniKani).</p>
-        </div>
-      </div>
-
-
-      <div class="row">
-        <div class="col col-third">
-          <h2>Speedy Gonzales</h2>
-          <p>Fly through your reviews by turning on the auto advance feature when you enter a correct answer, or show yourself all possible answers on failure.</p>
-        </div>
-        <div class="col col-third">
-          <h2>Next Time Gadget...</h2>
-          <p>When your answer has been marked incorrect, but you totally knew what it was, like, 本気で！ Press <b>i</b> on your keyboard or vehemently tap the <b>x</b> icon to ignore your failure.</p>
-        </div>
-        <div class="col col-third">
-          <h2>Follow WaniKani</h2>
-          <p>You unlock new KaniWani vocab as you unlock new WaniKani vocab. Toggle features on/off <a href="{% url "kw:settings" %}">on your settings page</a>.</p>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col col-half">
-          <h2>SRS to the Max</h2>
-          <p>The algorithm is identical to WaniKani’s SRS, in that the more often you correctly answer a review, the less often you will see it — until it is burnt. SRS updates on the server every 15 minutes, but if you’re impatient you can hit the little refresh button to see if there are any new reviews for you.</p>
-        </div>
-        <div class="col col-half">
-          <h2>Vocab Synergy</h2>
-          <p>Words in WaniKani that have the same identical base meaning but different readings get combined. For example, when you see the word “Father” you can answer either “ちちおや” or “おとうさん” (but not Anakin Skywalker).</p>
-        </div>
-      </div>
-
     </div>
-  </section>
 
-</div>
+    <div class="row">
+      <div class="col col-third">
+        <h2>Moving Forward</h2>
+        <p>KaniWani starts off at your current WK level, so you don’t have to go through all the previous levels unless you want to.</p>
+      </div>
+      <div class="col col-third">
+        <h2>Unlocking the Past</h2>
+        <p>Manually <a href="{% url "kw:vocab" %}">unlock or relock previous levels</a> to manage the vocabulary in your review schedule.</p>
+      </div>
+      <div class="col col-third">
+       <h2>Keyboard Warrior</h2>
+        <p>During reviews, press <b>P</b> to show the Phonetic reading, <b>K</b> to show the actual Kanji in the vocabulary, and <b>F</b> shows both (a la WaniKani).</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col col-third">
+        <h2>Speedy Gonzales</h2>
+        <p>Fly through your reviews by turning on the auto advance feature when you enter a correct answer, or show yourself all possible answers on failure.</p>
+      </div>
+      <div class="col col-third">
+        <h2>Next Time Gadget</h2>
+        <p>When your answer has been marked incorrect, but you totally knew what it was, like, 本気で！ Press <b>i</b> on your keyboard or vehemently tap the <b>x</b> icon to ignore your failure.</p>
+      </div>
+      <div class="col col-third">
+        <h2>Follow WaniKani</h2>
+        <p>You unlock new KaniWani vocab as you unlock new WaniKani vocab. Toggle features on/off <a href="{% url "kw:settings" %}">on your settings page</a>.</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col col-half">
+        <h2>Vocab Synergy</h2>
+        <p>Words in WaniKani that have the same identical base meaning but different readings get combined. For example, when you see the word “Father” you can answer either “ちちおや” or “おとうさん” (but not Anakin Skywalker).</p>
+      </div>
+      <div class="col col-half">
+        <h2>Science Repeat... Science!</h2>
+        <p>The algorithm is identical to WaniKani’s SRS (Spaced Repetition System), in that the more often you correctly answer a review, the less often you will see it — until it is burnt.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- / .site-content -->
 {% include 'partials/site-footer.html' %}
 
