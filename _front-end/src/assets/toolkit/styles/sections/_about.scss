@@ -4,14 +4,20 @@
     @include clearfix;
   }
 
-  .row + .row {
-      margin-top: $unit-sm;
-  }
 
   .col {
-    @include media($bp-md) {
-      lost-column: 1/2;
+    .title {
+      margin-top: .8em;
+    }
 
+    @include media($bp-sm) {
+      &.-half,
+      &.-third {
+        lost-column: 1/2;
+      }
+    }
+
+    @include media($bp-md) {
       &.-third {
         lost-column: 1/3;
       }

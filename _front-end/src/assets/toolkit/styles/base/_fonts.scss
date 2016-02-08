@@ -49,6 +49,7 @@ h6 {
 }
 
 h1,
+.h1,
 %h1 {
   font-family: $ff-heading;
   font-size: 30px;
@@ -57,27 +58,32 @@ h1,
 }
 
 h2,
+.h2,
 %h2 {
   font-size: 25px;
   font-size: responsive 20px 30px;
 }
 
 h3,
+.h3,
 %h3 {
   font-size: responsive 18px 25px;
 }
 
 h4,
+.h4,
 %h4 {
   font-size: responsive 17px 24px;
 }
 
 h5,
+.h5,
 %h5 {
   font-size: responsive 16px 23px;
 }
 
 h6,
+.h6,
 %h6{
   font-size: responsive 16px 21px;
 }
@@ -94,6 +100,7 @@ a {
 }
 
 p,
+.p,
 %p {
   margin-top: 0;
   margin-bottom: .7em;

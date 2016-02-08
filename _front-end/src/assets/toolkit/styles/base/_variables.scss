@@ -1,5 +1,6 @@
 /* Site Breakpoints - see _include-media.scss for usage */
-$bp-sm: '<md'; // 768px in include-media
+$bp-xs: '<sm'; // <480px in include-media
+$bp-sm: '>=sm'; // 480px in include-media
 $bp-md: '>=md'; // 768px in include-media
 $bp-lg: '>=lg'; // 1024px in include-media
 $bp-xl: '>=xl'; // 1200px in include-media

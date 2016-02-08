@@ -2,6 +2,14 @@
   margin-bottom: .5em;
   color: $black-light;
 
+  > span[lang="ja"] {
+    display: inline-block;
+    vertical-align: bottom;
+    line-height: 1.4;
+    border-left: .1em solid $black-light;
+    padding-left: .2em;
+  }
+
   > a {
     color: rgba($black-light, .95);
     transition: color .3s ease-out;
