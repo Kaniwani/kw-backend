@@ -304,17 +304,15 @@ class AddSynonym(View):
         if not review.can_be_managed_by(self.request.user):
             return HttpResponseForbidden("You can't modify that object!")
 
-        review.answer_was_correct()
         synonym_kana = request.POST["kana"]
-        synonym_kanji = request.POST["character"]
+        synonym_kanji = request.POST["kanji"]
         successfully_added = review.add_answer_synonym(synonym_kana, synonym_kanji)
 
         return HttpResponse("Synonym added! {}".format(successfully_added or ""))
 
-
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(FlipToCorrectAndAddSynonym, self).dispatch(request, *args, **kwargs)
+        return super(AddSynonym, self).dispatch(request, *args, **kwargs)
 
 
 
