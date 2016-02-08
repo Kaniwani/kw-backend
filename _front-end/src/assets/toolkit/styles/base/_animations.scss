@@ -13,6 +13,25 @@
   }
 }
 
+@keyframes shake {
+  from, to {
+    transform: translate3d(0, 0, 0);
+  }
+
+  10%, 40%, 70% {
+    transform: translate3d(-8px, 0, 0);
+  }
+
+  25%, 55%, 85% {
+    transform: translate3d(8px, 0, 0);
+  }
+}
+
+.shake {
+  animation: shake .6s;
+  animation-fill-mode: both;
+}
+
 @keyframes spin {
   0% {
     transform: rotate(0deg);

@@ -13,7 +13,14 @@
       <label for="userAnswer" class="question _visuallyhidden">Vocabulary <strong>reading</strong></label>
       <input id="userAnswer" lang="ja" class="answer" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off">
 
-      <button id="submitAnswer" type="submit" class="submit">
+      <button id="ignoreAnswer" type="button" class="submit -ignore">
+        <!-- wrap because <button> can't display:flex in safari properly -->
+        <span class="submitwrap">
+          <span class="icon i-cancel"></span>
+        </span>
+      </button>
+
+      <button id="submitAnswer" type="submit" class="submit -answer">
         <!-- wrap because <button> can't display:flex in safari properly -->
         <span class="submitwrap">
           <span class="icon i-rightarrow"></span>
