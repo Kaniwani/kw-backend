@@ -53,6 +53,9 @@
       border: 0;
       outline: none;
       appearance: none;
+      // when input shakes left/right on incorrect this color will show at edges
+      // otherwise never seen
+      background-color: $red;
     }
 
     .answer {
@@ -134,6 +137,7 @@
       position: absolute;
       bottom: 0;
       height: 100%;
+      z-index: 3;
     }
 
     .streak {
@@ -166,7 +170,7 @@
         }
       }
       &:focus {
-        .submitwrap {
+        .submitwrap .icon:before {
           outline: 1px dashed $grey-light;
         }
       }

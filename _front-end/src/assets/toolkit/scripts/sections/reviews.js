@@ -19,7 +19,7 @@ let KW,
     $reviewsDone = $('#reviewsDone'),
     $reviewsCorrect = $('#reviewsCorrect'),
     $reveal = $('.reveal'),
-    $answerForm = $('.answerForm'),
+    $answerPanel = $('.answerpanel'),
     $userAnswer = $('#userAnswer'),
     $detailKana = $('#detailKana'),
     $submitButton = $('#submitAnswer'),
@@ -53,8 +53,8 @@ function init() {
 
   // rotate or record on 'submit'
   $submitButton.click(enterPressed);
-  $answerForm.submit(enterPressed);
-  $ignoreButton.click(() => rotateVocab({ignored: true}));
+  $answerPanel.submit(enterPressed);
+  $ignoreButton.click(ignoreAnswer);
 
   // ask a question
   $meaning.html(currentVocab.meaning);
@@ -188,6 +188,11 @@ function recordAnswer(userID, correctness, previouslyWrong) {
     });
 }
 
+function ignoreAnswer() {
+  $userAnswer.addClass('shake');
+  setTimeout(() => rotateVocab({ignored: true}), 700);
+}
+
 function clearColors() {
   $userAnswer.removeClass('-marked -correct -incorrect -invalid');
 }
@@ -217,6 +222,7 @@ function updateProgressBar(percent) {
 function resetAnswerField() {
   clearColors();
   updateStreak();
+  $userAnswer.removeClass('shake');
   $userAnswer.val('');
   $userAnswer.focus();
 }
@@ -243,7 +249,6 @@ function revealAnswers({kana, kanji} = {}) {
 }
 
 function rotateVocab({ignored = false, correct = false} = {}) {
-  console.log('ignored:', ignored);
 
   if (ignored) {
     // put ignored answer back onto end of review queue
@@ -285,7 +290,6 @@ function enterPressed(event) {
     event.stopPropagation();
     event.preventDefault();
   }
-  console.log(event);
   if ($userAnswer.hasClass('-marked')) {
     if ($userAnswer.hasClass('-correct')) {
       rotateVocab({correct: true});
@@ -322,7 +326,7 @@ function handleShortcuts(event) {
     }
     //Pressing I ignores answer when input is marked incorrect
     else if (event.which == 73 || event.which == 105) {
-      if ($userAnswer.hasClass('-incorrect')) rotateVocab({ignored: true});
+      if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
     }
   }
 }
