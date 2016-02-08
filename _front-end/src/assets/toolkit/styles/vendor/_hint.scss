@@ -62,8 +62,9 @@
     font-size: 17px;
     line-height: 17px;
     white-space: nowrap;
+  }
 
-    // added by @djtb to force multiline by constraining width
+  .-multiline[data-hint]:after {
     max-width: 10em;
     min-width: 10em;
     white-space: normal;

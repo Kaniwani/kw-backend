@@ -16,10 +16,11 @@ let KW,
     $streakIcon = $('.streak > .icon'),
     $ignoreButton = $('#ignoreAnswer'),
     $userID = $('#us-id'),
+    $srsUp = $('#srsUp > .content'),
     $reviewsDone = $('#reviewsDone'),
     $reviewsCorrect = $('#reviewsCorrect'),
     $reveal = $('.reveal'),
-    $answerPanel = $('.answerpanel'),
+    $answerPanel = $('#answerpanel'),
     $userAnswer = $('#userAnswer'),
     $detailKana = $('#detailKana'),
     $submitButton = $('#submitAnswer'),
@@ -61,16 +62,29 @@ function init() {
   $userAnswer.focus();
 }
 
-function updateStreak() {
-  let streak = currentVocab.streak;
-  let iconClass = 'icon ' + (streak > 8 ? 'i-burned' :
-                             streak > 7 ? 'i-enlightened' :
-                             streak > 5 ? 'i-master' :
-                             streak > 2 ? 'i-guru'
-                                        : 'i-apprentice');
+function getSrsRank(num) {
+  return num > 8 ? 'burned' :
+         num > 7 ? 'enlightened' :
+         num > 5 ? 'master' :
+         num > 2 ? 'guru' : 'apprentice';
+}
 
-  $streakIcon.attr('class', iconClass);
-  $streakIcon.closest('.streak').attr('data-hint', iconClass.slice(7));
+function updateStreak() {
+  let rank = getSrsRank(currentVocab.streak);
+  $streakIcon.attr('class', `icon i-${rank}`)
+  $streakIcon.closest('.streak').attr('data-hint', `${rank}`);
+}
+
+function streakLevelUp() {
+  let rank = getSrsRank(currentVocab.streak);
+  let newRank = getSrsRank(currentVocab.streak + 1);
+
+  // if we went up a rank
+  if (newRank !== rank) {
+    $srsUp.attr('data-after', newRank).addClass('-animating');
+    $streakIcon.attr('class', `icon i-${newRank} -marked`)
+               .closest('.streak').attr('data-hint', `${newRank}`);
+  }
 }
 
 function updateKanaKanjiDetails() {
@@ -79,14 +93,14 @@ function updateKanaKanjiDetails() {
 }
 
 function makePost(path, params) {
-  var form = document.createElement('form');
+  let form = document.createElement('form');
   form.setAttribute('method', 'post');
   form.setAttribute('action', path);
   form.setAttribute('class', '_visuallyhidden');
 
-  for (var key in params) {
+  for (let key in params) {
     if (params.hasOwnProperty(key)) {
-      var hiddenField = document.createElement('input');
+      let hiddenField = document.createElement('input');
       hiddenField.setAttribute('type', 'hidden');
       hiddenField.setAttribute('name', key);
       hiddenField.setAttribute('value', params[key]);
@@ -130,7 +144,7 @@ function compareAnswer() {
     //Fills the correct kanji into the input field based on the user's answers
     $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
     processAnswer({correct: true});
-    if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 800);
+    if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 900);
   }
   //answer was not in the known readings.
   else {
@@ -213,6 +227,7 @@ function markRight() {
   clearColors();
   $userAnswer.addClass('-marked -correct');
   $streakIcon.addClass('-marked');
+  streakLevelUp();
 }
 
 function updateProgressBar(percent) {
@@ -222,6 +237,7 @@ function updateProgressBar(percent) {
 function resetAnswerField() {
   clearColors();
   updateStreak();
+  $srsUp.removeClass('-animating');
   $userAnswer.removeClass('shake');
   $userAnswer.val('');
   $userAnswer.focus();
@@ -302,30 +318,30 @@ function enterPressed(event) {
   }
 }
 
-function handleShortcuts(event) {
-  if (event.which == 13) {
-    event.stopPropagation();
-    event.preventDefault();
+function handleShortcuts(ev) {
+  if (ev.which == 13) {
+    ev.stopPropagation();
+    ev.preventDefault();
     enterPressed(null);
   }
   if ($userAnswer.hasClass('-marked')) {
-    event.stopPropagation();
-    event.preventDefault();
+    ev.stopPropagation();
+    ev.preventDefault();
 
     //Pressing P toggles phonetic reading
-    if (event.which == 80 || event.which == 112) {
+    if (ev.which == 80 || ev.which == 112) {
       revealAnswers({kana: true});
     }
     //Pressing K toggles the actual kanji reading.
-    else if (event.which == 75 || event.which == 107) {
+    else if (ev.which == 75 || ev.which == 107) {
       revealAnswers({kanji: true});
     }
     //Pressing F toggles both item info boxes.
-    else if (event.which == 70 || event.which == 102) {
+    else if (ev.which == 70 || ev.which == 102) {
       revealAnswers();
     }
     //Pressing I ignores answer when input is marked incorrect
-    else if (event.which == 73 || event.which == 105) {
+    else if (ev.which == 73 || ev.which == 105) {
       if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
     }
   }

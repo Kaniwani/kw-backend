@@ -142,6 +142,12 @@
 
     .streak {
       left: 0;
+      .icon {
+        &.-fadeOutUp {
+          color: $white;
+          animation: fadeOutUp .6s;
+        }
+      }
     }
 
     .submit {
@@ -162,7 +168,7 @@
         opacity: .5;
         transition: opacity .3s ease-out;
         .icon {
-          color: white;
+          color: $white;
         }
         &:hover,
         &:focus {
@@ -173,6 +179,41 @@
         .submitwrap .icon:before {
           outline: 1px dashed $grey-light;
         }
+      }
+    }
+  }
+
+  .srs-up {
+    position: absolute;
+    top: -2.25em;
+    left: 0%;
+    width: 100%;
+    font-size: 1.25em;
+    text-align: left;
+    padding-left: .25em;
+    > .content {
+      opacity: 0;
+      color: $white;
+      display: inline-block;
+      vertical-align: middle;
+      z-index: 4;
+      background: $green none repeat scroll 0% 0% / auto padding-box border-box;
+      border-radius: 3px;
+      padding: .1em .5em .3em;
+      &.-animating {
+        animation: fadeInUp .6s ease 0s 1 normal both running;
+      }
+      // srs rank
+      &:after {
+        font-variant: small-caps;
+        font-family: $ff-heading;
+        font-weight: 600;
+        content: attr(data-after);
+        margin-left: 6px;
+      }
+      // icon
+      &:before {
+        font-size: .75em;
       }
     }
   }
