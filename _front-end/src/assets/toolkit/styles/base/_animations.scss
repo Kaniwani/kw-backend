@@ -53,10 +53,10 @@
   }
 }
 
-@keyframes fadeInUp {
+@keyframes srsRankUp {
   0% {
     opacity: 0;
-    transform: translate3d(0, 130px, 0);
+    transform: translate3d(0, 2em, 0);
   }
 
   100% {

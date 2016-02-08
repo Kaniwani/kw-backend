@@ -81,7 +81,7 @@ function streakLevelUp() {
 
   // if we went up a rank
   if (newRank !== rank) {
-    $srsUp.attr('data-after', newRank).addClass('-animating');
+    $srsUp.attr('data-after', newRank).addClass(`-animating -${newRank}`);
     $streakIcon.attr('class', `icon i-${newRank} -marked`)
                .closest('.streak').attr('data-hint', `${newRank}`);
   }

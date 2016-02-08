@@ -185,7 +185,7 @@
 
   .srs-up {
     position: absolute;
-    top: -2.25em;
+    top: -2.2em;
     left: 0%;
     width: 100%;
     font-size: 1.25em;
@@ -197,11 +197,17 @@
       display: inline-block;
       vertical-align: middle;
       z-index: 4;
-      background: $green none repeat scroll 0% 0% / auto padding-box border-box;
       border-radius: 3px;
-      padding: .1em .5em .3em;
+      padding: .1em .5em .22em;
+      background: $green;
+
+      &.-guru { background: lighten($purple-light, 15%); }
+      &.-master { background: $blue; }
+      &.-enlightened { background: lighten($blue-light, 15%); }
+      &.-burned { background: $black-light; }
+
       &.-animating {
-        animation: fadeInUp .6s ease 0s 1 normal both running;
+        animation: srsRankUp .5s ease 0s 1 normal both running;
       }
       // srs rank
       &:after {
@@ -213,7 +219,7 @@
       }
       // icon
       &:before {
-        font-size: .75em;
+        font-size: .8em;
       }
     }
   }
