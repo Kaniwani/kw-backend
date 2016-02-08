@@ -185,12 +185,11 @@
 
   .srs-up {
     position: absolute;
-    top: -2.2em;
+    top: -2.5em;
     left: 0%;
     width: 100%;
     font-size: 1.25em;
-    text-align: left;
-    padding-left: .25em;
+    text-align: center;
     > .content {
       opacity: 0;
       color: $white;
@@ -207,7 +206,7 @@
       &.-burned { background: $black-light; }
 
       &.-animating {
-        animation: srsRankUp .5s ease 0s 1 normal both running;
+        animation: srsRankUp .75s ease 0s 1 normal both running;
       }
       // srs rank
       &:after {

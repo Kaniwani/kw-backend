@@ -15,6 +15,36 @@
 {% block bottomscripts %}
   <script>
     window.KW.sessionVocab = [
+      {
+        'user_specific_id':'{{ 000 }}',
+        'streak': 2,
+        'meaning':'noon',
+        'readings':  ['ひる'],
+        'characters':['昼'],
+      },
+      {
+        'user_specific_id':'{{ 000 }}',
+        'streak': 5,
+        'meaning':'noon',
+        'readings':  ['ひる'],
+        'characters':['昼'],
+      },
+      {
+        'user_specific_id':'{{ 000 }}',
+        'streak': 7,
+        'meaning':'noon',
+        'readings':  ['ひる'],
+        'characters':['昼'],
+      },
+      {
+        'user_specific_id':'{{ 000 }}',
+        'streak': 8,
+        'meaning':'noon',
+        'readings':  ['ひる'],
+        'characters':['昼'],
+      },
+
+
       {% for item in object_list %}
         {
         'user_specific_id':'{{ item.id }}',
