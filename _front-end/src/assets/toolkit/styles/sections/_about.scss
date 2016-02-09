@@ -22,5 +22,14 @@
         lost-column: 1/3;
       }
     }
+
+    @include media($bp-lg) {
+      &.-half,
+        lost-column: 1/2 40px;
+      }
+      &.-third {
+        lost-column: 1/3 40px;
+      }
+    }
   }
 }
