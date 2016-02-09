@@ -169,24 +169,17 @@ function processAnswer({correct} = {}) {
     } else {
       previouslyWrong = true;
     }
+      correctTotal += 1;
+      updateProgressBar(correctTotal / startCount * 100);
 
-    answeredTotal += 1;
-    correctTotal += 1;
-    updateProgressBar(correctTotal / startCount * 100);
-
-  } else if (correct === false) {
-    if ($.inArray(currentUserID, Object.keys(answerCorrectness)) == -1) {
+    } else if (correct === false) {
       answerCorrectness[currentUserID] = -1;
-      previouslyWrong = false
-    } else {
-      answerCorrectness[currentUserID] -= 1;
-      previouslyWrong = true
+      previouslyWrong = true;
+      currentVocab.streak -= 1;
+      remainingVocab.push(currentVocab);
     }
 
-    answeredTotal += 1;
-    remainingVocab.push(currentVocab);
-  }
-
+  answeredTotal += 1;
   recordAnswer(currentUserID, correct, previouslyWrong); // record on server
 }
 
