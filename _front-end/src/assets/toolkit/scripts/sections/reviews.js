@@ -169,15 +169,15 @@ function processAnswer({correct} = {}) {
     } else {
       previouslyWrong = true;
     }
-      correctTotal += 1;
-      updateProgressBar(correctTotal / startCount * 100);
+    correctTotal += 1;
+    updateProgressBar(correctTotal / startCount * 100);
 
-    } else if (correct === false) {
-      answerCorrectness[currentUserID] = -1;
-      previouslyWrong = true;
-      currentVocab.streak -= 1;
-      remainingVocab.push(currentVocab);
-    }
+  } else if (correct === false) {
+    answerCorrectness[currentUserID] = -1;
+    previouslyWrong = true;
+    currentVocab.streak -= 1;
+    remainingVocab.push(currentVocab);
+  }
 
   answeredTotal += 1;
   recordAnswer(currentUserID, correct, previouslyWrong); // record on server
