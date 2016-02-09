@@ -9,14 +9,23 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from collections import namedtuple
 from datetime import timedelta
 import os
 from django.core.urlresolvers import reverse_lazy
 import raven
 
-
-import KW.secrets as secrets
-
+try:
+    import KW.secrets as secrets
+except ImportError:
+    print("Couldn't find a secrets file. Defaulting")
+    secrets = namedtuple('secrets', ['DEPLOY', 'RAVEN_DSN', 'SECRET_KEY', 'DB_TYPE'])
+    secrets.DB_TYPE = "sqlite"
+    secrets.DEPLOY = False
+    secrets.SECRET_KEY = "samplekey"
+    secrets.RAVEN_DSN = "Whatever"
+    secrets.EMAIL_HOST_PASSWORD = "nope"
+    secrets.EMAIL_HOST_USER = "dontmatter@whatever.com"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -163,14 +172,14 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 # Application definition
 
 
-LOGIN_URL = reverse_lazy("kw:login")
+LOGIN_URL = reverse_lazy("login")
 LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
-SOUTH_TESTS_MIGRATE = False
 
 INSTALLED_APPS = (
+    'kw_webapp', #Make sure this is the top entry in order to correctly override template folders.
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.humanize',
@@ -178,10 +187,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'kw_webapp',
-    'south',
     'crispy_forms',
     'raven.contrib.django.raven_compat',
+    'rest_framework',
+    'lineage',
 
 )
 
@@ -192,16 +201,36 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = {
     'django.contrib.auth.context_processors.auth',
     "KW.preprocessors.review_count_preprocessor",
+    "KW.preprocessors.srs_count_preprocessor",
+    'django.core.context_processors.request', #TODO:  NOTE! This will change in 1.8 to django.template.context_processors.request
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+    'PAGE_SIZE': 10
 }
 
 ROOT_URLCONF = 'KW.urls'
 
 WSGI_APPLICATION = 'KW.wsgi.application'
+
+#EMAIL BACKEND SETTINGS
+MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
+DEFAULT_FROM_EMAIL = "gary@kaniwani.com"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = secrets.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = secrets.EMAIL_HOST_PASSWORD
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 
 
 # Database
@@ -239,12 +268,23 @@ USE_L10N = True
 
 USE_TZ = True
 
+LINEAGE_ANCESTOR_PHRASE = "-active"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = "/opt/venvs/KaniWaniEnv/KW/kw_webapp/static"
+STATIC_ROOT = "/var/www/kaniwani.com/static"
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "_front-end/dist/assets"),
+)
+
+#For cache-busting in production mode.
+if not DEBUG:
+    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+
+
 TEMPLATE_DIRS = (
     os.path.join(BASE_DIR,  'templates'),
+    os.path.join(BASE_DIR,  'kw_webapp/templates/kw_webapp')
 )

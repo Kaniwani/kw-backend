@@ -1,47 +1,19 @@
 {% extends "kw_webapp/logged_in.html" %}
-{% load staticfiles %}
+{% block title %}| Settings{% endblock %}
 {% load crispy_forms_tags %}
-{% block scripts %}
-{{ block.super }}
-{% endblock %}
 
-{% block title %}
-{{ block.super }}
-  <title>Settings</title>
-{% endblock %}
+{% block content %}
+  {{ block.super }}
 
-{% block main %}
-{{ block.super }}
-<main role="main">
-  <header>
-    <h1>Settings</h1>
-  </header>
-
-  <section>
-    {% crispy form %}
-    <!-- <form class="pure-form pure-form-stacked" method="post">
-      <input type="hidden" name="csrfmiddlewaretoken" value="WFFTVsR7H9k6XT7JHWupoHYcksOuMn9g">
-
-      <fieldset>
-        <label for="api">API Key <sup>*</sup></label>
-        <input id="api" class="required pure-input-1" type="email" placeholder="API Key" value="613514b652760f65b2665bd094cf89ec">
-
-        <label for="level">Level</label>
-        <input id="level" class="pure-input-1" type="text" placeholder="Leve" value="6" disabled="disabled">
-
-        <button type="submit" class="pure-button pure-button-primary">Save</button>
-      </fieldset>
-    </form> -->
+  <section class="settings-section">
+    <div class="inner">
+      <h1 class="section-heading">Settings</h1>
+        {% crispy form %}
+    </div>
   </section>
-</main>
-{% endblock %}
 
-{% block footer %}
-{{ block.super }}
-<footer class="footer">
-</footer>
+</div>
+<!-- / .site-content -->
+{% include 'partials/site-footer.html' %}
 
-<form>
-  <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
-</form>
 {% endblock %}

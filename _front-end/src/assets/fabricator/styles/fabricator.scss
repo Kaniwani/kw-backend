@@ -1,0 +1,21 @@
+/**
+ * Fabricator styles
+ * @author Luke Askew
+ * Class selectors are namespaced with "f-"
+ */
+
+
+// NOTE: default menu-width is 14rem, bumped up for now because of old KW html {font-size: 65%} bs
+$settings: (
+	theme: light,
+	accent: hsl(209, 100%, 45%),
+	menu-width: 20rem
+);
+
+@import 'partials/variables';
+@import 'partials/code';
+@import 'partials/color-chips';
+@import 'partials/controls';
+@import 'partials/item';
+@import 'partials/layout';
+@import 'partials/menu';

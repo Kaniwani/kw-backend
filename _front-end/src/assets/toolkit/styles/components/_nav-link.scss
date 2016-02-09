@@ -1,0 +1,60 @@
+.nav-link {
+  @include tap-target(8px, 18px);
+  display: flex;
+  position: relative;
+  justify-content: flex-end;
+  align-items: center;
+  color: $black-light;
+
+  @include media($bp-nav-1) {
+    justify-content: center;
+  }
+
+  &:hover {
+    color: $black-light;
+  }
+
+  &.-disabled {
+    cursor: not-allowed !important;
+    &:hover > .text {
+      color: $grey-light !important;
+      &:after {
+        opacity: 0 !important;
+        width: 0 !important;
+      }
+    }
+  }
+
+  > .text {
+    position: relative;
+    overflow: hidden;
+    padding-bottom: 4px;
+
+    .count {
+      display: inline-block;
+      color: $blue-light;
+      :not(:empty) {
+        margin-left: 3px;
+      }
+    }
+
+    &:not(:only-child) {
+      padding-right: $unit-sm;
+    }
+
+    // underline
+    &:after {
+      display: block;
+      position: absolute;
+      content: '';
+      width: 0;
+      bottom: 0;
+      left: 50%;
+      opacity: 0;
+      height: 3px;
+      background: $purple;
+      transition: all .3s ease-out;
+      transform: translateX(-50%);
+    }
+  }
+}

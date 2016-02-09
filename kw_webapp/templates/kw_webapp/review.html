@@ -1,58 +1,29 @@
 {% extends "kw_webapp/base.html" %}
-{% load staticfiles %}
-{% load humanize %}
-{% load crispy_forms_tags %}
+{% block title %}| Review{% endblock %}
+{% block content %}
 
-{% block scripts %}
-{{ block.super }}
+  <input type="hidden" id="csrf" value="{{ csrf_token }}">
+
+  <section class="review-section -fullwidth">
+    {% include 'partials/review-header.html' %}
+    {% include 'partials/review-quiz.html' %}
+  </section>
+
+</div>
+<!-- / .site-content -->
 {% endblock %}
-
-{% block title %}
-{{ block.super }}
-  <title>Review</title>
-{% endblock %}
-
-{% block header %}
-{{ block.super }}
-<header class="review-header">
-  <h1 class="review-home"><a href="/"><span class="fa fa-home"></span><span class="visually-hidden">KaniWani</span></a></h1>
-  <ul class="review-stats__list">
-    <li class="review-stats__item review-stats__correct-rate"><span class="fa fa-thumbs-up"></span> 100%</li>
-    <li class="review-stats__item review-stats__completed-count"><span class="fa fa-check"></span> 0</li>
-    <li class="review-stats__item review-stats__available-count"><span class="fa fa-inbox"></span> 104</li>
-  </ul>
-</header>
-{% endblock %}
-
-{% block main %}
-{{ block.super }}
-<main role="main" class="review">
-
-  <div class="review-upper">
-    <p class="review__meaning">Happy birthday</p>
-  </div>
-
-  <div class="review-lower">
-    <form class="pure-form pure-form-stacked" method="post">
-      <input type="hidden" name="csrfmiddlewaretoken" value="WFFTVsR7H9k6XT7JHWupoHYcksOuMn9g">
-
-      <fieldset>
-        <label for="response" class="review__question">Vocabulary <strong>reading</strong></label>
-        <input id="response" class="review__response pure-input-1" type="text" placeholder="答え" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" required>
-
-        <button type="submit" class="pure-button pure-button-primary review__submit"><span class="fa fa-chevron-right"></span><span class="visually-hidden">Submit</span></button>
-      </fieldset>
-    </form>
-  </div>
-</main>
-{% endblock %}
-
-{% block footer %}
-{{ block.super }}
-<footer class="footer">
-</footer>
-
-<form>
-  <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
-</form>
+{% block bottomscripts %}
+  <script>
+    window.KW.sessionVocab = [
+      {% for item in object_list %}
+        {
+        'user_specific_id':'{{ item.id }}',
+        'streak': {{ item.streak }},
+        'meaning':'{{ item.vocabulary.meaning }}{% if item.synonyms_string %}, {{ item.synonyms_string }}{% endif %}',
+        'readings':  [{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.kana }}',{% endif %}{% endfor %}],
+        'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
+        },
+      {% endfor %}
+    ];
+  </script>
 {% endblock %}

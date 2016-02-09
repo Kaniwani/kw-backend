@@ -1,0 +1,11 @@
+.review-extra {
+  > .row {
+    @include clearfix;
+  }
+
+  .reveal-block {
+    @include media($bp-md) {
+      lost-column: 1/2 0 0;
+    }
+  }
+}

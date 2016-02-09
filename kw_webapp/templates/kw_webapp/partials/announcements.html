@@ -1,0 +1,30 @@
+<section class="announcements-section">
+  <div class="inner">
+    <h2 class="section-heading">
+      Announcements
+    </h2>
+    <ul class="accordion-list">
+      {% for item in announcements %}
+        <li class="item">
+          <article class="accordion-container">
+
+            <header class="header -toggle">
+              <h4 class="title">{{ item.title }}
+                <time class="time" pubdate="{{item.pub_date}}"> ({{ item.pub_date | date:"N d, Y" }})</time>
+              </h4>
+              <span class="icon i-downarrow" aria-hidden="true"></span>
+            </header>
+
+            <div class="wrap">
+              <div class="content">
+                <p>{{ item.body|safe }}</p>
+                <p class="author">{{ item.creator.username }}</p>
+              </div>
+            </div>
+
+          </article>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>

@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 
+# local dev database
+db.sqlite3
+
 # C extensions
 *.so
 
@@ -15,7 +18,6 @@ env/
 bin/
 build/
 develop-eggs/
-dist/
 eggs/
 lib/
 lib64/
@@ -50,7 +52,8 @@ coverage.xml
 .ropeproject
 
 # Django stuff:
-*.log
+*.log*
+logs/*.log*
 *.pot
 KW/secrets.py
 celerybeat*
@@ -106,10 +109,7 @@ $RECYCLE.BIN/
 node_modules
 .sass-cache
 .DS_Store
-build
-build/
-*-generated.*
-scss-lint-report.xml
+dist
 
 # Ignore all local backup files
 *.bak

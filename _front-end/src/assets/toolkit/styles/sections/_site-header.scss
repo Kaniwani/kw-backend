@@ -1,0 +1,46 @@
+.site-header {
+  background: $white;
+  box-shadow: $shadow-bottom-light;
+
+  > .inner {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    > .site-logo {
+      // no-flex
+      display: inline-block;
+      float: left;
+      vertical-align: middle;
+      //
+      margin: 10px;
+      margin-left: 0;
+      flex-shrink: 0;
+      align-self: center;
+      @include media($bp-nav-1) {
+        align-self: center;
+      }
+    }
+
+    > .site-nav {
+      // no-flex fallbacks
+      display: inline-block;
+      float: right;
+      vertical-align: middle;
+      //
+      max-width: calc(100% - 90px);
+      align-self: center;
+      font-size: 14px;
+
+      @include media($bp-nav-1) {
+        align-self: center;
+      }
+
+      @include media($bp-nav-2) {
+        font-size: 16px;
+      }
+    }
+  }
+}

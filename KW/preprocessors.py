@@ -1,15 +1,37 @@
-from django.db.models import Min
-from kw_webapp.models import UserSpecific
+import time
+
+from kw_webapp.constants import KANIWANI_SRS_LEVELS
+from kw_webapp.tasks import get_users_future_reviews, get_users_current_reviews, get_users_reviews
+
 
 def review_count_preprocessor(request):
     if hasattr(request, 'user'):
         if hasattr(request.user, 'profile'):
-            review_count = UserSpecific.objects.filter(user=request.user, needs_review=True).count()
+            context_dict = {}
+            review_count = get_users_current_reviews(request.user).count()
             if review_count > 0:
-                return {'review_count': review_count}
+                context_dict['review_count'] = review_count
             else:
-                reviews = UserSpecific.objects.filter(user=request.user).exclude(next_review_date=None).annotate(Min('next_review_date')).order_by('next_review_date')
+                reviews = get_users_future_reviews(request.user)
                 if reviews:
-                    next_review_timestamp = reviews[0].next_review_date
-                    return {'next_review_date': next_review_timestamp}
+                    next_review_date = reviews[0].next_review_date
+                    context_dict['next_review_date'] = next_review_date
+                    context_dict['next_review_timestamp_local'] = next_review_date.timestamp() * 1000
+                    context_dict['next_review_timestamp_utc'] = int(time.mktime(next_review_date.timetuple())) * 1000
+            return context_dict
+
     return {'review_count': 0}
+
+
+def srs_count_preprocessor(request):
+    context_dict = {}
+    if hasattr(request, 'user'):
+        if hasattr(request.user, 'profile'):
+            all_reviews = get_users_reviews(request.user)
+            if all_reviews:
+                context_dict['srs_apprentice_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['apprentice']).count()
+                context_dict['srs_guru_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['guru']).count()
+                context_dict['srs_master_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['master']).count()
+                context_dict['srs_enlightened_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['enlightened']).count()
+                context_dict['srs_burned_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['burned']).count()
+    return context_dict

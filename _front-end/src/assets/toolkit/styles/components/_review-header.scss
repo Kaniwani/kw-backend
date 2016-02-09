@@ -1,0 +1,45 @@
+.review-header {
+  > .inner {
+    position: relative;
+    @include clearfix();
+
+    > .progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    > .homelink,
+    > .statslist {
+      margin: .75em;
+    }
+
+    > .statslist {
+      @extend %plainlist;
+      float: right;
+      font-size: responsive 16px 20px;
+
+      > .item {
+        display: inline-block;
+        margin-left: 1em;
+
+        span + span {
+          margin-left: 6px;
+        }
+      }
+    }
+
+    > .homelink {
+      opacity: .8;
+      display: block;
+      float: left;
+      font-size: responsive 16px 20px;
+      transition: opacity .3s ease-out;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+

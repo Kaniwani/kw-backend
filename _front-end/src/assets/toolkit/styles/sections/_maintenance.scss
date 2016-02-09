@@ -1,0 +1,31 @@
+.maintenance {
+  $darkblue: #40496A;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: $darkblue;
+  background: image('maintenance.png') no-repeat 15% center fixed;
+  background-size: cover;
+
+  > .text {
+    padding: 0 5% 0 1%;
+    float: right;
+    text-align: right;
+
+    > * {
+      color: $white;
+      text-shadow: 2px 2px 1px rgba($darkblue, .9);
+    }
+
+    h1 {
+      line-height: 1.3;
+      color: $white;
+    }
+
+    span[lang="ja"] {
+      padding-left: 15px;
+      padding-right: 10px;
+      font-weight: 300;
+    }
+  }
+}

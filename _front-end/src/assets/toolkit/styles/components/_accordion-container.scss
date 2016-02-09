@@ -1,0 +1,77 @@
+.accordion-container {
+
+  > .header {
+    &.-toggle {
+      cursor: pointer;
+    }
+
+    .title,
+    .icon {
+      display: inline-block;
+      vertical-align: baseline;
+      &:not(:first-child) {
+        margin-left: .4em;
+      }
+    }
+
+    .title {
+      margin: 0;
+    }
+
+    .time {
+      font-size: .85em;
+    }
+
+    .icon {
+      &:before {
+        display: block;
+        color: $black;
+        font-size: 1.1em;
+        transition: transform .2s ease-in-out;
+        transform: rotate(0deg);
+      }
+    }
+  }
+
+  > .wrap {
+    transition: max-height .4s ease-out;
+    max-height: 0;
+    overflow: hidden;
+
+  > .content {
+      padding: $unit-xs $unit-sm 0;
+      ol,
+      ul {
+        @extend %plainlist;
+        li {
+          margin-bottom: 15px;
+          &:before {
+            content: '(/^▽^)/';
+            display: inline-block;
+            font-size: .95em;
+            margin-right: .5em;
+          }
+        }
+      }
+
+      .author {
+        &:before {
+          content: '—';
+          position: relative;
+          left: -5px;
+        }
+      }
+    }
+  }
+
+  &.-open {
+    > .header > .icon {
+      &:before {
+      transition: transform .2s ease-in-out;
+      transform: rotate(180deg) translateY(-2px);
+      }
+    }
+  }
+
+}
+

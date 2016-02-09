@@ -1,0 +1,23 @@
+.button {
+  cursor: pointer;
+  appearance: none;
+  outline: 0;
+  padding: .5em 1.5em;
+  border: 0;
+  border-radius: 3px;
+  transition: all .3s ease-out;
+
+  &.-disabled {
+    opacity: .5;
+    cursor: not-allowed;
+  }
+
+  &.-submit {
+    font-size: 18px;
+    background-color: $blue;
+    color: $white;
+    &:hover {
+      background-color: transparentize($blue, .2);
+    }
+  }
+}

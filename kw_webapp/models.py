@@ -2,11 +2,9 @@ import logging
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 from django.utils import timezone
-from django.utils.encoding import smart_str
-import requests
 
+from kw_webapp import constants
 
 logger = logging.getLogger("kw.models")
 
@@ -14,7 +12,7 @@ logger = logging.getLogger("kw.models")
 class Announcement(models.Model):
     title = models.CharField(max_length=255)
     body = models.TextField()
-    pub_date = models.DateTimeField('Date Published', default=timezone.now(), null=True)
+    pub_date = models.DateTimeField('Date Published', auto_now_add=True, null=True)
     creator = models.ForeignKey(User)
 
     def __str__(self):
@@ -24,8 +22,9 @@ class Announcement(models.Model):
 class Level(models.Model):
     level = models.PositiveIntegerField(validators=[
         MinValueValidator(1),
-        MaxValueValidator(50),
+        MaxValueValidator(60),
     ])
+
     def __str__(self):
         return str(self.level)
 
@@ -36,30 +35,46 @@ class Profile(models.Model):
     api_valid = models.BooleanField(default=False)
     gravatar = models.CharField(max_length=255)
     about = models.CharField(max_length=255, default="")
-    website = models.CharField(max_length=255, default="")
-    twitter = models.CharField(max_length=255, default="@Tadgh11")
+    website = models.CharField(max_length=255, default="N/A", null=True)
+    twitter = models.CharField(max_length=255, default="N/A", null=True)
     topics_count = models.PositiveIntegerField(default=0)
     posts_count = models.PositiveIntegerField(default=0)
+    title = models.CharField(max_length=255, default="Turtles", null=True)
+    join_date = models.DateField(auto_now_add=True, null=True)
     level = models.PositiveIntegerField(null=True, validators=[
-        MinValueValidator(1),
-        MaxValueValidator(50),
+        MinValueValidator(constants.LEVEL_MIN),
+        MaxValueValidator(constants.LEVEL_MAX),
     ])
+
+    #General user-changeable settings
     unlocked_levels = models.ManyToManyField(Level)
+    follow_me = models.BooleanField(default=True)
+    auto_expand_answer_on_failure = models.BooleanField(default=False)
+    auto_advance_on_success = models.BooleanField(default=False)
+    only_review_burned = models.BooleanField(default=False)
+
+    #Vacation Settings
+    on_vacation = models.BooleanField(default=False)
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
 
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')
+        x = [x[0] for x in x]
         return x
-    
+
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
 
-
+    def is_being_followed(self):
+        if self.level in self.unlocked_levels_list():
+            return True
+        else:
+            return False
 
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
 
-    def num_options(self):
+    def reading_count(self):
         return self.reading_set.all().count()
 
     def available_readings(self, level):
@@ -77,8 +92,8 @@ class Reading(models.Model):
     character = models.CharField(max_length=255)
     kana = models.CharField(max_length=255)
     level = models.PositiveIntegerField(validators=[
-        MinValueValidator(1),
-        MaxValueValidator(50),
+        MinValueValidator(constants.LEVEL_MIN),
+        MaxValueValidator(constants.LEVEL_MAX),
     ])
 
 
@@ -88,7 +103,6 @@ class Reading(models.Model):
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
-    synonyms = models.CharField(max_length=255, default=None, blank=True, null=True)
     user = models.ForeignKey(User)
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)
@@ -97,15 +111,23 @@ class UserSpecific(models.Model):
     needs_review = models.BooleanField(default=True)
     unlock_date = models.DateTimeField(default=timezone.now, blank=True)
     next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
-    burnt = models.BooleanField(default=False)
+    burned = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
+    wanikani_srs = models.CharField(max_length=255, default="unknown")
+    wanikani_srs_numeric = models.IntegerField(default=0)
+    wanikani_burned = models.BooleanField(default=False)
+
+    def can_be_managed_by(self, user):
+        return self.user == user or user.is_superuser
 
     def synonyms_list(self):
         return [synonym.text for synonym in self.synonym_set.all()]
 
     def synonyms_string(self):
-        return ",".join([synonym.text for synonym in self.synonym_set.all()])
+        return ", ".join([synonym.text for synonym in self.synonym_set.all()])
 
+    def remove_synonym(self, text):
+        self.synonym_set.remove(Synonym.objects.get(text=text))
 
     def __str__(self):
         return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
@@ -116,8 +138,6 @@ class UserSpecific(models.Model):
                                                                      self.last_studied,
                                                                      self.needs_review,
                                                                      self.unlock_date)
-
-
 
 
 class Synonym(models.Model):

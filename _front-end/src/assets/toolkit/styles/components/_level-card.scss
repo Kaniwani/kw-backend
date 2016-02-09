@@ -1,0 +1,86 @@
+$bp-level-card-1: '<500px';
+$bp-level-card-1-2: '>=500px','<680px';
+$bp-level-card-2: '>=680px';
+
+.level-card {
+  position: relative;
+  border-radius: 3px;
+  display: block;
+
+  > .wrap {
+    display: block;
+    background-color: $purple-light;
+    background-image: linear-gradient(to bottom, $purple-light, $purple);
+    background-repeat: repeat-x;
+    border-radius: 3px;
+    color: $white-light;
+    transition: background-color .6s ease-in-out;
+    overflow: hidden;
+    font-size: responsive 24px 30px;
+    min-height: 4em;
+
+    > .levelnum {
+      text-shadow: 1px 2px 2px rgba($purple-dark, .7);
+      margin: -6px 0 26px;
+      position: absolute;
+      left: 20px;
+      top: 15px;
+    }
+
+    > .icon {
+      @include tap-target(5px, 10px);
+      position: absolute;
+      font-size: 22px;
+      left: calc(100% - 32px);
+      bottom: 12px;
+
+      &.i-lock {
+        color: $black;
+        font-size: 25px;
+        line-height: 22px;
+      }
+
+      &.i-link {
+        left: 22px;
+        bottom: 10px;
+        transition: color .3s ease-out;
+        color: $white-light;
+        font-size: .85em;
+        &:hover {
+          color: $black;
+          cursor: pointer;
+        }
+      }
+
+      &.-loading {
+        left: calc(100% - 36px);
+        bottom: 15px;
+      }
+    }
+  }
+
+  &.-locked > .wrap {
+    @include bg-stripes;
+    transition: background-color .6s ease-in-out;
+    background-color: $purple-dark;
+  }
+
+  &.-locked {
+    .i-lock:hover {
+      cursor: not-allowed;
+    }
+  }
+
+  &.-unlockable > .wrap:hover {
+    .i-unlock {
+      cursor: pointer;
+      animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
+    }
+  }
+
+  &.-unlocked:hover {
+    .i-unlocked {
+      cursor: pointer;
+    }
+  }
+}

@@ -1,0 +1,24 @@
+.vocab-section {
+
+  // override layout.scss inner with double specificity
+  // beacuse vocab list is a matrix with card padding at left/right edges
+  > .inner.inner {
+    padding-left: $unit-sm / 2;
+    padding-right: $unit-sm / 2;
+
+    > .section-heading {
+      padding-left: $unit-sm / 2;
+      padding-right: $unit-sm / 2;
+    }
+
+    @include media($bp-md) {
+      padding-left: $unit-sm * 1.25;
+      padding-right: $unit-sm * 1.25;
+    }
+
+    @include media($bp-md) {
+      padding-left: $unit-sm * 1.5;
+      padding-right: $unit-sm * 1.5;
+    }
+  }
+}

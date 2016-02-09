@@ -1,0 +1,79 @@
+.vocab-list {
+  @extend %plainlist;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: stretch;
+  align-content: center;
+
+  > .vocab-card {
+    margin: $unit-xs / 2;
+    display: inline-block;
+    vertical-align: middle;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    flex: 1 1 auto;
+
+    > .vocab-base {
+      display: inline-block;
+      vertical-align: middle;
+      display: flex;
+      flex-flow: column nowrap;
+      align-content: center;
+      justify-content: center;
+      align-items: center;
+      max-width: 100%;
+      flex: 1 0 100%;
+    }
+  }
+
+  &.-correct,
+  &.-incorrect {
+    .vocab-base {
+      .readingset {
+        color: $white;
+      }
+    }
+  }
+
+   &.-correct {
+    .vocab-base {
+      background: $green;
+      // horizontal separator between readings if more than 1
+      .reading-set:not(:only-child):not(:last-of-type):after {
+        background: rgba(darken($green, 20), .4);
+      }
+      .kanji {
+        text-shadow: 0 2px 2px rgba(darken($green, 20), .7);
+      }
+      .kana,
+      .meaning {
+        text-shadow: 0 1px 2px rgba(darken($green, 20), .7);
+      }
+    }
+  }
+
+  &.-incorrect {
+    .vocab-base {
+      background: $red;
+      .reading-set:not(:only-child):not(:last-of-type):after {
+        background: rgba(darken($red, 10), .4);
+      }
+      .kanji {
+        text-shadow: 1px 1px 1px rgba(darken($red, 10), .8);
+      }
+      .kana,
+      .meaning {
+        text-shadow: 0 1px 2px rgba(darken($red, 10), .8);
+      }
+    }
+  }
+}
+
+// ugghh IE fix your flexbox >_<
+@media all and (-ms-high-contrast:none) {
+  .vocab-list > .vocab-card { height: 280px; width: 400px; } /* IE10 */
+  *::-ms-backdrop, .vocab-list > .vocab-card {height: 280px; width: 400px; } /* IE11 */
+}

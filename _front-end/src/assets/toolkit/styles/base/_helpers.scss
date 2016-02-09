@@ -1,0 +1,119 @@
+// increases clickable/hoverable/tappable area for element without increasing size visually or adding internal padding
+@mixin tap-target($Y: .5em, $X: 1em) {
+  &:after {
+    position: absolute;
+    content: '';
+    top: -$Y;
+    bottom: -$Y;
+    right: -$X;
+    left: -$X;
+  }
+}
+
+@mixin clearfix() {
+  &:after {
+    content: '';
+    display: block; // yep block, we want margin collapsing!
+    clear: both;
+  }
+}
+
+
+@mixin bg-gradient($clr) {
+  background-color: $clr;
+  background-image: linear-gradient(to bottom, #{lighten($clr, 4%)}, #{darken($clr, 4%)});
+  background-repeat: repeat-x;
+}
+
+
+// limits width and centers item
+@mixin container($width: 1260px) {
+  max-width: $width;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// angled background stripes for disabled cards
+@mixin bg-stripes($color1: rgba(#fff, .25), $color2: transparent) {
+  background-size: 6px 6px;
+  background-image: linear-gradient(-45deg, $color1 25%, $color2 25%,
+                                            $color2 50%, $color1 50%,
+                                            $color1 75%, $color2 75%, $color2);
+  background-repeat: repeat;
+}
+
+// allows background to be 100% width whilst content is contained and centered.
+@mixin full-bg($maxwidth: 1260px) {
+  $maxwidth: $maxwidth / 2;
+  padding-left: calc(50% - #{$maxwidth});
+  padding-right: calc(50% - #{$maxwidth});
+}
+
+// %placeholderclasses are used in other places as @extend %placeholderclass
+%plainlist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// reset [type="button"] styling
+%plainbutton {
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  line-height: normal;
+  overflow: visible;
+  padding: 0;
+  -webkit-appearance: button; /* for input */
+  -webkit-user-select: none; /* for button */
+     -moz-user-select: none;
+      -ms-user-select: none;
+  // pseudos
+  &::-moz-focus-inner,
+  &::-moz-focus-inner {
+      border: 0;
+      padding: 0;
+  }
+}
+
+%flexcenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+
+%visuallyhidden {
+  position: absolute;
+  height: 1px !important;
+  width: 1px !important;
+  margin: -1px !important;
+  clip: rect(0 0 0 0);
+  outline: 0;
+  overflow: hidden;
+  border: 0;
+  padding: 0;
+}
+
+// an underscore _ denotes a utility class for use in markup
+// it's intentionally ugly to discourage use
+._visuallyhidden {
+  @extend %visuallyhidden;
+}
+
+.-hidden {
+  display: none !important;
+}
+
+._strikeout {
+  text-decoration: line-through;
+}
+
+// force box for components with no height (background floating icons for example)
+// should not be used in production
+._styleguidewrap {
+  position: relative;
+  height: 300px;
+}

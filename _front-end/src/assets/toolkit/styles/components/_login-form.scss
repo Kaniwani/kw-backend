@@ -1,0 +1,78 @@
+.login-form {
+  position: relative;
+  padding: 0;
+  z-index: 2;
+
+  .alert > ul {
+    @extend %plainlist;
+    background: rgba($pink, .9);
+    padding: $unit-xs $unit-sm;
+    margin-bottom: $unit-sm;
+    border-radius: 5px;
+  }
+
+  ::-webkit-input-placeholder { /* WebKit browsers */
+    font-family: 'Source Sans Pro', sans-serif;
+    color: $white;
+  }
+
+  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    font-family: 'Source Sans Pro', sans-serif;
+    color: $white;
+    opacity:  1;
+  }
+  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    font-family: 'Source Sans Pro', sans-serif;
+    color: $white;
+    opacity:  1;
+  }
+  :-ms-input-placeholder { /* Internet Explorer 10+ */
+    font-family: 'Source Sans Pro', sans-serif;
+    color: $white;
+  }
+
+  input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+    -webkit-text-fill-color: $blue-dark !important;
+  }
+
+  input:not([type="submit"]) {
+    display: block;
+    width: 250px;
+    padding: $unit-xs $unit-sm;
+    margin: 0 auto 10px auto;
+    appearance: none;
+    outline: 0;
+    border: 1px solid transparentize($white, .6);
+    border-radius: 3px;
+    color: $white;
+    background-color: transparentize($white, .8);
+    line-height: 1.3;
+    text-align: center;
+    font-size: 18px;
+    transition: width .3s ease-out;
+
+    &:hover {
+      background-color: transparentize($white, .6);
+    }
+
+    &:focus {
+      background-color: $white;
+      width: 280px;
+      color: $blue-dark;
+    }
+  }
+
+  .button[type="submit"],
+  .button[type="submit"].-submit {
+    background-color: $white;
+    width: 250px;
+    color: $blue;
+    opacity: .9;
+
+    &:focus {
+      width: 270px;
+      opacity: 1;
+    }
+  }
+}

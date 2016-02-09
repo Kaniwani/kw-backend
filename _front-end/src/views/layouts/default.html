@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+
+	<meta charset="utf-8">
+	<meta http-equiv="x-ua-compatible" content="ie=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>{{title}}</title>
+
+	{{#if fabricator}}<link rel="stylesheet" href="{{baseurl}}/assets/fabricator/styles/f.css">{{/if}}
+
+	<!-- toolkit styles -->
+	<link rel="stylesheet" href="{{baseurl}}/assets/styles/main.css">
+
+	<!-- google fonts -->
+	<link href='https://fonts.googleapis.com/css?family=Ubuntu:700|Open+Sans:300,700,400' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+
+	{{#if fabricator}}
+		{{> f-icons}}
+		{{> f-menu}}
+		<div class="f-container">
+			{{> f-control-bar}}
+	{{/if}}
+
+
+	{% body %}
+
+
+	{{#if fabricator}}
+		</div>
+	<script src="{{baseurl}}/assets/fabricator/scripts/f.js"></script>
+	{{/if}}
+
+	<!-- toolkit scripts -->
+	<script src="{{baseurl}}/assets/scripts/global.js"></script>
+
+</body>
+</html>

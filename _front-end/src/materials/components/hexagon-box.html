@@ -1,0 +1,11 @@
+---
+notes: |
+  `avatar -{{user}}` needs a background image defined in `_hexagon-box.scss`
+  if statements are just for styleguide. In production just use `-white -djtb` classes etc
+---
+
+<div class="hexagon-box -{{#if color}}{{color}}{{else}}white{{/if}}">
+  <a href="//github.com/{{user}}" class="inner">
+    <div class="avatar -{{#if user}}{{user}}{{else}}djtb{{/if}}"></div>
+  </a>
+</div>

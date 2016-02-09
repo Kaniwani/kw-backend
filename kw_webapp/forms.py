@@ -1,7 +1,7 @@
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm
+from django.forms import ModelForm, EmailInput
 from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
@@ -20,10 +20,28 @@ class UserLoginForm(AuthenticationForm):
         self.fields['password'].widget.attrs['placeholder'] = "Password"
         self.fields['password'].label = False
         self.helper = FormHelper()
-        self.helper.add_input(Submit("submit", "Sign In", css_class='pure-button pure-button-primary'))
-        self.helper.form_class = 'login pure-form pure-form-stacked'
+        self.helper.add_input(Submit("submit", "Sign In", css_class='button -submit'))
+        self.helper.form_class = 'login-form'
         self.helper.form_method = 'post'
         self.helper.form_action = ''
+
+
+class PasswordResetFormCustom(PasswordResetForm):
+    email = forms.EmailField(
+            label=_("Email"),
+            max_length=254,
+            required=True,
+            widget=EmailInput(attrs={
+                                 "type": "email",
+                                 "id": "id_email",
+                                 "autofocus": "true",
+                                 "placeholder": "Email Address",
+                                 "required": 'true'
+            }))
+
+    def save(self, *args, **kwargs):
+        domain = "kaniwani.com"
+        super(PasswordResetFormCustom, self).save(domain_override=domain)
 
 
 class UserCreateForm(UserCreationForm):
@@ -39,10 +57,8 @@ class UserCreateForm(UserCreationForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = ''
-        self.helper.add_input(Submit("submit", "Submit"))
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-lg-3'
-        self.helper.field_class = 'col-lg-9'
+        self.helper.add_input(Submit("submit", "Submit", css_class='button -submit'))
+        self.helper.form_class = 'login-form'
         self.helper.form_style = "default"
         self.helper.help_text_inline = True
         self.helper.error_text_inline = False
@@ -74,18 +90,27 @@ class UserCreateForm(UserCreationForm):
 class SettingsForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['api_key', 'level']
-
+        fields = ['api_key', 'level',  'follow_me', 'auto_advance_on_success', 'auto_expand_answer_on_failure', 'only_review_burned']
+        help_texts = {
+            "follow_me": ("If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani."),
+        }
+        labels = {
+            "follow_me": "Follow Wanikani Progress",
+            "auto_advance_on_success": "Automatically advance to next item in review if answer was correct.",
+            "auto_expand_answer_on_failure": "Automatically show kanji and kana if you answer incorrectly.",
+            "only_review_burned": "Review only items that you have burned in Wanikani."
+        }
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = ''
+        self.helper.form_id = 'settingsForm'
+        self.helper.form_class = 'settings-form pure-form pure-form-stacked'
         self.helper.add_input(Submit("submit", "Save", css_class='pure-button pure-button-primary'))
-        self.helper.form_class = 'pure-form pure-form-stacked'
         self.helper.label_class = ''
         self.helper.field_class = 'pure-input-1'
         self.helper.form_style = "default"
-        self.helper.help_text_inline = True
+        self.helper.help_text_inline = False
         self.helper.error_text_inline = False
         super(SettingsForm, self).__init__(*args, **kwargs)
         self.fields['level'].widget.attrs['readonly'] = True
@@ -99,5 +124,3 @@ class SettingsForm(ModelForm):
                 raise ValidationError("API Key not associated with a WaniKani User!")
         print("cleaned api Key...")
         return api_key
-
-

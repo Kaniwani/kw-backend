@@ -1,0 +1,69 @@
+.reveal-block {
+
+  &:not(:only-child) {
+    &:last-child > .button {
+      border-left: none;
+    }
+  }
+
+  > .button {
+    border: 1px solid $grey-light;
+    width: 100%;
+    padding-top: .75em;
+    padding-bottom: .75em;
+    border-radius: 0;
+    background-color: rgba($grey-dark, .75);
+    color: $white;
+
+    &.-disabled {
+      overflow: hidden;
+      transition: all .1s ease-in;
+      filter: blur(1px);
+      cursor: not-allowed;
+      opacity: .85;
+    }
+
+    &:not(.-disabled):hover,
+    &:not(.-disabled):active {
+      cursor: pointer;
+      color: $white;
+      background-color: $grey-dark;
+    }
+  }
+
+  > .reveal {
+    transition: all .15s ease;
+    overflow-y: hidden;
+    max-height: 300px;
+
+    &.-hidden {
+      transition: all .15s ease;
+      max-height: 0;
+    }
+
+    > .text {
+      background-color: $white;
+      text-align: center;
+      padding: $unit-xs $unit-sm;
+      max-width: 100%;
+      font-size: responsive 26px 50px;
+      font-range: 300px 2000px;
+      line-height: 1.5;
+
+      &.-kanji {
+        box-shadow: inset 2px 0 10px -2px rgba($black-light, .15);
+      }
+
+      &.-kana {
+        box-shadow: inset -2px 0 10px -2px rgba($black-light, .15);
+      }
+
+      &.-synonyms {
+        box-shadow: inset 0 0 8px -2px rgba($black-light, .15);
+      }
+
+    }
+
+  }
+
+}

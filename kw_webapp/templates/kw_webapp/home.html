@@ -1,90 +1,20 @@
-{% extends 'kw_webapp/logged_in.html'%}
-{% load humanize %}
-{% block main %}
-{{ block.super }}
-<main>
-  <header>
-    <h1>Dashboard</h1>
-  </header>
+{% extends "kw_webapp/logged_in.html" %}
 
-{% if user.profile.api_valid %}
-    API IS VALID!!!
-{% else %}
-    API IS NOT VALID!!!
-{% endif %}
-  <section>
-    <div class="user">
-      <div class="user-overview">
-        <h2 class="user-name">{{ user.username }}</h2>
-        <div class="user-gravatar gravatar">
-          <img title="Gravatar" alt="Gravatar" src="//www.gravatar.com/avatar/{{ user.profile.gravatar }}.jpg?s=300">
-        </div>
+{% block content %}
+  {{ block.super }}
+  {% if not user.profile.api_valid %}
+    <p id="invalidApiKey" class="_visuallyhidden">Woah your API key is invalid!</br> Fix it at the <a href="{% url "kw:settings" %}">Settings page</a>.</p>
+  {% endif %}
 
-        <div class="dashboard-reviews">
-          <h2 class="visually-hidden">Reviews</h2>
-          <button class="pure-button dashboard-reviews__refresh"><span class="visually-hidden">Refresh</span><span class="fa fa-refresh"></span></button>
-          {% if review_count > 0 %}
-            <button class="pure-button dashboard-reivews__count">{{ review_count }} Review{{ review_count|pluralize }}</button>
-          {% else %}
-            <button class="pure-button dashboard-reivews__count">Next review: {{ next_review_date|naturaltime }}</button>
-          {% endif %}
-        </div>
-      </div>
-
-      <div class="user-details">
-        <div class="col">
-          <h3>Crabigator Apprentice Info</h3>
-          <ul class="user-details__list">
-            <li class="user-details__item">
-              <strong><span class="username">{{ user.username }}</span></strong> of <strong>&lt;Sect <span class="title">Turtles</span>&gt;</strong>
-            </li>
-            <li class="user-details__item">
-              <strong>Level <span class="level">{{ user.profile.level }}</span></strong> &lt;Apprentice&gt;
-            </li>
-            <li class="user-details__item">
-              Scribed <strong>&lt;<span class="topics-count">{{ user.profile.topics_count }}</span>&gt; topics</strong> &amp; <strong>&lt;<span class="posts-count">{{ user.profile.posts_count }}</span> posts&gt;</strong>
-            </li>
-            <li class="user-details__item">
-              Serving the Crabigator since <strong>&lt;<span class="join-date">May 26, 2012</span>&gt;</strong>
-            </li>
-          </ul>
-        </div>
-
-        <div class="col">
-          <h3>About {{ user.username }}</h3>
-          <p>&lt;{{ user.profile.about }}&gt;</p>
-          <ul class="user-soical">
-            <li class="user-soical__item">
-              &lt;<a href="http://www.twitter.com/{{ user.profile.twitter }}" class="user-soical__link"><span class="fa fa-twitter"></span>{{ user.profile.twitter}}</a>&gt;
-            </li>
-            <li class="user-soical__item">
-              &lt;<a href="{{ user.profile.website}}" class="user-soical__link"><span class="fa fa-link"></span>{{ user.profile.website}}</a>&gt;
-            </li>
-          </ul>
-        </div>
-      </div>
-      <!-- <p class="user-level">WaniKani Level <strong>6</strong></p> -->
-    </div>
+  <section class="user-section -fullwidth -no-section-spacing">
+    {% include 'partials/user-overview.html' %}
+    {% include 'partials/user-details.html' %}
   </section>
 
-  <section>
-    <div>
-      <h2>Announcements</h2>
-      <ul class="accordion__list">
-        {% for item in announcements %}
-        <li class="accordion__item">
-          <a href="#" class="accordion__link">{{ item.title }}</a>
-          <div class="accordion__content">{{ item.body|safe }}<br> -- <strong>{{ item.creator.username }}</strong></div>
-        </li>
-        {% endfor %}
-      </ul>
-    </div>
-  </section>
-</main>
-{% endblock %}
+  {% include 'partials/srs-dashboard.html' %}
+  {% include 'partials/announcements.html' %}
+</div>
+<!-- / .site-content -->
+{% include 'partials/site-footer.html' %}
 
-{% block footer %}
-{{ block.super }}
-<footer class="footer">
-</footer>
 {% endblock %}

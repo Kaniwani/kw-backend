@@ -1,0 +1,30 @@
+.contact-form {
+  margin-top: 30px;
+
+  * {
+    margin-bottom: 10px;
+  }
+
+  input:not([type="submit"]),
+  textarea {
+    min-width: 280px;
+    max-width: calc(90vw - 40px);
+    @include media($bp-lg) {
+      min-width: 600px;
+    }
+  }
+
+  input[type="submit"],
+  button[type="submit"] {
+    margin-top: 10px;
+    background-color: $blue-light;
+    color: white;
+    transition: all .3s ease-out;
+    &:active,
+    &:focus,
+    &:hover {
+      background-color: $blue-dark;
+    }
+  }
+
+}
