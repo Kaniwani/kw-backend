@@ -74,10 +74,13 @@ gulp.task('styles:toolkit', function () {
     .pipe(sassGlob())
 		.pipe(sass().on('error', sass.logError))
  		.pipe(postcss([
+      responsiveType(),
       lost(),
-      responsiveType()
     ]))
-		.pipe(gulpif(config.prod, nano({discardComments: {removeAll: true}})))
+		.pipe(gulpif(config.prod, nano({
+			discardComments: {removeAll: true},
+			autoprefixer: {browsers: ['last 2 versions', '> 1%']},
+		})))
 		.pipe(gulpif(!config.prod, sourcemaps.write()))
 		.pipe(gulp.dest(config.dest + '/assets/styles'))
 		.pipe(gulpif(!config.prod, reload({stream:true})));
