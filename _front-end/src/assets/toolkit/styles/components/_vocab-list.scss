@@ -8,18 +8,12 @@
 
   > .vocab-card {
     margin: $unit-xs / 2;
-    display: inline-block;
-    vertical-align: middle;
-
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
     flex: 1 1 auto;
 
     > .vocab-base {
-      display: inline-block;
-      vertical-align: middle;
-
       display: flex;
       flex-flow: column nowrap;
       align-content: center;
