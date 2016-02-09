@@ -104,8 +104,9 @@ class SettingsForm(ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = ''
+        self.helper.form_id = 'settingsForm'
+        self.helper.form_class = 'settings-form pure-form pure-form-stacked'
         self.helper.add_input(Submit("submit", "Save", css_class='pure-button pure-button-primary'))
-        self.helper.form_class = 'pure-form pure-form-stacked'
         self.helper.label_class = ''
         self.helper.field_class = 'pure-input-1'
         self.helper.form_style = "default"
