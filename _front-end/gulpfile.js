@@ -2,7 +2,7 @@
 
 // modules
 var assemble = require('fabricator-assemble');
-var csso = require('gulp-csso');
+var nano = require('gulp-cssnano');
 var del = require('del');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
@@ -61,8 +61,7 @@ gulp.task('styles:fabricator', function () {
 	gulp.src(config.src.styles.fabricator)
 		.pipe(sourcemaps.init())
 		.pipe(sass().on('error', sass.logError))
-  	.pipe(postcss([autoprefixer('> 1%')]))
-		.pipe(gulpif(config.prod, csso()))
+		.pipe(gulpif(config.prod, nano()))
 		.pipe(rename('f.css'))
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(config.dest + '/assets/fabricator/styles'))
@@ -76,10 +75,9 @@ gulp.task('styles:toolkit', function () {
 		.pipe(sass().on('error', sass.logError))
  		.pipe(postcss([
       lost(),
-      responsiveType(),
-      autoprefixer()
+      responsiveType()
     ]))
-		.pipe(gulpif(config.prod, csso()))
+		.pipe(gulpif(config.prod, nano({discardComments: {removeAll: true}})))
 		.pipe(gulpif(!config.prod, sourcemaps.write()))
 		.pipe(gulp.dest(config.dest + '/assets/styles'))
 		.pipe(gulpif(!config.prod, reload({stream:true})));
