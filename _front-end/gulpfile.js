@@ -205,9 +205,9 @@ gulp.task('default', ['clean'], function () {
 		if (!config.prod) {
 			gulp.start('serve');
 		}
-/*		if (config.prod) {
+		if (config.prod) {
 			gulp.start('stripLogs');
-		}*/
+		}
 	});
 
 });
