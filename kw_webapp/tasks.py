@@ -9,7 +9,7 @@ from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
 from datetime import timedelta, datetime
 from django.utils import timezone
-
+from django.db.models import F
 logger = logging.getLogger('kw.tasks')
 
 
@@ -38,13 +38,14 @@ def all_srs(user=None):
     hours = [4, 4, 8, 24, 72, 168, 336, 720, 2160]
     srs_level = zip(map(lambda x: past_time(x), hours), range(0, 9))
     for level in srs_level:
-        if user:
+        if user and not user.profile.on_vacation:
             review_set = UserSpecific.objects.filter(user=user,
                                                      last_studied__lte=level[0],
                                                      streak=level[1],
                                                      needs_review=False)
         else:
-            review_set = UserSpecific.objects.filter(last_studied__lte=level[0],
+            review_set = UserSpecific.objects.filter(user__profile__on_vacation=False,
+                                                     last_studied__lte=level[0],
                                                      streak=level[1],
                                                      needs_review=False)
         if review_set.count() > 0:
@@ -556,16 +557,19 @@ def pull_all_user_synonyms(user=None):
 
 
 def user_returns_from_vacation(user):
+    """
+    Called when a user disables vacation mode. A one-time pass through their reviews in order to correct their last_studied_date, and quickly run an SRS run to determine which reviews currently need to be looked at.
+    """
     logger.info("{} has returned from vacation!".format(user.username))
-    users_reviews = UserSpecific.objects.filter(user=user)
     vacation_date = user.profile.vacation_date
     if vacation_date:
+        users_reviews = UserSpecific.objects.filter(user=user)
+        users_reviews.update(needs_review=False)
         elapsed_vacation_time = timezone.now() - vacation_date
-        logger.info("timedelta is: {}".format(str(elapsed_vacation_time)))
-        for review in users_reviews:
-            logger.info(review.last_studied)
-            review.last_studied += elapsed_vacation_time
-            review.save()
-            logger.info(review.last_studied)
+        logger.info("User {} has been gone for timedelta: {}".format(user.username, str(elapsed_vacation_time)))
+        updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
+        logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
+        all_srs(user)
     user.profile.vacation_date = None
+    user.profile.on_vacation = False
     user.profile.save()
