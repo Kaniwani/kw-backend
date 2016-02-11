@@ -16,7 +16,8 @@ from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
 from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    unlock_all_possible_levels_for_user, sync_user_profile_with_wk, sync_with_wk, get_wanikani_level_by_api_key, get_users_current_reviews
+    unlock_all_possible_levels_for_user, sync_user_profile_with_wk, sync_with_wk, get_wanikani_level_by_api_key, get_users_current_reviews, \
+    user_returns_from_vacation
 import logging
 
 logger = logging.getLogger("kw.views")
@@ -35,17 +36,25 @@ class Settings(UpdateView):
         # re-unlock current level is user now wants to be followed.
         # if not self.request.user.profile.follow_me and form.cleaned_data['follow_me']:
         was_following = self.request.user.profile.follow_me
+        was_on_vacation = self.request.user.profile.on_vacation
         self.object = form.save(commit=False)
         self.object.api_valid = True
+        user = User.objects.get(username=self.request.user.username)
         if not was_following and self.object.follow_me:  # if user swaps from non-following to following, sync them.
             self.object.level = get_wanikani_level_by_api_key(self.object.api_key)
             self.object.unlocked_levels.get_or_create(level=self.object.level)
             self.object.save()
             unlock_eligible_vocab_from_levels(self.object.user, self.object.level)
-            user = User.objects.get(username=self.request.user.username)
             sync_user_profile_with_wk(user)
         else:
             self.object.save()
+
+        if was_on_vacation and not self.object.on_vacation:
+            user_returns_from_vacation(user)
+        elif not was_on_vacation and self.object.on_vacation:
+            user.profile.vacation_date = timezone.now()
+            user.profile.save()
+
 
         logger.info("Saved Settings changes for {}.".format(self.request.user.username))
         return HttpResponseRedirect(reverse_lazy("kw:settings"))

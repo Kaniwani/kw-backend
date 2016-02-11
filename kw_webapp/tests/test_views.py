@@ -21,7 +21,7 @@ class TestViews(TestCase):
         self.user.save()
         create_profile(self.user, "some_key", 5)
         # create a piece of vocab with one reading.
-        self.vocabulary = create_vocab("cat")
+        self.vocabulary = create_vocab("radioactive bat")
         self.cat_reading = create_reading(self.vocabulary, "kana", "kanji", 5)
 
         # setup a review with two synonyms
@@ -55,7 +55,7 @@ class TestViews(TestCase):
         generic_view = kw_webapp.views.Review.as_view()
         response = generic_view(request)
 
-        self.assertContains(response, "cat, minou, chatte!")
+        self.assertContains(response, "radioactive bat, minou, chatte!")
 
     def test_review_page_shows_only_burnt_items_when_setting_is_enabled(self):
         word = create_vocab("phlange")
@@ -70,7 +70,7 @@ class TestViews(TestCase):
         view = kw_webapp.views.Review.as_view()
         response = view(request)
 
-        self.assertNotContains(response, "cat")
+        self.assertNotContains(response, "radioactive bat")
         self.assertContains(response, "phlange")
 
 
@@ -87,7 +87,7 @@ class TestViews(TestCase):
         view = kw_webapp.views.Review.as_view()
         response = view(request)
 
-        self.assertContains(response, "cat")
+        self.assertContains(response, "radioactive bat")
         self.assertContains(response, "phlange")
 
 
