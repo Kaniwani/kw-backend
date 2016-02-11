@@ -1,8 +1,12 @@
 import wanakana from '../vendor/wanakana.min';
 import { revealToggle } from '../components/revealToggle';
 
-//Grab CSRF token off of dummy form.
-const CSRF = $('#csrf').val();
+// would really like to do a massive refactor, break out some functions as importable helpers
+// undecided how I want to reorganise but it has become spaghetti and hard to reason about
+// might use react just for reviews - since the template is only used to load in the review object
+// instead we could load the page with a <div id="reactReview"></div> and ajax in the data
+// and have much better organisation / handling of state
+
 
 let KW,
     currentVocab,
@@ -25,7 +29,14 @@ let KW,
     $detailKana = $('#detailKana'),
     $submitButton = $('#submitAnswer'),
     $detailKanji = $('#detailKanji'),
-    $progressBar = $('.progress-bar > .value');
+    $progressBar = $('.progress-bar > .value'),
+// http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
+// not including half-width katakana / roman letters since they should be considered typos
+    japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
+
+const onlyJapaneseChars = str => [...str].every(c => japRegex.test(c));
+//Grab CSRF token off of dummy form.
+const CSRF = $('#csrf').val();
 
 function init() {
   // if not on reviews page do nothing
@@ -133,16 +144,13 @@ function compareAnswer() {
   if (answer.endsWith('n')) {
     answer = answer.slice(0, -1) + 'ん';
   }
-  //Ensure answer is full hiragana
-  if (!wanakana.isHiragana(answer)) {
-    let charCodesAnswer = [...answer].map(c => c.charCodeAt(0));
-    // greater than basic latin [0-9Aa-Zz] etc and not in katakana charcode range
-    // not explicitly checking for kanji here - but user shouldn't be entering spanish for example..!
-    if (charCodesAnswer.every(x => x > 127 && x < 65345 || x > 65370)) {
-      imeInput = true;
-    } else {
-      return nonHiraganaAnswer();
-    }
+
+  if (onlyJapaneseChars(answer)) {
+    // user used japanese IME, proceed
+    imeInput = true;
+  } else if (!wanakana.isHiragana(answer)) {
+    // user used english that couldn't convert to full hiragana - don't proceed
+     return nonHiraganaAnswer();
   }
 
   const inReadings = () => $.inArray(answer, currentVocab.readings) != -1;
