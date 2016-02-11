@@ -18,10 +18,7 @@ Object.assign($.timeago.settings.strings, {
 	year: 'a year',
 })
 
-let recentlySynced,
-		KW,
-		$refreshButton,
-		$reviewButton;
+let KW;
 
 function init() {
 	// let's update storage KW with any template provided changes
@@ -32,13 +29,22 @@ function init() {
 
 	// are we on home page?
 	if (window.location.pathname === '/kw/') {
-		$refreshButton = $("#forceSrs");
-		$reviewButton = $("#reviewCount");
-		recentlySynced = simpleStorage.get('recentlySynced');
+		let $refreshButton = $("#forceSrs");
+		let $reviewButton = $("#reviewCount");
+		// TODO: make util functions that get & merge KW from storage with given object
+		// something like (although we still need to sanitize KW.settings and KW.nextReview ... hmm..)
+		// const mergeWithStorageKW = obj => {
+		// 	let KW = Object.assign(simpleStorage.get('KW') || {}, obj);
+		// 	simpleStorage.set('KW', KW);
+		// 	return KW; // so we can do local scope let KW = mergeWithStorageKW(window.KW);
+		// }
+		//
+		// TODO: store on KW object?
+		let recentlySynced = simpleStorage.get('recentlySynced');
 
 		if (recentlySynced !== true) syncUser();
 		if (!KW.settings.onVacation) {
-			updateReviewTime();
+			updateReviewTime($reviewButton);
 			KW.reviewTimer = setInterval(updateReviewTime, 20000 /*ms*/);
 		}
 
@@ -52,7 +58,7 @@ function init() {
 	}
 }
 
-function updateReviewTime() {
+function updateReviewTime($el) {
 	let now = Date.now(),
 			next = Date.parse(KW.nextReview)
 
@@ -60,7 +66,7 @@ function updateReviewTime() {
 		refreshReviews();
 		clearInterval(KW.reviewTimer);
 	} else {
-		$reviewButton.text(`Next review: ${$.timeago(KW.nextReview)}`);
+		$el.text(`Next review: ${$.timeago(KW.nextReview)}`);
 	}
 }
 

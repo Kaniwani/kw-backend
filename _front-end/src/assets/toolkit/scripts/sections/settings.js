@@ -7,9 +7,9 @@ function init() {
 
     // if settings saved last time we were on page - notify user because page just refreshed on form submit
     if (!!saved) {
-       simpleStorage.deleteKey('settingsSaved');
+      simpleStorage.deleteKey('settingsSaved');
       // animation on page load can be a bit janky - let's delay notification slightly
-       setTimeout(() => notie.alert(1, 'Settings saved!', 2), 750);
+      setTimeout(() => notie.alert(1, 'Settings saved!', 2), 750);
     }
 
     // on form submit, set flag for notification
