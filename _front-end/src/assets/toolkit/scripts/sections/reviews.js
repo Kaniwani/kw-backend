@@ -50,7 +50,7 @@ function init() {
 
   // event listeners
   wanakana.bind($userAnswer.get(0));
-  $userAnswer.keypress(handleShortcuts);
+  $userAnswer.keydown(handleShortcuts);
 
   // rotate or record on 'submit'
   $submitButton.click(enterPressed);
@@ -124,6 +124,7 @@ String.prototype.endsWith = function(suffix) {
 
 function compareAnswer() {
   let answer = $userAnswer.val();
+  let imeInput = false;
 
   if(answer === '') return;
   console.log('Comparing', answer, 'with vocab item:', currentVocab.meaning);
@@ -132,17 +133,27 @@ function compareAnswer() {
   if (answer.endsWith('n')) {
     answer = answer.slice(0, -1) + 'ん';
   }
-
   //Ensure answer is full hiragana
   if (!wanakana.isHiragana(answer)) {
-    return nonHiraganaAnswer();
+    let charCodesAnswer = [...answer].map(c => c.charCodeAt(0));
+    // greater than basic latin [0-9Aa-Zz] etc and not in katakana charcode range
+    // not explicitly checking for kanji here - but user shouldn't be entering spanish for example..!
+    if (charCodesAnswer.every(x => x > 127 && x < 65345 || x > 65370)) {
+      imeInput = true;
+    } else {
+      return nonHiraganaAnswer();
+    }
   }
 
-  //Checking if the user's answer exists in valid readings.
-  if ($.inArray(answer, currentVocab.readings) != -1) {
+  const inReadings = () => $.inArray(answer, currentVocab.readings) != -1;
+  const inCharacters = () => $.inArray(answer, currentVocab.characters) != -1;
+
+  if (inReadings() || inCharacters()) {
     markRight();
     //Fills the correct kanji into the input field based on the user's answers
-    $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
+    if (!imeInput) {
+      $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
+    }
     processAnswer({correct: true});
     if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 900);
   }
@@ -197,7 +208,7 @@ function recordAnswer(userID, correctness, previouslyWrong) {
 
 function ignoreAnswer() {
   $userAnswer.addClass('shake');
-  setTimeout(() => rotateVocab({ignored: true}), 700);
+  setTimeout(() => rotateVocab({ignored: true}), 600);
 }
 
 function clearColors() {
@@ -258,7 +269,6 @@ function revealAnswers({kana, kanji} = {}) {
 }
 
 function rotateVocab({ignored = false, correct = false} = {}) {
-
   if (ignored) {
     // put ignored answer back onto end of review queue
     remainingVocab.push(currentVocab);
@@ -279,11 +289,11 @@ function rotateVocab({ignored = false, correct = false} = {}) {
   // guard against 0 / 0 (when first answer ignored)
   let percentCorrect = Math.floor((correctTotal / answeredTotal) * 100) || 0;
   console.log(`
-    remain length: ${remainingVocab.length},
-    vocab: ${remainingVocab.map(x => x.meaning.split(',')[0])},
-    correcttotal: ${correctTotal},
-    answertotal: ${answeredTotal},
-    correct: ${percentCorrect}`
+    remainingVocab.length: ${remainingVocab.length},
+    currentVocab: ${currentVocab.meaning},
+    correctTotal: ${correctTotal},
+    answeredTotal: ${answeredTotal},
+    percentCorrect: ${percentCorrect}`
   );
   $reviewsCorrect.html(percentCorrect);
   $meaning.html(currentVocab.meaning);
@@ -333,8 +343,8 @@ function handleShortcuts(ev) {
     else if (ev.which == 70 || ev.which == 102) {
       revealAnswers();
     }
-    //Pressing I ignores answer when input is marked incorrect
-    else if (ev.which == 73 || ev.which == 105) {
+    //Pressing I or backspace/del ignores answer when input has been marked incorrect
+    else if (ev.which == 73 || ev.which == 105 || ev.which == 8 || ev.which == 46) {
       if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
     }
   }
