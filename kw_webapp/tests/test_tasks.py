@@ -1,18 +1,22 @@
 from copy import deepcopy
 
+from datetime import timedelta
 from django.test import TestCase, RequestFactory
 import responses
+
+from django.utils import timezone
 
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific, Profile
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
     build_API_sync_string_for_user, add_synonyms_from_api_call_to_review, sync_unlocked_vocab_with_wk, \
-    lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels
+    lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
+    user_returns_from_vacation
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile
 
 
-class TestCeleryTasks(TestCase):
+class TestTasks(TestCase):
     def setUp(self):
         self.user = create_user("Tadgh")
         create_profile(self.user, "any_key", 5)
@@ -130,3 +134,22 @@ class TestCeleryTasks(TestCase):
 
         self.assertEqual(newly_synced_review.wanikani_srs, "apprentice")
         self.assertEqual(newly_synced_review.wanikani_srs_numeric, 3)
+
+    def test_user_returns_from_vacation_correctly_increments_(self):
+        self.user.profile.on_vacation = True
+
+        now = timezone.now()
+        an_hour_ago = now - timedelta(hours=1)
+        two_hours_ago = now - timedelta(hours=2)
+
+        self.user.profile.vacation_date = an_hour_ago
+        self.user.profile.save()
+        self.review.last_studied = two_hours_ago
+        self.review.save()
+
+        user_returns_from_vacation(self.user)
+
+        review = UserSpecific.objects.get(pk=self.review.id)
+
+        self.assertNotEqual(review.last_studied, self.review.last_studied)
+        self.assertAlmostEqual(review.last_studied, an_hour_ago, delta=timedelta(seconds=1))

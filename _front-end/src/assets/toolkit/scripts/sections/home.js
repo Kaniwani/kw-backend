@@ -35,10 +35,12 @@ function init() {
 		$refreshButton = $("#forceSrs");
 		$reviewButton = $("#reviewCount");
 		recentlySynced = simpleStorage.get('recentlySynced');
-		KW.reviewTimer = setInterval(updateReviewTime, 20000); // every 20 seconds
 
 		if (recentlySynced !== true) syncUser();
-		updateReviewTime();
+		if (!KW.settings.onVacation) {
+			updateReviewTime();
+			KW.reviewTimer = setInterval(updateReviewTime, 20000 /*ms*/);
+		}
 
 		// event handlers
 		$refreshButton.click(() => refreshReviews());

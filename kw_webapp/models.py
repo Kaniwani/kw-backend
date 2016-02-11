@@ -53,6 +53,10 @@ class Profile(models.Model):
     auto_advance_on_success = models.BooleanField(default=False)
     only_review_burned = models.BooleanField(default=False)
 
+    #Vacation Settings
+    on_vacation = models.BooleanField(default=False)
+    vacation_date = models.DateTimeField(default=None, null=True, blank=True)
+
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')
         x = [x[0] for x in x]
