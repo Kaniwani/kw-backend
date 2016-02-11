@@ -568,6 +568,7 @@ def user_returns_from_vacation(user):
         elapsed_vacation_time = timezone.now() - vacation_date
         logger.info("User {} has been gone for timedelta: {}".format(user.username, str(elapsed_vacation_time)))
         updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
+        users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
         logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
         all_srs(user)
     user.profile.vacation_date = None
