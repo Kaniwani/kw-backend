@@ -20,7 +20,7 @@ class TestTasks(TestCase):
     def setUp(self):
         self.user = create_user("Tadgh")
         create_profile(self.user, "any_key", 5)
-        self.vocabulary = create_vocab("cat")
+        self.vocabulary = create_vocab("radioactive bat")
         self.review = create_userspecific(self.vocabulary, self.user)
 
     def test_userspecifics_needing_review_are_flagged(self):
@@ -33,7 +33,7 @@ class TestTasks(TestCase):
 
     def test_get_vocab_by_meaning_gets_correct_vocab(self):
         vocab_id = self.vocabulary.id
-        found_vocab = get_vocab_by_meaning("cat")
+        found_vocab = get_vocab_by_meaning("radioactive bat")
         self.assertEqual(vocab_id, found_vocab.id)
 
     def test_get_vocab_by_meaning_raises_error_on_unknown_meaning(self):
