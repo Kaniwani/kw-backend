@@ -13,12 +13,8 @@
       <span class="i-refresh"></span>
     </button>
     {% if user.profile.on_vacation %}
-        <a id="reviewCountBREAKINGJS" href="{% url "kw:home" %}" class="pure-button button -disabled" role="button" >
-            {% comment %}
-            TODO @Subversity so i bastardized the ID of this element, since the JS auto-replaces it on load if i dont.
-            Not sure if you want to disable the JS magic or what you wanna do with it.
-            {% endcomment %}
-            On Vacation!
+        <a id="reviewCount" href="{% url "kw:home" %}" class="pure-button button -disabled" role="button" >
+          On Vacation!
         </a>
     {% elif review_count > 0 %}
       <a id="reviewCount" href="{% url "kw:review" %}" class="pure-button button" role="button" >
