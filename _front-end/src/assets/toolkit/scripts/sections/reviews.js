@@ -30,8 +30,8 @@ let KW,
     $submitButton = $('#submitAnswer'),
     $detailKanji = $('#detailKanji'),
     $progressBar = $('.progress-bar > .value'),
-// http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
-// not including half-width katakana / roman letters since they should be considered typos
+    // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
+    // not including *half-width katakana / roman letters* since they should be considered typos
     japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
 
 const onlyJapaneseChars = str => [...str].every(c => japRegex.test(c));
