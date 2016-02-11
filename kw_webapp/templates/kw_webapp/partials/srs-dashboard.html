@@ -1,5 +1,14 @@
 <div class="srs-dashboard">
   <ul class="list">
+      {% comment %}
+      TODO @Subversity
+      Change these to links of the following fashion:
+      <a href={% url 'kw:vocab_level' 'apprentice' %}>Apprentice vocab</a>
+      <a href={% url 'kw:vocab_level' 'guru' %}>Guru vocab</a>
+      <a href={% url 'kw:vocab_level' 'master' %}>Master vocab</a>
+      <a href={% url 'kw:vocab_level' 'enlightened' %}>Enlightened vocab</a>
+      <a href={% url 'kw:vocab_level' 'burned' %}>Burned vocab</a>
+      {% endcomment %}
     <li class="item -apprentice">
       <p class="count">{{ srs_apprentice_count }}</p>
       <h5 class="title">Apprentice</h5>
