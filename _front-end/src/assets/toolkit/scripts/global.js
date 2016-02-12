@@ -22,7 +22,7 @@ import summary from './sections/summary';
 import settings from './sections/settings';
 
 $(document).ready(() => {
-
+  levelVocab.init(); // first so smoothscroll on deeplink can activate as early as possible
   invalidApiKey.init();
   expandToggle.init();
   revealToggle.init();
@@ -30,7 +30,6 @@ $(document).ready(() => {
   login.init();
   home.init();
   vocab.init();
-  levelVocab.init();
   reviews.init();
   summary.init();
   settings.init();
