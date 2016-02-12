@@ -23,8 +23,11 @@ function init() {
 
 function smoothScrollDeepLink() {
   let hash = smoothScroll.escapeCharacters(window.location.hash); // Escape the hash
-  smoothScroll.animateScroll(hash, null /* toggle */, {offset: 50});
-  document.querySelector(hash).classList.add('-standout');
+  let el = document.querySelector(hash);
+  if (el != null) {
+    smoothScroll.animateScroll(hash, null /* toggle */, {offset: 50});
+    el.classList.add('-standout');
+  }
 }
 
 function handleIconClick(event) {
