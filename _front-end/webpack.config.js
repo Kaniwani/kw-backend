@@ -26,8 +26,9 @@ module.exports = function(fabricatorConfig) {
 	  plugins: [
 	    new webpack.ProvidePlugin({
 	      $: 'jquery',
+	      notie: 'notie',
 	      simpleStorage: 'simplestorage.js',
-	      notie: 'notie'
+	      smoothScroll: 'smooth-scroll',
 	    })
 	  ],
 		cache: {}

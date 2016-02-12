@@ -3,41 +3,28 @@ let CSRF,
     $cards;
 
 function init() {
-  $vocabList = $('.vocab-list');
-  // only run on vocab page
-  if(/vocabulary\/\d+/.test(window.location.pathname)) {
+  // catch any window hashes if we arrived from summary page before anything else
+  if (window.location.hash) {
+    smoothScroll.init();
+    smoothScrollDeepLink();
+  }
+
+  // only run on secondary vocab page
+  if(/vocabulary\/\.+\//.test(window.location.pathname)) {
+    alert('hi')
+    $vocabList = $('.vocab-list');
     CSRF = $('#csrf').val();
     $cards = $vocabList.find('.vocab-card');
-
-
-// im no longer imported at top of file.
-// seems flexbox is adjusting okay and we don't need this anymore
-// keeping it for a few commits then feel free to blow away the function
-//    if(im.greaterThan('md')) adjustCardHeight($cards);
-
-    // if user has deeplinked from summary or elsewhere let's draw attention to the card
-    let specificVocab = (window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/) || [])[1];
-    if (specificVocab) $(specificVocab).addClass('-standout');
 
     // Attach events
     $cards.on('click', '.icon', handleIconClick);
   }
 }
 
-// refactor to use accordiontoggle
-function toggleVocabExpand(event) {
-  event.preventDefault();
-  $(this).closest('.vocab-card').toggleClass('-expanded');
-}
-
-// force really tall cards to layout horizontal
-function adjustCardHeight($list) {
-  $list.each((i, el) => {
-    let $text = $(el).find('.meaning').text();
-    if($text.length >= 70) {
-      $(el).css('flex', '2 1 60%');
-    }
-  });
+function smoothScrollDeepLink() {
+  let hash = smoothScroll.escapeCharacters(window.location.hash); // Escape the hash
+  smoothScroll.animateScroll(hash, null /* toggle */, {offset: 50});
+  document.querySelector(hash).classList.add('-standout');
 }
 
 function handleIconClick(event) {
@@ -60,7 +47,6 @@ function toggleClasses($icon, $card) {
 
 const api = {
   init,
-  adjustCardHeight,
 };
 
 export default api;
