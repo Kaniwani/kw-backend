@@ -396,6 +396,7 @@ class Review(ListView):
 
         user = self.request.user
         res = get_users_current_reviews(user).order_by('?')
+        print(res.all())
         return res
 
     @method_decorator(login_required)
