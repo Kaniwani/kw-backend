@@ -1,48 +1,56 @@
 import wanakana from '../vendor/wanakana.min';
-import strToBoolean from '../util/strToBoolean';
 import { revealToggle } from '../components/revealToggle';
 
- //Grab CSRF token off of dummy form.
-const CSRF = $('#csrf').val();
+// would really like to do a massive refactor, break out some functions as importable helpers
+// undecided how I want to reorganise but it has become spaghetti and hard to reason about
+// might use react just for reviews - since the template is only used to load in the review object
+// instead we could load the page with a <div id="reactReview"></div> and ajax in the data
+// and have much better organisation / handling of state
 
-// extract to user = { settings } then can add more user details as needed?
-let userSettings,
-  // extract to session = { currentVocab } then call session.currentVocab etc?
-  currentVocab,
-  remainingVocab,
-  startCount,
-  correctTotal = 0,
-  answeredTotal = 0,
-  answerCorrectness = [],
-  // extract to UI = { reviewsLeft: $('#reviewsLeft') } then call UI.reviewsLeft etc?
-  $reviewsLeft = $('#reviewsLeft'),
-  $meaning = $('#meaning'),
-  $streakIcon = $('.streak > .icon'),
-  $userID = $('#us-id'),
-  $reviewsDone = $('#reviewsDone'),
-  $reviewsCorrect = $('#reviewsCorrect'),
-  $reveal = $('.reveal'),
-  $answerForm = $('.answerForm'),
-  $userAnswer = $('#userAnswer'),
-  $detailKana = $('#detailKana'),
-  $submitAnswer = $('#submitAnswer'),
-  $detailKanji = $('#detailKanji'),
-  $progressBar = $('.progress-bar > .value');
+
+let KW,
+    currentVocab,
+    remainingVocab,
+    startCount,
+    correctTotal = 0,
+    answeredTotal = 0,
+    answerCorrectness = [],
+    $reviewsLeft = $('#reviewsLeft'),
+    $meaning = $('#meaning'),
+    $streakIcon = $('.streak > .icon'),
+    $ignoreButton = $('#ignoreAnswer'),
+    $userID = $('#us-id'),
+    $srsUp = $('#srsUp > .content'),
+    $reviewsDone = $('#reviewsDone'),
+    $reviewsCorrect = $('#reviewsCorrect'),
+    $reveal = $('.reveal'),
+    $answerPanel = $('#answerpanel'),
+    $userAnswer = $('#userAnswer'),
+    $detailKana = $('#detailKana'),
+    $submitButton = $('#submitAnswer'),
+    $detailKanji = $('#detailKanji'),
+    $progressBar = $('.progress-bar > .value'),
+    // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
+    // not including *half-width katakana / roman letters* since they should be considered typos
+    japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
+
+const onlyJapaneseChars = str => [...str].every(c => japRegex.test(c));
+//Grab CSRF token off of dummy form.
+const CSRF = $('#csrf').val();
 
 function init() {
   // if not on reviews page do nothing
   if (!/review/.test(window.location.pathname)) return;
 
   // set initial values
-  userSettings = strToBoolean(window.KWuserSettings);
-  remainingVocab = window.KWsessionVocab;
+  KW = simpleStorage.get('KW');
+  remainingVocab = window.KW.sessionVocab;
   startCount = remainingVocab.length;
 
-  console.log('\nLength:', startCount, '\nSettings:', userSettings);
+  console.log('Settings:', KW.settings);
 
-  $reviewsLeft.text(startCount)
+  $reviewsLeft.text(startCount - 1)
   currentVocab = remainingVocab.shift();
-  console.log(currentVocab);
   $userID.val(currentVocab.user_specific_id);
 
   $detailKana.kana = $detailKana.find('.-kana');
@@ -53,28 +61,41 @@ function init() {
 
   // event listeners
   wanakana.bind($userAnswer.get(0));
-  $userAnswer.keypress(handleShortcuts);
+  $userAnswer.keydown(handleShortcuts);
 
   // rotate or record on 'submit'
-  $submitAnswer.click(enterPressed);
-  $answerForm.submit(enterPressed);
+  $submitButton.click(enterPressed);
+  $answerPanel.submit(enterPressed);
+  $ignoreButton.click(ignoreAnswer);
 
   // ask a question
   $meaning.html(currentVocab.meaning);
   $userAnswer.focus();
 }
 
-function updateStreak() {
-  let streak = currentVocab.streak;
-  let iconClass = 'icon ' + (streak > 8 ? 'i-burned' :
-                             streak > 7 ? 'i-enlightened' :
-                             streak > 5 ? 'i-master' :
-                             streak > 2 ? 'i-guru'
-                                        : 'i-apprentice');
+function getSrsRank(num) {
+  return num > 8 ? 'burned' :
+         num > 7 ? 'enlightened' :
+         num > 5 ? 'master' :
+         num > 2 ? 'guru' : 'apprentice';
+}
 
-  $streakIcon.attr('class', iconClass);
-  console.log($streakIcon.closest('.streak').get(0));
-  $streakIcon.closest('.streak').attr('data-hint', iconClass.slice(7));
+function updateStreak() {
+  let rank = getSrsRank(currentVocab.streak);
+  $streakIcon.attr('class', `icon i-${rank}`)
+  $streakIcon.closest('.streak').attr('data-hint', `${rank}`);
+}
+
+function streakLevelUp() {
+  let rank = getSrsRank(currentVocab.streak);
+  let newRank = getSrsRank(currentVocab.streak + 1);
+
+  // if we went up a rank
+  if (newRank !== rank) {
+    $srsUp.attr('data-after', newRank).addClass(`-animating -${newRank}`);
+    $streakIcon.attr('class', `icon i-${newRank} -marked`)
+               .closest('.streak').attr('data-hint', `${newRank}`);
+  }
 }
 
 function updateKanaKanjiDetails() {
@@ -83,14 +104,14 @@ function updateKanaKanjiDetails() {
 }
 
 function makePost(path, params) {
-  var form = document.createElement('form');
+  let form = document.createElement('form');
   form.setAttribute('method', 'post');
   form.setAttribute('action', path);
   form.setAttribute('class', '_visuallyhidden');
 
-  for (var key in params) {
+  for (let key in params) {
     if (params.hasOwnProperty(key)) {
-      var hiddenField = document.createElement('input');
+      let hiddenField = document.createElement('input');
       hiddenField.setAttribute('type', 'hidden');
       hiddenField.setAttribute('name', key);
       hiddenField.setAttribute('value', params[key]);
@@ -113,11 +134,10 @@ String.prototype.endsWith = function(suffix) {
 
 
 function compareAnswer() {
-  let correct,
-    previouslyWrong,
-    currentUserID = $userID.val(),
-    answer = $userAnswer.val();
+  let answer = $userAnswer.val();
+  let imeInput = false;
 
+  if(answer === '') return;
   console.log('Comparing', answer, 'with vocab item:', currentVocab.meaning);
 
   //Fixing the terminal n.
@@ -125,48 +145,61 @@ function compareAnswer() {
     answer = answer.slice(0, -1) + 'ん';
   }
 
-  //Ensure answer is full hiragana
-  if (!wanakana.isHiragana(answer)) {
-    return nonHiraganaAnswer();
-  } else if(answer === '') {
-    return;
+  if (onlyJapaneseChars(answer)) {
+    // user used japanese IME, proceed
+    imeInput = true;
+  } else if (!wanakana.isHiragana(answer)) {
+    // user used english that couldn't convert to full hiragana - don't proceed
+     return nonHiraganaAnswer();
   }
 
-  //Checking if the user's answer exists in valid readings.
-  else if ($.inArray(answer, currentVocab.readings) != -1) {
-    //Ensures this is the first time the vocab has been answered in this session, so it goes in the right
-    //container(incorrect/correct)
-    if ($.inArray(currentUserID, Object.keys(answerCorrectness)) == -1) {
-      answerCorrectness[currentUserID] = 1;
-      previouslyWrong = false;
+  const inReadings = () => $.inArray(answer, currentVocab.readings) != -1;
+  const inCharacters = () => $.inArray(answer, currentVocab.characters) != -1;
 
-    } else {
-      previouslyWrong = true;
-    }
-    correct = true;
-    rightAnswer();
-    var answerIndex = $.inArray(answer, currentVocab.readings);
+  if (inReadings() || inCharacters()) {
+    markRight();
     //Fills the correct kanji into the input field based on the user's answers
-    $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
+    if (!imeInput) {
+      $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
+    }
+    processAnswer({correct: true});
+    if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 900);
   }
   //answer was not in the known readings.
   else {
-    if ($.inArray(currentUserID, Object.keys(answerCorrectness)) == -1) {
-      answerCorrectness[currentUserID] = -1;
-      previouslyWrong = false
-    } else {
-      answerCorrectness[currentUserID] -= 1;
-      previouslyWrong = true
-    }
-    wrongAnswer();
-    correct = false;
+    markWrong();
+    // don't processAnswer() here
+    // wait for submission or ignore answer - which is handled by event listeners for submit/enter
+    if (KW.settings.showCorrectOnFail) revealAnswers();
   }
 
-  if (!correct && userSettings.showCorrectOnFail) revealAnswers();
-  if (correct && userSettings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 800);
-
-  recordAnswer(currentUserID, correct, previouslyWrong); //record answer as true
   enableButtons();
+}
+
+function processAnswer({correct} = {}) {
+  let previouslyWrong,
+      currentUserID = $userID.val();
+
+  if (correct === true) {
+    // Ensures this is the first time the vocab has been answered in this session, so it goes in the right container(incorrect/correct)
+    if ($.inArray(currentUserID, Object.keys(answerCorrectness)) == -1) {
+      answerCorrectness[currentUserID] = 1;
+      previouslyWrong = false;
+    } else {
+      previouslyWrong = true;
+    }
+    correctTotal += 1;
+    updateProgressBar(correctTotal / startCount * 100);
+
+  } else if (correct === false) {
+    answerCorrectness[currentUserID] = -1;
+    previouslyWrong = true;
+    currentVocab.streak -= 1;
+    remainingVocab.push(currentVocab);
+  }
+
+  answeredTotal += 1;
+  recordAnswer(currentUserID, correct, previouslyWrong); // record on server
 }
 
 function recordAnswer(userID, correctness, previouslyWrong) {
@@ -176,12 +209,14 @@ function recordAnswer(userID, correctness, previouslyWrong) {
       csrfmiddlewaretoken: CSRF,
       wrong_before: previouslyWrong
     })
-    .done(() => {
-      // anything need
-    })
     .always(res => {
       console.log(res);
     });
+}
+
+function ignoreAnswer() {
+  $userAnswer.addClass('shake');
+  setTimeout(() => rotateVocab({ignored: true}), 600);
 }
 
 function clearColors() {
@@ -193,35 +228,36 @@ function nonHiraganaAnswer() {
   $userAnswer.addClass('-invalid');
 }
 
-function wrongAnswer() {
+function markWrong() {
   clearColors();
   $userAnswer.addClass('-marked -incorrect');
   $streakIcon.addClass('-marked');
-  answeredTotal += 1;
-  remainingVocab.push(currentVocab);
+  $ignoreButton.removeClass('-hidden');
 }
 
-function rightAnswer() {
+function markRight() {
   clearColors();
   $userAnswer.addClass('-marked -correct');
   $streakIcon.addClass('-marked');
-  correctTotal += 1;
-  answeredTotal += 1;
-  updateProgressBar(correctTotal / startCount * 100);
+  streakLevelUp();
 }
 
 function updateProgressBar(percent) {
   $progressBar.css('width', percent + '%');
 }
 
-function newVocab() {
+function resetAnswerField() {
   clearColors();
   updateStreak();
+  $srsUp.removeClass('-animating');
+  $userAnswer.removeClass('shake');
   $userAnswer.val('');
   $userAnswer.focus();
 }
 
 function disableButtons() {
+  $reveal.addClass('-hidden');
+  $ignoreButton.addClass('-hidden');
   $detailKanji.find('.button').addClass('-disabled');
   $detailKana.find('.button').addClass('-disabled');
 }
@@ -240,10 +276,11 @@ function revealAnswers({kana, kanji} = {}) {
   }
 }
 
-function rotateVocab() {
-  $reviewsLeft.html(remainingVocab.length);
-  $reviewsDone.html(correctTotal);
-  $reviewsCorrect.html(Math.floor((correctTotal / answeredTotal) * 100));
+function rotateVocab({ignored = false, correct = false} = {}) {
+  if (ignored) {
+    // put ignored answer back onto end of review queue
+    remainingVocab.push(currentVocab);
+  }
 
   if (remainingVocab.length === 0) {
     console.log('Summary post data', answerCorrectness);
@@ -251,13 +288,28 @@ function rotateVocab() {
   }
 
   currentVocab = remainingVocab.shift();
-  $reveal.addClass('-hidden');
+
+  if (correct) {
+    $reviewsLeft.html(remainingVocab.length);
+    $reviewsDone.html(correctTotal);
+  }
+
+  // guard against 0 / 0 (when first answer ignored)
+  let percentCorrect = Math.floor((correctTotal / answeredTotal) * 100) || 0;
+  console.log(`
+    remainingVocab.length: ${remainingVocab.length},
+    currentVocab: ${currentVocab.meaning},
+    correctTotal: ${correctTotal},
+    answeredTotal: ${answeredTotal},
+    percentCorrect: ${percentCorrect}`
+  );
+  $reviewsCorrect.html(percentCorrect);
   $meaning.html(currentVocab.meaning);
   $userID.val(currentVocab.user_specific_id);
 
   disableButtons();
   updateKanaKanjiDetails();
-  newVocab();
+  resetAnswerField();
 }
 
 function enterPressed(event) {
@@ -265,30 +317,43 @@ function enterPressed(event) {
     event.stopPropagation();
     event.preventDefault();
   }
-  $userAnswer.hasClass('-marked') ? rotateVocab() : compareAnswer();
+  if ($userAnswer.hasClass('-marked')) {
+    if ($userAnswer.hasClass('-correct')) {
+      rotateVocab({correct: true});
+    } else if($userAnswer.hasClass('-incorrect')) {
+      processAnswer({correct: false});
+      rotateVocab({correct: false});
+    }
+  } else {
+    compareAnswer();
+  }
 }
 
-function handleShortcuts(event) {
-  if (event.which == 13) {
-    event.stopPropagation();
-    event.preventDefault();
+function handleShortcuts(ev) {
+  if (ev.which == 13) {
+    ev.stopPropagation();
+    ev.preventDefault();
     enterPressed(null);
   }
   if ($userAnswer.hasClass('-marked')) {
-    event.stopPropagation();
-    event.preventDefault();
+    ev.stopPropagation();
+    ev.preventDefault();
 
     //Pressing P toggles phonetic reading
-    if (event.which == 80 || event.which == 112) {
+    if (ev.which == 80 || ev.which == 112) {
       revealAnswers({kana: true});
     }
     //Pressing K toggles the actual kanji reading.
-    else if (event.which == 75 || event.which == 107) {
+    else if (ev.which == 75 || ev.which == 107) {
       revealAnswers({kanji: true});
     }
     //Pressing F toggles both item info boxes.
-    else if (event.which == 70 || event.which == 102) {
+    else if (ev.which == 70 || ev.which == 102) {
       revealAnswers();
+    }
+    //Pressing I or backspace/del ignores answer when input has been marked incorrect
+    else if (ev.which == 73 || ev.which == 105 || ev.which == 8 || ev.which == 46) {
+      if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
     }
   }
 }

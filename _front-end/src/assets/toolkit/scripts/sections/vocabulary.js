@@ -50,7 +50,7 @@ function unLockLevel() {
    .done(res => {
       notie.alert(1, res, 8);
 
-      $icon.removeClass("-loading").addClass('i-unlocked');
+      $icon.removeClass("-loading").addClass('i-unlocked').attr('title', 'Relock');
       $card.removeClass("-locked -unlockable");
       $card.addClass("-unlocked");
       $card.find('.i-link').removeClass('-hidden');
@@ -73,7 +73,7 @@ function reLockLevel() {
 
       notie.alert(1, res, 20);
 
-      $icon.removeClass("-loading").addClass("i-unlock");
+      $icon.removeClass("-loading").addClass("i-unlock").attr('title', 'Unlock');
       $card.removeClass("-unlocked");
       $card.addClass("-locked -unlockable");
       $card.find('.i-link').addClass('-hidden');

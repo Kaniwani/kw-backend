@@ -41,7 +41,8 @@
     z-index: 1000000;
     pointer-events: none;
     transition: 0.3s ease;
-    transition-delay: 0ms; }
+    transition-delay: 0ms;
+  }
   [data-hint]:hover:before, [data-hint]:hover:after {
     visibility: visible;
     opacity: 1; }
@@ -58,9 +59,16 @@
     background: #383838;
     color: white;
     padding: 8px 10px;
-    font-size: 16px;
-    line-height: 16px;
-    white-space: nowrap; }
+    font-size: 17px;
+    line-height: 17px;
+    white-space: nowrap;
+  }
+
+  .-multiline[data-hint]:after {
+    max-width: 10em;
+    min-width: 10em;
+    white-space: normal;
+  }
 
 [data-hint='']:before, [data-hint='']:after {
   display: none !important; }

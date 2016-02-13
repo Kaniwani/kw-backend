@@ -2,24 +2,26 @@
 
 // modules
 var assemble = require('fabricator-assemble');
-var browserSync = require('browser-sync');
-var csso = require('gulp-csso');
+var nano = require('gulp-cssnano');
 var del = require('del');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var gulpif = require('gulp-if');
 var stripDebug = require('gulp-strip-debug');
 var imagemin = require('gulp-imagemin');
-var prefix = require('gulp-autoprefixer');
 var rename = require('gulp-rename');
-var reload = browserSync.reload;
 var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
 var sassGlob = require('gulp-sass-glob');
 var sourcemaps = require('gulp-sourcemaps');
 var webpack = require('webpack');
 var changed = require('gulp-changed');
-var rucksack = require('gulp-rucksack');
+var postcss = require('gulp-postcss');
+var responsiveType = require('postcss-responsive-type');
+var lost = require('lost');
+var autoprefixer = require('autoprefixer');
+var browserSync = require('browser-sync');
+var reload = browserSync.reload;
 
 
 // configuration
@@ -59,8 +61,7 @@ gulp.task('styles:fabricator', function () {
 	gulp.src(config.src.styles.fabricator)
 		.pipe(sourcemaps.init())
 		.pipe(sass().on('error', sass.logError))
-		.pipe(prefix('> 1%'))
-		.pipe(gulpif(config.prod, csso()))
+		.pipe(gulpif(config.prod, nano()))
 		.pipe(rename('f.css'))
 		.pipe(sourcemaps.write())
 		.pipe(gulp.dest(config.dest + '/assets/fabricator/styles'))
@@ -72,9 +73,14 @@ gulp.task('styles:toolkit', function () {
 		.pipe(gulpif(!config.prod, sourcemaps.init()))
     .pipe(sassGlob())
 		.pipe(sass().on('error', sass.logError))
-    .pipe(rucksack())
-		.pipe(prefix('> 1%'))
-		.pipe(gulpif(config.prod, csso()))
+ 		.pipe(postcss([
+      responsiveType(),
+      lost(),
+    ]))
+		.pipe(gulpif(config.prod, nano({
+			discardComments: {removeAll: true},
+			autoprefixer: {browsers: ['last 2 versions', '> 1%']},
+		})))
 		.pipe(gulpif(!config.prod, sourcemaps.write()))
 		.pipe(gulp.dest(config.dest + '/assets/styles'))
 		.pipe(gulpif(!config.prod, reload({stream:true})));

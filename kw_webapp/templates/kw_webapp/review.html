@@ -2,16 +2,17 @@
 {% block title %}| Review{% endblock %}
 {% block content %}
 
-    <input type="hidden" id="csrf" value="{{ csrf_token }}">
+  <input type="hidden" id="csrf" value="{{ csrf_token }}">
 
-    <section class="review-section -fullwidth">
-      {% include 'partials/review-header.html' %}
-      {% include 'partials/review-quiz.html' %}
-    </section>
+  <section class="review-section -fullwidth">
+    {% include 'partials/review-header.html' %}
+    {% include 'partials/review-quiz.html' %}
+  </section>
 
 </div>
 <!-- / .site-content -->
-
+{% endblock %}
+{% block bottomscripts %}
     <script>
         window.KWuserSettings = {
           showCorrectOnFail: '{{ user.profile.auto_expand_answer_on_failure }}',

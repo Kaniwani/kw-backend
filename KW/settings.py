@@ -24,6 +24,8 @@ except ImportError:
     secrets.DEPLOY = False
     secrets.SECRET_KEY = "samplekey"
     secrets.RAVEN_DSN = "Whatever"
+    secrets.EMAIL_HOST_PASSWORD = "nope"
+    secrets.EMAIL_HOST_USER = "dontmatter@whatever.com"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -170,13 +172,14 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 # Application definition
 
 
-LOGIN_URL = reverse_lazy("kw:login")
+LOGIN_URL = reverse_lazy("login")
 LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
 
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 INSTALLED_APPS = (
+    'kw_webapp', #Make sure this is the top entry in order to correctly override template folders.
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.humanize',
@@ -184,7 +187,6 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'kw_webapp',
     'crispy_forms',
     'raven.contrib.django.raven_compat',
     'rest_framework',
@@ -205,6 +207,7 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = {
     'django.contrib.auth.context_processors.auth',
     "KW.preprocessors.review_count_preprocessor",
+    "KW.preprocessors.srs_count_preprocessor",
     'django.core.context_processors.request', #TODO:  NOTE! This will change in 1.8 to django.template.context_processors.request
 }
 
@@ -220,12 +223,14 @@ ROOT_URLCONF = 'KW.urls'
 WSGI_APPLICATION = 'KW.wsgi.application'
 
 #EMAIL BACKEND SETTINGS
-EMAIL_HOST = "127.0.0.1"
-EMAIL_PORT = 25
-#EMAIL_HOST_USER = "reports@kaniwani.com"
-#EMAIL_HOST_PASSWORD = ''
 MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
-DEFAULT_FROM_EMAIL = "notifications@KaniWani.com"
+DEFAULT_FROM_EMAIL = "gary@kaniwani.com"
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = secrets.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = secrets.EMAIL_HOST_PASSWORD
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 
 
 # Database

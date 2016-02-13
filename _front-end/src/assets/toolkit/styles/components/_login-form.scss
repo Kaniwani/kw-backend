@@ -36,8 +36,7 @@
     -webkit-text-fill-color: $blue-dark !important;
   }
 
-  .textinput,
-  .emailinput {
+  input:not([type="submit"]) {
     display: block;
     width: 250px;
     padding: $unit-xs $unit-sm;
@@ -71,15 +70,9 @@
     color: $blue;
     opacity: .9;
 
-    &:focus,
-    &:active {
+    &:focus {
       width: 270px;
       opacity: 1;
     }
-
-    &:hover {
-      opacity: 1;
-    }
   }
-
 }
