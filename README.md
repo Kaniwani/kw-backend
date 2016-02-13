@@ -36,12 +36,13 @@ Chances are your system will spit a bunch of errors at you. Ignore them and wait
 If all went well, it will start a server at 127.0.0.1:8000
 
 #### Frontend
-Since we're using Node, life is wonderful. Here are all the tools you need. 
+Here are all the tools you'll need. 
 
-1. Node.js [Get it here] (https://nodejs.org/en/).
+1. Node.js [Get it here] (https://nodejs.org).
 2. NPM (installed with Node, huzzah) (does this step even count?).
 3. Open a terminal, navigate to the frontend folder, and run `npm install`.
-4. Once deps installed, run `gulp` to see styleguide & watch changes.
+4. Make some tea while you wait.
+5. When dependencies are installed, run `gulp` to see styleguide & watch changes.
 
 This will start a server at 127.0.0.1:3000 & open your browser to the styleguide.
 
