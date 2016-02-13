@@ -14,17 +14,6 @@
     color: $black-light;
   }
 
-  &.-disabled {
-    cursor: not-allowed !important;
-    &:hover > .text {
-      color: $grey-light !important;
-      &:after {
-        opacity: 0 !important;
-        width: 0 !important;
-      }
-    }
-  }
-
   > .text {
     position: relative;
     overflow: hidden;

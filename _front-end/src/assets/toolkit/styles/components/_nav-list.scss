@@ -30,5 +30,9 @@
         width: 100%;
       }
     }
+
+    &.-disabled {
+      pointer-events: none; // modern & IE11+
+    }
   }
 }
