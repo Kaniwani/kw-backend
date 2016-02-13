@@ -37,6 +37,7 @@ def all_srs(user=None):
     logger.info("Beginning SRS run for {}.".format(user or "all users"))
     hours = [4, 4, 8, 24, 72, 168, 336, 720, 2160]
     srs_level = zip(map(lambda x: past_time(x), hours), range(0, 9))
+    print("User is on vacation: {}".format(user.profile.on_vacation))
     for level in srs_level:
         if user and not user.profile.on_vacation:
             review_set = UserSpecific.objects.filter(user=user,
@@ -564,7 +565,6 @@ def user_returns_from_vacation(user):
     vacation_date = user.profile.vacation_date
     if vacation_date:
         users_reviews = UserSpecific.objects.filter(user=user)
-        users_reviews.update(needs_review=False)
         elapsed_vacation_time = timezone.now() - vacation_date
         logger.info("User {} has been gone for timedelta: {}".format(user.username, str(elapsed_vacation_time)))
         updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
