@@ -7,7 +7,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('kw_webapp', '0009_userspecific_wanikani_burned'),
+        ('kw_webapp', "0010_auto_20160207_2013"),
     ]
 
     operations = [
