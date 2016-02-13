@@ -15,6 +15,7 @@ Since we're using Django, a fair bit of setup is required to get a development e
 5. Move the **secrets.py** file into the same directory as the **settings.py** file. 
 6. Fire up pycharm and open the parent KW directory. 
 7. After a bit, there should be a prompt to install a list of requirements, hit yes and let the installation go. It'll give you a popup when it is done.
+7b. If this doesn't happen, and you know your way around the terminal, try *pip install -r requirements.txt*
 8. Delete the db.sqlite3 file 
 9. hit Ctrl + alt + r . This will open up a manage.py command window. 
 10. execute the command **makemigrations**
@@ -44,7 +45,7 @@ Here are all the tools you'll need.
 4. Make some tea while you wait.
 5. When dependencies are installed, run `gulp` to see styleguide & watch changes.
 
-This will start a server at 127.0.0.1:3000 & open your browser to the styleguide.
+This will start a server at localhost:3000 & open your browser to the styleguide.
 
 However, *to compile & copy assets to be accessed within the webapp* ensure you run `gulp --prod`
 
