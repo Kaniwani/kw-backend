@@ -1,5 +1,6 @@
 import wanakana from '../vendor/wanakana.min';
 import { revealToggle } from '../components/revealToggle';
+import '../util/serializeObject';
 
 // would really like to do a massive refactor, break out some functions as importable helpers
 // undecided how I want to reorganise but it has become spaghetti and hard to reason about
@@ -168,9 +169,9 @@ function compareAnswer() {
     // wait for submission or ignore answer - which is handled by event listeners for submit/enter
     if (KW.settings.showCorrectOnFail) revealAnswers();
 
-    testSynonyms(currentVocab.user_specific_id);
   }
 
+  testSynonyms(currentVocab.user_specific_id);
   enableButtons();
 }
 
@@ -179,27 +180,16 @@ function compareAnswer() {
 // also allow addition/deletion of synonyms in vocabulary in case user messed up
 
 function testSynonyms(vocabID) {
-  let form = `
-    <form id="newAnswerSynonym" class="synonym-form">
-      <label for="newKanji">
-        New Kanji: <input type="text" id="newKanji" placeholder="new kanji" value=""/>
-      </label>
-      <label for="newKana">
-        New Kana: <input type="text" id="newKana" placeholder="new kana" value=""/>
-      </label>
-      <button id="synonymSubmit" type="submit" class="button -submit">Submit</button>
-    </form>
-  `;
-  $('.review-extra').append(form);
+  let $form = $('#synonymForm');
+  // prepopulate
   ( wanakana.isHiragana(answer) ? $('#newKana') : $('#newKanji') ).val(answer);
-  let $newSyn = $('#newAnswerSynonym');
-  $newSyn.submit((ev) => {
+  $form.submit(function(ev) {
     ev.preventDefault();
-    addSynonym(vocabID, $newSyn.find('#newKana').val(), $newSyn.find('#newKanji').val());
+    addSynonym(vocabID, $(this).serializeObject());
   });
 }
 
-function addSynonym(vocabID, kana = '', kanji = '') {
+function addSynonym(vocabID, {kana, kanji} = {}) {
   $.post('/kw/synonym/add', {
     csrfmiddlewaretoken: CSRF,
     user_specific_id: vocabID,
