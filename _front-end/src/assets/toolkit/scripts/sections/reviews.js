@@ -15,6 +15,7 @@ let KW,
     correctTotal = 0,
     answeredTotal = 0,
     answerCorrectness = [],
+    answer,
     $reviewsLeft = $('#reviewsLeft'),
     $meaning = $('#meaning'),
     $streakIcon = $('.streak > .icon'),
@@ -48,7 +49,6 @@ function init() {
 
   $reviewsLeft.text(startCount - 1)
   currentVocab = remainingVocab.shift();
-
   updateKanaKanjiDetails();
   updateStreak();
 
@@ -96,6 +96,7 @@ function updateKanaKanjiDetails() {
   $detailKanji.find('.-kanji').html(currentVocab.characters.map(kanji => `${kanji} </br>`));
 }
 
+// this can probably be an ajax followed by a window.navigate call I suppose instead of form jiggery
 function makePost(path, params) {
   let form = document.createElement('form');
   form.setAttribute('method', 'post');
@@ -127,11 +128,12 @@ String.prototype.endsWith = function(suffix) {
 
 
 function compareAnswer() {
-  let answer = $userAnswer.val();
+  answer = $userAnswer.val();
   let imeInput = false;
 
   if(answer === '') return;
-  console.log('Comparing', answer, 'with vocab item:', currentVocab.meaning);
+  console.log('Comparing', answer, 'with vocab item: ');
+  console.log(currentVocab);
 
   //Fixing the terminal n.
   if (answer.endsWith('n')) {
@@ -148,12 +150,13 @@ function compareAnswer() {
 
   const inReadings = () => $.inArray(answer, currentVocab.readings) != -1;
   const inCharacters = () => $.inArray(answer, currentVocab.characters) != -1;
+  const getMatchedReading = (hiraganaStr) => currentVocab.characters[currentVocab.readings.indexOf(hiraganaStr)]
 
   if (inReadings() || inCharacters()) {
     markRight();
     //Fills the correct kanji into the input field based on the user's answers
     if (!imeInput) {
-      $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
+      $userAnswer.val(getMatchedReading(answer));
     }
     processAnswer({correct: true});
     if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 900);
@@ -164,9 +167,50 @@ function compareAnswer() {
     // don't processAnswer() here
     // wait for submission or ignore answer - which is handled by event listeners for submit/enter
     if (KW.settings.showCorrectOnFail) revealAnswers();
+
+    testSynonyms(currentVocab.user_specific_id);
   }
 
   enableButtons();
+}
+
+
+// we're going to have to validate kana/kanji fields
+// also allow addition/deletion of synonyms in vocabulary in case user messed up
+
+function testSynonyms(vocabID) {
+  let form = `
+    <form id="newAnswerSynonym" class="synonym-form">
+      <label for="newKanji">
+        New Kanji: <input type="text" id="newKanji" placeholder="new kanji" value=""/>
+      </label>
+      <label for="newKana">
+        New Kana: <input type="text" id="newKana" placeholder="new kana" value=""/>
+      </label>
+      <button id="synonymSubmit" type="submit" class="button -submit">Submit</button>
+    </form>
+  `;
+  $('.review-extra').append(form);
+  ( wanakana.isHiragana(answer) ? $('#newKana') : $('#newKanji') ).val(answer);
+  let $newSyn = $('#newAnswerSynonym');
+  $newSyn.submit((ev) => {
+    ev.preventDefault();
+    addSynonym(vocabID, $newSyn.find('#newKana').val(), $newSyn.find('#newKanji').val());
+  });
+}
+
+function addSynonym(vocabID, kana = '', kanji = '') {
+  $.post('/kw/synonym/add', {
+    csrfmiddlewaretoken: CSRF,
+    user_specific_id: vocabID,
+    kana: kana,
+    kanji: kanji,
+  })
+  .always(res => {
+    console.log(res);
+    // should just clear vals and hide though to re-use instead of always creating new element
+    $('#newAnswerSynonym').remove();
+  });
 }
 
 function processAnswer({correct} = {}) {
@@ -197,9 +241,9 @@ function processAnswer({correct} = {}) {
 
 function recordAnswer(vocabID, correctness, previouslyWrong) {
   $.post('/kw/record_answer/', {
+      csrfmiddlewaretoken: CSRF,
       user_specific_id: vocabID,
       user_correct: correctness,
-      csrfmiddlewaretoken: CSRF,
       wrong_before: previouslyWrong
     })
     .always(res => {
