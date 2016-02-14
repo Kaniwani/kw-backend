@@ -1,9 +1,25 @@
 .about-section {
 
+  .donate-block {
+    @include container(30em);
+    text-align: center;
+    margin: $unit-sm auto;
+    padding: $unit-sm $unit-xs;
+    @include media($bp-lg) {
+      margin-top: $unit-md;
+      margin-bottom: $unit-md;
+    }
+    .text {
+      padding: $unit-xs;
+      line-height: 1.5;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
   .row {
     @include clearfix;
   }
-
 
   .col {
     .title {
