@@ -8,6 +8,8 @@ $ff-japanese: "Hiragino Kaku Gothic Pro", "Takao Pゴシック", "Meiryo", "Yu G
 
 [lang="ja"] {
   font-family: $ff-japanese;
+  // could be an issue for long japanese strings, potentially not worth global
+  word-break: keep-all;
 }
 
 body {

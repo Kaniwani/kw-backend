@@ -4,16 +4,17 @@
     @include container(30em);
     text-align: center;
     margin: $unit-sm auto;
-    padding: $unit-sm $unit-xs;
+    padding: $unit-sm 0;
+
     @include media($bp-lg) {
       margin-top: $unit-md;
       margin-bottom: $unit-md;
     }
     .text {
-      padding: $unit-xs;
-      line-height: 1.5;
       margin-left: auto;
       margin-right: auto;
+      padding: $unit-xs 0;
+      line-height: 1.5;
     }
   }
 
