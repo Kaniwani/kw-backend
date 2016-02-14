@@ -11,8 +11,13 @@
       width: 50%;
       padding: .4em;
       box-shadow: $shadow-outer-light;
+      transition: opacity .3s ease-out;
       &:last-child {
         width: 100%;
+      }
+
+      &:hover {
+        opacity: .9;
       }
 
       @include media($bp-md) {
