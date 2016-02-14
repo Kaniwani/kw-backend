@@ -19,21 +19,20 @@ let KW,
     $meaning = $('#meaning'),
     $streakIcon = $('.streak > .icon'),
     $ignoreButton = $('#ignoreAnswer'),
-    $userID = $('#us-id'),
     $srsUp = $('#srsUp > .content'),
     $reviewsDone = $('#reviewsDone'),
     $reviewsCorrect = $('#reviewsCorrect'),
     $reveal = $('.reveal'),
     $answerPanel = $('#answerpanel'),
     $userAnswer = $('#userAnswer'),
-    $detailKana = $('#detailKana'),
     $submitButton = $('#submitAnswer'),
+    $detailKana = $('#detailKana'),
     $detailKanji = $('#detailKanji'),
-    $progressBar = $('.progress-bar > .value'),
-    // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
-    // not including *half-width katakana / roman letters* since they should be considered typos
-    japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
+    $progressBar = $('.progress-bar > .value');
 
+// http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
+// not including *half-width katakana / roman letters* since they should be considered typos
+const japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
 const onlyJapaneseChars = str => [...str].every(c => japRegex.test(c));
 //Grab CSRF token off of dummy form.
 const CSRF = $('#csrf').val();
@@ -49,10 +48,6 @@ function init() {
 
   $reviewsLeft.text(startCount - 1)
   currentVocab = remainingVocab.shift();
-  $userID.val(currentVocab.user_specific_id);
-
-  $detailKana.kana = $detailKana.find('.-kana');
-  $detailKanji.kanji = $detailKanji.find('.-kanji');
 
   updateKanaKanjiDetails();
   updateStreak();
@@ -97,8 +92,8 @@ function streakLevelUp() {
 }
 
 function updateKanaKanjiDetails() {
-  $detailKana.kana.html(currentVocab.readings.map(reading => `${reading} </br>`));
-  $detailKanji.kanji.html(currentVocab.characters.map(kanji => `${kanji} </br>`));
+  $detailKana.find('.-kana').html(currentVocab.readings.map(reading => `${reading} </br>`));
+  $detailKanji.find('.-kanji').html(currentVocab.characters.map(kanji => `${kanji} </br>`));
 }
 
 function makePost(path, params) {
@@ -176,12 +171,12 @@ function compareAnswer() {
 
 function processAnswer({correct} = {}) {
   let previouslyWrong,
-      currentUserID = $userID.val();
+      currentvocabID = currentVocab.user_specific_id;
 
   if (correct === true) {
     // Ensures this is the first time the vocab has been answered in this session, so it goes in the right container(incorrect/correct)
-    if ($.inArray(currentUserID, Object.keys(answerCorrectness)) == -1) {
-      answerCorrectness[currentUserID] = 1;
+    if ($.inArray(currentvocabID, Object.keys(answerCorrectness)) == -1) {
+      answerCorrectness[currentvocabID] = 1;
       previouslyWrong = false;
     } else {
       previouslyWrong = true;
@@ -190,19 +185,19 @@ function processAnswer({correct} = {}) {
     updateProgressBar(correctTotal / startCount * 100);
 
   } else if (correct === false) {
-    answerCorrectness[currentUserID] = -1;
+    answerCorrectness[currentvocabID] = -1;
     previouslyWrong = true;
     currentVocab.streak -= 1;
     remainingVocab.push(currentVocab);
   }
 
   answeredTotal += 1;
-  recordAnswer(currentUserID, correct, previouslyWrong); // record on server
+  recordAnswer(currentvocabID, correct, previouslyWrong); // record on server
 }
 
-function recordAnswer(userID, correctness, previouslyWrong) {
+function recordAnswer(vocabID, correctness, previouslyWrong) {
   $.post('/kw/record_answer/', {
-      user_specific_id: userID,
+      user_specific_id: vocabID,
       user_correct: correctness,
       csrfmiddlewaretoken: CSRF,
       wrong_before: previouslyWrong
@@ -303,7 +298,6 @@ function rotateVocab({ignored = false, correct = false} = {}) {
   );
   $reviewsCorrect.html(percentCorrect);
   $meaning.html(currentVocab.meaning);
-  $userID.val(currentVocab.user_specific_id);
 
   disableButtons();
   updateKanaKanjiDetails();
