@@ -47,8 +47,6 @@ function init() {
   remainingVocab = window.KW.sessionVocab;
   startCount = remainingVocab.length;
 
-  console.log('Settings:', KW.settings);
-
   $reviewsLeft.text(startCount - 1)
   currentVocab = remainingVocab.shift();
   $userID.val(currentVocab.user_specific_id);
