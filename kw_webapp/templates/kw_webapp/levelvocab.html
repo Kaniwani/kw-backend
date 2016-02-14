@@ -9,7 +9,8 @@
 <section class="vocab-section">
   <div class="inner">
     <h1 class="section-heading">
-      <a href="{% url "kw:vocab" %}">Vocabulary</a><span class="breadcrumb">Level {{ selected_level | capfirst }}</span>
+      <a href="{% url "kw:vocab" %}">Vocabulary</a>
+      <span class="breadcrumb">Level {{ selected_level | capfirst }}</span>
     </h1>
 
     {% for review in reviews %}
