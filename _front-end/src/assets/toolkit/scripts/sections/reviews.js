@@ -1,8 +1,12 @@
 import wanakana from '../vendor/wanakana.min';
 import { revealToggle } from '../components/revealToggle';
 
-//Grab CSRF token off of dummy form.
-const CSRF = $('#csrf').val();
+// would really like to do a massive refactor, break out some functions as importable helpers
+// undecided how I want to reorganise but it has become spaghetti and hard to reason about
+// might use react just for reviews - since the template is only used to load in the review object
+// instead we could load the page with a <div id="reactReview"></div> and ajax in the data
+// and have much better organisation / handling of state
+
 
 let KW,
     currentVocab,
@@ -25,7 +29,14 @@ let KW,
     $detailKana = $('#detailKana'),
     $submitButton = $('#submitAnswer'),
     $detailKanji = $('#detailKanji'),
-    $progressBar = $('.progress-bar > .value');
+    $progressBar = $('.progress-bar > .value'),
+    // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
+    // not including *half-width katakana / roman letters* since they should be considered typos
+    japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
+
+const onlyJapaneseChars = str => [...str].every(c => japRegex.test(c));
+//Grab CSRF token off of dummy form.
+const CSRF = $('#csrf').val();
 
 function init() {
   // if not on reviews page do nothing
@@ -50,7 +61,7 @@ function init() {
 
   // event listeners
   wanakana.bind($userAnswer.get(0));
-  $userAnswer.keypress(handleShortcuts);
+  $userAnswer.keydown(handleShortcuts);
 
   // rotate or record on 'submit'
   $submitButton.click(enterPressed);
@@ -124,6 +135,7 @@ String.prototype.endsWith = function(suffix) {
 
 function compareAnswer() {
   let answer = $userAnswer.val();
+  let imeInput = false;
 
   if(answer === '') return;
   console.log('Comparing', answer, 'with vocab item:', currentVocab.meaning);
@@ -133,16 +145,23 @@ function compareAnswer() {
     answer = answer.slice(0, -1) + 'ん';
   }
 
-  //Ensure answer is full hiragana
-  if (!wanakana.isHiragana(answer)) {
-    return nonHiraganaAnswer();
+  if (onlyJapaneseChars(answer)) {
+    // user used japanese IME, proceed
+    imeInput = true;
+  } else if (!wanakana.isHiragana(answer)) {
+    // user used english that couldn't convert to full hiragana - don't proceed
+     return nonHiraganaAnswer();
   }
 
-  //Checking if the user's answer exists in valid readings.
-  if ($.inArray(answer, currentVocab.readings) != -1) {
+  const inReadings = () => $.inArray(answer, currentVocab.readings) != -1;
+  const inCharacters = () => $.inArray(answer, currentVocab.characters) != -1;
+
+  if (inReadings() || inCharacters()) {
     markRight();
     //Fills the correct kanji into the input field based on the user's answers
-    $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
+    if (!imeInput) {
+      $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
+    }
     processAnswer({correct: true});
     if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 900);
   }
@@ -197,7 +216,7 @@ function recordAnswer(userID, correctness, previouslyWrong) {
 
 function ignoreAnswer() {
   $userAnswer.addClass('shake');
-  setTimeout(() => rotateVocab({ignored: true}), 700);
+  setTimeout(() => rotateVocab({ignored: true}), 600);
 }
 
 function clearColors() {
@@ -258,7 +277,6 @@ function revealAnswers({kana, kanji} = {}) {
 }
 
 function rotateVocab({ignored = false, correct = false} = {}) {
-
   if (ignored) {
     // put ignored answer back onto end of review queue
     remainingVocab.push(currentVocab);
@@ -279,11 +297,11 @@ function rotateVocab({ignored = false, correct = false} = {}) {
   // guard against 0 / 0 (when first answer ignored)
   let percentCorrect = Math.floor((correctTotal / answeredTotal) * 100) || 0;
   console.log(`
-    remain length: ${remainingVocab.length},
-    vocab: ${remainingVocab.map(x => x.meaning.split(',')[0])},
-    correcttotal: ${correctTotal},
-    answertotal: ${answeredTotal},
-    correct: ${percentCorrect}`
+    remainingVocab.length: ${remainingVocab.length},
+    currentVocab: ${currentVocab.meaning},
+    correctTotal: ${correctTotal},
+    answeredTotal: ${answeredTotal},
+    percentCorrect: ${percentCorrect}`
   );
   $reviewsCorrect.html(percentCorrect);
   $meaning.html(currentVocab.meaning);
@@ -333,8 +351,8 @@ function handleShortcuts(ev) {
     else if (ev.which == 70 || ev.which == 102) {
       revealAnswers();
     }
-    //Pressing I ignores answer when input is marked incorrect
-    else if (ev.which == 73 || ev.which == 105) {
+    //Pressing I or backspace/del ignores answer when input has been marked incorrect
+    else if (ev.which == 73 || ev.which == 105 || ev.which == 8 || ev.which == 46) {
       if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
     }
   }

@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="{% static "styles/main.css" %}">
 
   <!-- google fonts -->
-  <link href='https://fonts.googleapis.com/css?family=Ubuntu:700|Open+Sans:300,700,400'
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu:700|Open+Sans:300,700,400,400italic'
         rel='stylesheet' type='text/css'>
 
   <!-- favicons -->
@@ -60,9 +60,9 @@
         unlockedLevels: '{{ user.profile.unlocked_levels_list }}',
       },
       nextReview: '{{ next_review_timestamp_local }}',
-      nextReviewUTC: '{{ next_review_timestamp_utc }}',
       reviewCount: '{{ review_count }}',
       settings: {
+        onVacation: '{{ user.profile.on_vacation }}',
         showCorrectOnFail: '{{ user.profile.auto_expand_answer_on_failure }}',
         autoAdvanceCorrect: '{{ user.profile.auto_advance_on_success }}',
         followWanikani: '{{ user.follow_me }}',

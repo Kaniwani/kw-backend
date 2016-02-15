@@ -9,6 +9,7 @@
     padding: $unit-xs $unit-sm;
     margin-bottom: $unit-sm;
     border-radius: 5px;
+    font-weight: 600;
   }
 
   ::-webkit-input-placeholder { /* WebKit browsers */
@@ -38,9 +39,9 @@
 
   input:not([type="submit"]) {
     display: block;
-    width: 250px;
+    min-width: 250px;
     padding: $unit-xs $unit-sm;
-    margin: 0 auto 10px auto;
+    margin: 5px auto 10px auto;
     appearance: none;
     outline: 0;
     border: 1px solid transparentize($white, .6);
@@ -50,7 +51,8 @@
     line-height: 1.3;
     text-align: center;
     font-size: 18px;
-    transition: width .3s ease-out;
+    transition: all .3s ease-out;
+    border: 2px solid rgba($blue, .2);
 
     &:hover {
       background-color: transparentize($white, .6);
@@ -58,7 +60,7 @@
 
     &:focus {
       background-color: $white;
-      width: 280px;
+      border-color: $grey-dark;
       color: $blue-dark;
     }
   }
@@ -66,12 +68,15 @@
   .button[type="submit"],
   .button[type="submit"].-submit {
     background-color: $white;
-    width: 250px;
+    min-width: 220px;
     color: $blue;
     opacity: .9;
+    border: 2px solid $blue;
+
+    transition: border .2s ease-in;
 
     &:focus {
-      width: 270px;
+      border-color: $grey-dark;
       opacity: 1;
     }
   }

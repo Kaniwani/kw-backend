@@ -8,6 +8,8 @@ $ff-japanese: "Hiragino Kaku Gothic Pro", "Takao Pゴシック", "Meiryo", "Yu G
 
 [lang="ja"] {
   font-family: $ff-japanese;
+  // could be an issue for long japanese strings, potentially not worth global
+  word-break: keep-all;
 }
 
 body {
@@ -99,6 +101,10 @@ a {
   color: $grey-dark;
 }
 
+p + p:last-child {
+  margin-bottom: 0;
+}
+
 p,
 .p,
 %p {
@@ -107,10 +113,6 @@ p,
   font-size: 16px;
   font-size: responsive 14px 18px;
   font-range: 400px 1400px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
 
   > a {
     color: $blue-light;

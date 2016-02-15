@@ -16,7 +16,7 @@ single_vocab_response = {
     "requested_information": [{
                         "character": "猫",
                         "kana": "ねこ",
-                        "meaning": "cat",
+                        "meaning": "radioactive bat",
                         "level": 16,
                         "user_specific": {
                             "srs": "apprentice",
