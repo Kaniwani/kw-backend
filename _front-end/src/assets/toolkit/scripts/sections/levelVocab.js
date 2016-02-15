@@ -10,8 +10,7 @@ function init() {
   }
 
   // only run on secondary vocab page
-  if(/vocabulary\/\.+\//.test(window.location.pathname)) {
-    alert('hi')
+  if(/vocabulary\/.+\//.test(window.location.pathname)) {
     $vocabList = $('.vocab-list');
     CSRF = $('#csrf').val();
     $cards = $vocabList.find('.vocab-card');
