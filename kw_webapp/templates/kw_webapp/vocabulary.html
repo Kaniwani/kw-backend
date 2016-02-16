@@ -40,17 +40,14 @@
           </li>
         {% endif %}
       {% endfor %}
-      {% comment %}
-        TODO: @tadgh can you make this operational
-        I'll style these after, but you can test with this
-        {% for level in <SRS LEVELS> %}
+        {% for srs_level in srs_level_names %}
           <li class="level-card -unlocked>
             <div class="wrap">
-              <span class="levelnum">{{ <SRS LEVEL NAME> | capfirst }}</span>
-              <a class="icon i-link" title="View vocab" href="{% url 'kw:vocab_level' '<SRS LEVEL NAME>' %}"></a>
+              <span class="levelnum">{{ srs_level | capfirst }}</span>
+              <a class="icon i-link" title="View vocab" href="{% url 'kw:vocab_level' srs_level %}"></a>
             </div>
           </li>
-      {% endcomment %}
+        {% endfor %}
     </ul>
 
   </div>
