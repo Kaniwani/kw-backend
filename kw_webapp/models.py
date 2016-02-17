@@ -134,7 +134,7 @@ class UserSpecific(models.Model):
 
     def add_answer_synonym(self, kana, character):
         synonym, created = self.answersynonym_set.get_or_create(kana=kana, character=character)
-        return created
+        return synonym, created
 
     def __str__(self):
         return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
@@ -152,6 +152,13 @@ class AnswerSynonym(models.Model):
     kana = models.CharField(max_length=255, null=False)
     review = models.ForeignKey(UserSpecific, null=True)
 
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "kana": self.kana,
+            "character": self.character,
+            "user_specific_id": self.review.id
+        }
 
 class MeaningSynonym(models.Model):
     text = models.CharField(max_length=255, blank=False, null=False)
