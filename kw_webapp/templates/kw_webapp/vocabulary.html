@@ -40,10 +40,7 @@
         {% endif %}
       {% endfor %}
       </ul>
-      {% comment %}
-        @tadgh can you rejig the list order of srs_level_names to be output as apprentice -> burned?
-        currently showing up in template as Guru Enlightened Master Burned Apprentice
-      {% endcomment %}
+
       <ul class="level-list">
         {% for srs_level in srs_level_names %}
         <li class="level-card -srs -{{srs_level}}">
