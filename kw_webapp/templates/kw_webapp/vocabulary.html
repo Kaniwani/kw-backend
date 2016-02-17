@@ -4,7 +4,6 @@
 {% block content %}
 {{ block.super }}
 <input type="hidden" id="csrf" value="{{ csrf_token }}"></input>
-<input type="hidden" id="currentLevel" value="{{ user.profile.level }}"></input>
 
 <section class="levels-section">
   <div class="inner">
@@ -40,16 +39,16 @@
           </li>
         {% endif %}
       {% endfor %}
+      </ul>
+      <ul class="level-list">
         {% for srs_level in srs_level_names %}
-          <li class="level-card -unlocked>
-            <div class="wrap">
-              <span class="levelnum">{{ srs_level | capfirst }}</span>
-              <a class="icon i-link" title="View vocab" href="{% url 'kw:vocab_level' srs_level %}"></a>
-            </div>
+        <li class="level-card -srs -{{srs_level}}">
+            <a class="wrap" href="{% url 'kw:vocab_level' srs_level %}">
+              <span class="levelnum">KW: {{ srs_level | capfirst }}</span>
+            </a>
           </li>
         {% endfor %}
-    </ul>
-
+      </ul>
   </div>
 </section>
 

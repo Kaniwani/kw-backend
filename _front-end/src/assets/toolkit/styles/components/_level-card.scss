@@ -83,4 +83,42 @@ $bp-level-card-2: '>=680px';
       cursor: pointer;
     }
   }
+
+  &.-srs {
+    > .wrap {
+      font-size: responsive 16px 22px;
+      font-weight: 600;
+    }
+  }
+
+  &.-apprentice > .wrap {
+    @include bg-gradient($pink);
+    > .levelnum {
+      text-shadow: 1px 2px 2px rgba($pink, .7);
+    }
+  }
+  &.-guru > .wrap {
+    @include bg-gradient($purple);
+    > .levelnum {
+      text-shadow: 1px 2px 2px rgba($purple, .7);
+    }
+  }
+  &.-master > .wrap {
+    @include bg-gradient($blue-dark);
+    > .levelnum {
+      text-shadow: 1px 2px 2px rgba($blue-dark, .7);
+    }
+  }
+  &.-enlightened > .wrap {
+    @include bg-gradient($blue-light);
+    > .levelnum {
+      text-shadow: 1px 2px 2px rgba($blue-light, .7);
+    }
+  }
+  &.-burned > .wrap {
+    @include bg-gradient($black-light);
+    > .levelnum {
+      text-shadow: 1px 2px 2px rgba($black-light, .7);
+    }
+  }
 }
