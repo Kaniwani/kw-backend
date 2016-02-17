@@ -111,6 +111,10 @@
   text-decoration: line-through;
 }
 
+._underline {
+  text-decoration: underline;
+}
+
 // force box for components with no height (background floating icons for example)
 // should not be used in production
 ._styleguidewrap {
