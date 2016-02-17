@@ -13,8 +13,8 @@
       <span class="breadcrumb">Level {{ selected_level | capfirst }}</span>
     </h1>
 
-    {% for review in reviews %}
-      <ul class="vocab-list">
+    <ul class="vocab-list">
+      {% for review in reviews %}
         <li id="vocab{{ review.id }}" class="vocab-card {% if review.hidden %}-locked -unlockable {% endif %}"
             data-pk="{{ review.id }}">
 
@@ -79,14 +79,15 @@
           {% endcomment %}
 
         </li>
-      </ul>
-    {% empty %}
-      <div class="empty">
-        <p>Oh my, you haven't unlocked anything here.</p>
-        <p>Maybe go clickity click some locks in your <a href="{% url 'kw:vocab' %}">vocabulary</a> or toggle some <a href="{% url 'kw:settings' %}">settings</a>.</p>
-        <p>Failing that, we recommend levelling up some vocab through reviews (￣ω￣;)</p>
-      </div>
-    {% endfor %}
+      {% endfor %}
+    </ul>
+  {% if not reviews %}
+    <div class="empty">
+      <p>Oh my, you haven't unlocked anything here.</p>
+      <p>Maybe go clickity click some locks in your <a href="{% url 'kw:vocab' %}">vocabulary</a> or toggle some <a href="{% url 'kw:settings' %}">settings</a>.</p>
+      <p>Failing that, we recommend levelling up some vocab through reviews (￣ω￣;)</p>
+    </div>
+    {% endif %}
   </div>
 </section>
 
