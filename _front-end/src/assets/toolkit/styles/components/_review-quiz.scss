@@ -53,6 +53,9 @@
       border: 0;
       outline: none;
       appearance: none;
+      // ios has rounded inputs by default ffs
+      -webkit-appearance: none;
+      border-radius: 0;
       // when input shakes left/right on incorrect this color will show at edges
       // otherwise never seen
       background-color: $red;
