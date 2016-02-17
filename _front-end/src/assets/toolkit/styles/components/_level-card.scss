@@ -85,9 +85,16 @@ $bp-level-card-2: '>=680px';
   }
 
   &.-srs {
+    transition: opacity .3s ease-out;
+    &:hover {
+      opacity: .9;
+    }
     > .wrap {
       font-size: responsive 16px 22px;
       font-weight: 600;
+      > .levelnum {
+        margin: 0;
+      }
     }
   }
 
