@@ -1,5 +1,6 @@
 import time
 
+from kw_webapp import constants
 from kw_webapp.constants import KANIWANI_SRS_LEVELS
 from kw_webapp.tasks import get_users_future_reviews, get_users_current_reviews, get_users_reviews
 
@@ -34,4 +35,5 @@ def srs_count_preprocessor(request):
                 context_dict['srs_master_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['master']).count()
                 context_dict['srs_enlightened_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['enlightened']).count()
                 context_dict['srs_burned_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['burned']).count()
+                context_dict['srs_level_names'] = constants.KANIWANI_SRS_LEVELS.keys()
     return context_dict

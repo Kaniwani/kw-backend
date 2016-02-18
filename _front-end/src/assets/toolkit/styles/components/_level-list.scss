@@ -15,5 +15,9 @@
     min-width: 150px;
     z-index: 2;
     margin: 0 $unit-xs/2 $unit-xs;
+    &.-srs {
+      flex-basis: 180px;
+      min-width: 180px;
+    }
   }
 }
