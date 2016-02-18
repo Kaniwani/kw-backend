@@ -15,6 +15,9 @@
         {% for review in incorrect %}
           <li class="vocab-card">
             <div class="vocab-base">
+            {% comment %}
+              @tadgh and ID here
+            {% endcomment %}
               <a href="{% url "kw:vocab" %}{{ review.vocabulary.reading_set.all.0.level }}#vocab{{ review.id }}" class="readingset">
                 <div class="ja">
                   {% for reading in review.vocabulary.reading_set.all %}
