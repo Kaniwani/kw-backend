@@ -159,9 +159,9 @@ function compareAnswer() {
   if (inReadings() || inCharacters()) {
     markRight();
     //Fills the correct kanji into the input field based on the user's answers
-    if (!imeInput) {
-      $userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
-    }
+    if (wanakana.isHiragana(answer)) {
+		$userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
+	}
     processAnswer({correct: true});
     if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 900);
   }
