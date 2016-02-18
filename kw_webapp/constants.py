@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 SRS_TIMES = {
     0: 4,  # Apprentice
     1: 4,  # Apprentice
@@ -13,13 +15,14 @@ SRS_TIMES = {
 
 # The level arrangement I believe to be exposed by WK API.
 
-KANIWANI_SRS_LEVELS = {
-    "apprentice": [0, 1, 2],
-    "guru": [3, 4, 5],
-    "master": [6, 7],
-    "enlightened": [8],
-    "burned": [9]
-}
+KANIWANI_SRS_LEVELS = OrderedDict()
+KANIWANI_SRS_LEVELS["apprentice"] = [0, 1, 2]
+KANIWANI_SRS_LEVELS["guru"] = [3, 4, 5]
+KANIWANI_SRS_LEVELS["master"] = [6, 7]
+KANIWANI_SRS_LEVELS["enlightened"] = [8]
+KANIWANI_SRS_LEVELS["burned"] = [9]
+
+
 WANIKANI_SRS_LEVELS = {
     "apprentice": [0, 1, 2, 3, 4],
     "guru": [5, 6],

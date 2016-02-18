@@ -1,7 +1,8 @@
 from datetime import timedelta
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound, JsonResponse, \
+    Http404
 from django.shortcuts import get_object_or_404, render_to_response, render
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
@@ -257,6 +258,24 @@ class UnlockLevels(TemplateView):
     def dispatch(self, *args, **kwargs):
         return super(UnlockLevels, self).dispatch(*args, **kwargs)
 
+
+class SRSVocab(TemplateView):
+    template_name = "kw_webapp/levelvocab.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(SRSVocab, self).get_context_data()
+        requested_srs_level = self.kwargs['srs_level']
+
+        if requested_srs_level not in constants.KANIWANI_SRS_LEVELS:
+            raise Http404
+
+        related_levels = constants.KANIWANI_SRS_LEVELS[requested_srs_level]
+
+        user = self.request.user
+        vocab = UserSpecific.objects.filter(user=user, streak__in=related_levels).distinct().order_by("vocabulary__meaning")
+        context['reviews'] = vocab
+        context['selected_level'] = requested_srs_level
+        return context
 
 class LevelVocab(TemplateView):
     template_name = "kw_webapp/levelvocab.html"
