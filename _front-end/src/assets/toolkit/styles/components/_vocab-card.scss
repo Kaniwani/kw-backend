@@ -7,9 +7,7 @@
 
   > .vocab-base {
     position: relative;
-    background-color: $purple;
-    background-image: linear-gradient(to bottom, $purple-light, $purple);
-    background-repeat: repeat-x;
+    @include bg-gradient($purple-light);
     color: $white-light;
     border-radius: 3px;
     transition: background-color .5s ease-out;
@@ -116,13 +114,14 @@
   &.-standout {
     box-shadow: 0 4px 10px 0 rgba($purple-dark, .5);
     > .vocab-base {
-      background: $purple-dark;
+      @include bg-gradient($purple);
     }
   }
 
    &.-locked > .vocab-base {
     @include bg-stripes;
     background-color: $purple-dark;
+    border: 2px solid $purple-dark;
   }
 
   &.-unlockable > .vocab-base:hover {
