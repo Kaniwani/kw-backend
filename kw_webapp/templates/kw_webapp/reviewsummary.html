@@ -18,7 +18,7 @@
             {% comment %}
               @tadgh and ID here
             {% endcomment %}
-              <a href="{% url "kw:vocab" %}{{ review.vocabulary.reading_set.all.0.level }}#vocab{{ review.id }}" class="readingset">
+              <a href="{% url "kw:vocab" %}{{ review.vocabulary.reading_set.all.0.level }}#vocab{{ review.vocabulary.id }}" class="readingset">
                 <div class="ja">
                   {% for reading in review.vocabulary.reading_set.all %}
                     {% ifchanged %}<span lang="ja" class="kana">{{ reading.kana }}</span> {% endifchanged %}
