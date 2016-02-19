@@ -160,8 +160,8 @@ function compareAnswer() {
     markRight();
     //Fills the correct kanji into the input field based on the user's answers
     if (wanakana.isHiragana(answer)) {
-		$userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
-	}
+	   	$userAnswer.val(currentVocab.characters[currentVocab.readings.indexOf(answer)]);
+	  }
     processAnswer({correct: true});
     if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 900);
   }
