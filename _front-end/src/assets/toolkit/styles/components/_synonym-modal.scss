@@ -4,29 +4,13 @@
   text-align: center;
   border: 1px solid $grey-light;
   min-width: 320px;
-  @include media($bp-md) {
-    max-width: 50%;
-  }
-  @include media($bp-xl) {
-    max-width: 33%;
-  }
   margin: 0 auto;
   padding-top: .75em;
   padding-bottom: .75em;
   border-radius: 0;
   background-color: rgba($grey-dark, .75);
   color: $white;
-
-  &.-disabled {
-    overflow: hidden;
-    transition: all .1s ease-in;
-    filter: blur(1px);
-    cursor: not-allowed;
-    opacity: .85;
-  }
-
-  &:not(.-disabled):hover,
-  &:not(.-disabled):active {
+  &:hover {
     cursor: pointer;
     color: $white;
     background-color: $grey-dark;

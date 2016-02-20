@@ -180,18 +180,19 @@ function compareAnswer() {
 
 
 // we're going to have to validate kana/kanji fields
+// HAVE TO ADD NEW SYNONYM TO VOCAB ITEM BEFORE RETURNED TO REVIEW QUEUE
 // also allow addition/deletion of synonyms in vocabulary in case user messed up
 
 function testSynonyms(vocabID) {
   let $form = $('#synonymForm');
   let $button = $('#addSynonym');
-  let $close = $('[data-modal-');
-  // temporary
-  $button.removeClass('-disabled');
+  console.log($button);
+  console.log($form);
+  // temporary for now but should happen on wrong answer
+  $button.removeClass('-hidden');
 
   $button.click(function(event) {
-    console.log('event fired', event);
-    if (!$button.hasClass('-disabled')) {
+      console.log('event fired', event);
       // prepopulate
       $form.find('.wrappinglabel').each(function(i,el) {
         let $el = $(el);
@@ -203,7 +204,6 @@ function testSynonyms(vocabID) {
       console.log($answerField, $notAnswerField)
       $answerField.val(answer).next('.jisho').addClass('-ghost');
       $notAnswerField.next('.jisho').attr({ href: `//jisho.org/search/${answer}` });
-    }
   });
 
   $form.submit(function(ev) {
