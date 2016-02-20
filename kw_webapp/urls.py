@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, url
 from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard, ReviewSummary, UnlockLevels, \
     UnlockRequested, ForceSRSCheck, About, \
-    Settings, LevelVocab, ToggleVocabLockStatus, LockRequested, UnlockAll, Error404, SyncRequested, AddSynonym
+    Settings, LevelVocab, ToggleVocabLockStatus, LockRequested, UnlockAll, Error404, SyncRequested, AddSynonym, \
+    RemoveSynonym
 from kw_webapp.forms import UserLoginForm
 
 urlpatterns = patterns('',
@@ -12,6 +13,7 @@ urlpatterns = patterns('',
                        url(r'^vocabulary/$', UnlockLevels.as_view(), name="vocab"),
                        url(r'^levelunlock/$', UnlockRequested.as_view(), name="do_unlock"),
                        url(r'^synonym/add', AddSynonym.as_view(), name="add_synonym"),
+                       url(r'^synonym/remove', RemoveSynonym.as_view(), name="add_synonym"),
                        url(r'^levellock/$', LockRequested.as_view(), name="do_lock"),
                        url(r'^unlockall/', UnlockAll.as_view(), name="unlock_all"),
                        url(r'^force_srs/$', ForceSRSCheck.as_view(), name="force_srs"),

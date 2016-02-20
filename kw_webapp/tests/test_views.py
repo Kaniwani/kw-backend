@@ -234,10 +234,25 @@ class TestViews(TestCase):
 
         view = kw_webapp.views.AddSynonym.as_view()
         view(request)
-
         review = UserSpecific.objects.get(pk=self.review.id)
         found_synonym = review.answersynonym_set.first()
 
-
+        self.assertTrue(synonym_kana in review.answer_synonyms())
         self.assertEqual(found_synonym.kana, synonym_kana)
         self.assertEqual(found_synonym.character, synonym_kanji)
+
+    def test_removing_synonym_removes_synonym(self):
+        kana = "whatever"
+        characters = "somechar"
+        synonym, created = self.review.add_answer_synonym(kana, characters)
+
+        request = self.factory.post("/kw/synonym/remove", data={"synonym_id": synonym.id})
+        request.user = self.user
+
+        view = kw_webapp.views.RemoveSynonym.as_view()
+        view(request)
+
+        review = UserSpecific.objects.get(pk=self.review.id)
+        self.assertListEqual(review.answer_synonyms(), [])
+
+

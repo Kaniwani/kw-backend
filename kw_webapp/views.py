@@ -11,7 +11,7 @@ from django.views.generic.edit import FormView, UpdateView
 from rest_framework import viewsets
 from kw_webapp import constants
 from kw_webapp.decorators.ValidApiRequired import valid_api_required
-from kw_webapp.models import Profile, UserSpecific, Announcement
+from kw_webapp.models import Profile, UserSpecific, Announcement, AnswerSynonym
 from kw_webapp.forms import UserCreateForm, SettingsForm
 from django.utils import timezone
 from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
@@ -301,6 +301,26 @@ class ToggleVocabLockStatus(View):
         return super(ToggleVocabLockStatus, self).dispatch(*args, **kwargs)
 
 
+class RemoveSynonym(View):
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponseForbidden()
+
+    def post(self, request, *args, **kwargs):
+        synonym_id = request.POST['synonym_id']
+        synonym = get_object_or_404(AnswerSynonym, pk=synonym_id)
+        response_string = "Synonym {}/{} deleted".format(synonym.kana, synonym.character)
+        synonym.delete()
+        return HttpResponse(response_string)
+
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(RemoveSynonym, self).dispatch(request, *args, **kwargs)
+
+
+
+
 class AddSynonym(View):
 
     def get(self, request, *args, **kwargs):
@@ -315,9 +335,9 @@ class AddSynonym(View):
 
         synonym_kana = request.POST["kana"]
         synonym_kanji = request.POST["kanji"]
-        successfully_added = review.add_answer_synonym(synonym_kana, synonym_kanji)
+        synonym, successfully_added = review.add_answer_synonym(synonym_kana, synonym_kanji)
 
-        return HttpResponse("Synonym added! {}".format(successfully_added or ""))
+        return JsonResponse(synonym.as_dict())
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
