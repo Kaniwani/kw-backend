@@ -174,8 +174,10 @@ function compareAnswer() {
 
   }
 
-  testSynonyms(currentVocab.user_specific_id);
   enableButtons();
+
+  // FIXME: not here, should be button click or 'S' press only after incorrect answer
+  newSynonym();
 }
 
 
@@ -183,14 +185,19 @@ function compareAnswer() {
 // HAVE TO ADD NEW SYNONYM TO VOCAB ITEM BEFORE RETURNED TO REVIEW QUEUE
 // also allow addition/deletion of synonyms in vocabulary in case user messed up
 
-function testSynonyms(vocabID) {
+
+function newSynonym({trigger = false} = {}) {
+  let vocabID = currentVocab.user_specific_id;
   let $form = $('#synonymForm');
   let $button = $('#addSynonym');
   console.log($button);
   console.log($form);
-  // temporary for now but should happen on wrong answer
+  // FIXME: should happen on wrong answer (not this temporary addition for styling)
   $button.removeClass('-hidden');
 
+  if (trigger) modals.openModal(null, '#newSynonym', { backspaceClose: false });
+
+  // FIXME: should be registered on main reviews INIT
   $button.click(function(event) {
       console.log('event fired', event);
       // prepopulate
@@ -204,6 +211,7 @@ function testSynonyms(vocabID) {
       console.log($answerField, $notAnswerField)
       $answerField.val(answer).next('.jisho').addClass('-ghost');
       $notAnswerField.next('.jisho').attr({ href: `//jisho.org/search/${answer}` });
+      setTimeout(() => $notAnswerField.focus(), 300);
   });
 
   $form.submit(function(ev) {
@@ -395,21 +403,27 @@ function handleShortcuts(ev) {
     ev.stopPropagation();
     ev.preventDefault();
 
-    //Pressing P toggles phonetic reading
+    // Pressing P toggles phonetic reading
     if (ev.which == 80 || ev.which == 112) {
       revealAnswers({kana: true});
     }
-    //Pressing K toggles the actual kanji reading.
+    // Pressing K toggles the actual kanji reading.
     else if (ev.which == 75 || ev.which == 107) {
       revealAnswers({kanji: true});
     }
-    //Pressing F toggles both item info boxes.
+    // Pressing F toggles both item info boxes.
     else if (ev.which == 70 || ev.which == 102) {
       revealAnswers();
     }
-    //Pressing I or backspace/del ignores answer when input has been marked incorrect
+    // Pressing S toggles both add synonym modal.
+    else if (ev.which == 83 || ev.which == 115) {
+      newSynonym({trigger: true});
+    }
+    // Pressing I or backspace/del ignores answer when input has been marked incorrect
     else if (ev.which == 73 || ev.which == 105 || ev.which == 8 || ev.which == 46) {
-      if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
+      if ($userAnswer.hasClass('-incorrect')) {
+        ignoreAnswer();
+      }
     }
   }
 }
