@@ -1,6 +1,9 @@
 import wanakana from '../vendor/wanakana.min';
 import { revealToggle } from '../components/revealToggle';
 import '../util/serializeObject';
+import modals from '../vendor/modals';
+modals.init({ backspaceClose: false });
+
 
 // would really like to do a massive refactor, break out some functions as importable helpers
 // undecided how I want to reorganise but it has become spaghetti and hard to reason about
@@ -181,11 +184,38 @@ function compareAnswer() {
 
 function testSynonyms(vocabID) {
   let $form = $('#synonymForm');
-  // prepopulate
-  ( wanakana.isHiragana(answer) ? $('#newKana') : $('#newKanji') ).val(answer);
+  let $button = $('#addSynonym');
+  let $close = $('[data-modal-');
+  // temporary
+  $button.removeClass('-disabled');
+
+  $button.click(function(event) {
+    console.log('event fired', event);
+    if (!$button.hasClass('-disabled')) {
+      // prepopulate
+      $form.find('.wrappinglabel').each(function(i,el) {
+        let $el = $(el);
+        $el.find('.input').val('');
+        $el.find('.jisho').removeClass('-ghost');
+      });
+      let $answerField = $(wanakana.isHiragana(answer) ? '#newKana' : '#newKanji');
+      let $notAnswerField = $('.input').not($answerField);
+      console.log($answerField, $notAnswerField)
+      $answerField.val(answer).next('.jisho').addClass('-ghost');
+      $notAnswerField.next('.jisho').attr({ href: `//jisho.org/search/${answer}` });
+    }
+  });
+
   $form.submit(function(ev) {
     ev.preventDefault();
-    addSynonym(vocabID, $(this).serializeObject());
+    let data = $(this).serializeObject();
+
+    if (Object.keys(data).every(k => data[k] !== '' && onlyJapaneseChars(data[k]))) {
+      addSynonym(vocabID, data);
+      modals.closeModals();
+    } else {
+      /* form validation... */
+    }
   });
 }
 

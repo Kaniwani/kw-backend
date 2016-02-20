@@ -21,8 +21,6 @@ import reviews from './sections/reviews';
 import summary from './sections/summary';
 import settings from './sections/settings';
 
-import modals from './vendor/modals';
-
 $(document).ready(() => {
 
   invalidApiKey.init();
@@ -36,20 +34,6 @@ $(document).ready(() => {
   reviews.init();
   summary.init();
   settings.init();
-
-modals.init({
-    selectorToggle: '[data-modal]', // Modal toggle selector
-    selectorWindow: '[data-modal-window]', // Modal window selector
-    selectorClose: '[data-modal-close]', // Modal window close selector
-    modalActiveClass: 'active', // Class applied to active modal windows
-    modalBGClass: 'modal-bg', // Class applied to the modal background overlay
-    preventBGScroll: false, // Boolean, prevents background content from scroll if true
-    preventBGScrollHtml: true, // Boolean, adds overflow-y: hidden to <html> if true (preventBGScroll must also be true)
-    preventBGScrollBody: true, // Boolean, adds overflow-y: hidden to <body> if true (preventBGScroll must also be true)
-    backspaceClose: true, // Boolean, whether or not to enable backspace/delete button modal closing
-    callbackOpen: function ( toggle, modalID ) {}, // Functions to run after opening a modal
-    callbackClose: function () {} // Functions to run after closing a modal
-});
 
 })
 

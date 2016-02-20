@@ -1,15 +1,19 @@
-<a data-modal="#newSynonym" href="#">Add Synonym</a>
+<a id="addSynonym" class="button -addsynonym -disabled" data-modal="#newSynonym" href="#">Add <strong>S</strong>ynonym</a>
 
-<div class="modal modal-small" data-modal-window id="newSynonym">
-    <a class="close" data-modal-close>x</a>
-    <h3>Add an accepted answer synonym</h3>
+<div class="modal modal-medium synonym-modal" data-modal-window id="newSynonym">
+    <a class="close" data-modal-close><span class="icon i-cancel"></span></a>
+    <h3 class="title">Add an accepted answer synonym</h3>
       <form id="synonymForm" class="synonym-form">
-        <label for="newKana">
-          New Kana: <input type="text" id="newKana" name="kana" placeholder="new kana" value=""/>
+        <label class="wrappinglabel" for="newKana">
+          <span class="text">New Kana:</span>
+          <input lang="ja" class="input" type="text" id="newKana" name="kana" value="" />
+          <a class="jisho" href="//jisho.org/search/" rel="external" target="_blank" title="Search Jisho" tabindex="-1"><span class="icon i-help"></span></a>
         </label>
-        <label for="newKanji">
-          New Kanji: <input type="text" id="newKanji" name="kanji" placeholder="new kanji" value=""/>
+        <label class="wrappinglabel" for="newKanji">
+          <span class="text">New Kanji:</span>
+          <input lang="ja" class="input" type="text" id="newKanji" name="kanji" value=""/>
+          <a class="jisho" href="//jisho.org/search/" rel="external" target="_blank" title="Search Jisho" tabindex="-1"><span class="icon i-help"></span></a>
         </label>
         <button id="synonymSubmit" type="submit" class="button -submit">Submit</button>
-      </form>
+    </form>
 </div>

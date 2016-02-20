@@ -24,7 +24,7 @@
 	box-shadow: 0 calc-em(4px) calc-em(8px) rgba(0, 0, 0, 0.3);
 	display: none;
 	max-width: 100%;
-	padding: calc-em(8px) calc-em(16px);
+	padding: calc-em(10px) calc-em(18px);
 	visibility: hidden;
 	z-index: 9999;
 
@@ -83,6 +83,7 @@
 	right: 0;
 	top: 0;
 	z-index: 9998;
+	z-index: -1; // TODO: REMOVE THIS, TEMPORARY FOR STYLEGUIDE
 }
 
 /**

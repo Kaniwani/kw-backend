@@ -25,6 +25,26 @@
   background-repeat: repeat-x;
 }
 
+// include under input {}
+@mixin placeholderColor($clr: #444) {
+  &::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: $clr;
+  }
+  &:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+     color: $clr;
+     opacity:  1;
+  }
+  &::-moz-placeholder { /* Mozilla Firefox 19+ */
+     color: $clr;
+     opacity:  1;
+  }
+  &:-ms-input-placeholder { /* Internet Explorer 10-11 */
+     color: $clr;
+  }
+  &:placeholder-shown { /* Standard (https://drafts.csswg.org/selectors-4/#placeholder) */
+    color: $clr;
+  }
+}
 
 // limits width and centers item
 @mixin container($width: 1260px) {
@@ -107,6 +127,13 @@
   display: none !important;
 }
 
+// hidden but still takes up space, often used with icons
+.-ghost {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  cursor: none !important;
+}
+
 ._strikeout {
   text-decoration: line-through;
 }
@@ -117,3 +144,4 @@
   position: relative;
   height: 300px;
 }
+

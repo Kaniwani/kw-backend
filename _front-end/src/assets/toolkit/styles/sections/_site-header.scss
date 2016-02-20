@@ -4,6 +4,7 @@
 
   > .inner {
     display: flex;
+    min-height: 80px; // yay flexbox fixes
     flex-wrap: nowrap;
     flex-direction: row;
     justify-content: space-between;

@@ -11,24 +11,8 @@
     border-radius: 5px;
   }
 
-  ::-webkit-input-placeholder { /* WebKit browsers */
-    font-family: 'Source Sans Pro', sans-serif;
-    color: $white;
-  }
-
-  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    font-family: 'Source Sans Pro', sans-serif;
-    color: $white;
-    opacity:  1;
-  }
-  ::-moz-placeholder { /* Mozilla Firefox 19+ */
-    font-family: 'Source Sans Pro', sans-serif;
-    color: $white;
-    opacity:  1;
-  }
-  :-ms-input-placeholder { /* Internet Explorer 10+ */
-    font-family: 'Source Sans Pro', sans-serif;
-    color: $white;
+  input {
+    @include placeholderColor($white);
   }
 
   input:-webkit-autofill {
