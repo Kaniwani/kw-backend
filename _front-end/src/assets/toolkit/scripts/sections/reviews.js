@@ -222,7 +222,7 @@ function newSynonym({trigger = false} = {}) {
       addSynonym(vocabID, data);
       modals.closeModals();
     } else {
-      /* form validation... */
+      $('.validation').removeClass('-hidden');
     }
   });
 }
