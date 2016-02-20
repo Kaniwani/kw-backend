@@ -18,7 +18,7 @@
 }
 
 .synonym-modal {
-  > .title {
+  .title {
     line-height: 1.2;
     margin: $unit-xs 0 $unit-sm;
     padding-bottom: .5em;
@@ -36,12 +36,14 @@
   .wrappinglabel {
     display: flex;
     margin-top: $unit-sm;
-    @include media($bp-lg) {
-      margin-top: $unit-md;
-    }
     justify-content: center;
     align-items: center;
     align-content: center;
+
+    @include media($bp-lg) {
+      margin-top: $unit-md;
+    }
+
     .text {
       text-align: right;
       display: inline-block;
@@ -49,6 +51,7 @@
       padding: 0;
       padding-right: .6em;
     }
+
     .input {
       appearance: none;
       border: 1px solid rgba($grey-light, .3);
@@ -60,12 +63,14 @@
       font-size: responsive 16px 30px;
       border-radius: 3px;
     }
+
     .jisho {
       display: inline-block;
       text-align: left;
       flex: 1 0 auto;
       vertical-align: middle;
       padding: 0 .5em 0 1em;
+
       .icon {
         transition: color .3s ease-out;
         font-size: responsive 18px 32px;
@@ -81,9 +86,11 @@
     padding: 0 1.2em;
     font-style: italic;
     font-size: 1.1em;
+
     @include media($bp-md) {
       margin-top: $unit-md;
     }
+
     .i-attention {
       font-size: 1.1em;
       margin-right: 8px;
@@ -93,11 +100,11 @@
 
   .button {
     margin: $unit-sm auto;
+    text-align: center;
+    font-size: inherit;
     @include media($bp-md) {
       margin-top: $unit-md;
       margin-bottom: $unit-md;
     }
-    text-align: center;
-    font-size: inherit;
   }
 }
