@@ -1,10 +1,9 @@
 <ul style="font-size: 1.5em; list-style-type: none;">
 
 <style>
-  li:not(.i-spin):before {
+  li:not(.-loading):before {
     padding-right: 10px;
   }
-  .i-spin + li {display: inline-block;}
 </style>
 
   <li class="i-lock">i-lock</li>
@@ -33,6 +32,6 @@
   <li class="i-plus">i-plus</li>
   <li class="i-minus">i-minus</li>
   <li class="i-edit">i-edit</li>
-  <li class="i-spin -spinning"></li><li>i-spin -spinning</li>
+  <li class="-loading" style="display: inline-block;"></li><span> -loading</span>
 
 </ul>

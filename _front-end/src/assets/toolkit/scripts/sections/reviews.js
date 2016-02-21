@@ -214,7 +214,8 @@ function handleSynonymForm(ev) {
   if (Object.keys(data).every(k => data[k] !== '' && onlyJapaneseChars(data[k]))) {
     $validation.addClass('-hidden');
     addSynonym(vocabID, data);
-    $submitButton.html('<span class="icon i-spin -spinning"></span>');
+    $submitButton.html('<span class="icon -loading"></span>');
+    // style="display: inline-block;"
     setTimeout(() => {
       ignoreAnswer({ animate: false });
       modals.closeModals();
