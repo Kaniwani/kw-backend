@@ -15,9 +15,6 @@
 
     <ul class="vocab-list">
       {% for review in reviews %}
-      {% comment %}
-        @tadgh ID here
-      {% endcomment %}
         <li id="vocab{{ review.vocabulary.id }}" class="vocab-card {% if review.hidden %}-locked -unlockable {% endif %}"
             data-pk="{{ review.id }}">
 
