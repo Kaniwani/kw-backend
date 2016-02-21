@@ -2,7 +2,7 @@ import wanakana from '../vendor/wanakana.min';
 import { revealToggle } from '../components/revealToggle';
 import '../util/serializeObject';
 import modals from '../vendor/modals';
-modals.init({ backspaceClose: false });
+modals.init({ backspaceClose: false, callbackOpen: synonymModal });
 
 
 // would really like to do a massive refactor, break out some functions as importable helpers
@@ -185,7 +185,7 @@ function compareAnswer() {
   enableButtons();
 }
 
-function synonymModal({trigger = false} = {}) {
+function synonymModal() {
   let $form = $('#synonymForm');
   let $answerField = $(wanakana.isHiragana(answer) ? '#newKana' : '#newKanji');
   let $notAnswerField = $('.input').not($answerField);
@@ -198,10 +198,9 @@ function synonymModal({trigger = false} = {}) {
   });
 
   $answerField.val(answer).next('.jisho').addClass('-ghost');
-  $notAnswerField.next('.jisho').attr({ href: `//jisho.org/search/${answer}` });
+  $notAnswerField.attr({ href: `//jisho.org/search/${answer}` });
 
-  if (trigger) modals.openModal(null, '#newSynonym', { backspaceClose: false });
-  setTimeout(() => $notAnswerField.focus(), 300);
+  setTimeout(() => $notAnswerField.focus(), 200);
 }
 
 function handleSynonymForm(ev) {
@@ -425,7 +424,7 @@ function handleShortcuts(ev) {
         break;
       // Pressing S toggles both add synonym modal.
       case (ev.which == 83 || ev.which == 115):
-        synonymModal({trigger: true});
+        modals.openModal(null, '#newSynonym', { backspaceClose: false, callbackOpen: synonymModal });
         break;
       // Pressing I or backspace/del ignores answer when input has been marked incorrect
       case (ev.which == 73 || ev.which == 105 || ev.which == 8 || ev.which == 46):
