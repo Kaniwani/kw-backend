@@ -19,7 +19,7 @@
         {
         'user_specific_id':'{{ item.id }}',
         'streak': {{ item.streak }},
-        'meaning':'{{ item.vocabulary.meaning }}',
+        'meaning':'{{ item.vocabulary.meaning }}{% if item.synonyms_string %}, {{ item.synonyms_string }}{% endif %}',
         'readings':  [{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.kana }}',{% endif %}{% endfor %}],
         'characters':[{% for reading in item.vocabulary.reading_set.all %}{% if reading.level <= user.profile.level %}'{{ reading.character }}',{% endif %}{% endfor %}],
         },
