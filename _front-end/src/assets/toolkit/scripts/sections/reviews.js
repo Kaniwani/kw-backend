@@ -215,7 +215,6 @@ function handleSynonymForm(ev) {
     $validation.addClass('-hidden');
     addSynonym(vocabID, data);
     $submitButton.html('<span class="icon -loading"></span>');
-    // style="display: inline-block;"
     setTimeout(() => {
       ignoreAnswer({ animate: false });
       modals.closeModals();

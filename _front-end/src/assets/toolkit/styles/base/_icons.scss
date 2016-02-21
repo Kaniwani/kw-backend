@@ -55,19 +55,31 @@
 .i-plus:before { content: '\e817'; } /* '' */
 .i-minus:before { content: '\e818'; } /* '' */
 .i-edit:before { content: '\e819'; } /* '' */
-.i-spin:before { content: '\e81a'; } /* '' */
 
-.-spinning {
+// change both border px and width/height to adjust spinner size
+.-loading {
   display: inline-block;
-  animation: spin 2s infinite linear;
+  vertical-align: text-bottom;
+  border-top: 2px solid rgba($black, 0.2);
+  border-right: 2px solid rgba($black, 0.2);
+  border-bottom: 2px solid rgba($black, 0.2);
+  border-left: 2px solid $white;
+  transform: translateZ(0);
+  animation: loadspin 1.2s infinite linear;
 }
 
-@keyframes spin {
+.-loading,
+.-loading:after {
+  border-radius: 50%;
+  width: 1em;
+  height: 1em;
+}
+
+@keyframes loadspin {
   0% {
     transform: rotate(0deg);
   }
-
   100% {
-    transform: rotate(359deg);
+    transform: rotate(360deg);
   }
 }
