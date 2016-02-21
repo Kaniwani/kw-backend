@@ -72,9 +72,9 @@ $bp-user-details: '>=480px';
     }
 
     > .list > .item > .link {
+      @include word-wrap();
       color: $ud-grey;
       text-shadow: $shadow-text-thin;
-
 
       &:hover {
         color: $white;
