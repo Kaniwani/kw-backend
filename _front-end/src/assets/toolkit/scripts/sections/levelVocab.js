@@ -7,11 +7,6 @@ function init() {
     let $cards = $vocabList.find('.vocab-card');
     CSRF = $('#csrf').val();
 
-    // im no longer imported at top of file.
-    // seems flexbox is adjusting okay and we don't need this anymore
-    // keeping it for a few commits then feel free to blow away the function
-    //    if(im.greaterThan('md')) adjustCardHeight($cards);
-
     // if user has deeplinked from summary or elsewhere let's draw attention to the card
     let specificVocab = (window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/) || [])[1];
     if (specificVocab) $(specificVocab).addClass('-standout');
