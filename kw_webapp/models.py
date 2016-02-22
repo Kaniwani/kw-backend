@@ -1,4 +1,6 @@
 import logging
+from itertools import chain
+
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
@@ -117,6 +119,9 @@ class UserSpecific(models.Model):
     wanikani_srs_numeric = models.IntegerField(default=0)
     wanikani_burned = models.BooleanField(default=False)
 
+    def get_all_readings(self):
+        return list(chain(self.vocabulary.reading_set.all(), self.answersynonym_set.all()))
+
     def can_be_managed_by(self, user):
         return self.user == user or user.is_superuser
 
@@ -151,6 +156,9 @@ class AnswerSynonym(models.Model):
     character = models.CharField(max_length=255, null=True)
     kana = models.CharField(max_length=255, null=False)
     review = models.ForeignKey(UserSpecific, null=True)
+
+    def __str__(self):
+        return "{} - {} - {} - SYNONYM".format(self.review.vocabulary.meaning, self.kana, self.character)
 
     def as_dict(self):
         return {

@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.test import Client, TestCase
@@ -90,3 +92,14 @@ class TestModels(TestCase):
         review.meaningsynonym_set.get_or_create(text="kitty")
 
         self.assertIn("kitty", review.synonyms_string())
+
+    def test_get_all_readings_returns_original_and_added_readings(self):
+        self.vocabulary.reading_set.create(kana="what", character="ars", level=5)
+        review = create_userspecific(self.vocabulary, self.user)
+        review.answersynonym_set.create(kana="shwoop", character="fwoop")
+
+        expected = list(chain(self.vocabulary.reading_set.all(), review.answersynonym_set.all()))
+
+        print(review.get_all_readings())
+        self.assertListEqual(expected, review.get_all_readings())
+

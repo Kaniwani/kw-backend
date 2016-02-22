@@ -20,7 +20,7 @@
         <div class="vocab-base">
           <dl class="readingset">
             <span class="ja">
-              {% for reading in review.vocabulary.reading_set.all %}
+              {% for reading in review.get_all_readings %}
                 {% ifchanged %}<dt lang="ja" class="kana">{{ reading.kana }}</dt>{% endifchanged %}
                 {% ifchanged %}<dt lang="ja" class="kanji">{{ reading.character }}</dt>{% endifchanged %}
               {% endfor %}
