@@ -110,7 +110,7 @@ function updateKanaKanjiDetails() {
 }
 
 // this can probably be an ajax followed by a window.navigate call I suppose instead of form jiggery
-function makePost(path, params) {
+function postSummary(path, params) {
   let form = document.createElement('form');
   form.setAttribute('method', 'post');
   form.setAttribute('action', path);
@@ -358,7 +358,7 @@ function rotateVocab({ignored = false, correct = false} = {}) {
 
   if (remainingVocab.length === 0) {
     console.log('Summary post data', answerCorrectness);
-    return makePost('/kw/summary/', answerCorrectness);
+    return postSummary('/kw/summary/', answerCorrectness);
   }
 
   currentVocab = remainingVocab.shift();

@@ -15,23 +15,28 @@
     <ul class="vocab-list">
       {% for review in reviews %}
         <li id="vocab{{ review.id }}" class="vocab-card {% if review.hidden %}-locked -unlockable {% endif %}"
-            data-pk="{{ review.id }}">
-
+            data-vocab-id="{{ review.id }}">
         <div class="vocab-base">
           <dl class="readingset">
             <span class="ja">
-              {% for reading in review.get_all_readings %}
+              {% for reading in review.vocabulary.reading_set.all %}
                 {% ifchanged %}<dt lang="ja" class="kana">{{ reading.kana }}</dt>{% endifchanged %}
                 {% ifchanged %}<dt lang="ja" class="kanji">{{ reading.character }}</dt>{% endifchanged %}
+              {% endfor %}
+              {% for synonym in review.answersynonym_set.all %}
+                <dt lang="ja" class="kana">{{ synonym.kana }}</dt>
+                <dt lang="ja" class="kanji">{{ synonym.character }}
+                  <span class="icon i-cancel removeSynonym" title="Remove Synonym" data-synonym-id="{{ synonym.id }}"></span>
+                </dt>
               {% endfor %}
             </span>
             <dd class="meaning">{{ review.vocabulary.meaning }}</dd>
           </dl>
 
           {% if review.hidden %}
-            <span class="icon -lockstatus i-unlock"></span>
+            <span class="icon i-unlock -lockstatus toggleLock"></span>
           {% else %}
-            <span class="icon -lockstatus i-unlocked"></span>
+            <span class="icon i-unlocked -lockstatus toggleLock"></span>
           {% endif %}
 
           {% if review.wanikani_burned %}

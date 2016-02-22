@@ -63,6 +63,7 @@
     }
 
     .kanji {
+      position: relative;
       font-size: responsive 30px 48px;
       text-shadow: 2px 2px 2px rgba($purple-dark, .7);
       line-height: 1.4;
@@ -72,6 +73,22 @@
       @include media($bp-xl) {
         line-height: 1.3;
       }
+
+      > .i-cancel {
+        @include tap-target(10px, 15px);
+        position: absolute;
+        top: 50%;
+        left: -.6em;
+        font-size: .4em;
+        cursor: pointer;
+        transform: translateY(-50%);
+        text-shadow: 0 1px 1px ($purple-dark, .7);
+        transition: color .2s ease-out;
+        &:hover {
+          color: lighten($red, 8%);
+        }
+      }
+
     }
 
     .kana {
