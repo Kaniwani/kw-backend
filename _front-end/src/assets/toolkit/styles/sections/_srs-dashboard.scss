@@ -40,6 +40,11 @@
       &.-enlightened { @include bg-gradient($blue-light); }
       &.-burned { @include bg-gradient($black-light); }
 
+      .link {
+        display: inline-block;
+        width: 100%;
+      }
+
       .count,
       .title {
         display: inline-block;
