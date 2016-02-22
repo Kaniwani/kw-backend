@@ -15,82 +15,44 @@
 
     <ul class="vocab-list">
       {% for review in reviews %}
-      {% comment %}
-        @tadgh ID here
-      {% endcomment %}
-        <li id="vocab{{ review.vocabulary.id }}" class="vocab-card {% if review.hidden %}-locked -unlockable {% endif %}"
-            data-pk="{{ review.id }}">
+      <li id="vocab{{ review.vocabulary.id }}" class="vocab-card {% if review.hidden %}-locked -unlockable {% endif %}" data-vocab-id="{{ review.id }}">
+        <div class="vocab-base">
+          <dl class="readingset">
+            <span class="ja">
+              {% for reading in review.vocabulary.reading_set.all %}
+                {% ifchanged %}<dt lang="ja" class="kana">{{ reading.kana }}</dt>{% endifchanged %}
+                {% ifchanged %}<dt lang="ja" class="kanji">{{ reading.character }}</dt>{% endifchanged %}
+              {% endfor %}
+              {% for synonym in review.answersynonym_set.all %}
+                <dt lang="ja" class="kana">{{ synonym.kana }}</dt>
+                <dt lang="ja" class="kanji">{{ synonym.character }}
+                  <span class="icon i-cancel removeSynonym" title="Remove Synonym" data-synonym-id="{{ synonym.id }}"></span>
+                </dt>
+              {% endfor %}
+            </span>
+            <dd class="meaning">{{ review.vocabulary.meaning }}</dd>
+          </dl>
 
-          <div class="vocab-base">
-            <dl class="readingset">
-              <span class="ja">
-                {% for reading in review.vocabulary.reading_set.all %}
-                  {% ifchanged %}<dt lang="ja" class="kana">{{ reading.kana }}</dt>{% endifchanged %}
-                  {% ifchanged %}<dt lang="ja" class="kanji">{{ reading.character }}</dt>{% endifchanged %}
-                {% endfor %}
-              </span>
-              <dd class="meaning">{{ review.vocabulary.meaning }}</dd>
-            </dl>
+          {% if review.hidden %}
+            <span class="icon i-unlock -lockstatus toggleLock"></span>
+          {% else %}
+            <span class="icon i-unlocked -lockstatus toggleLock"></span>
+          {% endif %}
 
-            {% if review.hidden %}
-              <span class="icon -lockstatus i-unlock"></span>
-            {% else %}
-              <span class="icon -lockstatus i-unlocked"></span>
-            {% endif %}
-
-            {% if review.wanikani_burned %}
-              <span class="icon -srslevel i-burned" title="Burned on WaniKani!"></span>
-            {% endif %}
-
-
-          {% comment 'not ready for production - need to decide on placement/sizing - maybe go in vocab extra' %}
-            {% if review.streak > 8 %}
-              <span class="icon -srslevel i-burned" title="KaniWani Level - Burned"></span>
-            {% elif review.streak > 7 %}
-              <span class="icon -srslevel i-enlightened" title="KaniWani Level - Enlightened"></span>
-            {% elif review.streak > 5 %}
-              <span class="icon -srslevel i-guru" title="KaniWani Level - Guru"></span>
-            {% elif review.streak > 2 %}
-              <span class="icon -srslevel i-master" title="KaniWani Level - Master"></span>
-            {% else %}
-              <span class="icon -srslevel i-apprentice" title="KaniWani Level - Apprentice"></span>
-            {% endif %}
-          {% endcomment %}
-
-          </div>
-
-
-          {% comment 'not ready for production - also needs update from styleguide template - maybe this should be a second "meaning" like mutiple readings are displayed. Would look nice with the symmmetry' %}
-          <div class="vocab-extra">
-
-            <div class="synonyms">
-              <span class="text">User synonyms:</span>
-
-              <!-- TODO: possible approach using separate contentEditable <li>s
-                   http://codepen.io/chriscoyier/pen/LVEdJg -->
-
-              <ul class="list">
-                <li class="item">Implementing</li>
-                <li class="item">Soon but not yet!</li>
-                <li>{{ review.synonyms_string }}</li>
-              </ul>
-            </div>
-
-            <button class="button extraToggle i-downarrow" title="More…"></button>
-
-          </div>
-          {% endcomment %}
-
-        </li>
+          {% if review.wanikani_burned %}
+            <span class="icon -srslevel i-burned" title="Burned on WaniKani!"></span>
+          {% endif %}
+        </div>
+      </li>
       {% endfor %}
     </ul>
   {% if not reviews %}
     <div class="empty">
       <p>Oh my, you haven't unlocked anything here.</p>
       <p>Maybe go clickity click some locks in your <a href="{% url 'kw:vocab' %}">vocabulary</a> or toggle some <a href="{% url 'kw:settings' %}">settings</a>.</p>
-      <p>Failing that, we recommend levelling up some vocab through reviews (￣ω￣;)</p>
+      <p>Failing that, go ahead and level up some vocab through reviews (￣ω￣;)</p>
     </div>
-    {% endif %}
+  {% endif %}
   </div>
 </section>
 

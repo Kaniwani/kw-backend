@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from kw_webapp.models import Vocabulary, Synonym, UserSpecific, Reading, Profile
+from kw_webapp.models import Vocabulary, MeaningSynonym, UserSpecific, Reading, Profile
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -31,7 +31,7 @@ class VocabularySerializer(serializers.ModelSerializer):
 
 class SynonymSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Synonym
+        model = MeaningSynonym
 
 
 class ReviewSerializer(serializers.ModelSerializer):

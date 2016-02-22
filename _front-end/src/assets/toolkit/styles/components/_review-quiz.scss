@@ -2,29 +2,28 @@
   display: table;
   padding: 0;
   width: 100%;
-  height: 100%;
 
   .upper,
   .lower {
     display: table-row;
     width: 100%;
   }
+}
 
-  .upper {
-    background-color: $purple;
-    background-image: linear-gradient(to bottom, $purple-light, $purple);
-    background-repeat: repeat-x;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFAA00FF, endColorstr=#FF9300DD, GradientType=0);
-    color: $white;
-    text-align: center;
-    height: auto;
-    height: 25vh;
-    @include media($bp-md) {
-      height: 33vh;
-    }
-    @include media($bp-lg) {
-      height: 40vh;
-    }
+.upper {
+  background-color: $purple;
+  background-image: linear-gradient(to bottom, $purple-light, $purple);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFAA00FF, endColorstr=#FF9300DD, GradientType=0);
+  color: $white;
+  text-align: center;
+  height: auto;
+  height: 25vh;
+  @include media($bp-md) {
+    height: 33vh;
+  }
+  @include media($bp-lg) {
+    height: 40vh;
   }
 
   .meaning {
@@ -43,145 +42,145 @@
       padding-right: 10%;
     }
   }
+}
 
-  .lower {
+.lower {
 
-    .answerpanel {
-      position: relative;
-      padding: 0;
-      margin: 0;
-      border: 0;
-      outline: none;
-      appearance: none;
-      // ios has rounded inputs by default ffs
-      -webkit-appearance: none;
-      border-radius: 0;
-      // when input shakes left/right on incorrect this color will show at edges
-      // otherwise never seen
-      background-color: $red;
+  .answerpanel {
+    position: relative;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    outline: none;
+    appearance: none;
+    // ios has rounded inputs by default ffs
+    -webkit-appearance: none;
+    border-radius: 0;
+    // when input shakes left/right on incorrect this color will show at edges
+    // otherwise never seen
+    background-color: $red;
+  }
+
+  .answer {
+    display: block;
+    width: 100%;
+    outline: none;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background-color: $white-light;
+    box-shadow: $shadow-inner-medium;
+    font-size: responsive 22px 50px;
+    font-range: 300px 2000px;
+    line-height: 2.5;
+    text-align: center;
+    transition: all .1s ease-out;
+
+    // hide stupid X on IE
+    ::-ms-clear {;}
+
+    &.-marked {
+      color: $white;
+
+      ~ .submit.-answer .icon {
+        color: $white;
+        text-shadow: $shadow-text-thin;
+      }
     }
 
-    .answer {
-      display: block;
-      width: 100%;
-      outline: none;
-      border: 0;
-      margin: 0;
-      padding: 0;
-      background-color: $white-light;
-      box-shadow: $shadow-inner-medium;
-      font-size: responsive 22px 50px;
-      font-range: 300px 2000px;
-      line-height: 2.5;
-      text-align: center;
-      transition: all .1s ease-out;
+    &.-invalid {
+      background-color: $yellow;
+      color: $grey-dark;
+      text-shadow: none;
 
-      // hide stupid X on IE
-      ::-ms-clear {;}
-
-      &.-marked {
-        color: $white;
-
-        ~ .submit.-answer .icon {
-          color: $white;
-          text-shadow: $shadow-text-thin;
-        }
-      }
-
-      &.-invalid {
-        background-color: $yellow;
+      + .submit .icon {
         color: $grey-dark;
         text-shadow: none;
-
-        + .submit .icon {
-          color: $grey-dark;
-          text-shadow: none;
-        }
-      }
-
-      &.-incorrect {
-        background-color: $red;
-        text-shadow: 1px 1px 0 rgba(darken($red, 20%), .75);
-      }
-
-      &.-correct {
-        background-color: $green;
-        text-shadow: 1px 1px 0 rgba(darken($green, 20%), .75);
       }
     }
 
-    .answer.-marked::-webkit-input-placeholder { color: $white; }
-    .answer.-marked::-moz-placeholder { color: $white;  }
-    .answer.-marked:-ms-input-placeholder { color: $white; }
-    .answer.-marked:placeholder-shown { color: $white; }
+    &.-incorrect {
+      background-color: $red;
+      text-shadow: 1px 1px 0 rgba(darken($red, 20%), .75);
+    }
 
-    .submitwrap,
-    .streak {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-content: center;
-      margin: 0 .5em;
+    &.-correct {
+      background-color: $green;
+      text-shadow: 1px 1px 0 rgba(darken($green, 20%), .75);
+    }
+  }
 
+  .answer.-marked::-webkit-input-placeholder { color: $white; }
+  .answer.-marked::-moz-placeholder { color: $white;  }
+  .answer.-marked:-ms-input-placeholder { color: $white; }
+  .answer.-marked:placeholder-shown { color: $white; }
+
+  .submitwrap,
+  .streak {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    margin: 0 .5em;
+
+    .icon {
+      font-size: responsive 18px 36px;
+      font-range: 300px 1600px;
+      line-height: normal;
+      color: $grey-dark;
+      &.-marked {
+        color: $white;
+        text-shadow: $shadow-text-thin;
+      }
+    }
+  }
+
+  .submit,
+  .streak {
+    position: absolute;
+    bottom: 0;
+    height: 100%;
+    z-index: 3;
+  }
+
+  .streak {
+    left: 0;
+    .icon {
+      &.-fadeOutUp {
+        color: $white;
+        animation: fadeOutUp .6s;
+      }
+    }
+  }
+
+  .submit {
+    right: 0;
+    appearance: none;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    &.-answer {
+      .icon:before {
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
+    &.-ignore {
+      right: 3em;
+      opacity: .5;
+      transition: opacity .3s ease-out;
       .icon {
-        font-size: responsive 18px 36px;
-        font-range: 300px 1600px;
-        line-height: normal;
-        color: $grey-dark;
-        &.-marked {
-          color: $white;
-          text-shadow: $shadow-text-thin;
-        }
+        color: $white;
       }
-    }
-
-    .submit,
-    .streak {
-      position: absolute;
-      bottom: 0;
-      height: 100%;
-      z-index: 3;
-    }
-
-    .streak {
-      left: 0;
-      .icon {
-        &.-fadeOutUp {
-          color: $white;
-          animation: fadeOutUp .6s;
-        }
-      }
-    }
-
-    .submit {
-      right: 0;
-      appearance: none;
-      background: none;
-      border: 0;
-      border-radius: 0;
-      box-shadow: none;
-      &.-answer {
-        .icon:before {
-          display: inline-block;
-          vertical-align: middle;
-        }
-      }
-      &.-ignore {
-        right: 3em;
-        opacity: .5;
-        transition: opacity .3s ease-out;
-        .icon {
-          color: $white;
-        }
-        &:hover,
-        &:focus {
-          opacity: 1;
-        }
-      }
+      &:hover,
       &:focus {
-        .submitwrap .icon:before {
-          outline: 1px dashed $grey-light;
-        }
+        opacity: 1;
+      }
+    }
+    &:focus {
+      .submitwrap .icon:before {
+        outline: 1px dashed $grey-light;
       }
     }
   }
@@ -193,6 +192,7 @@
     width: 100%;
     font-size: 1.25em;
     text-align: center;
+
     > .content {
       opacity: 0;
       color: $white;

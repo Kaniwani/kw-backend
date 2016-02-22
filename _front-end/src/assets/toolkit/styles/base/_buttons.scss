@@ -16,8 +16,9 @@
     font-size: 18px;
     background-color: $blue;
     color: $white;
-    &:hover {
-      background-color: transparentize($blue, .2);
+    &:hover,
+    &:focus {
+      background-color: transparentize($blue, .15);
     }
   }
 }
