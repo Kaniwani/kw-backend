@@ -72,6 +72,11 @@
         line-height: 1.3;
       }
 
+      & + .kana:not(:last-child) {
+        padding-top: .44em;
+        border-top: .2em solid rgba($purple-dark, .3);
+      }
+
       > .i-cancel {
         @include tap-target(10px, 15px);
         position: absolute;
@@ -86,7 +91,6 @@
           color: lighten($red, 8%);
         }
       }
-
     }
 
     .kana {
