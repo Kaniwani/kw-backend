@@ -1,7 +1,6 @@
 .nav-list {
   @extend %plainlist;
   display: flex;
-  max-height: auto;
   flex-wrap: wrap;
   text-align: right;
   justify-content: flex-end;
@@ -29,6 +28,10 @@
         opacity: 1;
         width: 100%;
       }
+    }
+
+    &.-disabled {
+      pointer-events: none; // modern & IE11+
     }
   }
 }

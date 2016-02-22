@@ -18,6 +18,13 @@
   }
 }
 
+@mixin word-wrap() {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-word;
+  hyphens: auto;
+}
 
 @mixin bg-gradient($clr) {
   background-color: $clr;
@@ -136,6 +143,10 @@
 
 ._strikeout {
   text-decoration: line-through;
+}
+
+._underline {
+  text-decoration: underline;
 }
 
 // force box for components with no height (background floating icons for example)

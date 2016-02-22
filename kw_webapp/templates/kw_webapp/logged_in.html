@@ -15,9 +15,11 @@
     <nav class="site-nav">
       <a href="#0" class="expandToggle">☰ Menu</a>
       <ul class="nav-list toggleTarget">
-        <li class="item {% ancestor 'kw:review' %}">
+        <li class="item {% ancestor 'kw:review' %} {% if user.profile.on_vacation %}-disabled{% endif %}">
           <a href="{% url "kw:review" %}" class="nav-link">
-            <span class="text">Reviews <span id="navReviewCount" class="count">{% if review_count %}{{ review_count }}{% endif %}</span></span>
+            <span class="text">Reviews
+              <span id="navReviewCount" class="count">{% if review_count and not user.profile.on_vacation %}{{ review_count }}{% endif %}</span>
+            </span>
           </a>
         </li>
         <li class="item {% ancestor 'kw:vocab' %}">

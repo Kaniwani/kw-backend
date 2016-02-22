@@ -45,7 +45,7 @@ function init() {
 		if (recentlySynced !== true) syncUser();
 		if (!KW.settings.onVacation) {
 			updateReviewTime($reviewButton);
-			KW.reviewTimer = setInterval(updateReviewTime, 20000 /*ms*/);
+			KW.reviewTimer = setInterval(updateReviewTime($reviewButton), 20000 /*ms*/);
 		}
 
 		// event handlers

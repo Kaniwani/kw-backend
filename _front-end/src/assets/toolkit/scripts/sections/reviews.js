@@ -6,7 +6,7 @@ modals.init({ backspaceClose: false, callbackOpen: synonymModal });
 
 
 // would really like to do a massive refactor, break out some functions as importable helpers
-// undecided how I want to reorganise but it has become spaghetti and hard to reason about
+// undecided how I want to reorganise but it's becoming a spiderweb
 // might use react just for reviews - since the template is only used to load in the review object
 // instead we could load the page with a <div id="reactReview"></div> and ajax in the data
 // and have much better organisation / handling of state
@@ -158,7 +158,7 @@ function compareAnswer() {
     imeInput = true;
   } else if (!wanakana.isHiragana(answer)) {
     // user used english that couldn't convert to full hiragana - don't proceed
-     return nonHiraganaAnswer();
+    return nonHiraganaAnswer();
   }
 
   const inReadings = () => $.inArray(answer, currentVocab.readings) != -1;
@@ -168,9 +168,9 @@ function compareAnswer() {
   if (inReadings() || inCharacters()) {
     markRight();
     //Fills the correct kanji into the input field based on the user's answers
-    if (!imeInput) {
-      $userAnswer.val(getMatchedReading(answer));
-    }
+    if (wanakana.isHiragana(answer)) {
+	   	$userAnswer.val(getMatchedReading(answer));
+	  }
     processAnswer({correct: true});
     if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 900);
   }
