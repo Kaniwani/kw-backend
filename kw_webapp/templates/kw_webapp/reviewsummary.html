@@ -41,7 +41,7 @@
         {% for review in correct %}
         {% with review.vocabulary.reading_set.first as reading %}
           <li class="item">
-            <a lang="ja" class="link hint--bottom hint--rounded -multiline" data-hint="{{ reading.kana }} | {{ review.vocabulary.meaning }}" href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ reading.id }}">{{ reading.character }}</a>
+            <a lang="ja" class="link hint--bottom hint--rounded -multiline" data-hint="{{ reading.kana }} ・ {{ review.vocabulary.meaning }}" href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ reading.id }}">{{ reading.character }}</a>
           </li>
         {% endwith %}
         {% endfor %}
