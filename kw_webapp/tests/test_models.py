@@ -1,8 +1,10 @@
+from itertools import chain
+
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.test import Client, TestCase
 
-from kw_webapp.models import Synonym, UserSpecific
+from kw_webapp.models import MeaningSynonym, UserSpecific
 from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
 
@@ -16,7 +18,7 @@ class TestModels(TestCase):
         self.user.save()
         self.vocabulary = create_vocab("cat")
         self.review = create_userspecific(self.vocabulary, self.user)
-        self.review.synonym_set.get_or_create(text="minou")
+        self.review.meaningsynonym_set.get_or_create(text="minou")
 
         #default state of a test is a user that has a single review, and the review has a single synonym added.
 
@@ -44,8 +46,8 @@ class TestModels(TestCase):
         self.assertNotEqual(before_toggle_hidden, after_toggle_hidden)
 
     def test_adding_synonym_works(self):
-        self.review.synonym_set.get_or_create(text="une petite chatte")
-        self.assertEqual(2, len(self.review.synonym_set.all()))
+        self.review.meaningsynonym_set.get_or_create(text="une petite chatte")
+        self.assertEqual(2, len(self.review.meaningsynonym_set.all()))
 
     def test_removing_synonym_by_lookup_works(self):
         remove_text = "minou"
@@ -54,11 +56,11 @@ class TestModels(TestCase):
 
     def test_removing_nonexistent_synonym_fails(self):
         remove_text = "un chien"
-        self.assertRaises(Synonym.DoesNotExist, self.review.remove_synonym, remove_text)
+        self.assertRaises(MeaningSynonym.DoesNotExist, self.review.remove_synonym, remove_text)
 
     def test_removing_synonym_by_object_works(self):
-        synonym, created = self.review.synonym_set.get_or_create(text="minou")
-        self.review.synonym_set.remove(synonym)
+        synonym, created = self.review.meaningsynonym_set.get_or_create(text="minou")
+        self.review.meaningsynonym_set.remove(synonym)
 
     def test_reading_clean_fails_with_invalid_levels_too_high(self):
         v = create_vocab("cat")
@@ -87,6 +89,17 @@ class TestModels(TestCase):
     def test_synonym_adding(self):
         review = create_userspecific(self.vocabulary, self.user)
 
-        review.synonym_set.get_or_create(text="kitty")
+        review.meaningsynonym_set.get_or_create(text="kitty")
 
         self.assertIn("kitty", review.synonyms_string())
+
+    def test_get_all_readings_returns_original_and_added_readings(self):
+        self.vocabulary.reading_set.create(kana="what", character="ars", level=5)
+        review = create_userspecific(self.vocabulary, self.user)
+        review.answersynonym_set.create(kana="shwoop", character="fwoop")
+
+        expected = list(chain(self.vocabulary.reading_set.all(), review.answersynonym_set.all()))
+
+        print(review.get_all_readings())
+        self.assertListEqual(expected, review.get_all_readings())
+

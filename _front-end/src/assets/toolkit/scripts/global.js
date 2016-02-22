@@ -33,4 +33,7 @@ $(document).ready(() => {
   reviews.init();
   summary.init();
   settings.init();
+
 })
+
+

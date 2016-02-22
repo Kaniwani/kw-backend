@@ -1,3 +1,4 @@
+// add 's' to string if number is zero or plural
 const pluralize = function(text, num) {
   num = +num;
   if (Number.isNaN(num)) console.warn('pluralize received non-number');

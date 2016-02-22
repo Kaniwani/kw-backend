@@ -1,4 +1,6 @@
 import logging
+from itertools import chain
+
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
@@ -117,17 +119,27 @@ class UserSpecific(models.Model):
     wanikani_srs_numeric = models.IntegerField(default=0)
     wanikani_burned = models.BooleanField(default=False)
 
+    def get_all_readings(self):
+        return list(chain(self.vocabulary.reading_set.all(), self.answersynonym_set.all()))
+
     def can_be_managed_by(self, user):
         return self.user == user or user.is_superuser
 
     def synonyms_list(self):
-        return [synonym.text for synonym in self.synonym_set.all()]
+        return [synonym.text for synonym in self.meaningsynonym_set.all()]
 
     def synonyms_string(self):
-        return ", ".join([synonym.text for synonym in self.synonym_set.all()])
+        return ", ".join([synonym.text for synonym in self.meaningsynonym_set.all()])
 
     def remove_synonym(self, text):
-        self.synonym_set.remove(Synonym.objects.get(text=text))
+        self.meaningsynonym_set.remove(MeaningSynonym.objects.get(text=text))
+
+    def answer_synonyms(self):
+        return [synonym.kana for synonym in self.answersynonym_set.all()]
+
+    def add_answer_synonym(self, kana, character):
+        synonym, created = self.answersynonym_set.get_or_create(kana=kana, character=character)
+        return synonym, created
 
     def __str__(self):
         return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
@@ -140,7 +152,23 @@ class UserSpecific(models.Model):
                                                                      self.unlock_date)
 
 
-class Synonym(models.Model):
+class AnswerSynonym(models.Model):
+    character = models.CharField(max_length=255, null=True)
+    kana = models.CharField(max_length=255, null=False)
+    review = models.ForeignKey(UserSpecific, null=True)
+
+    def __str__(self):
+        return "{} - {} - {} - SYNONYM".format(self.review.vocabulary.meaning, self.kana, self.character)
+
+    def as_dict(self):
+        return {
+            "id": self.id,
+            "kana": self.kana,
+            "character": self.character,
+            "user_specific_id": self.review.id
+        }
+
+class MeaningSynonym(models.Model):
     text = models.CharField(max_length=255, blank=False, null=False)
     review = models.ForeignKey(UserSpecific, null=True)
 

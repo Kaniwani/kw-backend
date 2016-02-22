@@ -287,7 +287,7 @@ def add_synonyms_from_api_call_to_review(review, user_specific_json):
         return review, new_synonym_count
 
     for synonym in user_specific_json["user_synonyms"]:
-        _, created = review.synonym_set.get_or_create(text=synonym)
+        _, created = review.meaningsynonym_set.get_or_create(text=synonym)
         if created:
             new_synonym_count += 1
     return review, new_synonym_count
@@ -518,7 +518,7 @@ def pull_user_synonyms_by_level(user, level):
                     try:
                         review = UserSpecific.objects.get(user=user, vocabulary__meaning=meaning)
                         for synonym in vocabulary['user_specific']['user_synonyms']:
-                            review.synonym_set.get_or_create(text=synonym)
+                            review.meaningsynonym_set.get_or_create(text=synonym)
                         review.save()
                     except UserSpecific.DoesNotExist as e:
                         logger.error("Couldn't pull review during a synonym sync: {}".format(e))

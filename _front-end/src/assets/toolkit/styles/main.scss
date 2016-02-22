@@ -2,8 +2,6 @@
  * Toolkit styles
  */
 
-// first so we can override
-@import "vendor/*";
 
 // explicitly ordered to control cascade
 @import "base/normalize";
@@ -18,6 +16,8 @@
 @import "base/layout";
 @import "base/buttons";
 @import "base/forms";
+
+@import "vendor/*";
 
 // glob import is alphabetical, use _01-stylesheet to order explicitly if needed
 @import "components/*";

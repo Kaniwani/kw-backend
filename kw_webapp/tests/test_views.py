@@ -14,6 +14,7 @@ from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import create_user, create_userspecific, create_profile, create_reading
 from kw_webapp.tests.utils import create_vocab
 
+
 class TestViews(TestCase):
     def setUp(self):
         self.user = create_user("user1")
@@ -47,8 +48,8 @@ class TestViews(TestCase):
         self.assertRedirects(response, expected_url="/kw/")
 
     def test_review_page_populates_synonyms_next_to_meaning(self):
-        self.review.synonym_set.create(text="minou")
-        self.review.synonym_set.create(text="chatte!")
+        self.review.meaningsynonym_set.create(text="minou")
+        self.review.meaningsynonym_set.create(text="chatte!")
 
         request = self.factory.get('/kw/review/')
         request.user = self.user
@@ -73,7 +74,6 @@ class TestViews(TestCase):
         self.assertNotContains(response, "radioactive bat")
         self.assertContains(response, "phlange")
 
-
     def test_review_page_shows_all_items_when_burnt_setting_is_disabled(self):
         word = create_vocab("phlange")
         self.user.profile.only_review_burned = False
@@ -89,8 +89,6 @@ class TestViews(TestCase):
 
         self.assertContains(response, "radioactive bat")
         self.assertContains(response, "phlange")
-
-
 
     def test_recording_answer_works_on_correct_answer(self):
         us = create_userspecific(self.vocabulary, self.user)
@@ -225,4 +223,36 @@ class TestViews(TestCase):
         response = self.client.get("/kw/")
 
         self.assertEqual(response.context['next_review_date'], current_time)
+
+    def test_adding_synonym_adds_synonym(self):
+        synonym_kana = "いぬ"
+        synonym_kanji = "犬"
+        request = self.factory.post("/kw/synonym/add", data={"user_specific_id": self.review.id,
+                                                             "kana": synonym_kana,
+                                                             "kanji": synonym_kanji})
+        request.user = self.user
+
+        view = kw_webapp.views.AddSynonym.as_view()
+        view(request)
+        review = UserSpecific.objects.get(pk=self.review.id)
+        found_synonym = review.answersynonym_set.first()
+
+        self.assertTrue(synonym_kana in review.answer_synonyms())
+        self.assertEqual(found_synonym.kana, synonym_kana)
+        self.assertEqual(found_synonym.character, synonym_kanji)
+
+    def test_removing_synonym_removes_synonym(self):
+        kana = "whatever"
+        characters = "somechar"
+        synonym, created = self.review.add_answer_synonym(kana, characters)
+
+        request = self.factory.post("/kw/synonym/remove", data={"synonym_id": synonym.id})
+        request.user = self.user
+
+        view = kw_webapp.views.RemoveSynonym.as_view()
+        view(request)
+
+        review = UserSpecific.objects.get(pk=self.review.id)
+        self.assertListEqual(review.answer_synonyms(), [])
+
 
