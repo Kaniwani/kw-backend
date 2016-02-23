@@ -198,7 +198,7 @@ function synonymModal() {
   });
 
   $answerField.val(answer).next('.jisho').addClass('-ghost');
-  $notAnswerField.attr({ href: `//jisho.org/search/${answer}` });
+  $notAnswerField.next('.jisho').attr({ href: `//jisho.org/search/${answer}` });
 
   setTimeout(() => $notAnswerField.focus(), 200);
 }

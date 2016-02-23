@@ -1,36 +1,26 @@
 let CSRF;
 
 function init() {
-<<<<<<< HEAD
   // catch any window hashes if we arrived from summary page before anything else
   if (window.location.hash) {
     smoothScroll.init();
     smoothScrollDeepLink();
   }
 
-  // only run on secondary vocab page
-  if(/vocabulary\/.+\//.test(window.location.pathname)) {
-    $vocabList = $('.vocab-list');
-    CSRF = $('#csrf').val();
-    $cards = $vocabList.find('.vocab-card');
-=======
-  let $vocabList = $('.vocab-list');
   // only run on vocab page
-  if (/vocabulary\/\d+/.test(window.location.pathname)) {
-    let $cards = $vocabList.find('.vocab-card');
+  if(/vocabulary\/.+\//.test(window.location.pathname)) {
+    let $cards = $('.vocab-list').find('.vocab-card');
     CSRF = $('#csrf').val();
 
     // if user has deeplinked from summary or elsewhere let's draw attention to the card
-    let specificVocab = (window.location.href.match(/.*vocabulary\/\d+\/(\#.+)/) || [])[1];
+    let specificVocab = (window.location.href.match(/.*vocabulary\/.+\/(\#.+)/) || [])[1];
     if (specificVocab) $(specificVocab).addClass('-standout');
->>>>>>> dev
 
     // Attach events
     $cards.on('click', '.icon', handleIconClick);
   }
 }
 
-<<<<<<< HEAD
 function smoothScrollDeepLink() {
   let hash = smoothScroll.escapeCharacters(window.location.hash); // Escape the hash
   let el = document.querySelector(hash);
@@ -40,8 +30,6 @@ function smoothScrollDeepLink() {
   }
 }
 
-=======
->>>>>>> dev
 function handleIconClick(event) {
   let $icon = $(this);
   let $card = $icon.closest('.vocab-card');
@@ -76,7 +64,6 @@ function handleIconClick(event) {
     .always(res => console.log(res));
   }
 }
-
 
 const api = {
   init,
