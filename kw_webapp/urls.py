@@ -1,8 +1,8 @@
 from django.conf.urls import patterns, url
-from kw_webapp.views import Logout, Review, Register, RecordAnswer, Dashboard, ReviewSummary, UnlockLevels, \
+
+from kw_webapp.views import Review, RecordAnswer, Dashboard, ReviewSummary, UnlockLevels, \
     UnlockRequested, ForceSRSCheck, About, Settings, LevelVocab, ToggleVocabLockStatus, LockRequested, \
     UnlockAll, Error404, SyncRequested, SRSVocab, AddSynonym, RemoveSynonym
-from kw_webapp.forms import UserLoginForm
 
 urlpatterns = patterns('',
                        url(r'^$', Dashboard.as_view(), name="home"),
