@@ -81,8 +81,6 @@
         padding-top: .44em;
         border-top: .2em solid rgba($purple-dark, .3);
       }
-<<<<<<< HEAD
-=======
 
       > .i-cancel {
         @include tap-target(10px, 15px);
@@ -98,7 +96,6 @@
           color: lighten($red, 8%);
         }
       }
->>>>>>> dev
     }
 
     .kana {
@@ -139,7 +136,7 @@
   &.-standout {
     box-shadow: 0 4px 10px 0 rgba($purple-dark, .5);
     > .vocab-base {
-      @include bg-gradient($purple);
+      @include bg-gradient(adjust-hue($purple, -7%));
     }
   }
 
