@@ -1,18 +1,18 @@
 from copy import deepcopy
-
 from datetime import timedelta
-from django.test import TestCase, RequestFactory
-import responses
 
+import responses
+from django.test import TestCase
 from django.utils import timezone
 
 from kw_webapp import constants
-from kw_webapp.models import Vocabulary, UserSpecific, Profile
+from kw_webapp.models import Vocabulary, UserSpecific
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
-    build_API_sync_string_for_user, add_synonyms_from_api_call_to_review, sync_unlocked_vocab_with_wk, \
+    build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation
 from kw_webapp.tests import sample_api_responses
+from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile
 
 
@@ -76,14 +76,8 @@ class TestTasks(TestCase):
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [5, 7])
 
     def test_create_new_vocab_based_on_json_works(self):
-        vocab_json = {"character": "bleh", "kana": "bleh", "meaning": "two", "level": 1,
-                      "user_specific": {"srs": "burned", "srs_numeric": 9, "unlocked_date": 1382674360,
-                                        "available_date": 1398364200, "burned": True, "burned_date": 1398364287,
-                                        "meaning_correct": 8, "meaning_incorrect": 0, "meaning_max_streak": 8,
-                                        "meaning_current_streak": 8, "reading_correct": 8, "reading_incorrect": 0,
-                                        "reading_max_streak": 8, "reading_current_streak": 8, "meaning_note": None,
-                                        "user_synonyms": None, "reading_note": None}}
-        vocab = create_new_vocabulary(vocab_json)
+
+        vocab = create_new_vocabulary(single_vocab_requested_information)
         self.assertIsInstance(vocab, Vocabulary)
 
     @responses.activate
