@@ -1,14 +1,13 @@
+from datetime import timedelta
 from unittest import mock
 
 import responses
-from datetime import timedelta
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import Http404, HttpResponseForbidden
-from django.test import TestCase, RequestFactory, Client
+from django.http import HttpResponseForbidden
+from django.test import TestCase, Client
 from django.utils import timezone
 
-import kw_webapp
 from kw_webapp.models import UserSpecific
 from kw_webapp.tasks import build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
