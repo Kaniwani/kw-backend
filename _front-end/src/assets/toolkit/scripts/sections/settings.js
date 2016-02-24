@@ -1,9 +1,15 @@
+import '../util/serializeObject';
+
+function followChanged(formData) {
+  return simpleStorage.get('KW').settings.followWanikani === false && formData.follow_me === 'on'
+}
+
 function init() {
   // are we on settings page?
   if (/settings/.test(window.location.pathname)) {
     const saved = simpleStorage.get('settingsSaved');
     const $form = $('#settingsForm');
-    const $button = $form.find('#submit-id-submit') // lolwut? crispy forms generated markup madness
+    const $button = $form.find('#submit-id-submit')
 
     // if settings saved last time we were on page - notify user because page just refreshed on form submit
     if (!!saved) {
@@ -13,7 +19,10 @@ function init() {
     }
 
     // on form submit, set flag for notification
-    $form.submit(event => {
+    $form.submit(function(event) {
+      const formData = $(this).serializeObject();
+      if (followChanged(formData)) simpleStorage.set('recentlySynced', false);
+      // force sync if user turns followme back on
       simpleStorage.set('settingsSaved', true);
       $button.addClass('-hidden');
       $button.closest('div').append(`
