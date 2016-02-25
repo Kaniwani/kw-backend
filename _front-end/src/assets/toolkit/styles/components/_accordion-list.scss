@@ -1,15 +1,94 @@
-.accordion-list {
-  @extend %plainlist;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: space-around;
+$accordion-list-bg-color: $green;
 
-  > .item {
-    flex: 1 1 100%;
-    &:not(:last-child) {
-      margin-bottom: $unit-xs;
+.accordion-list {
+
+}
+
+.accordion-title {
+  display: block;
+  @extend %h3;
+  background-color: $accordion-list-bg-color;
+  text-align: center;
+  font-weight: 700;
+  padding: 1em 1.5em 1em 1em;
+  text-decoration: none;
+  color: #fff;
+  transition: background-color 0.5s ease-in-out;
+  border-bottom: 1px solid darken($accordion-list-bg-color, 5%);
+  position: relative;
+
+  .icon {
+    position: absolute;
+    right: .75em;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform .2s linear;
+  }
+
+  &:hover {
+    background-color: darken($accordion-list-bg-color, 10%);
+  }
+
+  &.is-expanded {
+    background-color: darken($accordion-list-bg-color, 10%);
+    .icon {
+      transform: translateY(0) rotate(-225deg);
     }
+  }
+}
+
+.accordion-content {
+  margin: 0;
+  height: auto;
+  overflow: hidden;
+  // magic number fallback to allow the accordion to animate if no-js
+  max-height: 50em;
+  transition: max-height 1s;
+
+  @include media($bp-md) {
+    max-height: 15em;
+    transition: max-height 0.5s
+  }
+
+  &.is-collapsed {
+    max-height: 0;
+  }
+
+  .no-js &.is-collapsed {
+    max-height: 100%;
+  }
+
+  p {
+    padding: 1em 2em;
+  }
+}
+
+.animateIn {
+  animation: accordionIn 0.45s normal ease-in-out both 1;
+}
+.animateOut {
+  animation: accordionOut 0.45s alternate ease-in-out both 1;
+}
+
+@keyframes accordionIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) rotateX(-60deg);
+    transform-origin: 50% 0;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes accordionOut {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+     transform: scale(0.9) rotateX(-60deg);
   }
 }

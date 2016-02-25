@@ -3,13 +3,9 @@
   $bp-user-details: '>=650px';
   text-align: left;
 
+  // though maybe just $bp-md be fine
   @include media($bp-user-details) {
-    text-align: center;
 
-    .accordion-container .content {
-      // p is constrained to 700px - keep centered/line length nicer
-      @include container(700px);
-    }
   }
 
 }
