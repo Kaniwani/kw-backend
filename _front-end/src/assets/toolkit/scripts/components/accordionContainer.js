@@ -80,9 +80,6 @@ function init2() {
       $content.toggleClass('is-collapsed');
 
       let hash = $title.attr('href');
-      setTimeout(() => {
-        smoothScroll.animateScroll(hash, null, {offset: 50, speed: 1000 });
-      }, 300)
       // accH = $title.hasClass('is-expanded') ? $content.outerHeight() : 0;
 
       // $content.css('max-height', accH);

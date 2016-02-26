@@ -17,6 +17,7 @@ $accordion-list-bg-color: $green;
   border-bottom: 1px solid darken($accordion-list-bg-color, 5%);
   position: relative;
 
+  // probably have to make the title flexbox with .icon {margin-left: auto} to get this placement how you like it
   .icon {
     position: absolute;
     right: .75em;
