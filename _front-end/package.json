@@ -9,7 +9,8 @@
     "gulp": "gulp",
     "prestart": "npm install",
     "build": "npm install && gulp",
-    "start": "gulp --sync"
+    "start": "gulp --sync",
+    "test": "casperjs test test/test.js"
   },
   "keywords": [
     "toolkit",
