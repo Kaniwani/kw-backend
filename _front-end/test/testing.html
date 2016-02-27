@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Test Page</title>
+    <meta charset="utf-8">
+</head>
+<body>
+    <h1>Test!</h1>
+
+    <button>Change title</button>
+
+    <script>
+        document.querySelector('button').addEventListener('click', function () {
+            document.querySelector('h1').innerHTML = 'New title';
+        });
+    </script>
+</body>
+</html>
