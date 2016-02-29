@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from kw_webapp import constants
+from kw_webapp.constants import TWITTER_USERNAME_REGEX
 
 logger = logging.getLogger("kw.models")
 
@@ -58,6 +59,16 @@ class Profile(models.Model):
     #Vacation Settings
     on_vacation = models.BooleanField(default=False)
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
+
+    def set_twitter_account(self, twitter_account):
+        if twitter_account.startswith("@") and TWITTER_USERNAME_REGEX.match(twitter_account[1:]):
+            self.twitter = twitter_account
+        elif TWITTER_USERNAME_REGEX.match(twitter_account):
+            self.twitter = "@{}".format(twitter_account)
+        else:
+            logger.warning("WK returned a funky twitter account name: {},  for user:{} ".format(twitter_account, self.user.username))
+
+        self.save()
 
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')

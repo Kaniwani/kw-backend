@@ -1,3 +1,5 @@
+import re
+
 from collections import OrderedDict
 
 SRS_TIMES = {
@@ -22,7 +24,6 @@ KANIWANI_SRS_LEVELS["master"] = [6, 7]
 KANIWANI_SRS_LEVELS["enlightened"] = [8]
 KANIWANI_SRS_LEVELS["burned"] = [9]
 
-
 WANIKANI_SRS_LEVELS = {
     "apprentice": [0, 1, 2, 3, 4],
     "guru": [5, 6],
@@ -34,3 +35,5 @@ WANIKANI_SRS_LEVELS = {
 LEVEL_MIN = 1
 LEVEL_MAX = 60
 API_KEY = "0158f285fa5e1254b84355ce92ccfa99"
+
+TWITTER_USERNAME_REGEX = re.compile("[a-zA-Z0-9_]+")
