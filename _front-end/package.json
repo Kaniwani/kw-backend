@@ -10,7 +10,7 @@
     "prestart": "npm install",
     "build": "npm install && gulp",
     "start": "gulp --sync",
-    "test": "casperjs test test/test.js"
+    "test": "casperjs test test/index.js"
   },
   "keywords": [
     "toolkit",
