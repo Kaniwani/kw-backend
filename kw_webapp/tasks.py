@@ -191,7 +191,7 @@ def sync_user_profile_with_wk(user):
             user.profile.topics_count = user_info["topics_count"]
             user.profile.posts_count = user_info["posts_count"]
             user.profile.about = user_info["about"]
-            user.profile.website = user_info["website"]
+            user.profile.set_website(user_info["website"])
             user.profile.set_twitter_account(user_info["twitter"])
             if user.profile.follow_me:
                 user.profile.unlocked_levels.get_or_create(level=user_info["level"])

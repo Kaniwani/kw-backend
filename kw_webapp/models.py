@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from kw_webapp import constants
-from kw_webapp.constants import TWITTER_USERNAME_REGEX
+from kw_webapp.constants import TWITTER_USERNAME_REGEX, HTTP_S_REGEX
 
 logger = logging.getLogger("kw.models")
 
@@ -69,6 +69,12 @@ class Profile(models.Model):
             logger.warning("WK returned a funky twitter account name: {},  for user:{} ".format(twitter_account, self.user.username))
 
         self.save()
+
+    def set_website(self, website_url):
+        fixed_site = HTTP_S_REGEX.sub("", website_url)
+        if fixed_site:
+            self.website = fixed_site
+            self.save()
 
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')
