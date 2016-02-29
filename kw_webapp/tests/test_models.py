@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.test import Client, TestCase
 
-from kw_webapp.models import MeaningSynonym, UserSpecific
+from kw_webapp.models import MeaningSynonym, UserSpecific, Profile
 from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
 
@@ -103,3 +103,66 @@ class TestModels(TestCase):
         print(review.get_all_readings())
         self.assertListEqual(expected, review.get_all_readings())
 
+    def test_setting_twitter_account_correctly_prepends_at_symbol(self):
+        non_prepended_account_name = "Tadgh"
+        self.user.profile.set_twitter_account(non_prepended_account_name)
+
+        users_profile = Profile.objects.get(user=self.user)
+        self.assertEqual(users_profile.twitter, "@Tadgh")
+
+    def test_setting_twitter_account_works_when_input_is_already_valid(self):
+        account_name = "@Tadgh"
+        self.user.profile.set_twitter_account(account_name)
+
+        users_profile = Profile.objects.get(user=self.user)
+
+        self.assertEqual(users_profile.twitter, "@Tadgh")
+
+    def test_setting_an_invalid_twitter_handle_does_not_modify_model_instance(self):
+        invalid_account_name = "!!"
+        old_twitter = self.user.profile.twitter
+
+        self.user.profile.set_twitter_account(invalid_account_name)
+
+        users_profile = Profile.objects.get(user=self.user)
+
+        self.assertEqual(users_profile.twitter, old_twitter)
+
+
+    def test_setting_a_blank_twitter_handle_does_not_modify_model_instance(self):
+        invalid_account_name = "@"
+        old_twitter = self.user.profile.twitter
+
+        self.user.profile.set_twitter_account(invalid_account_name)
+
+        users_profile = Profile.objects.get(user=self.user)
+
+        self.assertEqual(users_profile.twitter, old_twitter)
+
+
+    def test_setting_valid_profile_website_modifies_model(self):
+        valid_site = "www.kaniwani.com"
+
+        self.user.profile.set_website(valid_site)
+
+        users_profile = Profile.objects.get(user=self.user)
+
+        self.assertEqual(users_profile.website, valid_site)
+
+    def test_setting_website_with_http_prepended_gets_it_stripped(self):
+        http_prepended_valid_site = "https://www.kaniwani.com"
+
+        self.user.profile.set_website(http_prepended_valid_site)
+
+        users_profile = Profile.objects.get(user=self.user)
+
+        self.assertEqual(users_profile.website, "www.kaniwani.com")
+
+    def test_protocol_only_strings_are_rejected_when_setting_website(self):
+        invalid_url = "http://"
+        old_url = self.user.profile.website
+
+        self.user.profile.set_website(invalid_url)
+
+        users_profile = Profile.objects.get(user=self.user)
+        self.assertEqual(users_profile.website, old_url)

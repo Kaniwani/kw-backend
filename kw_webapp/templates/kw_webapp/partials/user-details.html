@@ -24,12 +24,12 @@
       <p class="text">{{ user.profile.about }}</p>
     <ul class="list">
       <li class="item">
-        <a href="//www.twitter.com/{{ user.twitter }}" class="link">
+        <a href="//www.twitter.com/{{ user.profile.twitter }}" rel="external" target="_blank" class="link">
           <span class="icon i-twitter"></span> {{ user.profile.twitter }}
         </a>
       </li>
       <li class="item">
-        <a href="{{ user.website }}" class="link">
+        <a href="//{{ user.profile.website }}" rel="external" target="_blank" class="link">
         <span class="icon i-link"></span> {{ user.profile.website }}
         </a>
       </li>
