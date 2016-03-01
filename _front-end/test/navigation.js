@@ -4,10 +4,10 @@ function buildNav(urlFragment, title) {
 	return function() {
 		var fullUrl = baseUrl + (urlFragment || '');
 		casper.open(fullUrl)
-				  .then(function() {
-				  	comment(fullUrl);
-				  	landedSafely(title);
-				  });
+		  .then(function() {
+		  	comment(fullUrl);
+		  	landedSafely(title);
+	  });
 	};
 }
 
