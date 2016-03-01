@@ -11,51 +11,26 @@ handlers();
 
 // Tests
 var login = require('./sections/login.js');
+// var vocabulary = require('./sections/vocabulary.js')
+// var settings = require('./sections/settings.js')
+
 
 // whhhhhy do I have to update this argh
 var testCount = 11;
 casper.test.begin('----- ALL TESTS -----', testCount, function suite(test) {
-
 	casper.start('http://localhost:8000/', function then() {
 		login('duncantest1', 'dadedade');
 	})
-
-	.then(function() {
-		// replace all these with actual page tests (that start with the navigation)
-		nav.review();
-	})
-
-	.then(function() {
-		nav.vocab.levels();
-	})
-
-	.then(function() {
-		nav.vocab.srs();
-	})
-
-	.then(function() {
-		nav.vocab.level();
-	})
-
-	.then(function() {
-		nav.vocab.single();
-	})
-
-	.then(function() {
-		nav.about();
-	})
-
-	.then(function() {
-		nav.contact();
-	})
-
-	.then(function() {
-		nav.settings();
-	})
-
-	.then(function() {
-		nav.logout();
-	})
+	// replace all these with actual page tests from separate files (that start with the navigation)
+	.then(function() { nav.review(); })
+	.then(function() { nav.vocab.levels(); })
+	.then(function() { nav.vocab.srs(); })
+	.then(function() { nav.vocab.level(); })
+	.then(function() { nav.vocab.single(); })
+	.then(function() { nav.contact(); })
+	.then(function() { nav.settings(); })
+	.then(function() { nav.about(); })
+	.then(function() { nav.logout(); })
 
   .run(function() {
 	  test.comment('----- COMPLETE -----\n');
