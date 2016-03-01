@@ -1,24 +1,64 @@
-var _ = require('lodash');
+var utils = require('utils'); //casper utils
 var config = require('./config.js');
-var util = require('./util.js');
-var navigateTo = require('./navigation.js');
+var handlers = require('./handlers.js');
+var nav = require('./navigation.js');
 
 // merge our config with defaults
-_.assign(casper.options, config);
+utils.mergeObjects(casper.options, config);
 
-// Setup
-casper.on('page.error', util.handlePageError);
+// attach our custom event handlers
+handlers();
 
 // Tests
 var login = require('./sections/login.js');
 
-// all basic nav tests are in login at the moment
-// need to decide on a method of chaining tests in different files while remaining logged in
+// whhhhhy do I have to update this argh
+var testCount = 11;
+casper.test.begin('----- ALL TESTS -----', testCount, function suite(test) {
 
-login();
+	casper.start('http://localhost:8000/', function then() {
+		login('duncantest1', 'dadedade');
+	})
 
-// TODO:
-// home()
-// vocab()
-// vocablevels()
-// etc
+	.then(function() {
+		// replace all these with actual page tests (that start with the navigation)
+		nav.review();
+	})
+
+	.then(function() {
+		nav.vocab.levels();
+	})
+
+	.then(function() {
+		nav.vocab.srs();
+	})
+
+	.then(function() {
+		nav.vocab.level();
+	})
+
+	.then(function() {
+		nav.vocab.single();
+	})
+
+	.then(function() {
+		nav.about();
+	})
+
+	.then(function() {
+		nav.contact();
+	})
+
+	.then(function() {
+		nav.settings();
+	})
+
+	.then(function() {
+		nav.logout();
+	})
+
+  .run(function() {
+	  test.comment('----- COMPLETE -----\n');
+    test.done();
+  });
+});
