@@ -110,6 +110,7 @@ node_modules
 .sass-cache
 .DS_Store
 dist
+_front-end/test/screenshots
 
 # Ignore all local backup files
 *.bak
