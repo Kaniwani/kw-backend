@@ -61,7 +61,7 @@
   "dependencies": {
     "jquery": "^2.2.0",
     "notie": "^2.1.0",
-    "smooth-scroll": "github:cferdinandi/smooth-scroll",
+    "smooth-scroll": "cferdinandi/smooth-scroll",
     "simplestorage.js": "^0.2.1"
   }
 }
