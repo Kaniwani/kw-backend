@@ -1,5 +1,6 @@
 var handlers = function() {
 
+	// if js error in current page scripts (ie. reviews.js)
 	casper.on('page.error', function(msg, trace) {
 		casper.echo('Error: ' + msg, 'ERROR');
 		for(var i=0; i<trace.length; i++) {
@@ -8,10 +9,7 @@ var handlers = function() {
 		}
 	});
 
-	casper.on('http.status.404', function(resource) {
-	  casper.echo(resource.url + ' was 404');
-	})
-
+	// take a screenshot of page last test failed on
 	casper.test.on('fail', function() {
 	  casper.capture('test/screenshots/fail.png');
 	});
