@@ -20,7 +20,7 @@ class TestModels(TestCase):
         self.review = create_userspecific(self.vocabulary, self.user)
         self.review.meaningsynonym_set.get_or_create(text="minou")
 
-        #default state of a test is a user that has a single review, and the review has a single synonym added.
+        # default state of a test is a user that has a single review, and the review has a single synonym added.
 
     def test_toggling_review_hidden_ownershp_fails_on_wrong_user(self):
         user2 = create_user("eve")
@@ -100,7 +100,6 @@ class TestModels(TestCase):
 
         expected = list(chain(self.vocabulary.reading_set.all(), review.answersynonym_set.all()))
 
-        print(review.get_all_readings())
         self.assertListEqual(expected, review.get_all_readings())
 
     def test_setting_twitter_account_correctly_prepends_at_symbol(self):
@@ -128,7 +127,6 @@ class TestModels(TestCase):
 
         self.assertEqual(users_profile.twitter, old_twitter)
 
-
     def test_setting_a_blank_twitter_handle_does_not_modify_model_instance(self):
         invalid_account_name = "@"
         old_twitter = self.user.profile.twitter
@@ -138,7 +136,6 @@ class TestModels(TestCase):
         users_profile = Profile.objects.get(user=self.user)
 
         self.assertEqual(users_profile.twitter, old_twitter)
-
 
     def test_setting_valid_profile_website_modifies_model(self):
         valid_site = "www.kaniwani.com"
