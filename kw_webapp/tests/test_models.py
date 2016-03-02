@@ -20,7 +20,7 @@ class TestModels(TestCase):
         self.review = create_userspecific(self.vocabulary, self.user)
         self.review.meaningsynonym_set.get_or_create(text="minou")
 
-        #default state of a test is a user that has a single review, and the review has a single synonym added.
+        # default state of a test is a user that has a single review, and the review has a single synonym added.
 
     def test_toggling_review_hidden_ownershp_fails_on_wrong_user(self):
         user2 = create_user("eve")
@@ -176,7 +176,6 @@ class TestModels(TestCase):
     def test_setting_twitter_on_none_twitter(self):
         twitter_handle = None
         old_twitter = self.user.profile.twitter
-
 
         self.user.profile.set_twitter_account(twitter_handle)
 

@@ -140,10 +140,10 @@ class TestTasks(TestCase):
         self.user.profile.save()
         self.review.last_studied = two_hours_ago
         self.review.save()
+        previously_studied = self.review.last_studied
 
         user_returns_from_vacation(self.user)
+        self.review.refresh_from_db()
 
-        review = UserSpecific.objects.get(pk=self.review.id)
-
-        self.assertNotEqual(review.last_studied, self.review.last_studied)
-        self.assertAlmostEqual(review.last_studied, an_hour_ago, delta=timedelta(seconds=1))
+        self.assertNotEqual(self.review.last_studied, previously_studied)
+        self.assertAlmostEqual(self.review.last_studied, an_hour_ago, delta=timedelta(seconds=1))
