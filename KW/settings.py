@@ -284,8 +284,21 @@ STATICFILES_DIRS = (
 if not DEBUG:
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
-
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR,  'templates'),
-    os.path.join(BASE_DIR,  'kw_webapp/templates/kw_webapp')
-)
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            os.path.join(BASE_DIR,  'templates'),
+            os.path.join(BASE_DIR,  'kw_webapp/templates/kw_webapp')
+        ],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                'django.contrib.auth.context_processors.auth',
+                "KW.preprocessors.review_count_preprocessor",
+                "KW.preprocessors.srs_count_preprocessor",
+                'django.template.context_processors.request'
+            ]
+        }
+    }
+]
