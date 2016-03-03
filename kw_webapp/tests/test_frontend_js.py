@@ -19,7 +19,6 @@ class AllFrontEndTests(CasperTestCase):
         pass
 
     def test_index(self):
-        print("TESTING JS TESTS")
         self.assertTrue(self.casper(test_file_path))
 
 
