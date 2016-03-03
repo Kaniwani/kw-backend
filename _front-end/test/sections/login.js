@@ -1,5 +1,4 @@
 var login = function(username, password) {
-
 	casper.waitForSelector('.login-form', function() {
 		this.test.assertExists('.login-form', 'Login form exists');
 		casper.echo('# Submitting login form with username: ' + username + ', password: ' + password, 'COMMENT');

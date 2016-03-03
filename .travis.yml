@@ -4,6 +4,9 @@ python:
 - '3.3'
 install:
 - pip install -r requirements.txt
+- cd _front-end
+- npm install -g casperjs
+- cd ../
 script: python manage.py test
 notifications:
   slack:
