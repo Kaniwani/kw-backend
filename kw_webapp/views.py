@@ -173,6 +173,7 @@ class UnlockAll(View):
     """
 
     def post(self, request, *args, **kwargs):
+        should_sync = False
         user = self.request.user
         lower_level_range = [level for level in range(1, user.profile.level + 1)]
         for level in lower_level_range:
