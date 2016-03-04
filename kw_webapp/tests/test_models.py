@@ -100,7 +100,6 @@ class TestModels(TestCase):
 
         expected = list(chain(self.vocabulary.reading_set.all(), review.answersynonym_set.all()))
 
-        print(review.get_all_readings())
         self.assertListEqual(expected, review.get_all_readings())
 
     def test_setting_twitter_account_correctly_prepends_at_symbol(self):
@@ -128,7 +127,6 @@ class TestModels(TestCase):
 
         self.assertEqual(users_profile.twitter, old_twitter)
 
-
     def test_setting_a_blank_twitter_handle_does_not_modify_model_instance(self):
         invalid_account_name = "@"
         old_twitter = self.user.profile.twitter
@@ -138,7 +136,6 @@ class TestModels(TestCase):
         users_profile = Profile.objects.get(user=self.user)
 
         self.assertEqual(users_profile.twitter, old_twitter)
-
 
     def test_setting_valid_profile_website_modifies_model(self):
         valid_site = "www.kaniwani.com"
@@ -160,6 +157,15 @@ class TestModels(TestCase):
 
     def test_protocol_only_strings_are_rejected_when_setting_website(self):
         invalid_url = "http://"
+        old_url = self.user.profile.website
+
+        self.user.profile.set_website(invalid_url)
+
+        users_profile = Profile.objects.get(user=self.user)
+        self.assertEqual(users_profile.website, old_url)
+
+    def test_website_setting_on_None_site(self):
+        invalid_url = None
         old_url = self.user.profile.website
 
         self.user.profile.set_website(invalid_url)
