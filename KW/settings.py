@@ -287,7 +287,7 @@ TEMPLATES = [
             "context_processors": [
                 'django.contrib.auth.context_processors.auth',
                 "KW.preprocessors.review_count_preprocessor",
-                "KW.preprocessors.srs_count_preprocessor",
+                "KW.preprocessors.srs_level_count_preprocessor",
                 'django.template.context_processors.request'
             ],
             "debug": True

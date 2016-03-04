@@ -74,10 +74,11 @@ class Profile(models.Model):
         self.save()
 
     def set_website(self, website_url):
-        fixed_site = HTTP_S_REGEX.sub("", website_url)
-        if fixed_site:
-            self.website = fixed_site
-            self.save()
+        if website_url:
+            fixed_site = HTTP_S_REGEX.sub("", website_url)
+            if fixed_site:
+                self.website = fixed_site
+                self.save()
 
     def unlocked_levels_list(self):
         x = self.unlocked_levels.values_list('level')

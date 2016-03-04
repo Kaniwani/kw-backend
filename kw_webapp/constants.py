@@ -5,14 +5,14 @@ from collections import OrderedDict
 SRS_TIMES = {
     0: 4,  # Apprentice
     1: 4,  # Apprentice
-    2: 8,  # Apprentice
-    3: 24,  # Guru
-    4: 72,  # Guru
-    5: 168,  # Guru
-    6: 336,  # Master
-    7: 720,  # Master
-    8: 2160,  # Enlightened
-    9: 4320,  # Burned
+    2: 8,  # Apprentice (8 hours)
+    3: 24,  # Guru (1 day)
+    4: 72,  # Guru (3 days)
+    5: 168,  # Guru (7 days)
+    6: 336,  # Master  (14 days)
+    7: 720,  # Master (30 days)
+    8: 2160,  # Enlightened (90 days)
+    9: 4320,  # Burned (180 days)
 }
 
 # The level arrangement I believe to be exposed by WK API.

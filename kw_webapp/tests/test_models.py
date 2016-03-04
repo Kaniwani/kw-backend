@@ -163,3 +163,12 @@ class TestModels(TestCase):
 
         users_profile = Profile.objects.get(user=self.user)
         self.assertEqual(users_profile.website, old_url)
+
+    def test_website_setting_on_None_site(self):
+        invalid_url = None
+        old_url = self.user.profile.website
+
+        self.user.profile.set_website(invalid_url)
+
+        users_profile = Profile.objects.get(user=self.user)
+        self.assertEqual(users_profile.website, old_url)
