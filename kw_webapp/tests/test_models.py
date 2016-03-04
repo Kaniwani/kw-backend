@@ -147,7 +147,7 @@ class TestModels(TestCase):
         self.assertEqual(users_profile.website, valid_site)
 
     def test_setting_website_with_http_prepended_gets_it_stripped(self):
-        http_prepended_valid_site = "https://www.kaniwani.com"
+        http_prepended_valid_site = "http://https://www.kaniwani.com"
 
         self.user.profile.set_website(http_prepended_valid_site)
 
