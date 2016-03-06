@@ -61,6 +61,9 @@ class Profile(models.Model):
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
 
     def set_twitter_account(self, twitter_account):
+        if not twitter_account:
+            return
+        
         if twitter_account.startswith("@") and TWITTER_USERNAME_REGEX.match(twitter_account[1:]):
             self.twitter = twitter_account
         elif TWITTER_USERNAME_REGEX.match(twitter_account):
