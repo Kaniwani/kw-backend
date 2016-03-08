@@ -86,7 +86,8 @@ class TestViews(TestCase):
         self.client.post(reverse("kw:record_answer"),
                          {'user_correct': "true", 'user_specific_id': us.id, 'wrong_before': 'false'})
 
-        us = UserSpecific.objects.get(pk=us.id)
+        us.refresh_from_db()
+
         recorded_properly = us.correct == 1 and us.streak == 1 and us.needs_review is False
         self.assertTrue(recorded_properly)
 
@@ -97,9 +98,9 @@ class TestViews(TestCase):
         self.client.post(reverse("kw:record_answer"),
                          {'user_correct': "false", 'user_specific_id': us.id, 'wrong_before': 'false'})
 
-        # grab it again and ensure it's correct.
-        us = UserSpecific.objects.get(pk=us.id)
+        us.refresh_from_db()
         recorded_properly = (us.incorrect == 1 and us.streak == 0 and us.needs_review is True)
+
         self.assertTrue(recorded_properly)
 
     def test_nonexistent_user_specific_id_raises_error_in_record_answer(self):
@@ -122,10 +123,11 @@ class TestViews(TestCase):
         self.user.profile.level = 5
         self.user.save()
 
-        response = self.client.post("/kw/levellock/", data={"level": 5})
+        self.client.post("/kw/levellock/", data={"level": 5})
 
-        user = User.objects.get(username="user1")
-        self.assertFalse(user.profile.follow_me)
+        self.user.refresh_from_db()
+        self.user = User.objects.get(username='user1')
+        self.assertFalse(self.user.profile.follow_me)
 
     @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y: [1, 0])
     def test_unlocking_a_level_unlocks_all_vocab(self, unlock_call):
@@ -200,10 +202,10 @@ class TestViews(TestCase):
                                                           "kana": synonym_kana,
                                                           "kanji": synonym_kanji})
 
-        review = UserSpecific.objects.get(pk=self.review.id)
-        found_synonym = review.answersynonym_set.first()
+        self.review.refresh_from_db()
+        found_synonym = self.review.answersynonym_set.first()
 
-        self.assertTrue(synonym_kana in review.answer_synonyms())
+        self.assertTrue(synonym_kana in self.review.answer_synonyms())
         self.assertEqual(found_synonym.kana, synonym_kana)
         self.assertEqual(found_synonym.character, synonym_kanji)
 
@@ -214,5 +216,6 @@ class TestViews(TestCase):
 
         self.client.post(reverse("kw:remove_synonym"), data={"synonym_id": synonym.id})
 
-        review = UserSpecific.objects.get(pk=self.review.id)
-        self.assertListEqual(review.answer_synonyms(), [])
+        self.review.refresh_from_db()
+
+        self.assertListEqual(self.review.answer_synonyms(), [])
