@@ -224,9 +224,10 @@ class SyncRequested(View):
     """
 
     def get(self, request, *args, **kwargs):
-
+        logger.debug("Entering SyncRequrested for user {}".format(self.request.user))
         should_full_sync = request.GET["full_sync"] if hasattr(request.GET, "full_sync") else True
         profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(self.request.user, should_full_sync)
+        logger.debug("Exiting SyncRequested for user {}".format(self.request.user))
         return JsonResponse({"profile_sync_succeeded": profile_sync_succeeded,
                              "new_review_count": new_review_count,
                              "new_synonym_count": new_synonym_count})
