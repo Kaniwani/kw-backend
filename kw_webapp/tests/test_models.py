@@ -172,3 +172,13 @@ class TestModels(TestCase):
 
         users_profile = Profile.objects.get(user=self.user)
         self.assertEqual(users_profile.website, old_url)
+
+    def test_setting_twitter_on_none_twitter(self):
+        twitter_handle = None
+        old_twitter = self.user.profile.twitter
+
+
+        self.user.profile.set_twitter_account(twitter_handle)
+
+        users_profile = Profile.objects.get(user=self.user)
+        self.assertEqual(old_twitter, users_profile.twitter)
