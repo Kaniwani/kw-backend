@@ -52,7 +52,7 @@ function init() {
 
   // set initial values
   KW = simpleStorage.get('KW');
-  remainingVocab = window.KW.sessionVocab;
+  remainingVocab = window.sessionVocab;
   startCount = remainingVocab.length;
 
   $reviewsLeft.text(startCount - 1)
