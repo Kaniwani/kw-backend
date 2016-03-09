@@ -12,7 +12,7 @@ class AllFrontEndTests(CasperTestCase):
         # Single test is run. Any data you add to database in this method will be emptied out at the end of EVERY test.
         # The overall way a test runs is. setUp() -> test() -> tearDown()
         # https://github.com/dobarkod/django-casper#bypassing-log-in-procedure
-        self.user = create_user("duncantest1")
+        self.user = create_user("duncantest")
         self.user.set_password("dadedade")
         self.user.save()
 
