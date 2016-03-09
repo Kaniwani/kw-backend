@@ -3,13 +3,13 @@ var helper = require("./djangocasper.js");
 
 helper.scenario('/',
     function() {
-        this.test.assertSelectorHasText('input[type="submit"]', 'Sign In',
-            "The home page has a Login button");
-        this.click('input[type="submit"]');
+        this.test.assertSelectorHasText('.link.-register', 'Register',
+            "The home page has a Register button");
+        this.click('.link.-register');
     },
     function() {
-        helper.assertAbsUrl('/auth/login/?next=/',
-            "After clicking Login, we're redirected to login page");
+        helper.assertAbsUrl('/auth/register/',
+            "After clicking Register link, we're redirected to the register page");
     }
 );
 helper.run();
