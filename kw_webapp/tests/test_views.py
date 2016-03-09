@@ -181,7 +181,7 @@ class TestViews(TestCase):
 
     @responses.activate
     def test_sync_now_endpoint_returns_correct_json(self):
-        request = self.factory.get("/kw/sync/?full_sync=True")
+        request = self.factory.get("/kw/sync/?full_sync=true")
 
         request.user = self.user
 
