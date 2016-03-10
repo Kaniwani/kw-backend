@@ -15,7 +15,7 @@
 {% endblock %}
 {% block bottomscripts %}
     <script>
-      window.KW.sessionVocab = [
+      window.sessionVocab = [
         {% for item in object_list %}
           {
             'user_specific_id':'{{ item.id }}',
