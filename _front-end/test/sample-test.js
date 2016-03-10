@@ -3,7 +3,7 @@ var helper = require("./djangocasper.js");
 
 helper.scenario('/',
     function() {
-        this.test.assertSelectorHasText('.link.-register', 'Register',
+        this.test.assertSelectorHasText('.thiswillfail', 'Register',
             "The home page has a Register button");
         this.click('.link.-register');
     },
@@ -12,4 +12,5 @@ helper.scenario('/',
             "After clicking Register link, we're redirected to the register page");
     }
 );
+
 helper.run();
