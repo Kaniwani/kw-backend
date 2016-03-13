@@ -3,7 +3,7 @@ from casper.tests import CasperTestCase
 
 from kw_webapp.tests.utils import create_user
 
-test_file_path = os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/sample-test.js")
+test_file_path = os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/login-test.js")
 
 class AllFrontEndTests(CasperTestCase):
 
