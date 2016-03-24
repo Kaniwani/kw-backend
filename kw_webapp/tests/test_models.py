@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.test import Client, TestCase
 
+from kw_webapp import constants
 from kw_webapp.models import MeaningSynonym, UserSpecific, Profile
 from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
@@ -20,7 +21,7 @@ class TestModels(TestCase):
         self.review = create_userspecific(self.vocabulary, self.user)
         self.review.meaningsynonym_set.get_or_create(text="minou")
 
-        #default state of a test is a user that has a single review, and the review has a single synonym added.
+        # default state of a test is a user that has a single review, and the review has a single synonym added.
 
     def test_toggling_review_hidden_ownershp_fails_on_wrong_user(self):
         user2 = create_user("eve")
@@ -147,7 +148,7 @@ class TestModels(TestCase):
         self.assertEqual(users_profile.website, valid_site)
 
     def test_setting_website_with_http_prepended_gets_it_stripped(self):
-        http_prepended_valid_site = "https://www.kaniwani.com"
+        http_prepended_valid_site = "http://https://www.kaniwani.com"
 
         self.user.profile.set_website(http_prepended_valid_site)
 
@@ -177,8 +178,22 @@ class TestModels(TestCase):
         twitter_handle = None
         old_twitter = self.user.profile.twitter
 
-
         self.user.profile.set_twitter_account(twitter_handle)
 
         users_profile = Profile.objects.get(user=self.user)
         self.assertEqual(old_twitter, users_profile.twitter)
+
+    def test_rounding_a_review_time_only_goes_up(self):
+        self.review.next_review_date = self.review.next_review_date.replace(minute=17)
+        self.review._round_review_time_up()
+        self.review.refresh_from_db()
+
+        self.assertEqual(self.review.next_review_date.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0)
+        self.assertEqual(self.review.next_review_date.hour % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)), 0)
+        self.assertEqual(self.review.next_review_date.second % constants.REVIEW_ROUNDING_TIME.total_seconds(), 0)
+
+    def test_default_review_times_are_not_rounded(self):
+        rounded_time = self.review.next_review_date
+        new_vocab = create_userspecific(create_vocab("fresh"), self.user)
+
+        self.assertNotEqual(rounded_time, new_vocab.next_review_date)

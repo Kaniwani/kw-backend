@@ -1,27 +1,28 @@
 'use strict';
 
 // modules
-var assemble = require('fabricator-assemble');
-var nano = require('gulp-cssnano');
-var del = require('del');
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var gulpif = require('gulp-if');
-var stripDebug = require('gulp-strip-debug');
-var imagemin = require('gulp-imagemin');
-var rename = require('gulp-rename');
-var runSequence = require('run-sequence');
-var sass = require('gulp-sass');
-var sassGlob = require('gulp-sass-glob');
-var sourcemaps = require('gulp-sourcemaps');
-var webpack = require('webpack');
-var changed = require('gulp-changed');
-var postcss = require('gulp-postcss');
-var responsiveType = require('postcss-responsive-type');
-var lost = require('lost');
-var autoprefixer = require('autoprefixer');
-var browserSync = require('browser-sync');
-var reload = browserSync.reload;
+var assemble = require('fabricator-assemble'),
+		nano = require('gulp-cssnano'),
+		del = require('del'),
+		gulp = require('gulp'),
+		gutil = require('gulp-util'),
+		gulpif = require('gulp-if'),
+		stripDebug = require('gulp-strip-debug'),
+		imagemin = require('gulp-imagemin'),
+		rename = require('gulp-rename'),
+		runSequence = require('run-sequence'),
+		sass = require('gulp-sass'),
+		sassGlob = require('gulp-sass-glob'),
+		sourcemaps = require('gulp-sourcemaps'),
+		webpack = require('webpack'),
+		changed = require('gulp-changed'),
+		postcss = require('gulp-postcss'),
+		responsiveType = require('postcss-responsive-type'),
+		lost = require('lost'),
+		autoprefixer = require('autoprefixer'),
+		browserSync = require('browser-sync'),
+		spawn = require('child_process').spawn, // for casper tests
+		reload = browserSync.reload;
 
 
 // configuration
@@ -138,6 +139,23 @@ gulp.task('stripLogs', function () {
 		    .pipe(stripDebug())
         .pipe(gulp.dest(config.dest + '/assets/scripts'));
 
+});
+
+// functionality tests
+gulp.task('test', function () {
+    var tests = ['test/test.js'];
+
+    var casperChild = spawn('casperjs', ['test'].concat(tests));
+
+    casperChild.stdout.on('data', function (data) {
+        gutil.log('CasperJS:', data.toString().slice(0, -1)); // Remove \n
+    });
+
+    casperChild.on('close', function (code) {
+        var success = code === 0; // Will be 1 in the event of failure
+
+        // Do something with success here
+    });
 });
 
 // server

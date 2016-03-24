@@ -165,8 +165,6 @@ SECRET_KEY = secrets.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = True
-
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 
 # Application definition
@@ -191,6 +189,7 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     'rest_framework',
     'lineage',
+    'casper'
 
 )
 
@@ -203,13 +202,6 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
 )
-
-TEMPLATE_CONTEXT_PROCESSORS = {
-    'django.contrib.auth.context_processors.auth',
-    "KW.preprocessors.review_count_preprocessor",
-    "KW.preprocessors.srs_count_preprocessor",
-    'django.core.context_processors.request', #TODO:  NOTE! This will change in 1.8 to django.template.context_processors.request
-}
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -283,8 +275,22 @@ STATICFILES_DIRS = (
 if not DEBUG:
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
-
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR,  'templates'),
-    os.path.join(BASE_DIR,  'kw_webapp/templates/kw_webapp')
-)
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            os.path.join(BASE_DIR,  'templates'),
+            os.path.join(BASE_DIR,  'kw_webapp/templates/kw_webapp')
+        ],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                'django.contrib.auth.context_processors.auth',
+                "KW.preprocessors.review_count_preprocessor",
+                "KW.preprocessors.srs_count_preprocessor",
+                'django.template.context_processors.request'
+            ],
+            "debug": True
+        }
+    }
+]

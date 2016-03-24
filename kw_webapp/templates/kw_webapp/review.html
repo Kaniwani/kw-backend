@@ -1,5 +1,5 @@
 {% extends "kw_webapp/base.html" %}
-{% block title %}| Review{% endblock %}
+{% block title %}Review | {% endblock %}
 {% block content %}
 
   <input type="hidden" id="csrf" value="{{ csrf_token }}">
@@ -15,7 +15,7 @@
 {% endblock %}
 {% block bottomscripts %}
     <script>
-      window.KW.sessionVocab = [
+      window.sessionVocab = [
         {% for item in object_list %}
           {
             'user_specific_id':'{{ item.id }}',

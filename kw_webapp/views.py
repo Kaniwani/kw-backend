@@ -175,6 +175,7 @@ class UnlockAll(View):
     """
 
     def post(self, request, *args, **kwargs):
+        should_sync = False
         user = self.request.user
         lower_level_range = [level for level in range(1, user.profile.level + 1)]
         for level in lower_level_range:
@@ -399,8 +400,8 @@ class RecordAnswer(View):
                     review.burned = True
             review.needs_review = False
             review.last_studied = timezone.now()
-            review.next_review_date = timezone.now() + timedelta(hours=RecordAnswer.srs_times[review.streak])
             review.save()
+            review.set_next_review_time()
             return HttpResponse("Correct!")
         elif not user_correct:
             review.incorrect += 1
