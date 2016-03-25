@@ -73,15 +73,13 @@ function updateReviewTime($el) {
 function syncUser() {
 	animateSync();
 
-	let extraThrottle = KW.settings.followWanikani;
-
 	$.getJSON('/kw/sync/', {full_sync: false})
 		.done(res => {
 			const message = `Account synced with Wanikani!`,
 					  newMaterial = `</br>You have unlocked ${pluralize('new vocab item', res.new_review_count)} & ${pluralize('new synonym', res.new_synonym_count)}.`;
 
- 			// expire after 30mins if following WK - otherwise 12 hours
- 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: (extraThrottle ? 43200000 : 1800000)})
+ 			// expire after 12 hours
+ 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: 43200000});
  			notie.alert(1, (newMaterial ? message + newMaterial : message), 5);
 		})
 		.fail((res) => {

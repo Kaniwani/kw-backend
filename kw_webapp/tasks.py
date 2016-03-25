@@ -446,7 +446,7 @@ def sync_all_users_to_wk():
     users = User.objects.all().exclude(profile__isnull=True)
     affected_count = 0
     for user in users:
-        sync_with_wk.delay(user)
+        sync_with_wk.delay(user, full_sync=True)
         affected_count += 1
     return affected_count
 
