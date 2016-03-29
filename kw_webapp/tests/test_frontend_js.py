@@ -1,7 +1,7 @@
 import os
 from casper.tests import CasperTestCase
 
-from kw_webapp.tests.utils import create_user
+from kw_webapp.tests.utils import create_user, create_profile
 
 test_file_path = os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/login-test.js")
 
@@ -14,7 +14,9 @@ class AllFrontEndTests(CasperTestCase):
         # https://github.com/dobarkod/django-casper#bypassing-log-in-procedure
         self.user = create_user("duncantest")
         self.user.set_password("dadedade")
+
         self.user.save()
+        create_profile(self.user, "whatever", 15)
 
     def tearDown(self):
         pass
