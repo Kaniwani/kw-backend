@@ -37,6 +37,9 @@ module.exports = (function() {
             height: 768
         };
 
+        casper.options.waitTimeout = 10000;
+				casper.options.verbose = true;
+
         if (firstScenario) {
             injectCookies();
 
