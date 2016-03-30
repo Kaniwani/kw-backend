@@ -1,25 +1,37 @@
 import os
 from casper.tests import CasperTestCase
 
-from kw_webapp.tests.utils import create_user
+from kw_webapp.tests.utils import create_user, create_profile
 
-test_file_path = os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/sample-test.js")
+# if these are changed, will need to update variables in JS test files as well
+test_username = "duncantest"
+test_password = "dadedade"
+
+# to skip BE tests run: manage.py test kw_webapp.tests.test_frontend_js
+
+login_test = os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/login-test.js")
+logged_in_test = os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/logged-in-test.js")
 
 class AllFrontEndTests(CasperTestCase):
 
     def setUp(self):
-        #TODO @Subversity This is the rough outline of how to create a user. This "setUp" function is called before every
-        # Single test is run. Any data you add to database in this method will be emptied out at the end of EVERY test.
+        # This is the rough outline of how to create a user. This "setUp" function is called before every
+        # single test is run. Any data you add to database in this method will be emptied out at the end of EVERY test.
         # The overall way a test runs is. setUp() -> test() -> tearDown()
         # https://github.com/dobarkod/django-casper#bypassing-log-in-procedure
-        self.user = create_user("duncantest")
-        self.user.set_password("dadedade")
+        self.user = create_user(test_username)
+        self.user.set_password(test_password)
+
         self.user.save()
+        create_profile(self.user, "whatever", 2)
 
     def tearDown(self):
         pass
 
-    def test_index(self):
-        self.assertTrue(self.casper(test_file_path))
+    def test_login(self):
+        self.assertTrue(self.casper(login_test))
 
+    def test_logged_in(self):
+        self.client.login(username=test_username, password=test_password)
+        self.assertTrue(self.casper(logged_in_test))
 
