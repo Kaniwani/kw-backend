@@ -7,7 +7,6 @@ def create_user(username):
     u = User.objects.create(username=username)
     return u
 
-
 def create_userspecific(vocabulary, user):
     u = UserSpecific.objects.create(vocabulary=vocabulary, user=user)
     u.save()
