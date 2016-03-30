@@ -37,7 +37,7 @@ module.exports = (function() {
             height: 768
         };
 
-        casper.options.waitTimeout = 30000;
+        casper.options.waitTimeout = 50000;
 				casper.options.verbose = true;
 
         if (firstScenario) {
