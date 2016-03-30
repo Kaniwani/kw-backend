@@ -6,20 +6,30 @@ var username = 'duncantest',
 
 helper.scenario('/',
   function() {
-		casper.waitForSelector('.login-form', function() {
-			this.test.assertExists('.login-form', 'Login form exists');
+
+		var	loginSelector = '.login-form';
+		casper.waitForSelector(loginSelector, function() {
+			this.test.assertExists(loginSelector, 'Login form exists');
 			casper.echo('# Submitting login form with username: ' + username + ', password: ' + password, 'COMMENT');
-			casper.fillSelectors('.login-form', {
+			casper.fillSelectors(loginSelector, {
 				'input[name="username"]': username,
 				'input[name="password"]': password
 			}, true);
 		})
 
 		.then(function() {
-			casper.waitForSelector('.user-overview .name', function() {
-				this.test.assertSelectorHasText('', username, 'User overview name matches ' + username);
+			casper.waitForUrl(/kw\/$/, function() {
+				casper.echo('# Succesfully redirected to logged in home', 'INFO');
+			})
+		})
+
+		.then(function() {
+			var	nameSelector = '.user-overview .name';
+			casper.waitForSelector(nameSelector, function() {
+				this.test.assertSelectorHasText(nameSelector, username, 'User overview name matches ' + username);
 			});
 		});
+
   }
 );
 
