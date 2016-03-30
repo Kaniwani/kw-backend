@@ -13,7 +13,7 @@ helper.scenario('/',
 			var linksLength = casper.evaluate(function() {
 				return $('.nav-list .item').length === 6;
 			});
-			this.test.assert(linksLength, 'There are 6 links when loggd in');
+			this.test.assert(linksLength, 'There are 6 links when logged in');
 
 			var firstLinkText = casper.evaluate(function() {
 				return /^Reviews/.test($('.nav-list .item').first().text().trim());

@@ -38,7 +38,7 @@ module.exports = (function() {
         };
         casper.options.waitTimeout = 30000;
 				casper.options.verbose = true;
- 				casper.options.clientScripts = ['../node_modules/jquery/dist/jquery.js'];
+ 				casper.options.clientScripts = ['./jquery.js'];
 
         if (firstScenario) {
             injectCookies();
