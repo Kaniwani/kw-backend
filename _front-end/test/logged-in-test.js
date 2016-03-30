@@ -1,7 +1,6 @@
-casper.test.comment("Logged in home test.");
+casper.test.comment("Logged in home tests.");
 var helper = require("./djangocasper.js"),
-		username = 'duncantest',
-		password = 'dadedade';
+		username = 'duncantest';
 
 helper.scenario('/',
   function() {
@@ -11,26 +10,27 @@ helper.scenario('/',
 			// user details has correct name
 			this.test.assertSelectorHasText(nameSelector, username, '"' + nameSelector + '" matches ' + username);
 
-			// there are 6 links when logged in
-			this.test.assertEval(function() {
+			var linksLength = casper.evaluate(function() {
 				return $('.nav-list .item').length === 6;
-			})
+			});
+			this.test.assert(linksLength, 'There are 6 links when loggd in');
 
-			// first navbar link starts with text: Reviews
-			this.test.assertEval(function() {
+			var firstLinkText = casper.evaluate(function() {
 				return /^Reviews/.test($('.nav-list .item').first().text().trim());
-			})
+			});
+			this.test.assert(firstLinkText, 'First navbar link starts with text: Reviews');
 
-			// last navbar link item has text 'Logout'
-			this.test.assertEval(function() {
+			var lastLinkText = casper.evaluate(function() {
 		 		return $('.nav-list .item').last().find('.text').text() === 'Logout';
-			})
+			});
+			this.test.assert(lastLinkText, 'last navbar link item has text: Logout');
 
-		// NOTE: no reviews count - need to seed test user with vocab first?
-		// this.test.assertEval(function() {
-		// 	var reviewsLinkText = document.querySelector('#navReviewCount').textContent;
-		// 	return /\d+/g.test(reviewsLinkText);
-		// });
+			// NOTE: no reviews count - need to seed test user with vocab first?
+			// var reviewsCount = casper.evaluate(function() {
+			// 	var text = $('#navReviewCount').text();
+			// 	return /\d+/g.test(text) && parseInt(text) > 0;
+			// });
+			// this.test.assert(reviewsCount, 'Reviews nav link contains a positive integer');
 
 		})
   }
