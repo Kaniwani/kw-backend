@@ -29,13 +29,17 @@ class AllFrontEndTests(CasperTestCase):
     def tearDown(self):
         pass
 
-    def test_login(self):
-        self.assertTrue(self.casper(testFile('login-test')))
+    # def test_login(self):
+    #     self.assertTrue(self.casper(testFile('login-test')))
 
-    def test_logged_in(self):
-        self.client.login(username=test_username, password=test_password)
-        self.assertTrue(self.casper(testFile('logged-in-test')))
+    # def test_logged_in(self):
+    #     self.client.login(username=test_username, password=test_password)
+    #     self.assertTrue(self.casper(testFile('logged-in-test')))
 
     def test_about(self):
         self.client.login(username=test_username, password=test_password)
         self.assertTrue(self.casper(testFile('about-test')))
+
+    def test_register(self):
+        self.assertTrue(self.casper(testFile('register-test')))
+

@@ -1,4 +1,4 @@
-casper.test.comment("Simple login form test.");
+casper.test.comment("Login page test.");
 var helper = require("./djangocasper.js");
 
 var username = 'duncantest',
@@ -6,7 +6,6 @@ var username = 'duncantest',
 
 helper.scenario('/',
   function() {
-
 		var	loginSelector = '.login-form';
 		casper.waitForSelector(loginSelector, function() {
 			this.test.assertExists(loginSelector, 'Login form exists');
@@ -16,21 +15,18 @@ helper.scenario('/',
 				'input[name="password"]': password
 			}, true);
 		})
-
-		.then(function() {
-			casper.waitForUrl(/kw\/$/, function() {
-				casper.echo('# Succesfully redirected to logged in home', 'INFO');
-			})
+	},
+	function() {
+		casper.waitForUrl(/kw\/$/, function() {
+			casper.echo('# Succesfully redirected to logged in home', 'INFO');
 		})
-
-		.then(function() {
-			var	nameSelector = '.user-overview .name';
-			casper.waitForSelector(nameSelector, function() {
-				this.test.assertSelectorHasText(nameSelector, username, 'User overview name matches ' + username);
-			});
+	},
+	function() {
+		var	nameSelector = '.user-overview .name';
+		casper.waitForSelector(nameSelector, function() {
+			this.test.assertSelectorHasText(nameSelector, username, 'User overview name matches ' + username);
 		});
-
-  }
+	}
 );
 
 helper.run();
