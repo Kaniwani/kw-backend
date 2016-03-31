@@ -22,7 +22,8 @@ helper.scenario('/',
 			'input[name="email"]': 'register@test.com',
 			'input[name="password1"]': password,
 			'input[name="password2"]': password,
-			'input[name="api_key"]': 'null'
+			// level 1 user with no vocab - WK might remove this inactive profile at some point
+			'input[name="api_key"]': 'ac961ccd0c59c432f89951fb827de879'
 		}, true);
 	},
 	function() {
@@ -41,8 +42,6 @@ helper.scenario('/',
 		})
 	},
 	function() {
-	  casper.capture("./testcapture.png", {top: 0, left: 0, width: 900, height: 900})
-
 		casper.waitForUrl(/kw\/$/, function() {
 			casper.echo('# Succesfully redirected to logged in home', 'INFO');
 		})
