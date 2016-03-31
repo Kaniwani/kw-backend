@@ -9,8 +9,9 @@ test_password = "dadedade"
 
 # to skip BE tests run: manage.py test kw_webapp.tests.test_frontend_js
 
-login_test = os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/login-test.js")
-logged_in_test = os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/logged-in-test.js")
+# util method
+def testFile(filename):
+    return os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/", filename + ".js")
 
 class AllFrontEndTests(CasperTestCase):
 
@@ -29,9 +30,12 @@ class AllFrontEndTests(CasperTestCase):
         pass
 
     def test_login(self):
-        self.assertTrue(self.casper(login_test))
+        self.assertTrue(self.casper(testFile('login-test')))
 
     def test_logged_in(self):
         self.client.login(username=test_username, password=test_password)
-        self.assertTrue(self.casper(logged_in_test))
+        self.assertTrue(self.casper(testFile('logged-in-test')))
 
+    def test_about(self):
+        self.client.login(username=test_username, password=test_password)
+        self.assertTrue(self.casper(testFile('about-test')))

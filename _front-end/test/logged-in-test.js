@@ -1,11 +1,11 @@
 casper.test.comment("Logged in home tests.");
-var helper = require("./djangocasper.js"),
-		username = 'duncantest';
+var helper = require("./djangocasper.js");
 
 helper.scenario('/',
   function() {
 
 		var	nameSelector = '.user-overview .name';
+		var username = 'duncantest';
 		casper.waitForSelector(nameSelector, function() {
 			// user details has correct name
 			this.test.assertSelectorHasText(nameSelector, username, '"' + nameSelector + '" matches ' + username);
