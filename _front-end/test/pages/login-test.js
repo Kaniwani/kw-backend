@@ -1,5 +1,5 @@
 casper.test.comment("Login page test.");
-var helper = require("./djangocasper.js");
+var helper = require("../djangocasper.js");
 
 var username = 'duncantest',
 		password = 'dadedade';

@@ -11,7 +11,7 @@ test_password = "dadedade"
 
 # util method
 def testFile(filename):
-    return os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/", filename + ".js")
+    return os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/pages/", filename + ".js")
 
 class AllFrontEndTests(CasperTestCase):
 
@@ -25,6 +25,8 @@ class AllFrontEndTests(CasperTestCase):
 
         self.user.save()
         create_profile(self.user, "whatever", 2)
+        # TODO: create some vocab at diff levels, diff srs levels in order
+        # to test vocab pages have correct items & lock/unlock icons/ajax work
 
     def tearDown(self):
         pass

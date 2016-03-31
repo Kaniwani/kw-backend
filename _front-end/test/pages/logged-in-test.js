@@ -1,5 +1,5 @@
 casper.test.comment("Logged in home tests.");
-var helper = require("./djangocasper.js");
+var helper = require("../djangocasper.js");
 
 helper.scenario('/',
   function() {

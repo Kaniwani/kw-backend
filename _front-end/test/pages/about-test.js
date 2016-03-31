@@ -1,5 +1,5 @@
 casper.test.comment("About page tests.");
-var helper = require("./djangocasper.js");
+var helper = require("../djangocasper.js");
 
 helper.scenario('/kw/about',
   function() {

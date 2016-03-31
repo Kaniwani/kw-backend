@@ -1,5 +1,5 @@
 casper.test.comment("Register page test.");
-var helper = require("./djangocasper.js");
+var helper = require("../djangocasper.js");
 
 var	loginForm = '.login-form',
 		username = 'registertest',
