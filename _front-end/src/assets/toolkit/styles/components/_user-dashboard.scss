@@ -1,0 +1,90 @@
+$bp-user-details: '>=480px';
+.user-dashboard {
+  $ud-grey: #ddd;
+  @include clearfix;
+  background: rgba($black, .6);
+  color: $white;
+  font-family: $ff-heading;
+  border-radius: 0 0 3px 3px;
+  line-height: 1.3;
+
+  .title {
+    margin-top: 0;
+    text-shadow: $shadow-text-light;
+    color: lighten($ud-grey, 5%);
+  }
+
+  strong {
+    color: $white;
+    font-family: $ff-heading;
+    font-weight: normal;
+    text-shadow: $shadow-text-thin;
+  }
+
+  .wkinfo,
+  .userinfo {
+    padding: $unit-md $unit-sm;
+    @include media($bp-user-details) {
+      lost-column: 1/2 0 0;
+      padding: $unit-md 22px $unit-lg ;
+    }
+  }
+
+  .wkinfo {
+    @include media($bp-user-details) {
+      text-align: right;
+    }
+
+    .list {
+      @extend %plainlist;
+    }
+
+    .item {
+      color: $ud-grey;
+      text-shadow: $shadow-text-thin;
+    }
+  }
+
+
+  .userinfo {
+    @include media($bp-user-details) {
+      text-align: left;
+    }
+
+    > .text {
+      margin: 0;
+      text-shadow: $shadow-text-thin;
+
+      @include media($bp-lg) {
+        max-width: 400px;
+      }
+    }
+
+    > .list {
+      @extend %plainlist;
+      @include clearfix;
+
+      > .item {
+        display: inline-block;
+        margin-top: 10px;
+        margin-right: 15px;
+      }
+    }
+
+    > .list > .item > .link {
+      @include word-wrap();
+      color: $ud-grey;
+      text-shadow: $shadow-text-thin;
+
+      &:hover {
+        color: $white;
+      }
+
+      .icon {
+        color: $white;
+        display: inline-block;
+        margin-right: 5px;
+      }
+    }
+  }
+}
