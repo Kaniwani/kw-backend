@@ -11,7 +11,7 @@ test_password = "dadedade"
 
 # util method
 def testFile(filename):
-    return os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/pages/", filename + ".js")
+    return os.path.join(os.path.dirname(__file__), "..", "..", "_front-end/test/", filename + ".js")
 
 class AllFrontEndTests(CasperTestCase):
 
