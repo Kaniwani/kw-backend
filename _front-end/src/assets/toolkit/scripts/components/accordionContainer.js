@@ -57,10 +57,12 @@ function init2() {
     };
 
     function resizeAccordion(e) {
-      $('.accordion-title').each(function(i, $title) {
-        if ($title.hasClass('-is-expanded')) {
+      $('.accordion-title').each(function(i, title) {
+        let $title = $(title);
+        if ($title.hasClass('is-expanded')) {
           let $content = $title.closest('dt').next();
-          let accH = $content.outerHeight();
+          let accH = $content.find('.content-inner').outerHeight();
+          console.log(accH)
           $content.css('max-height', accH);
         }
       });
@@ -71,6 +73,7 @@ function init2() {
 
       let $title = $(this).closest('.accordionTrigger');
       let $content = $title.closest('dt').next();
+      let $inner = $content.find('.content-inner');
 
       $content.hasClass('is-collapsed') ?
         setAccordionAria($title, $content, 'true') :
@@ -80,14 +83,15 @@ function init2() {
       $content.toggleClass('is-collapsed');
 
       let hash = $title.attr('href');
-      // accH = $title.hasClass('is-expanded') ? $content.outerHeight() : 0;
+      accH = $title.hasClass('is-expanded') ? $inner.outerHeight() : 0;
 
-      // $content.css('max-height', accH);
-      // $content.toggleClass('animateIn');
+      $content.toggleClass('animateIn');
+      $content.toggleClass('animateOut');
+      $content.css('max-height', accH);
     }
 
     $('.accordionTrigger').click('.accordionTrigger', switchAccordion);
-    // $(window).on('debouncedresize', resizeAccordion);
+    $(window).on('debouncedresize', resizeAccordion);
   }
 }
 
