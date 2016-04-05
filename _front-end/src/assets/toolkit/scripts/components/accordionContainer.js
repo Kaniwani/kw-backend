@@ -1,40 +1,6 @@
 import '../vendor/jquery.debouncedresize';
 
 function init() {
-  if ($('.accordion-container').length) {
-
-    $('.-toggle').on('click', function(e) {
-      e.preventDefault();
-
-      let $acc = $(this).closest('.accordion-container'),
-        $wrap = $acc.find('.wrap'),
-        $content = $acc.find('.content'),
-        accH = 0;
-
-      $acc.toggleClass('-open');
-
-      if ($acc.hasClass('-open')) {
-        accH = $content.outerHeight();
-      } else {
-        accH = 0;
-      }
-
-      $wrap.css('max-height', accH);
-    });
-
-    $(window).on('debouncedresize', function (e) {
-      $.each($('.accordion-container'), function (i, $acc) {
-        if ($(this).hasClass('-open')) {
-          let accH = $(this).find('.content').outerHeight();
-          $(this).find('.wrap').css('max-height', accH);
-        }
-      });
-    });
-
-  }
-};
-
-function init2() {
   if ($('.accordion-list').length) {
 
     let accH;
@@ -62,7 +28,6 @@ function init2() {
         if ($title.hasClass('is-expanded')) {
           let $content = $title.closest('dt').next();
           let accH = $content.find('.content-inner').outerHeight();
-          console.log(accH)
           $content.css('max-height', accH);
         }
       });
@@ -96,7 +61,7 @@ function init2() {
 }
 
 const api = {
-  init: init2,
+  init: init,
 }
 
 export default api;
