@@ -1,16 +1,20 @@
 <section class="announcements-section">
   <div class="inner">
+
+    <h2 class="section-heading">
+      Announcements
+    </h2>
     <dl class="accordion-list">
       {% for item in announcements %}
       <dt>
         <a href="#accordion{{ item.id }}" aria-expanded="false" aria-controls="accordion{{ item.id }}" class="accordion-title accordionTrigger">
           {{ item.title }} <time class="time">({{ item.pub_date | date:"N d, Y" }})</time>
-          <span class="icon i-plus"></span>
         </a>
       </dt>
-      <dd class="accordion-content accordionContent is-collapsed" id="accordion{{ item.id }}" aria-hidden="true">
-        <p>{{ item.body|safe }}</p>
-        <p class="author">{{ item.creator.username }}</p>
+      <dd class="accordion-content accordionContent is-collapsed animateOut" id="accordion{{ item.id }}" aria-hidden="true">
+        <div class="content-inner">
+          {{ item.body|safe }}
+        </div>
       </dd>
       {% endfor %}
     </dl>
