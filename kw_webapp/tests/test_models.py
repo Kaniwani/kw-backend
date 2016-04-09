@@ -197,3 +197,43 @@ class TestModels(TestCase):
         new_vocab = create_userspecific(create_vocab("fresh"), self.user)
 
         self.assertNotEqual(rounded_time, new_vocab.next_review_date)
+
+
+    def test_handle_wanikani_level_up_correctly_levels_up(self):
+        old_level = self.user.profile.level
+
+        self.user.profile.handle_wanikani_level_change(self.user.profile.level + 1)
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.profile.level, old_level + 1)
+
+
+    def test_handle_wanikani_level_down_correctly_deletes_invalid_reviews(self):
+        self.user.profile.level = 5
+        self.user.profile.save()
+        self.user.profile.unlocked_levels.get_or_create(level=5)
+
+        #Create a review at current level
+        vocab = create_vocab("ANY WORD")
+        create_reading(vocab, "some reading", "some char", self.user.profile.level)
+        create_userspecific(vocab, self.user)
+
+        self.user.profile.handle_wanikani_level_change(self.user.profile.level - 1)
+
+        reviews = UserSpecific.objects.filter(user=self.user)
+
+        self.assertTrue(reviews.count() == 1)
+
+
+    def test_handle_wanikani_level_down_correctly_removes_invalid_levels(self):
+        self.user.profile.level = 5
+        self.user.profile.save()
+        self.user.profile.unlocked_levels.get_or_create(level=5)
+        old_level = self.user.profile.level
+        self.user.profile.handle_wanikani_level_change(old_level - 1)
+
+        self.user.refresh_from_db()
+        unlocked_levels = self.user.profile.unlocked_levels_list()
+
+        self.assertTrue(old_level not in unlocked_levels)
+
