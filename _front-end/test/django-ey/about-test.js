@@ -1,8 +1,9 @@
 casper.test.comment("About page tests.");
-var helper = require("../djangocasper.js");
+var helper = require("./djangocasper.js");
 
 helper.scenario('/kw/about',
   function() {
+
 		var	titleSelector = '.about-section .title';
 		var hasText = 'this all about';
 		casper.waitForSelector(titleSelector, function() {
@@ -13,6 +14,7 @@ helper.scenario('/kw/about',
 				return $('.donate-block form').length > 0;
 			})
 			this.test.assert(donateExists, 'The donate form exists');
+
 		})
   }
 );
