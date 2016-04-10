@@ -8,6 +8,7 @@ from kw_webapp.tasks import get_users_future_reviews, get_users_current_reviews,
 def review_count_preprocessor(request):
     if hasattr(request, 'user'):
         if hasattr(request.user, 'profile'):
+
             context_dict = {}
             review_count = get_users_current_reviews(request.user).count()
             if review_count > 0:

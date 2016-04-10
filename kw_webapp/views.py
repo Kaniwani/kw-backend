@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidde
 from django.shortcuts import get_object_or_404, render_to_response, render
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import logout
+from django.template import RequestContext
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, ListView, View
 from django.views.generic.edit import FormView, UpdateView
@@ -473,15 +474,12 @@ class ReviewSummary(TemplateView):
             except ValueError as e:
                 # this is here to catch the CSRF token essentially.
                 logging.debug("Un-parseable: {}".format(review_id))
-        # wow what a shit-ass hack. TODO figure out the proper way to render templates off a post.
-        return render_to_response(self.template_name, {"correct": correct,
+
+        return render(request, self.template_name, {"correct": correct,
                                                        "incorrect": incorrect,
                                                        "correct_count": len(correct),
                                                        "incorrect_count": len(incorrect),
-                                                       "review_count": len(correct) + len(incorrect),
-                                                       "request": self.request},
-                                  # HOLY MOTHER OF GOD I NEED TO FIX THIS
-                                  )
+                                                       "review_session_count": len(correct) + len(incorrect)})
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
