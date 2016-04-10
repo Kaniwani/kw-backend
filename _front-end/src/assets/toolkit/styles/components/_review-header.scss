@@ -9,13 +9,9 @@
       left: 0;
     }
 
-    > .homelink,
-    > .statslist {
-      margin: .75em;
-    }
-
     > .statslist {
       @extend %plainlist;
+      margin: .75em;
       float: right;
       font-size: responsive 16px 20px;
 
@@ -30,11 +26,19 @@
     }
 
     > .homelink {
-      opacity: .8;
+      opacity: .9;
       display: block;
+      margin: .75em .5em;
       float: left;
       font-size: responsive 16px 20px;
       transition: opacity .3s ease-out;
+			color: whitesmoke;
+
+			.svg-icon {
+				width: 1.5em;
+				height: 1.5em;
+				fill: currentColor;
+			}
 
       &:hover {
         opacity: 1;
