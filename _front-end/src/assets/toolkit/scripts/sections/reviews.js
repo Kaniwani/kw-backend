@@ -77,6 +77,12 @@ function init() {
   // ask a question
   $meaning.text(currentVocab.meaning);
   $userAnswer.focus();
+
+  // early termination testing
+  $('.homelink').click(function(e) {
+    e.preventDefault();
+    postSummary('/kw/summary/', answerCorrectness);
+  });
 }
 
 function getSrsRank(num) {
@@ -433,6 +439,7 @@ function handleShortcuts(ev) {
     }
   }
 }
+
 
 const api = {
   init: init
