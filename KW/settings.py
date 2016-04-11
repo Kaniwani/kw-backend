@@ -33,6 +33,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 sentry_class = 'raven.contrib.django.raven_compat.handlers.SentryHandler' if secrets.DEPLOY else 'logging.StreamHandler'
 sentry_level = 'ERROR' if secrets.DEPLOY else 'DEBUG'
 
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -183,6 +184,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
@@ -229,7 +231,7 @@ EMAIL_USE_TLS = True
 if secrets.DB_TYPE == "postgres":
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': secrets.DB_NAME,
             'USER': secrets.DB_USER,
             'PASSWORD': secrets.DB_PASSWORD,

@@ -115,7 +115,8 @@ class SettingsForm(ModelForm):
         self.helper.help_text_inline = False
         self.helper.error_text_inline = False
         super(SettingsForm, self).__init__(*args, **kwargs)
-        self.fields['level'].widget.attrs['readonly'] = True
+        #self.fields['level'].widget.attrs['readonly'] = True
+        self.fields['level'].disabled = True
 
     def clean_api_key(self):
         api_key = self.cleaned_data['api_key']
