@@ -189,8 +189,6 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     'rest_framework',
     'lineage',
-    'casper'
-
 )
 
 MIDDLEWARE_CLASSES = (

@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.test import Client, TestCase
 
+from kw_webapp import constants
 from kw_webapp.models import MeaningSynonym, UserSpecific, Profile
 from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
@@ -172,3 +173,67 @@ class TestModels(TestCase):
 
         users_profile = Profile.objects.get(user=self.user)
         self.assertEqual(users_profile.website, old_url)
+
+    def test_setting_twitter_on_none_twitter(self):
+        twitter_handle = None
+        old_twitter = self.user.profile.twitter
+
+        self.user.profile.set_twitter_account(twitter_handle)
+
+        users_profile = Profile.objects.get(user=self.user)
+        self.assertEqual(old_twitter, users_profile.twitter)
+
+    def test_rounding_a_review_time_only_goes_up(self):
+        self.review.next_review_date = self.review.next_review_date.replace(minute=17)
+        self.review._round_review_time_up()
+        self.review.refresh_from_db()
+
+        self.assertEqual(self.review.next_review_date.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0)
+        self.assertEqual(self.review.next_review_date.hour % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)), 0)
+        self.assertEqual(self.review.next_review_date.second % constants.REVIEW_ROUNDING_TIME.total_seconds(), 0)
+
+    def test_default_review_times_are_not_rounded(self):
+        rounded_time = self.review.next_review_date
+        new_vocab = create_userspecific(create_vocab("fresh"), self.user)
+
+        self.assertNotEqual(rounded_time, new_vocab.next_review_date)
+
+
+    def test_handle_wanikani_level_up_correctly_levels_up(self):
+        old_level = self.user.profile.level
+
+        self.user.profile.handle_wanikani_level_change(self.user.profile.level + 1)
+        self.user.refresh_from_db()
+
+        self.assertEqual(self.user.profile.level, old_level + 1)
+
+
+    def test_handle_wanikani_level_down_correctly_deletes_invalid_reviews(self):
+        self.user.profile.level = 5
+        self.user.profile.save()
+        self.user.profile.unlocked_levels.get_or_create(level=5)
+
+        #Create a review at current level
+        vocab = create_vocab("ANY WORD")
+        create_reading(vocab, "some reading", "some char", self.user.profile.level)
+        create_userspecific(vocab, self.user)
+
+        self.user.profile.handle_wanikani_level_change(self.user.profile.level - 1)
+
+        reviews = UserSpecific.objects.filter(user=self.user)
+
+        self.assertTrue(reviews.count() == 1)
+
+
+    def test_handle_wanikani_level_down_correctly_removes_invalid_levels(self):
+        self.user.profile.level = 5
+        self.user.profile.save()
+        self.user.profile.unlocked_levels.get_or_create(level=5)
+        old_level = self.user.profile.level
+        self.user.profile.handle_wanikani_level_change(old_level - 1)
+
+        self.user.refresh_from_db()
+        unlocked_levels = self.user.profile.unlocked_levels_list()
+
+        self.assertTrue(old_level not in unlocked_levels)
+

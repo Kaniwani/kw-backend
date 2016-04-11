@@ -1,6 +1,7 @@
 import re
 
 from collections import OrderedDict
+from datetime import timedelta
 
 SRS_TIMES = {
     0: 4,  # Apprentice
@@ -23,6 +24,8 @@ KANIWANI_SRS_LEVELS["guru"] = [3, 4, 5]
 KANIWANI_SRS_LEVELS["master"] = [6, 7]
 KANIWANI_SRS_LEVELS["enlightened"] = [8]
 KANIWANI_SRS_LEVELS["burned"] = [9]
+
+REVIEW_ROUNDING_TIME = timedelta(minutes=15)
 
 WANIKANI_SRS_LEVELS = {
     "apprentice": [0, 1, 2, 3, 4],

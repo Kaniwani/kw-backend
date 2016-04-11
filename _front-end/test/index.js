@@ -1,3 +1,5 @@
+// NOTE: NO LONGER IN USE -- DJANGCASPER.JS IS THE ENTRY POINT
+
 var utils = require('utils'); //casper utils
 var config = require('./config.js');
 var handlers = require('./handlers.js');

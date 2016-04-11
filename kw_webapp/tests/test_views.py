@@ -1,5 +1,6 @@
 from datetime import timedelta
 from unittest import mock
+from unittest.mock import MagicMock
 
 import responses
 from django.contrib.auth.models import User
@@ -8,6 +9,7 @@ from django.http import HttpResponseForbidden
 from django.test import TestCase, Client
 from django.utils import timezone
 
+from kw_webapp.constants import SRS_TIMES
 from kw_webapp.models import UserSpecific
 from kw_webapp.tasks import build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
@@ -168,7 +170,7 @@ class TestViews(TestCase):
                       status=200,
                       content_type='application/json')
 
-        response = self.client.get(reverse("kw:sync"), data={"full_sync": True})
+        response = self.client.get(reverse("kw:sync"), data={"full_sync": "true"})
 
         correct_response = {
             "new_review_count": 0,
@@ -219,3 +221,24 @@ class TestViews(TestCase):
         self.review.refresh_from_db()
 
         self.assertListEqual(self.review.answer_synonyms(), [])
+
+
+    def test_review_submission_correctly_rounds_time_up_to_next_interval(self):
+        original_time = self.review.next_review_date
+
+        #prep work to grab the actual correct time
+        self.review.streak += 1
+        self.review.save()
+        self.review.set_next_review_time()
+        self.review.refresh_from_db()
+        correct_time = self.review.next_review_date
+        self.review.next_review_date = original_time
+        self.review.streak -= 1
+        self.review.save()
+
+        self.client.post(reverse("kw:record_answer"), data={'user_correct': "true", 'user_specific_id': self.review.id, 'wrong_before': 'false'})
+
+        self.review.refresh_from_db()
+
+        self.assertAlmostEqual(correct_time, self.review.next_review_date, delta=timedelta(seconds=1))
+

@@ -1,4 +1,6 @@
 from datetime import timedelta
+
+import simplejson as simplejson
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden, HttpResponseNotFound, JsonResponse, \
@@ -225,9 +227,10 @@ class SyncRequested(View):
     """
 
     def get(self, request, *args, **kwargs):
-
-        should_full_sync = request.GET["full_sync"] if hasattr(request.GET, "full_sync") else True
+        logger.debug("Entering SyncRequrested for user {}".format(self.request.user))
+        should_full_sync = simplejson.loads(request.GET.get("full_sync", "false"))
         profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(self.request.user, should_full_sync)
+        logger.debug("Exiting SyncRequested for user {}".format(self.request.user))
         return JsonResponse({"profile_sync_succeeded": profile_sync_succeeded,
                              "new_review_count": new_review_count,
                              "new_synonym_count": new_synonym_count})
@@ -397,8 +400,8 @@ class RecordAnswer(View):
                     review.burned = True
             review.needs_review = False
             review.last_studied = timezone.now()
-            review.next_review_date = timezone.now() + timedelta(hours=RecordAnswer.srs_times[review.streak])
             review.save()
+            review.set_next_review_time()
             return HttpResponse("Correct!")
         elif not user_correct:
             review.incorrect += 1

@@ -185,7 +185,6 @@ def sync_user_profile_with_wk(user):
         json_data = r.json()
         try:
             user_info = json_data["user_information"]
-            user.profile.level = user_info["level"]
             user.profile.title = user_info["title"]
             user.profile.join_date = datetime.utcfromtimestamp(user_info["creation_date"])
             user.profile.topics_count = user_info["topics_count"]
@@ -195,6 +194,12 @@ def sync_user_profile_with_wk(user):
             user.profile.set_twitter_account(user_info["twitter"])
             if user.profile.follow_me:
                 user.profile.unlocked_levels.get_or_create(level=user_info["level"])
+                if user_info["level"] < user.profile.level: #we have detected a user reset on WK
+                    user.profile.handle_wanikani_reset(user_info["level"])
+                else:
+                    user.profile.level = user_info["level"]
+
+
             user.profile.gravatar = user_info["gravatar"]
             user.profile.api_valid = True
             user.profile.save()
@@ -453,7 +458,7 @@ def sync_all_users_to_wk():
     users = User.objects.all().exclude(profile__isnull=True)
     affected_count = 0
     for user in users:
-        sync_with_wk.delay(user)
+        sync_with_wk.delay(user, full_sync=True)
         affected_count += 1
     return affected_count
 

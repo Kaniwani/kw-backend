@@ -1,6 +1,8 @@
 import logging
 from itertools import chain
 
+from datetime import timedelta
+
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
@@ -49,21 +51,21 @@ class Profile(models.Model):
         MaxValueValidator(constants.LEVEL_MAX),
     ])
 
-    #General user-changeable settings
+    # General user-changeable settings
     unlocked_levels = models.ManyToManyField(Level)
     follow_me = models.BooleanField(default=True)
     auto_expand_answer_on_failure = models.BooleanField(default=False)
     auto_advance_on_success = models.BooleanField(default=False)
     only_review_burned = models.BooleanField(default=False)
 
-    #Vacation Settings
+    # Vacation Settings
     on_vacation = models.BooleanField(default=False)
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
 
     def set_twitter_account(self, twitter_account):
         if not twitter_account:
             return
-        
+
         if twitter_account.startswith("@") and TWITTER_USERNAME_REGEX.match(twitter_account[1:]):
             self.twitter = twitter_account
         elif TWITTER_USERNAME_REGEX.match(twitter_account):
@@ -85,14 +87,25 @@ class Profile(models.Model):
         x = [x[0] for x in x]
         return x
 
+    def handle_wanikani_level_change(self, new_level):
+        original_level = self.level
+        self.level = new_level
+        self.save()
+
+        #The case of a user resetting their WK profile.
+        if new_level < original_level:
+            expired_levels = self.unlocked_levels.filter(level__gt=new_level)
+            expired_levels.delete()
+
+            expired_reviews = self.get_overleveled_reviews()
+            expired_reviews.delete()
+
+    def get_overleveled_reviews(self):
+        return UserSpecific.objects.filter(user=self.user, vocabulary__reading__level__gt=self.user.profile.level)
+
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
 
-    def is_being_followed(self):
-        if self.level in self.unlocked_levels_list():
-            return True
-        else:
-            return False
 
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
@@ -118,7 +131,6 @@ class Reading(models.Model):
         MinValueValidator(constants.LEVEL_MIN),
         MaxValueValidator(constants.LEVEL_MAX),
     ])
-
 
     def __str__(self):
         return "{} - {} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character, self.level)
@@ -162,15 +174,37 @@ class UserSpecific(models.Model):
         synonym, created = self.answersynonym_set.get_or_create(kana=kana, character=character)
         return synonym, created
 
+    def set_next_review_time(self):
+        self.next_review_date = timezone.now() + timedelta(hours=constants.SRS_TIMES[self.streak])
+        self._round_review_time_up()
+        self.save()
+
+    def _round_review_time_up(self):
+        original_date = self.next_review_date
+        round_to = constants.REVIEW_ROUNDING_TIME.total_seconds()
+        seconds = (
+            self.next_review_date - self.next_review_date.min.replace(tzinfo=self.next_review_date.tzinfo)).seconds
+        rounding = (seconds + round_to) // round_to * round_to
+        self.next_review_date = self.next_review_date + timedelta(0, rounding - seconds, 0)
+
+        logger.debug(
+            "Updating Next Review Time for user {} for review {}. Went from {} to {}, a rounding of {:.1f} minutes"
+                .format(self.user,
+                        self.vocabulary.meaning,
+                        original_date.strftime("%H:%M:%S"),
+                        self.next_review_date.strftime("%H:%M:%S"),
+                        (self.next_review_date - original_date).total_seconds() / 60))
+        self.save()
+
     def __str__(self):
         return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
-                                                                     self.user.username,
-                                                                     self.correct,
-                                                                     self.incorrect,
-                                                                     self.streak,
-                                                                     self.last_studied,
-                                                                     self.needs_review,
-                                                                     self.unlock_date)
+                                                                              self.user.username,
+                                                                              self.correct,
+                                                                              self.incorrect,
+                                                                              self.streak,
+                                                                              self.last_studied,
+                                                                              self.needs_review,
+                                                                              self.unlock_date)
 
 
 class AnswerSynonym(models.Model):
@@ -188,6 +222,7 @@ class AnswerSynonym(models.Model):
             "character": self.character,
             "user_specific_id": self.review.id
         }
+
 
 class MeaningSynonym(models.Model):
     text = models.CharField(max_length=255, blank=False, null=False)

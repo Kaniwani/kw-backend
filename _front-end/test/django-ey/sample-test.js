@@ -1,4 +1,4 @@
-casper.test.comment("Simple integration test for casper and django.");
+casper.test.comment("Simple register link test.");
 var helper = require("./djangocasper.js");
 
 helper.scenario('/',
