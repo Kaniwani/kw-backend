@@ -76,7 +76,7 @@ function init() {
   $synonymForm.submit(handleSynonymForm);
 
   // ask a question
-  $meaning.text(currentVocab.meaning);
+  $meaning.html(currentVocab.meaning);
   $userAnswer.focus();
 
   $homeLink.click(earlyTermination);
