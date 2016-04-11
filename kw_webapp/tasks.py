@@ -10,6 +10,7 @@ from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
 from datetime import timedelta, datetime
 from django.utils import timezone
 from django.db.models import F
+from async_messages import message_user
 logger = logging.getLogger('kw.tasks')
 
 
@@ -54,6 +55,8 @@ def all_srs(user=None):
         else:
             logger.info("{} has no reviews for SRS level {}".format((user or "all users"), level[1]))
         review_set.update(needs_review=True)
+
+
     logger.info("Finished SRS run for {}.".format(user or "all users"))
 
 
@@ -232,6 +235,10 @@ def sync_with_wk(user, full_sync=False):
             new_review_count, new_synonym_count = sync_recent_unlocked_vocab_with_wk(user)
         else:
             new_review_count, new_synonym_count = sync_unlocked_vocab_with_wk(user)
+
+        #Async messaging system.
+        message_user(user, "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(new_review_count, new_synonym_count))
+
         return profile_sync_succeeded, new_review_count, new_synonym_count
     else:
         logger.warn(
