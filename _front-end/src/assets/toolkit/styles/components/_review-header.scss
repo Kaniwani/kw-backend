@@ -26,7 +26,7 @@
     }
 
     > .homelink {
-      opacity: .9;
+      opacity: .95;
       display: block;
       margin: .75em .5em;
       float: left;
@@ -41,7 +41,8 @@
 			}
 
       &:hover {
-        opacity: 1;
+      	opacity: 1;
+        fill: white;
       }
     }
   }
