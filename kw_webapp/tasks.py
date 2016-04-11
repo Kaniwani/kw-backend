@@ -332,18 +332,25 @@ def get_users_current_reviews(user):
                                            burned=False)
 
 
-def get_users_future_reviews(user):
+def get_users_future_reviews(user, time_limit=None):
     if user.profile.only_review_burned:
-        return UserSpecific.objects.filter(user=user,
+        queryset = UserSpecific.objects.filter(user=user,
                                            needs_review=False,
                                            wanikani_burned=True,
                                            hidden=False,
                                            burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
     else:
-        return UserSpecific.objects.filter(user=user,
+        queryset = UserSpecific.objects.filter(user=user,
                                            needs_review=False,
                                            hidden=False,
                                            burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
+
+    if isinstance(time_limit, timedelta):
+        queryset = queryset.filter(next_review_date__lte=timezone.now() + time_limit)
+
+    return queryset
+
+
 
 
 def process_vocabulary_response_for_unlock(user, response):
