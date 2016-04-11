@@ -1,3 +1,23 @@
+@mixin section-spacing() {
+	margin-top: $unit-md;
+  margin-bottom: $unit-md;
+  @include media($bp-lg) {
+    margin-top: $unit-lg;
+    margin-bottom: $unit-lg;
+  }
+}
+
+@mixin section-gutters() {
+  @include container($site-max-width);
+  padding-left: $unit-sm;
+  padding-right: $unit-sm;
+
+  @include media($bp-md) {
+    padding-left: $unit-md;
+    padding-right: $unit-md;
+  }
+}
+
 // increases clickable/hoverable/tappable area for element without increasing size visually or adding internal padding
 @mixin tap-target($Y: .5em, $X: 1em) {
   &:after {

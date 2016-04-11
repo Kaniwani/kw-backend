@@ -3,12 +3,10 @@ from itertools import chain
 
 from datetime import timedelta
 
-import math
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.utils.datetime_safe import strftime
 
 from kw_webapp import constants
 from kw_webapp.constants import TWITTER_USERNAME_REGEX, HTTP_S_REGEX
@@ -73,8 +71,7 @@ class Profile(models.Model):
         elif TWITTER_USERNAME_REGEX.match(twitter_account):
             self.twitter = "@{}".format(twitter_account)
         else:
-            logger.warning("WK returned a funky twitter account name: {},  for user:{} ".format(twitter_account,
-                                                                                                self.user.username))
+            logger.warning("WK returned a funky twitter account name: {},  for user:{} ".format(twitter_account, self.user.username))
 
         self.save()
 
