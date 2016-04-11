@@ -1,0 +1,39 @@
+{
+  "name": "okaynav",
+  "version": "2.0.3",
+  "description": "Progressively responsive jQuery navigation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VPenkov/okayNav.git"
+  },
+  "keywords": [
+    "responsive",
+    "navigation",
+    "jquery-plugin",
+    "ecosystem:jquery"
+  ],
+  "author": "Vergil Penkov (http://vergilpenkov.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/VPenkov/okayNav/issues"
+  },
+  "homepage": "https://github.com/VPenkov/okayNav#readme",
+  "devDependencies": {
+    "bower": "^1.7.7",
+    "browser-sync": "^2.11.1",
+    "del": "^2.2.0",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-cssnano": "^2.1.1",
+    "gulp-less": "^3.0.5",
+    "gulp-uglify": "^1.5.3",
+    "gulp-useref": "^3.0.6"
+  },
+  "dependencies": {
+    "jquery": ">=1.7"
+  }
+}
