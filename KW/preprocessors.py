@@ -14,12 +14,11 @@ def review_count_preprocessor(request):
     3) How many reviews coming up in next hour.
     4) How many reviews coming up in next day.
     """
+    context_dict = {}
     if hasattr(request, 'user'):
         if hasattr(request.user, 'profile'):
-            context_dict = {}
             review_count = get_users_current_reviews(request.user).count()
             context_dict['review_count'] = review_count
-
             if review_count == 0:
                 reviews = get_users_future_reviews(request.user)
                 if reviews:
