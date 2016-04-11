@@ -16,10 +16,11 @@ let KW,
     currentVocab,
     remainingVocab,
     startCount,
+    answer,
     correctTotal = 0,
     answeredTotal = 0,
     answerCorrectness = [],
-    answer,
+    $homeLink = $('.homelink'),
     $reviewsLeft = $('#reviewsLeft'),
     $reviewsDone = $('#reviewsDone'),
     $reviewsCorrect = $('#reviewsCorrect'),
@@ -75,8 +76,10 @@ function init() {
   $synonymForm.submit(handleSynonymForm);
 
   // ask a question
-  $meaning.text(currentVocab.meaning);
+  $meaning.html(currentVocab.meaning);
   $userAnswer.focus();
+
+  $homeLink.click(earlyTermination);
 }
 
 function getSrsRank(num) {
@@ -109,7 +112,15 @@ function updateKanaKanjiDetails() {
   $detailKanji.find('.-kanji').html(currentVocab.characters.map(kanji => `${kanji} </br>`));
 }
 
-// this can probably be an ajax followed by a window.navigate call I suppose instead of form jiggery
+function earlyTermination(ev) {
+  ev.preventDefault();
+  if (answeredTotal < 1) {
+    window.location.href = "http://kaniwani.com/kw/";
+  } else {
+    postSummary('/kw/summary/', answerCorrectness);
+  }
+}
+
 function postSummary(path, params) {
   let form = document.createElement('form');
   form.setAttribute('method', 'post');
@@ -138,7 +149,6 @@ function postSummary(path, params) {
 String.prototype.endsWith = function(suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
-
 
 function compareAnswer() {
   answer = $userAnswer.val();
@@ -433,6 +443,7 @@ function handleShortcuts(ev) {
     }
   }
 }
+
 
 const api = {
   init: init
