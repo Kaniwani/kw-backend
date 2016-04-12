@@ -103,6 +103,8 @@ class TestTasks(TestCase):
 
     @responses.activate
     def test_unlock_all_unlocks_all(self):
+        self.user.profile.api_valid = True
+        self.user.profile.save()
         resp_body = sample_api_responses.single_vocab_response
         level_list = [level for level in range(1, self.user.profile.level + 1)]
         responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, level_list),
@@ -143,11 +145,11 @@ class TestTasks(TestCase):
         previously_studied = self.review.last_studied
 
         user_returns_from_vacation(self.user)
-        self.review.refresh_from_db()
-
-        self.assertNotEqual(self.review.last_studied, previously_studied)
-        self.assertAlmostEqual(self.review.last_studied, an_hour_ago, delta=timedelta(seconds=1))
-
+        #self.review.refresh_from_db()
+        rev = UserSpecific.objects.get(id=self.review.id)
+        print(rev)
+        self.assertNotEqual(rev.last_studied, previously_studied)
+        self.assertAlmostEqual(rev.last_studied, an_hour_ago, delta=timedelta(seconds=1))
 
     def test_returning_review_count_that_is_time_delimited_functions_correctly(self):
         new_review = create_userspecific(create_vocab("arbitrary word"), self.user)

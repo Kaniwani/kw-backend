@@ -1,15 +1,22 @@
 from __future__ import absolute_import
+
 import logging
-from django.contrib.auth.models import User
+from datetime import timedelta, datetime
+
 import requests
+from django.contrib.auth.models import User
+from django.db.models import F
 from django.db.models import Min
+from django.utils import timezone
+
+
+from kw_webapp.wanikani import make_api_call
+from kw_webapp.wanikani import exceptions
 
 from KW.celery import app as celery_app
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
-from datetime import timedelta, datetime
-from django.utils import timezone
-from django.db.models import F
+
 logger = logging.getLogger('kw.tasks')
 
 
@@ -50,7 +57,7 @@ def all_srs(user=None):
                                                      needs_review=False)
         if review_set.count() > 0:
             logger.info(
-                    "{} has {} reviews for SRS level {}".format((user or "all users"), review_set.count(), level[1]))
+                "{} has {} reviews for SRS level {}".format((user or "all users"), review_set.count(), level[1]))
         else:
             logger.info("{} has no reviews for SRS level {}".format((user or "all users"), level[1]))
         review_set.update(needs_review=True)
@@ -92,8 +99,8 @@ def associate_vocab_to_user(vocab, user):
         us = UserSpecific.objects.filter(vocabulary=vocab, user=user)
         for u in us:
             logger.error(
-                    "during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(user.username,
-                                                                                                         u))
+                "during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(user.username,
+                                                                                                     u))
 
 
 def build_API_sync_string_for_user(user):
@@ -150,25 +157,27 @@ def unlock_eligible_vocab_from_levels(user, levels):
     :param levels: requested level unlock. This can also be a list.
     :return: unlocked count, locked count
     """
+    unlocked = locked = 0
 
-    api_string = build_API_sync_string_for_user_for_levels(user, levels)
-    r = requests.get(api_string)
-    unlocked, locked = process_vocabulary_response_for_unlock(user, r)
+    api_call_string = build_API_sync_string_for_user_for_levels(user, levels)
+
+    try:
+        response = make_api_call(api_call_string)
+        unlocked, locked = process_vocabulary_response_for_unlock(user, response)
+    except exceptions.InvalidWaniKaniKey:
+        user.profile.api_valid = False
+        user.profile.save()
+    except exceptions.WanikaniAPIException:
+        logger.error("Non-invalid key error found during API call. ")
     return unlocked, locked
 
 
 def get_wanikani_level_by_api_key(api_key):
     api_string = "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
-    r = requests.get(api_string)
-    if r.status_code == 200:
-        json_data = r.json()
-        try:
-            user_info = json_data["user_information"]
-            level = user_info["level"]
-            return level
-        except KeyError:
-            return None
-        return
+    response = make_api_call(api_string)
+    user_info = response["user_information"]
+    level = user_info["level"]
+    return level
 
 
 @celery_app.task()
@@ -194,11 +203,10 @@ def sync_user_profile_with_wk(user):
             user.profile.set_twitter_account(user_info["twitter"])
             if user.profile.follow_me:
                 user.profile.unlocked_levels.get_or_create(level=user_info["level"])
-                if user_info["level"] < user.profile.level: #we have detected a user reset on WK
+                if user_info["level"] < user.profile.level:  # we have detected a user reset on WK
                     user.profile.handle_wanikani_reset(user_info["level"])
                 else:
                     user.profile.level = user_info["level"]
-
 
             user.profile.gravatar = user_info["gravatar"]
             user.profile.api_valid = True
@@ -235,7 +243,7 @@ def sync_with_wk(user, full_sync=False):
         return profile_sync_succeeded, new_review_count, new_synonym_count
     else:
         logger.warn(
-                "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed ")
+            "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed ")
 
 
 def create_new_vocabulary(vocabulary_json):
@@ -335,22 +343,22 @@ def get_users_current_reviews(user):
 def get_users_future_reviews(user, time_limit=None):
     if user.profile.only_review_burned:
         queryset = UserSpecific.objects.filter(user=user,
-                                           needs_review=False,
-                                           wanikani_burned=True,
-                                           hidden=False,
-                                           burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
+                                               needs_review=False,
+                                               wanikani_burned=True,
+                                               hidden=False,
+                                               burned=False).annotate(Min('next_review_date')).order_by(
+            'next_review_date')
     else:
         queryset = UserSpecific.objects.filter(user=user,
-                                           needs_review=False,
-                                           hidden=False,
-                                           burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
+                                               needs_review=False,
+                                               hidden=False,
+                                               burned=False).annotate(Min('next_review_date')).order_by(
+            'next_review_date')
 
     if isinstance(time_limit, timedelta):
         queryset = queryset.filter(next_review_date__lte=timezone.now() + time_limit)
 
     return queryset
-
-
 
 
 def process_vocabulary_response_for_unlock(user, response):
@@ -360,29 +368,24 @@ def process_vocabulary_response_for_unlock(user, response):
     :param response:
     :return:
     """
-    r = response
-    if r.status_code == 200:
-        json_data = r.json()
-        vocab_list = json_data['requested_information']
-        vocab_list = [vocab_json for vocab_json in vocab_list if
-                      vocab_json['user_specific'] is not None]  # filters out locked items.
-        unlocked = len(vocab_list)
-        locked = len(json_data['requested_information']) - unlocked
-        for vocabulary_json in vocab_list:
-            user_specific = vocabulary_json['user_specific']
-            vocab = get_or_create_vocab_by_json(vocabulary_json)
-            vocab = associate_readings_to_vocab(vocab, vocabulary_json)
-            new_review, created = associate_vocab_to_user(vocab, user)
-            new_review, synonyms_added_count = add_synonyms_from_api_call_to_review(new_review, user_specific)
-            new_review.wanikani_srs = user_specific["srs"]
-            new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
-            new_review.wanikani_burned = user_specific["burned"]
-            new_review.save()
-        logger.info("Unlocking level for {}".format(user.username))
-        return unlocked, locked
-    else:
-        logger.error("{} COULD NOT Unlock Level. {}}".format(user.username, r.status_code))
-        return 0, 0
+    json_data = response
+    vocab_list = json_data['requested_information']
+    vocab_list = [vocab_json for vocab_json in vocab_list if
+                  vocab_json['user_specific'] is not None]  # filters out locked items.
+    unlocked = len(vocab_list)
+    locked = len(json_data['requested_information']) - unlocked
+    for vocabulary_json in vocab_list:
+        user_specific = vocabulary_json['user_specific']
+        vocab = get_or_create_vocab_by_json(vocabulary_json)
+        vocab = associate_readings_to_vocab(vocab, vocabulary_json)
+        new_review, created = associate_vocab_to_user(vocab, user)
+        new_review, synonyms_added_count = add_synonyms_from_api_call_to_review(new_review, user_specific)
+        new_review.wanikani_srs = user_specific["srs"]
+        new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
+        new_review.wanikani_burned = user_specific["burned"]
+        new_review.save()
+    logger.info("Unlocking level for {}".format(user.username))
+    return unlocked, locked
 
 
 def process_vocabulary_response_for_user(user, response):
@@ -445,6 +448,7 @@ def sync_unlocked_vocab_with_wk(user):
         return new_review_count, new_synonym_count
     else:
         return 0, 0
+
 
 
 @celery_app.task()
@@ -540,8 +544,8 @@ def pull_user_synonyms_by_level(user, level):
                         reviews = UserSpecific.objects.filter(user=user, vocabulary__meaning=meaning)
                         for review in reviews:
                             logger.error(
-                                    "Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(
-                                            review))
+                                "Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(
+                                    review))
         except KeyError:
             logger.error("NO requested info?: {}".format(json_data))
     else:
