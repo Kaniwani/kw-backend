@@ -40,17 +40,15 @@
   <div class="site">
     {% block content %}{% endblock content %}
   </div>
-  <div class="sync-loader">
-    <h5 class="title">
-      <span class="letter">S</span>
-      <span class="letter">y</span>
-      <span class="letter">n</span>
-      <span class="letter">c</span>
-      <span class="letter">i</span>
-      <span class="letter">n</span>
-      <span class="letter">g</span>
-    </h5>
-  </div>
+
+  <!-- delete later after testing -->
+  {% if messages %}
+    <ul class="_visuallyhidden">
+    {% for message in messages %}
+      <li {% if message.tags %} class="{{ message.tags }}" {% endif %}> {{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
 
   <script>
     window.KW = {
@@ -59,6 +57,7 @@
         level: '{{ user.profile.level }}',
         unlockedLevels: '{{ user.profile.unlocked_levels_list }}',
       },
+      messages: '{{ messages }}',
       nextReview: '{{ next_review_timestamp_local }}',
       reviewCount: '{{ review_count }}',
       settings: {

@@ -6,14 +6,6 @@
     <p id="invalidApiKey" class="_visuallyhidden">Woah your API key is invalid!</br> Fix it at the <a href="{% url "kw:settings" %}">Settings page</a>.</p>
   {% endif %}
 
-    {% if messages %}
-        <ul class="messages">
-        {% for message in messages %}
-            <li {% if message.tags %} class="{{ message.tags }}" {% endif %}> {{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-
   <section class="user-section -fullwidth -no-section-spacing">
     {% include 'partials/user-overview.html' %}
     {% include 'partials/user-details.html' %}
