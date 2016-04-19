@@ -114,11 +114,7 @@ function updateKanaKanjiDetails() {
 
 function earlyTermination(ev) {
   ev.preventDefault();
-  if (answeredTotal < 1) {
-    window.location.href = "http://kaniwani.com/kw/";
-  } else {
-    postSummary('/kw/summary/', answerCorrectness);
-  }
+  postSummary('/kw/summary/', answerCorrectness);
 }
 
 function postSummary(path, params) {

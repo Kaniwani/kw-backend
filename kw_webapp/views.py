@@ -457,9 +457,16 @@ class ReviewSummary(TemplateView):
 
     def post(self, request, *args, **kwargs):
         logger.info("{} navigated to review summary page.".format(request.user.username))
+
         all_reviews = request.POST
+
+        if len(all_reviews) == 1:
+            #The post data is only populated by the CSRF token. No reviews were done
+            return HttpResponseRedirect(reverse_lazy("kw:home"))
+
         correct = []
         incorrect = []
+
         for review_id in all_reviews:
             try:
                 if int(all_reviews[review_id]) > 0:
