@@ -223,7 +223,7 @@ def sync_with_wk(user, full_sync=False):
     Takes a user. Checks the vocab list from WK for all levels. If anything new has been unlocked on the WK side,
     it also unlocks it here on Kaniwani and creates a new review for the user.
 
-    :param recent_only: if set to True, will sync only user's most recent 3 levels. This is for during login when it is synchronous.
+    :param full_sync: if set to True, will sync only user's most recent 3 levels. This is for during login when it is synchronous.
     :param user: The user to check for new unlocks
     :return: None
     '''
@@ -237,8 +237,10 @@ def sync_with_wk(user, full_sync=False):
             new_review_count, new_synonym_count = sync_unlocked_vocab_with_wk(user)
 
         #Async messaging system.
-        message_user(user, "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(new_review_count, new_synonym_count))
+        if new_review_count or new_synonym_count:
+            message_user(user, "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(new_review_count, new_synonym_count))
 
+        
         return profile_sync_succeeded, new_review_count, new_synonym_count
     else:
         logger.warn(
