@@ -4,7 +4,10 @@
   transition: color .3s ease-out;
 
 	&.is-animating {
-		transition: all 1s ease-in-out;
+		> .text {
+			will-change: background-color;
+			transition: background-color 3s ease-in-out;
+		}
 	}
 
   &:hover {

@@ -32,18 +32,9 @@ function init() {
 		let $refreshButton = $("#forceSrs");
 		let $reviewButton = $("#reviewCount");
 
-/*
-    let recentlySynced = simpleStorage.get('recentlySynced');
-		if (recentlySynced !== true) syncUser();
-*/
-
-    if (true /* !KW.messages.length */) {
-      animateSync();
-    }
-
 		if (!KW.settings.onVacation) {
 			updateReviewTime($reviewButton);
-			KW.reviewTimer = setInterval(() => updateReviewTime($reviewButton), 20000 /* 20s */);
+			KW.reviewTimer = setInterval(() => updateReviewTime($reviewButton), 10000 /* 10s */);
 		}
 
 		// event handlers
@@ -52,8 +43,22 @@ function init() {
 			if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
 		});
 
-		$(document).keypress(handleKeyPress);
+    // temporary
+    displayMessages();
 	}
+}
+
+// temporary, messages that appear on logged out screen will be stored and displayed on login
+function displayMessages() {
+  if (simpleStorage.get('KW').messages.length) {
+    KW.messages.split('/').slice(0,-1).forEach(msg => {
+      // check counts aren't both 0
+      let updated = !/0 new.*0 new/.test(msg); // ugh
+      if (updated) setTimeout(() => notie.alert(1, msg, 4), 1500);
+    });
+    KW.messages = [];
+    simpleStorage.set('KW', KW);
+  }
 }
 
 function updateReviewTime($el) {
@@ -67,44 +72,31 @@ function updateReviewTime($el) {
 		$el.text(`Next review: ${$.timeago(KW.nextReview)}`);
 	}
 }
+
 /*
-function syncUser() {
-	animateSync();
-
-	$.getJSON('/kw/sync/', {full_sync: false})
-		.done(res => {
-			const message = `Account synced with Wanikani!`,
-					  newMaterial = `</br>You have unlocked ${pluralize('new vocab item', res.new_review_count)} & ${pluralize('new synonym', res.new_synonym_count)}.`;
-
- 			// expire after 12 hours
- 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: 43200000});
- 			notie.alert(1, (newMaterial ? message + newMaterial : message), 5);
-		})
-		.fail((res) => {
-			notie.alert(3, `Something went wrong while trying to sync with Wanikani. If the problem persists, send us a <a href="/contact/">contact message</a>! with the following: <q class="failresponse">${res.status}: ${res.statusText}</q>`, 10);
-		})
-		.always(() => animateSync({clear: true}));
-}*/
-
-
 function animateSync() {
 	const $logo = document.querySelector('.site-logo');
-  $logo.classList.add('-is-animating')
-	const [blue, purple, pink, tan] = [
-		'hsl(217, 63%, 57%)',
-		'hsl(282, 100%, 47%)',
-		'hsl(314, 100%, 50%)',
-		'hsl(37, 67%, 65%)'
-	];
-	const palette = [ blue, purple, pink, tan ]
-	let paletteIndex = 0;
+  const $logotext = Array.from($logo.children).reduce((_, el) => {
+    return el.classList.contains('text') ? el : null;
+  });
 
-  setInterval( function() {
-    $logo.style.color = palette[paletteIndex];
+  const [blue, purple, pink, tan] = [
+    'hsl(217, 63%, 57%)',
+    'hsl(282, 100%, 47%)',
+    'hsl(314, 100%, 50%)',
+    'hsl(27, 67%, 65%)'
+  ];
+  const palette = [ blue, purple, pink, tan ]
+  let paletteIndex = 0;
+
+  $logo.classList.add('is-animating');
+
+  setInterval(function() {
+    $logotext.style.backgroundColor = palette[paletteIndex];
     paletteIndex += 1;
     paletteIndex %= palette.length;
-	}, 1100 );
-}
+	}, 2900 );
+}*/
 
 const api = {
 	init,

@@ -41,15 +41,6 @@
     {% block content %}{% endblock content %}
   </div>
 
-  <!-- delete later after testing -->
-  {% if messages %}
-    <ul class="_visuallyhidden">
-    {% for message in messages %}
-      <li {% if message.tags %} class="{{ message.tags }}" {% endif %}> {{ message }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-
   <script>
     window.KW = {
       user: {
@@ -57,7 +48,7 @@
         level: '{{ user.profile.level }}',
         unlockedLevels: '{{ user.profile.unlocked_levels_list }}',
       },
-      messages: '{{ messages }}',
+      messages: '{% for message in messages %}{{message}}/{% endfor %}',
       nextReview: '{{ next_review_timestamp_local }}',
       reviewCount: '{{ review_count }}',
       settings: {
