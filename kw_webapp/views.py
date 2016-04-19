@@ -460,7 +460,7 @@ class ReviewSummary(TemplateView):
 
         all_reviews = request.POST
 
-        if len(all_reviews) == 1:
+        if len(all_reviews) <= 1:
             #The post data is only populated by the CSRF token. No reviews were done
             return HttpResponseRedirect(reverse_lazy("kw:home"))
 
