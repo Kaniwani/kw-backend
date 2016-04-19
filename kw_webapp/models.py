@@ -48,6 +48,7 @@ class Profile(models.Model):
     posts_count = models.PositiveIntegerField(default=0)
     title = models.CharField(max_length=255, default="Turtles", null=True)
     join_date = models.DateField(auto_now_add=True, null=True)
+    last_wanikani_sync_date = models.DateTimeField(auto_now_add=True, null=True)
     level = models.PositiveIntegerField(null=True, validators=[
         MinValueValidator(constants.LEVEL_MIN),
         MaxValueValidator(constants.LEVEL_MAX),

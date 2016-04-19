@@ -205,6 +205,7 @@ def sync_user_profile_with_wk(user):
 
             user.profile.gravatar = user_info["gravatar"]
             user.profile.api_valid = True
+            user.profile.last_wanikani_sync_date = timezone.now()
             user.profile.save()
 
             logger.info("Synced {}'s Profile.".format(user.username))
@@ -240,7 +241,7 @@ def sync_with_wk(user, full_sync=False):
         if new_review_count or new_synonym_count:
             message_user(user, "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(new_review_count, new_synonym_count))
 
-        
+
         return profile_sync_succeeded, new_review_count, new_synonym_count
     else:
         logger.warn(
