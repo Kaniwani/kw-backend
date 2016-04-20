@@ -27,6 +27,7 @@ function init() {
 	KW.nextReview = new Date(Math.ceil(+KW.nextReview));
 	simpleStorage.set('KW', KW);
 
+  console.log(KW.user.lastWKSyncDate);
   console.log('Messages passed to JS: \n')
   console.table(window.KW.messages);
   displayMessages();
@@ -53,12 +54,7 @@ function init() {
 function displayMessages() {
   if (KW.messages.length) {
     // match django async message levels with notie message levels
-    const messageLevels = {
-      '25': 1, // Success
-      '30': 2, // Warning
-      '40': 3, // Error
-      '20': 4, // Info
-    };
+    const messageLevels = {'success': 1, 'warning': 2, 'error': 3, 'info': 4};
     // delay messages in sequence since notie has no queueing system
     const delay = 3000;
     let displayDelay = 500;

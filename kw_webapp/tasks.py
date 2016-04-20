@@ -10,7 +10,7 @@ from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
 from datetime import timedelta, datetime
 from django.utils import timezone
 from django.db.models import F
-from async_messages import message_user
+from async_messages import messages
 logger = logging.getLogger('kw.tasks')
 
 
@@ -239,11 +239,8 @@ def sync_with_wk(user, full_sync=False):
 
         #Async messaging system.
         if new_review_count or new_synonym_count:
-            message_user(user, "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(new_review_count, new_synonym_count))
-            print("YES WE HAVE SUCCESSFULLY FOUND YOUR NEW VOCAB/WHATEVER")
-        else:
-            message_user(user, "Nothing new to report from Wanikani!")
-            
+            messages.success(user, "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(new_review_count, new_synonym_count))
+
 
 
         return profile_sync_succeeded, new_review_count, new_synonym_count

@@ -52,7 +52,7 @@
       messages: [
         {% if messages %}
           {% for message in messages %}
-            { "text":"{{message}}", "level": {{message.level}} },
+            { "text":"{{message}}", "level": "{{message.tags}}" },
           {% endfor %}
         {% endif %}
       ],
