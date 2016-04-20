@@ -28,7 +28,6 @@ function init() {
 	simpleStorage.set('KW', KW);
 
   console.log(KW.user.lastWKSyncDate);
-  console.log('Messages passed to JS: \n')
   console.table(window.KW.messages);
   displayMessages();
 
@@ -60,7 +59,6 @@ function displayMessages() {
     let displayDelay = 500;
 
     KW.messages.forEach(({text, level}) => {
-      console.log(`Notifying message: ${text}`);
       setTimeout(() => notie.alert(messageLevels[level], text, delay / 1000 /*secs*/), displayDelay);
       displayDelay += delay;
     });
