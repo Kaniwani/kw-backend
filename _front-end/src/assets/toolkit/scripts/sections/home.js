@@ -1,22 +1,16 @@
+import config from '../config';
 import refreshReviews from '../components/refreshReviews';
 import pluralize from '../util/pluralize';
 import strToBoolean from '../util/strToBoolean';
 import timeago from '../vendor/timeago';
+import toastr from '../vendor/toastr';
+import im from '../vendor/include-media';
 
-// overriding settings by merging objects
-Object.assign($.timeago.settings, {
-	allowFuture: true,
-	allowPast: false,
-});
-Object.assign($.timeago.settings.strings, {
-  prefixFromNow: '~',
-  suffixFromNow: "",
-	minute: 'a minute',
-	hour: 'an hour',
-	hours: '%d hours',
-	month: 'a month',
-	year: 'a year',
-})
+// vendor js configuration
+Object.assign($.timeago.settings, config.timeago.settings);
+Object.assign($.timeago.settings.strings, config.timeago.strings)
+if (im.lessThan('sm')) config.toastr.positionClass = 'toast-top-full-width';
+toastr.options = config.toastr;
 
 let KW;
 
@@ -49,20 +43,8 @@ function init() {
 	}
 }
 
-// temporary, messages that appear on logged out screen will be stored and displayed on login
 function displayMessages() {
-  if (KW.messages.length) {
-    // match django async message levels with notie message levels
-    const messageLevels = {'success': 1, 'warning': 2, 'error': 3, 'info': 4};
-    // delay messages in sequence since notie has no queueing system
-    const delay = 3000;
-    let displayDelay = 500;
-
-    KW.messages.forEach(({text, level}) => {
-      setTimeout(() => notie.alert(messageLevels[level], text, delay / 1000 /*secs*/), displayDelay);
-      displayDelay += delay;
-    });
-  }
+  KW.messages.forEach(({text, level}) => toastr[level](text));
 }
 
 function updateReviewTime($el) {
