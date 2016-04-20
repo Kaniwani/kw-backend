@@ -4,7 +4,7 @@
 
   > .inner {
     display: flex;
-    min-height: 80px; // yay flexbox fixes
+    height: 95px;
     flex-wrap: nowrap;
     flex-direction: row;
     justify-content: space-between;
@@ -22,25 +22,6 @@
       align-self: center;
       @include media($bp-nav-1) {
         align-self: center;
-      }
-    }
-
-    > .site-nav {
-      // no-flex fallbacks
-      display: inline-block;
-      float: right;
-      vertical-align: middle;
-      //
-      max-width: calc(100% - 90px);
-      align-self: center;
-      font-size: 14px;
-
-      @include media($bp-nav-1) {
-        align-self: center;
-      }
-
-      @include media($bp-nav-2) {
-        font-size: 16px;
       }
     }
   }

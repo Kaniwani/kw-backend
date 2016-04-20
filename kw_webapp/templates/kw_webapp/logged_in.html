@@ -12,9 +12,8 @@
       </span>
     </a>
 
-    <nav class="site-nav">
-      <a href="#0" class="expandToggle">☰ Menu</a>
-      <ul class="nav-list toggleTarget">
+    <nav id="nav-main" class="okayNav">
+      <ul class="nav-list">
         <li class="item {% ancestor 'kw:review' %} {% if user.profile.on_vacation %}-disabled{% endif %}">
           <a href="{% url "kw:review" %}" class="nav-link">
             <span class="text">Reviews

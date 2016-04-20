@@ -3,12 +3,10 @@ from itertools import chain
 
 from datetime import timedelta
 
-import math
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from django.utils import timezone
-from django.utils.datetime_safe import strftime
 
 from kw_webapp import constants
 from kw_webapp.constants import TWITTER_USERNAME_REGEX, HTTP_S_REGEX
@@ -73,8 +71,7 @@ class Profile(models.Model):
         elif TWITTER_USERNAME_REGEX.match(twitter_account):
             self.twitter = "@{}".format(twitter_account)
         else:
-            logger.warning("WK returned a funky twitter account name: {},  for user:{} ".format(twitter_account,
-                                                                                                self.user.username))
+            logger.warning("WK returned a funky twitter account name: {},  for user:{} ".format(twitter_account, self.user.username))
 
         self.save()
 
@@ -90,14 +87,24 @@ class Profile(models.Model):
         x = [x[0] for x in x]
         return x
 
+    def handle_wanikani_level_change(self, new_level):
+        original_level = self.level
+        self.level = new_level
+        self.save()
+
+        #The case of a user resetting their WK profile.
+        if new_level < original_level:
+            expired_levels = self.unlocked_levels.filter(level__gt=new_level)
+            expired_levels.delete()
+
+            expired_reviews = self.get_overleveled_reviews()
+            expired_reviews.delete()
+
+    def get_overleveled_reviews(self):
+        return UserSpecific.objects.filter(user=self.user, vocabulary__reading__level__gt=self.user.profile.level)
+
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
-
-    def is_being_followed(self):
-        if self.level in self.unlocked_levels_list():
-            return True
-        else:
-            return False
 
 
 class Vocabulary(models.Model):
@@ -175,16 +182,18 @@ class UserSpecific(models.Model):
     def _round_review_time_up(self):
         original_date = self.next_review_date
         round_to = constants.REVIEW_ROUNDING_TIME.total_seconds()
-        seconds = (self.next_review_date - self.next_review_date.min.replace(tzinfo=self.next_review_date.tzinfo)).seconds
+        seconds = (
+            self.next_review_date - self.next_review_date.min.replace(tzinfo=self.next_review_date.tzinfo)).seconds
         rounding = (seconds + round_to) // round_to * round_to
         self.next_review_date = self.next_review_date + timedelta(0, rounding - seconds, 0)
 
-        logger.debug("Updating Next Review Time for user {} for review {}. Went from {} to {}, a rounding of {:.1f} minutes"
-                     .format(self.user,
-                             self.vocabulary.meaning,
-                             original_date.strftime("%H:%M:%S"),
-                             self.next_review_date.strftime("%H:%M:%S"),
-                             (self.next_review_date - original_date).total_seconds() / 60))
+        logger.debug(
+            "Updating Next Review Time for user {} for review {}. Went from {} to {}, a rounding of {:.1f} minutes"
+                .format(self.user,
+                        self.vocabulary.meaning,
+                        original_date.strftime("%H:%M:%S"),
+                        self.next_review_date.strftime("%H:%M:%S"),
+                        (self.next_review_date - original_date).total_seconds() / 60))
         self.save()
 
     def __str__(self):

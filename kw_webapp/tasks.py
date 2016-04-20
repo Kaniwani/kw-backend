@@ -185,7 +185,6 @@ def sync_user_profile_with_wk(user):
         json_data = r.json()
         try:
             user_info = json_data["user_information"]
-            user.profile.level = user_info["level"]
             user.profile.title = user_info["title"]
             user.profile.join_date = datetime.utcfromtimestamp(user_info["creation_date"])
             user.profile.topics_count = user_info["topics_count"]
@@ -195,6 +194,12 @@ def sync_user_profile_with_wk(user):
             user.profile.set_twitter_account(user_info["twitter"])
             if user.profile.follow_me:
                 user.profile.unlocked_levels.get_or_create(level=user_info["level"])
+                if user_info["level"] < user.profile.level: #we have detected a user reset on WK
+                    user.profile.handle_wanikani_reset(user_info["level"])
+                else:
+                    user.profile.level = user_info["level"]
+
+
             user.profile.gravatar = user_info["gravatar"]
             user.profile.api_valid = True
             user.profile.save()
@@ -327,18 +332,25 @@ def get_users_current_reviews(user):
                                            burned=False)
 
 
-def get_users_future_reviews(user):
+def get_users_future_reviews(user, time_limit=None):
     if user.profile.only_review_burned:
-        return UserSpecific.objects.filter(user=user,
+        queryset = UserSpecific.objects.filter(user=user,
                                            needs_review=False,
                                            wanikani_burned=True,
                                            hidden=False,
                                            burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
     else:
-        return UserSpecific.objects.filter(user=user,
+        queryset = UserSpecific.objects.filter(user=user,
                                            needs_review=False,
                                            hidden=False,
                                            burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
+
+    if isinstance(time_limit, timedelta):
+        queryset = queryset.filter(next_review_date__lte=timezone.now() + time_limit)
+
+    return queryset
+
+
 
 
 def process_vocabulary_response_for_unlock(user, response):

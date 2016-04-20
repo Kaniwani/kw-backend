@@ -2,6 +2,8 @@ import refreshReviews from '../components/refreshReviews';
 import pluralize from '../util/pluralize';
 import strToBoolean from '../util/strToBoolean';
 import timeago from '../vendor/timeago';
+import okayNav from '../vendor/jquery.okayNav';
+const sitenav = $('#nav-main').okayNav();
 
 // overriding settings by merging objects
 Object.assign($.timeago.settings, {
