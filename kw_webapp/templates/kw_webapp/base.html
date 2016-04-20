@@ -47,8 +47,15 @@
         name: '{{ user.profile.user }}',
         level: '{{ user.profile.level }}',
         unlockedLevels: '{{ user.profile.unlocked_levels_list }}',
+        lastWKSyncDate: '{{ user.profile.last_wanikani_sync_date }}',
       },
-      messages: '{% for message in messages %}{{message}}/{% endfor %}',
+      messages: [
+        {% if messages %}
+          {% for message in messages %}
+            { "text":"{{message}}", "level": {{message.level}} },
+          {% endfor %}
+        {% endif %}
+      ],
       nextReview: '{{ next_review_timestamp_local }}',
       reviewCount: '{{ review_count }}',
       settings: {

@@ -5,10 +5,6 @@
   {% if not user.profile.api_valid %}
     <p id="invalidApiKey" class="_visuallyhidden">Woah your API key is invalid!</br> Fix it at the <a href="{% url "kw:settings" %}">Settings page</a>.</p>
   {% endif %}
-    {% comment %}
-        Below is an example of how to access last sync time.
-    {% endcomment %}
-    {{ user.profile.last_wanikani_sync_date }}
 
   <section class="user-section -fullwidth -no-section-spacing">
     {% include 'partials/user-overview.html' %}

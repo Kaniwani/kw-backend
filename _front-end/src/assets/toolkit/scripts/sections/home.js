@@ -27,6 +27,10 @@ function init() {
 	KW.nextReview = new Date(Math.ceil(+KW.nextReview));
 	simpleStorage.set('KW', KW);
 
+  console.log('Messages passed to JS: \n')
+  console.table(window.KW.messages);
+  displayMessages();
+
 	// are we on home page?
 	if (window.location.pathname === '/kw/') {
 		let $refreshButton = $("#forceSrs");
@@ -42,22 +46,28 @@ function init() {
 		$reviewButton.click(ev => {
 			if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
 		});
-
-    // temporary
-    displayMessages();
 	}
 }
 
 // temporary, messages that appear on logged out screen will be stored and displayed on login
 function displayMessages() {
-  if (simpleStorage.get('KW').messages.length) {
-    KW.messages.split('/').slice(0,-1).forEach(msg => {
-      // check counts aren't both 0
-      let updated = !/0 new.*0 new/.test(msg); // ugh
-      if (updated) setTimeout(() => notie.alert(1, msg, 4), 1500);
+  if (KW.messages.length) {
+    // match django async message levels with notie message levels
+    const messageLevels = {
+      '25': 1, // Success
+      '30': 2, // Warning
+      '40': 3, // Error
+      '20': 4, // Info
+    };
+    // delay messages in sequence since notie has no queueing system
+    const delay = 3000;
+    let displayDelay = 500;
+
+    KW.messages.forEach(({text, level}) => {
+      console.log(`Notifying message: ${text}`);
+      setTimeout(() => notie.alert(messageLevels[level], text, delay / 1000 /*secs*/), displayDelay);
+      displayDelay += delay;
     });
-    KW.messages = [];
-    simpleStorage.set('KW', KW);
   }
 }
 
