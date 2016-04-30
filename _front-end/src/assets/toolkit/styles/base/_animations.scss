@@ -60,6 +60,15 @@
   }
 }
 
+
+@function plusMinus($n) {
+	@return if(random(2) > 1, -#{$n}, +#{$n});
+}
+
+@function calcDrift($L, $D) {
+	@return if($L > 50, #{-$D}vw, #{$D}vw);
+}
+
 @mixin turtle-animation($i, $imgSize, $opacity, $duration, $delay, $rotate, $drift) {
   $left: random(100);
 
@@ -72,13 +81,6 @@
   animation-duration: #{$duration}s;
   animation-delay: #{$delay}s;
 
-  @function plusMinus($n) {
-    @return if(random(2) > 1, -#{$n}, +#{$n});
-  }
-
-  @function calcDrift($L, $D) {
-    @return if($L > 50, #{-$D}vw, #{$D}vw);
-  }
 
   @keyframes turtle-float-#{$i} {
     33% {
