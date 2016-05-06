@@ -181,10 +181,10 @@ function compareAnswer() {
   if (onlyJapaneseChars(answer)) {
     // user used japanese IME, proceed
     imeInput = true;
-    console.log('currvoc starts', currentVocab.characters[0].startsWith('〜'));
-    console.log('add tild', !answer.startsWith('〜'), '〜' + answer);
-
+    console.log('Current vocab first kanji char starts with tilde:', currentVocab.characters[0].startsWith('〜'));
+    console.log('Input starts with 〜:', !answer.startsWith('〜'), '〜' + answer);
     if (currentVocab.characters[0].startsWith('〜')) addStartingTilde(answer);
+
   } else if (!wanakana.isHiragana(answer)) {
     // user used english that couldn't convert to full hiragana - don't proceed
     return nonHiraganaAnswer();
