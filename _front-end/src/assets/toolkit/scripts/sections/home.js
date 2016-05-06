@@ -80,8 +80,8 @@ function syncUser() {
 			const message = `Account synced with Wanikani!`,
 					  newMaterial = `</br>You have unlocked ${pluralize('new vocab item', res.new_review_count)} & ${pluralize('new synonym', res.new_synonym_count)}.`;
 
- 			// expire after 12 hours
- 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: 43200000});
+ 			// expire after 6 hours
+ 			simpleStorage.set('recentlySynced', res.profile_sync_succeeded, {TTL: 21600000});
  			notie.alert(1, (newMaterial ? message + newMaterial : message), 5);
 		})
 		.fail((res) => {
