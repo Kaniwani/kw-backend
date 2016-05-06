@@ -1,0 +1,90 @@
+.icon {
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	fill: currentColor;
+}
+
+/* =======================================================================================
+Example showing how to change the color/size of the icons:
+.icon-name {
+	font-size: 32px; // works because "width" & "height" were set using em units
+	color: red; // works for single-colored icons, because "fill" was set to "currentColor"
+}
+======================================================================================== */
+
+.icon-lock {
+	width: 0.6416015625em;
+}
+
+.icon-unlocked {
+	width: 0.927734375em;
+}
+
+.icon-unlock {
+	width: 0.6416015625em;
+}
+
+.icon-help {
+	width: 0.857421875em;
+}
+
+.icon-home {
+	width: 0.927734375em;
+}
+
+.icon-leftarrow {
+	width: 0.7138671875em;
+}
+
+.icon-rightarrow {
+	width: 0.7138671875em;
+}
+
+.icon-refresh {
+	width: 0.857421875em;
+}
+
+.icon-attention {
+	width: 0.857421875em;
+}
+
+.icon-thumbsup {
+	width: 0.927734375em;
+}
+
+.icon-thumbsdown {
+	width: 0.927734375em;
+}
+
+.icon-link {
+	width: 0.927734375em;
+}
+
+.icon-inbox {
+	width: 0.857421875em;
+}
+
+.icon-twitter {
+	width: 0.927734375em;
+}
+
+.icon-cancel {
+	width: 0.78515625em;
+}
+
+.icon-plus {
+	width: 0.78515625em;
+}
+
+.icon-minus {
+	width: 0.78515625em;
+}
+
+.icon-edit {
+	width: 0.857421875em;
+}
+
+.icon-spin {
+	width: 1.0009765625em;
+}

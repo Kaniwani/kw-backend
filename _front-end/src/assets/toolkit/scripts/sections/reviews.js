@@ -146,22 +146,45 @@ String.prototype.endsWith = function(suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
+String.prototype.startsWith = function(prefix) {
+  return this.slice(0, prefix.length) === prefix;
+};
+
+// Fixing the terminal n.
+function addTerminalN(str) {
+  if (str.endsWith('n')) answer = str.slice(0, -1) + 'ん';
+}
+
+// Add tilde to ime input
+function addStartingTilde(str) {
+  const tildeJA = '〜';
+  const tildeEN = '~';
+  if (str.startsWith(tildeEN)) answer = tildeJA + str.slice(1);
+  if (!str.startsWith(tildeJA)) answer = tildeJA + str;
+}
+
+function emptyString(str) {
+  return str === '';
+}
+
 function compareAnswer() {
-  answer = $userAnswer.val();
   let imeInput = false;
+  answer = $userAnswer.val().trim();
 
-  if(answer === '') return;
-  console.log('Comparing', answer, 'with vocab item: ');
-  console.log(currentVocab);
+  if (emptyString(answer)) return;
 
-  //Fixing the terminal n.
-  if (answer.endsWith('n')) {
-    answer = answer.slice(0, -1) + 'ん';
-  }
+  console.log('Comparing', answer, 'with vocab item:')
+  console.table(currentVocab);
+
+  addTerminalN(answer);
 
   if (onlyJapaneseChars(answer)) {
     // user used japanese IME, proceed
     imeInput = true;
+    console.log('currvoc starts', currentVocab.characters[0].startsWith('〜'));
+    console.log('add tild', !answer.startsWith('〜'), '〜' + answer);
+
+    if (currentVocab.characters[0].startsWith('〜')) addStartingTilde(answer);
   } else if (!wanakana.isHiragana(answer)) {
     // user used english that couldn't convert to full hiragana - don't proceed
     return nonHiraganaAnswer();
