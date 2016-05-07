@@ -44,6 +44,7 @@ let KW,
 // not including *half-width katakana / roman letters* since they should be considered typos
 const japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
 const onlyJapaneseChars = str => [...str].every(c => japRegex.test(c));
+const onlyKanji = str => [...str].every(c => c.charCodeAt(0) >= 19968 && c.charCodeAt(0) < 40879);
 //Grab CSRF token off of dummy form.
 const CSRF = $('#csrf').val();
 
@@ -182,8 +183,9 @@ function compareAnswer() {
     // user used japanese IME, proceed
     imeInput = true;
     console.log('Current vocab first kanji char starts with tilde:', currentVocab.characters[0].startsWith('〜'));
+    console.log('Answer was pure Kanji', onlyKanji(answer));
     console.log('Input starts with 〜:', !answer.startsWith('〜'), '〜' + answer);
-    if (currentVocab.characters[0].startsWith('〜')) addStartingTilde(answer);
+    if (currentVocab.characters[0].startsWith('〜') && onlyKanji(answer)) addStartingTilde(answer);
 
   } else if (!wanakana.isHiragana(answer)) {
     // user used english that couldn't convert to full hiragana - don't proceed
