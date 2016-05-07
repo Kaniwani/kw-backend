@@ -431,6 +431,8 @@ function enterPressed(event) {
   }
 }
 
+Array.prototype.includes = function(x) { return this.indexOf(x) > -1 };
+
 function handleShortcuts(ev) {
   if (ev.which == 13) {
     ev.stopPropagation();
@@ -442,23 +444,23 @@ function handleShortcuts(ev) {
 
     switch(true) {
       // Pressing P toggles phonetic reading
-      case (ev.which == 80 || ev.which == 112):
+      case ([80, 112].includes(ev.which)):
         revealAnswers({kana: true});
         break;
       // Pressing K toggles the actual kanji reading.
-      case (ev.which == 75 || ev.which == 107):
+      case ([75, 107].includes(ev.which)):
         revealAnswers({kanji: true});
         break;
       // Pressing F toggles both item info boxes.
-      case (ev.which == 70 || ev.which == 102):
+      case ([70, 102].includes(ev.which)):
         revealAnswers();
         break;
-      // Pressing S toggles both add synonym modal.
-      case (ev.which == 83 || ev.which == 115):
+      // Pressing S toggles add synonym modal.
+      case ([83, 115].includes(ev.which)):
         modals.openModal(null, '#newSynonym', { backspaceClose: false, callbackOpen: synonymModal });
         break;
       // Pressing I or backspace/del ignores answer when input has been marked incorrect
-      case (ev.which == 73 || ev.which == 105 || ev.which == 8 || ev.which == 46):
+      case ([8, 46, 73, 105].includes(ev.which)):
         if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
         break;
     }
