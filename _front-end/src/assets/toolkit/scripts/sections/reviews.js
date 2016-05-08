@@ -63,7 +63,7 @@ function init() {
   updateStreak();
 
   // event listeners
-  wanakana.bind($userAnswer.get(0));
+  wanakana.bind(document.querySelector('#userAnswer'));
   wanakana.bind(document.querySelector('#newKana')); // new synonym form input
   wanakana.bind(document.querySelector('#newKanji')); // new synonym form input
   $userAnswer.keydown(handleShortcuts);

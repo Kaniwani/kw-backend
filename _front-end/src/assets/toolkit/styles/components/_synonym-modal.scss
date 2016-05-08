@@ -2,13 +2,14 @@
 .button.-addsynonym {
   display: block;
   text-align: center;
-  border: 1px solid $grey-light;
+  transition: all .15s ease-out;
+  // border: 1px solid $grey-light;
   min-width: 320px;
   margin: 0 auto;
   padding-top: .75em;
   padding-bottom: .75em;
   border-radius: 0;
-  background-color: rgba($grey-dark, .75);
+  background-color: rgba($grey-dark, .95);
   color: $white;
   &:hover {
     cursor: pointer;
@@ -53,7 +54,7 @@
     }
 
     .input {
-      appearance: none;
+      -webkit-appearance: none;
       border: 1px solid rgba($grey-light, .3);
       box-shadow: inset 0 3px 20px -8px rgba(41, 41, 41, 0.25);
       display: inline-block;
