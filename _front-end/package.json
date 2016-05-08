@@ -9,7 +9,7 @@
     "gulp": "gulp",
     "prestart": "npm install",
     "build": "npm install && gulp",
-    "start": "gulp --sync",
+    "start": "gulp --sync"
   },
   "keywords": [
     "japanese",
