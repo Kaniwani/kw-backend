@@ -199,9 +199,9 @@ function compareAnswer() {
   if (inReadings() || inCharacters()) {
     let advanceDelay = 850;
     markRight();
+    processAnswer({correct: true});
     //Fills the correct kanji into the input field based on the user's answers
     if (wanakana.isHiragana(answer)) $userAnswer.val(getMatchedReading(answer));
-    processAnswer({correct: true});
     if (KW.settings.showCorrectOnSuccess) {
       revealAnswers();
       if (KW.settings.autoAdvanceCorrect) advanceDelay = 1400;
