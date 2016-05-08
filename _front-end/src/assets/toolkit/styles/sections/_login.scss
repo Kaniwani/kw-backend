@@ -1,132 +1,75 @@
 .login-section {
+	$login-grey: #e5e5e5;
+	$border-radius: 10px;
+
   position: relative;
   display: block;
   min-height: 100vh;
   width: 100%;
   overflow: auto;
-  color: $white;
-  background: $blue-light;
-  background: linear-gradient(to bottom, $blue-light 40%, $blue-dark 95%);
+  color: $grey-dark;
+  background: $login-grey;
+  background-image: image('backgrounds/login/login-1200.png');
+  background-size: 100%;
+  background-position: bottom 30% center;
+  background-repeat: no-repeat;
 
-  &.-pending {
-    > .container > .login-form,
-    > .link {
-      opacity: 0;
-      pointer-events: none;
-    }
-    > .container > .title {
-      animation: fadeOutUp 6s ease-in;
-      animation-fill-mode: forwards;
-    }
-    > .feedback {
-      opacity: 1;
-    }
-  }
+	@include media($bp-lg) {
+ 	  background-position: top center;
+		background-size: inherit;
+	}
 
-  > .feedback {
-    position: absolute;
-    margin: 0;
-    top: 50%;
-    left: 50%;
-    text-align: center;
-    transform: translate(-50%, -50%);
-    transition: opacity 8s ease-in;
-    color: $white;
-    opacity: 0;
-    .icon {
-      display: block;
-      margin: .25em auto;
-      font-size: 1.5em;
-    }
-  }
+	@include media($bp-xxl) {
+	  background-image: image('backgrounds/login/login-1800.png');
+	}
 
   > .container {
     max-width: 600px;
     text-align: center;
     z-index: 2;
-    margin: $unit-md auto $unit-sm;
+    margin: 5vh auto;
+
+		@include media($bp-sm) {
+		  margin-top: 10vh;
+		}
 
     @include media($bp-lg) {
-      position: absolute;
-      margin: 0;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      margin: 290px auto 0;
     }
 
     > .title {
-      position: relative;
       margin-top: 0;
+      margin-bottom: 15px;
       line-height: 1;
-      opacity: .9;
       z-index: 2;
-      color: $white;
-      font-size: 40px;
-
-      @include media($bp-lg) {
-        font-size: 60px;
-      }
+      color: $grey-dark;
+  	  font-size: responsive 25px 60px;
+	    @include media($bp-lg) {
+    	  text-shadow: 0 1px 1px rgba($black-light, .7);
+  	  }
     }
 
     > p {
       max-width: 400px;
       margin: 0 auto $unit-sm;
     }
-
-    > .login-form {
-      transition: opacity 1s ease;
-    }
   }
+
+	&:not(.-registration) {
+		#id_username {
+			border: 0;
+			border-bottom: 2px solid $login-grey;
+			border-radius: $border-radius $border-radius 0 0;
+		}
+
+		#id_password {
+			border: 0;
+			border-radius: 0 0 $border-radius $border-radius;
+		}
+	}
 
   > .link {
-    display: block;
-    position: relative;
-    padding: $unit-xs;
-    font-size: 14px;
-    font-weight: 400;
-    text-decoration: none;
-    color: $white;
-    z-index: 3;
-    opacity: .85;
-    transition: opacity 1s ease;
-    text-align: center;
-
-    @include media($bp-lg) {
-      position: absolute;
-      top: 0;
-      right: 0;
-      padding: 12px 18px;
-      font-size: 16px;
-      transition: opacity .2s ease-out;
-      text-align: right;
-      &.-forgot {
-        top: $unit-lg;
-      }
-    }
-
-    &:hover {
-      opacity: 1;
-    }
+  	text-align: center;
   }
 
-  .button.-signin {
-    display: block;
-    background-color: $white;
-    width: 200px;
-    margin: 10px auto;
-    color: $blue;
-    opacity: .85;
-
-    &:focus,
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  > .floating-icons {
-    position: absolute;
-    z-index: 1;
-    top: 0;
-    left: 0;
-  }
 }
