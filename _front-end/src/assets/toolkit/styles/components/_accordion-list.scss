@@ -35,6 +35,7 @@ $accordion-border: 2px solid $grey-light;
   overflow: hidden;
   max-height: 50em;
   transition: max-height .6s;
+  background-color: $white-light;
 
   @include media($bp-md) {
     max-height: 15em;
