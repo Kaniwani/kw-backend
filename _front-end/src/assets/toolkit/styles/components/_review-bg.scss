@@ -11,9 +11,9 @@
 		opacity: .9;
 		background-image: image('backgrounds/reviews/reviews.png');
 		background-repeat: no-repeat;
-		background-position: center center;
+		background-position: bottom center;
 		background-size: contain;
-		@include media('>=600px') {
+		@include media('>=800px') {
 			background-position: bottom right;
 			background-size: cover;
 			background-image: image('backgrounds/reviews/reviews-1800.png');
