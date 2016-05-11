@@ -1,4 +1,4 @@
-$accordion-list-bg-color: $grey;
+$accordion-list-bg-color: $grey-dark;
 $accordion-border: 2px solid $grey-light;
 
 .accordion-list {
@@ -10,15 +10,14 @@ $accordion-border: 2px solid $grey-light;
 }
 
 .accordion-title {
-  @extend %h3;
+  @extend %h4;
 	display: block;
   background-color: $accordion-list-bg-color;
-  font-weight: 700;
   text-decoration: none;
-  color: #fff;
+  color: $white-light;
   transition: background-color .3s ease-in-out;
 	text-align: center;
-	padding: .4em 1em;
+	padding: .6em 1em;
 
   &:hover {
     background-color: darken($accordion-list-bg-color, 10%);

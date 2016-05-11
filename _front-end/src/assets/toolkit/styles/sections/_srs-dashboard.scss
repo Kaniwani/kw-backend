@@ -12,7 +12,8 @@
 			vertical-align: middle;
 			display: inline-block;
 			transition: all .3s ease-out;
-			min-width: 60px;
+			min-width: 65px;
+
 			@include media($bp-md) {
 			  min-width: 115px;
 			}
@@ -41,7 +42,7 @@
 				margin: 0 auto;
 				color: $white;
 				font-size: 16px;
-				font-size: responsive 14px 22px;
+				font-size: responsive 13px 20px;
 				font-range: 400px 1400px;
 				text-shadow: $shadow-text-thin;
 				@include media($bp-md) {
