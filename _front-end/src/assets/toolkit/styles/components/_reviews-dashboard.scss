@@ -19,7 +19,10 @@
 
 		li {
 			width: 100%;
-			max-width: 200px;
+			max-width: 150px;
+			@include media($bp-md) {
+				max-width: 200px;
+			}
 
 			span {
 				display: block;
