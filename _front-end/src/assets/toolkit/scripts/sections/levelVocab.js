@@ -1,3 +1,7 @@
+/// TODO: unlock ajax needs promises
+/// if you click several unlocks - the returns are weird (wrong icon changes - some are missed etc)
+
+
 let CSRF;
 
 function init() {

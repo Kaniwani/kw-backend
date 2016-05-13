@@ -1,6 +1,7 @@
 $bp-user-details: '>=480px';
 .user-details {
   $ud-grey: #ddd;
+
   @include clearfix;
   background: rgba($black, .6);
   color: $white;

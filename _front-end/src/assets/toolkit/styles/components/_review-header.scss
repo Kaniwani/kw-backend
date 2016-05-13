@@ -1,44 +1,46 @@
 .review-header {
-  > .inner {
-    position: relative;
-    @include clearfix();
+  @include clearfix;
+  color: $white;
 
-    > .progress-bar {
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+  > .progress-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 
-    > .homelink,
-    > .statslist {
-      margin: .75em;
-    }
+  > .statslist {
+    @extend %plainlist;
+    margin: .75em;
+    float: right;
+    font-size: responsive 16px 20px;
 
-    > .statslist {
-      @extend %plainlist;
-      float: right;
-      font-size: responsive 16px 20px;
+    > .item {
+      display: inline-block;
+      margin-left: 1em;
 
-      > .item {
-        display: inline-block;
-        margin-left: 1em;
-
-        span + span {
-          margin-left: 6px;
-        }
+      span + span {
+        margin-left: 6px;
       }
     }
+  }
 
-    > .homelink {
-      opacity: .8;
-      display: block;
-      float: left;
-      font-size: responsive 16px 20px;
-      transition: opacity .3s ease-out;
+  > .homelink {
+    opacity: .95;
+    display: block;
+    margin: .75em .5em;
+    float: left;
+    font-size: responsive 16px 20px;
+    transition: opacity .3s ease-out;
+		color: $white;
 
-      &:hover {
-        opacity: 1;
-      }
+		.svg-icon {
+			width: 1.75em;
+			height: 1.75em;
+			fill: currentColor;
+		}
+
+    &:hover {
+    	opacity: 1;
     }
   }
 }

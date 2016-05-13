@@ -8,10 +8,6 @@
   </div>
 
   <div class="reviews">
-    <button type="button" id="forceSrs" class="pure-button">
-      <span class="_visuallyhidden">Refresh reviews</span>
-      <span class="i-refresh"></span>
-    </button>
     {% if user.profile.on_vacation %}
       <a id="reviewCount" href="{% url "kw:home" %}" class="pure-button button -disabled" role="button" >
         On Vacation!

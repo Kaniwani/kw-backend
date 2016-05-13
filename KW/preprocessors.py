@@ -1,4 +1,5 @@
 import time
+import datetime
 
 from kw_webapp import constants
 from kw_webapp.constants import KANIWANI_SRS_LEVELS
@@ -6,25 +7,39 @@ from kw_webapp.tasks import get_users_future_reviews, get_users_current_reviews,
 
 
 def review_count_preprocessor(request):
+    """
+    preprocessor which returns user's review information like the following:
+    1) Current review count.
+    2) If no reviews, when is next review.
+    3) How many reviews coming up in next hour.
+    4) How many reviews coming up in next day.
+    """
+    context_dict = {}
     if hasattr(request, 'user'):
         if hasattr(request.user, 'profile'):
-            context_dict = {}
             review_count = get_users_current_reviews(request.user).count()
-            if review_count > 0:
-                context_dict['review_count'] = review_count
-            else:
+            context_dict['review_count'] = review_count
+            if review_count == 0:
                 reviews = get_users_future_reviews(request.user)
                 if reviews:
                     next_review_date = reviews[0].next_review_date
                     context_dict['next_review_date'] = next_review_date
                     context_dict['next_review_timestamp_local'] = next_review_date.timestamp() * 1000
-                    context_dict['next_review_timestamp_utc'] = int(time.mktime(next_review_date.timetuple())) * 1000
+                    context_dict['next_review_timestamp_utc'] = int(time.mktime(next_review_date.timetuple())) * 1000 #TODO potentially remove?
+
+
+            one_hour = datetime.timedelta(hours=1)
+            today = datetime.timedelta(hours=24)
+            context_dict['reviews_within_hour_count'] = get_users_future_reviews(request.user, time_limit=one_hour).count()
+            context_dict['reviews_within_day_count'] = get_users_future_reviews(request.user, time_limit=today).count()
             return context_dict
 
-    return {'review_count': 0}
+    return context_dict
 
-
-def srs_count_preprocessor(request):
+def srs_level_count_preprocessor(request):
+    """
+    Preprocessor to provide the user's specific SRS level information, indicating how many vocab exist at each SRS level.
+    """
     context_dict = {}
     if hasattr(request, 'user'):
         if hasattr(request.user, 'profile'):

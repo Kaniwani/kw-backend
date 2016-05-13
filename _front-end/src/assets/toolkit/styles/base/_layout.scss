@@ -43,21 +43,16 @@ body {
   flex: 1 0 auto; /* 2 */
   width: 100%;
   & > [class*="-section"]:not(.-no-section-spacing) {
-    margin-top: $unit-md;
-    margin-bottom: $unit-md;
-    @include media($bp-lg) {
-      margin-top: $unit-lg;
-      margin-bottom: $unit-lg;
-    }
+   @include section-spacing;
   }
 }
 
-.site-content::after {
-  content: '\00a0'; /* &nbsp; */
-  display: block;
-  height: 0px;
-  visibility: hidden;
-}
+// .site-content::after {
+//   content: '\00a0'; /* &nbsp; */
+//   display: block;
+//   height: 0px;
+//   visibility: hidden;
+// }
 /* / sticky-footer */
 
 // matches .whatever-section, .something-section
@@ -67,15 +62,7 @@ body {
   &:not(.-fullwidth) {
 
     > .inner {
-      @include container($site-max-width);
-      padding-left: $unit-sm;
-      padding-right: $unit-sm;
-
-      @include media($bp-md) {
-        padding-left: $unit-md;
-        padding-right: $unit-md;
-      }
-
+      @include section-gutters;
       p {
         max-width: 800px;
       }
