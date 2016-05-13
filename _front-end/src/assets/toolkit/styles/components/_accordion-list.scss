@@ -26,6 +26,11 @@ $accordion-border: 2px solid $grey-light;
   &.is-expanded {
     background-color: darken($accordion-list-bg-color, 15%);
   }
+
+	.time {
+		font-size: .85em;
+	}
+
 }
 
 .accordion-content {
