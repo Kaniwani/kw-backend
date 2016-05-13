@@ -1,230 +1,228 @@
 .review-quiz {
-  display: table;
-  padding: 0;
-  width: 100%;
+	display: table;
+	padding: 0;
+	width: 100%;
 
-  .upper,
-  .lower {
-    display: table-row;
-    width: 100%;
-  }
+	.upper,
+	.lower {
+		display: table-row;
+		width: 100%;
+	}
 }
 
 .upper {
-  background-color: $purple;
-  background-image: linear-gradient(to bottom, $purple-light, $purple);
-	// background: linear-gradient(to bottom, #773AB7 , #512DA8); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+	background-color: $purple-dark; // fallback
+	background-image: linear-gradient(to bottom, $purple-light, $purple-dark);
 
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFAA00FF, endColorstr=#FF9300DD, GradientType=0);
-  color: $white;
-  text-align: center;
-  height: auto;
-  height: 25vh;
-  @include media($bp-md) {
-    height: 33vh;
-  }
-  @include media($bp-lg) {
-    height: 40vh;
-  }
+	background-repeat: repeat-x;
+	color: $white;
+	text-align: center;
+	height: auto;
+	height: 25vh;
+	@include media($bp-md) {
+		height: 33vh;
+	}
+	@include media($bp-lg) {
+		height: 40vh;
+	}
 
-  .meaning {
-    color: $white;
-    text-shadow: 1px 2px 4px $purple-dark;
-    padding: 50px 15px 30px;
-    display: table-cell;
-    font-size: responsive 20px 50px;
-    font-range: 300px 2000px;
-    vertical-align: middle;
-    line-height: 1.3;
-    letter-spacing: -1px;
+	.meaning {
+		color: $white;
+		text-shadow: 1px 2px 4px $purple-dark;
+		padding: 50px 15px 30px;
+		display: table-cell;
+		font-size: responsive 20px 50px;
+		font-range: 300px 2000px;
+		vertical-align: middle;
+		line-height: 1.3;
+		letter-spacing: -1px;
 
-    @include media($bp-lg) {
-      padding-left: 10%;
-      padding-right: 10%;
-    }
-  }
+		@include media($bp-lg) {
+			padding-left: 10%;
+			padding-right: 10%;
+		}
+	}
 }
 
 .lower {
 
-  .answerpanel {
-    position: relative;
-    padding: 0;
-    margin: 0;
-    border: 0;
-    outline: none;
-    appearance: none;
-    // ios has rounded inputs by default ffs
-    -webkit-appearance: none;
-    border-radius: 0;
-    // when input shakes left/right on incorrect this color will show at edges
-    // otherwise never seen
-    background-color: $red;
-  }
+	.answerpanel {
+		position: relative;
+		padding: 0;
+		margin: 0;
+		border: 0;
+		outline: none;
+		appearance: none;
+		// ios has rounded inputs by default ffs
+		-webkit-appearance: none;
+		border-radius: 0;
+		// when input shakes left/right on incorrect this color will show at edges
+		// otherwise never seen
+		background-color: $red;
+	}
 
-  .answer {
-    display: block;
-    width: 100%;
-    outline: none;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    background-color: $white-light;
-    box-shadow: $shadow-inner-medium;
-    font-size: responsive 22px 50px;
-    font-range: 300px 2000px;
-    line-height: 2.5;
-    text-align: center;
-    transition: all .1s ease-out;
+	.answer {
+		display: block;
+		width: 100%;
+		outline: none;
+		border: 0;
+		margin: 0;
+		padding: 0;
+		background-color: $white-light;
+		box-shadow: $shadow-inner-medium;
+		font-size: responsive 22px 50px;
+		font-range: 300px 2000px;
+		line-height: 2.5;
+		text-align: center;
+		transition: all .1s ease-out;
 
-    // hide stupid X on IE
-    ::-ms-clear {;}
+		// hide stupid X on IE
+		::-ms-clear {;}
 
-    &.-marked {
-      color: $white;
+		&.-marked {
+			color: $white;
 
-      ~ .submit.-answer .icon {
-        color: $white;
-        text-shadow: $shadow-text-thin;
-      }
-    }
+			~ .submit.-answer .icon {
+				color: $white;
+				text-shadow: $shadow-text-thin;
+			}
+		}
 
-    &.-invalid {
-      background-color: $yellow;
-      color: $grey-dark;
-      text-shadow: none;
+		&.-invalid {
+			background-color: $yellow;
+			color: $grey-dark;
+			text-shadow: none;
 
-      + .submit .icon {
-        color: $grey-dark;
-        text-shadow: none;
-      }
-    }
+			+ .submit .icon {
+				color: $grey-dark;
+				text-shadow: none;
+			}
+		}
 
-    &.-incorrect {
-      background-color: $red;
-      text-shadow: 1px 1px 0 rgba(darken($red, 20%), .75);
-    }
+		&.-incorrect {
+			background-color: $red;
+			text-shadow: 1px 1px 0 rgba(darken($red, 20%), .75);
+		}
 
-    &.-correct {
-      background-color: $green;
-      text-shadow: 1px 1px 0 rgba(darken($green, 20%), .75);
-    }
-  }
+		&.-correct {
+			background-color: $green;
+			text-shadow: 1px 1px 0 rgba(darken($green, 20%), .75);
+		}
+	}
 
-  .answer.-marked::-webkit-input-placeholder { color: $white; }
-  .answer.-marked::-moz-placeholder { color: $white;  }
-  .answer.-marked:-ms-input-placeholder { color: $white; }
-  .answer.-marked:placeholder-shown { color: $white; }
+	.answer.-marked::-webkit-input-placeholder { color: $white; }
+	.answer.-marked::-moz-placeholder { color: $white;  }
+	.answer.-marked:-ms-input-placeholder { color: $white; }
+	.answer.-marked:placeholder-shown { color: $white; }
 
-  .submitwrap,
-  .streak {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    margin: 0 .5em;
+	.submitwrap,
+	.streak {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-content: center;
+		margin: 0 .5em;
 
-    .icon {
-      font-size: responsive 18px 36px;
-      font-range: 300px 1600px;
-      line-height: normal;
-      color: $grey-dark;
-      &.-marked {
-        color: $white;
-        text-shadow: $shadow-text-thin;
-      }
-    }
-  }
+		.icon {
+			font-size: responsive 18px 36px;
+			font-range: 300px 1600px;
+			line-height: normal;
+			color: $grey-dark;
+			&.-marked {
+				color: $white;
+				text-shadow: $shadow-text-thin;
+			}
+		}
+	}
 
-  .submit,
-  .streak {
-    position: absolute;
-    bottom: 0;
-    height: 100%;
-    z-index: 3;
-  }
+	.submit,
+	.streak {
+		position: absolute;
+		bottom: 0;
+		height: 100%;
+		z-index: 3;
+	}
 
-  .streak {
-    left: 0;
-    .icon {
-      &.-fadeOutUp {
-        color: $white;
-        animation: fadeOutUp .6s;
-      }
-    }
-  }
+	.streak {
+		left: 0;
+		.icon {
+			&.-fadeOutUp {
+				color: $white;
+				animation: fadeOutUp .6s;
+			}
+		}
+	}
 
-  .submit {
-    right: 0;
-    appearance: none;
-    background: none;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-    &.-answer {
-      .icon:before {
-        display: inline-block;
-        vertical-align: middle;
-      }
-    }
-    &.-ignore {
-      right: 3em;
-      opacity: .5;
-      transition: opacity .3s ease-out;
-      .icon {
-        color: $white;
-      }
-      &:hover,
-      &:focus {
-        opacity: 1;
-      }
-    }
-    &:focus {
-      .submitwrap .icon:before {
-        outline: 1px dashed $grey-light;
-      }
-    }
-  }
+	.submit {
+		right: 0;
+		appearance: none;
+		background: none;
+		border: 0;
+		border-radius: 0;
+		box-shadow: none;
+		&.-answer {
+			.icon:before {
+				display: inline-block;
+				vertical-align: middle;
+			}
+		}
+		&.-ignore {
+			right: 3em;
+			opacity: .5;
+			transition: opacity .3s ease-out;
+			.icon {
+				color: $white;
+			}
+			&:hover,
+			&:focus {
+				opacity: 1;
+			}
+		}
+		&:focus {
+			.submitwrap .icon:before {
+				outline: 1px dashed $grey-light;
+			}
+		}
+	}
 
-  .srs-up {
-    position: absolute;
-    top: -2.5em;
-    left: 0%;
-    width: 100%;
-    font-size: 1.25em;
-    text-align: center;
+	.srs-up {
+		position: absolute;
+		top: -2.5em;
+		left: 0%;
+		width: 100%;
+		font-size: 1.25em;
+		text-align: center;
 
-    > .content {
-      opacity: 0;
-      color: $white;
-      display: inline-block;
-      vertical-align: middle;
-      z-index: 4;
-      border-radius: 3px;
-      padding: .1em .5em .22em;
-      background: $green;
+		> .content {
+			opacity: 0;
+			color: $white;
+			display: inline-block;
+			vertical-align: middle;
+			z-index: 4;
+			border-radius: 3px;
+			padding: .1em .5em .22em;
+			background: $green;
 
-      &.-guru { background: lighten($purple-light, 15%); }
-      &.-master { background: $blue; }
-      &.-enlightened { background: lighten($blue-light, 15%); }
-      &.-burned { background: $black-light; }
+			&.-guru { background: lighten($purple-light, 15%); }
+			&.-master { background: $blue; }
+			&.-enlightened { background: lighten($blue-light, 15%); }
+			&.-burned { background: $black-light; }
 
-      &.-animating {
-        animation: srsRankUp .75s ease 0s 1 normal both running;
-      }
-      // srs rank
-      &:after {
-        font-variant: small-caps;
-        font-family: $ff-heading;
-        font-weight: 600;
-        content: attr(data-after);
-        margin-left: 6px;
-      }
-      // icon
-      &:before {
-        font-size: .8em;
-      }
-    }
-  }
+			&.-animating {
+				animation: srsRankUp .75s ease 0s 1 normal both running;
+			}
+			// srs rank
+			&:after {
+				font-variant: small-caps;
+				font-family: $ff-heading;
+				font-weight: 600;
+				content: attr(data-after);
+				margin-left: 6px;
+			}
+			// icon
+			&:before {
+				font-size: .8em;
+			}
+		}
+	}
 }
