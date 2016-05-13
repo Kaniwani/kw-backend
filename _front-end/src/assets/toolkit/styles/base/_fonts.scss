@@ -55,7 +55,7 @@ h1,
 %h1 {
   font-family: $ff-heading;
   font-size: 30px;
-  font-size: responsive 21px 36px;
+  font-size: responsive 22px 36px;
   font-range: 600px 1300px;
 }
 
@@ -69,7 +69,7 @@ h2,
 h3,
 .h3,
 %h3 {
-  font-size: responsive 18px 25px;
+  font-size: responsive 18px 26px;
 }
 
 h4,
@@ -81,13 +81,13 @@ h4,
 h5,
 .h5,
 %h5 {
-  font-size: responsive 16px 23px;
+  font-size: responsive 16px 21px;
 }
 
 h6,
 .h6,
 %h6{
-  font-size: responsive 16px 21px;
+  font-size: responsive 16px 19px;
 }
 
 b,
