@@ -11,7 +11,7 @@ const sitenav = $('#nav-main').okayNav();
 // vendor js configuration
 Object.assign($.timeago.settings, config.timeago.settings);
 Object.assign($.timeago.settings.strings, config.timeago.strings)
-if (im.lessThan('sm')) config.toastr.positionClass = 'toast-top-full-width';
+if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
 toastr.options = config.toastr;
 
 let KW;

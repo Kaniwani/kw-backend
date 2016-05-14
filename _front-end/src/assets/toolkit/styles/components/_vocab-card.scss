@@ -6,9 +6,10 @@
   border-radius: 3px;
 
   > .vocab-base {
-    position: relative;
     @include bg-gradient($purple-light);
+    position: relative;
     color: $white-light;
+	  border: 2px solid transparent;
     border-radius: 3px;
     transition: background-color .5s ease-out;
 
@@ -79,7 +80,7 @@
 
       & + .kana:not(:last-child) {
         padding-top: .44em;
-        border-top: .2em solid rgba($purple-dark, .3);
+        border-top: .2em solid rgba($purple-dark, .5);
       }
 
       > .i-cancel {
@@ -143,7 +144,7 @@
    &.-locked > .vocab-base {
     @include bg-stripes;
     background-color: $purple-dark;
-    border: 2px solid $purple-dark;
+    border-color: $purple-dark;
   }
 
   &.-unlockable > .vocab-base:hover {

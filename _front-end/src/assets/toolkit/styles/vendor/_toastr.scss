@@ -60,7 +60,7 @@ button.toast-close-button {
   width: 100%;
 }
 .toast-top-full-width {
-  top: 0;
+  top: 8px;
   right: 0;
   width: 100%;
 }
@@ -78,8 +78,8 @@ button.toast-close-button {
   right: .5em;
 }
 .toast-bottom-right {
-  right: .5em;
   bottom: .5em;
+  right: .5em;
 }
 .toast-bottom-left {
   bottom: .5em;
@@ -106,7 +106,6 @@ button.toast-close-button {
   background-repeat: no-repeat;
   box-shadow: 0 0 12px $grey-light;
   color: $white;
-  opacity: 0.95;
   @include media($bp-md) {
     width: $toast-w-md;
   }

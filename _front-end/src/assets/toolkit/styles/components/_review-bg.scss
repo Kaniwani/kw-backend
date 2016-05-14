@@ -13,10 +13,12 @@
 		background-repeat: no-repeat;
 		background-position: bottom right;
 		background-size: auto;
+
 		@include media('>=600px') {
 			background-size: contain;
 			background-image: image('backgrounds/reviews/reviews-1200.png');
 		}
+
 		@include media('>=1200px') {
 			background-size: cover;
 			background-image: image('backgrounds/svg/reviews.svg');

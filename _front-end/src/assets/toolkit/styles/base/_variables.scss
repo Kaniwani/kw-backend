@@ -12,14 +12,17 @@ $bp-xxl: '>=xxl'; // 2000px in include-media
 $bp-nav-1: '>=615px';
 $bp-nav-2: '>=850px';
 
-$site-max-width: 1300px;
-
 /* Units */
 $unit-xs: 10px;
 $unit-sm: 15px;
 $unit-md: 25px;
 $unit-lg: 30px;
 $unit-xl: 40px;
+
+
+$site-max-width: 1300px;
+$site-max-width-inner: $site-max-width - $unit-sm * 2;
+$site-max-width-inner-md: $site-max-width - $unit-md * 2;
 
 /* Greyscale */
 $white-light: hsl(0, 0%, 98%);
@@ -35,8 +38,8 @@ $black-dark: hsl(0, 0%, 0%);
 /* KaniWani colors */
 $blue-light: hsl(200, 100%, 41%);
 $purple-light: hsl(274, 100%, 50%);
-$purple: hsl(272, 80%, 36%);
-$purple-dark: hsl(258, 58%, 42%);
+$purple: hsl(262, 70%, 44%);
+$purple-dark: hsl(260, 58%, 42%);
 $blue-dark: hsl(228, 71%, 52%);
 $blue: hsl(217, 63%, 57%);
 $purple: hsl(282, 100%, 45%);
