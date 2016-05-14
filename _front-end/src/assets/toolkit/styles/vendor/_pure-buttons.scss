@@ -1,7 +1,7 @@
 .pure-button {
   display: inline-block;
   zoom: 1;
-  line-height: normal;
+  line-height: 1;
   white-space: nowrap;
   vertical-align: middle;
   text-align: center;
@@ -16,7 +16,7 @@
 .pure-button {
   font-family: inherit;
   font-size: 100%;
-  padding: .5em 1em;
+  padding: .6em 1.2em;
   color: #444;
   color: rgba(0, 0, 0, .8);
   border: 1px solid #999;

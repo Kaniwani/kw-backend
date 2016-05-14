@@ -68,7 +68,7 @@ function updateReviewTime($el) {
 		refreshReviews();
 		clearInterval(KW.reviewTimer);
 	} else {
-		$el.text(`Next review: ${$.timeago(KW.nextReview)}`);
+		$el.html(`Next review: ${$.timeago(KW.nextReview)}`);
 	}
 }
 
