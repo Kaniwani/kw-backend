@@ -47,12 +47,12 @@ body {
   }
 }
 
-.site-content::after {
-  content: '\00a0'; /* &nbsp; */
-  display: block;
-  height: 0px;
-  visibility: hidden;
-}
+// .site-content::after {
+//   content: '\00a0'; /* &nbsp; */
+//   display: block;
+//   height: 0px;
+//   visibility: hidden;
+// }
 /* / sticky-footer */
 
 // matches .whatever-section, .something-section

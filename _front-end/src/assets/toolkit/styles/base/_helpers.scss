@@ -46,9 +46,9 @@
   hyphens: auto;
 }
 
-@mixin bg-gradient($clr) {
+@mixin bg-gradient($clr, $dir: bottom, $percent: 5%) {
   background-color: $clr;
-  background-image: linear-gradient(to bottom, #{lighten($clr, 4%)}, #{darken($clr, 4%)});
+  background-image: linear-gradient(to $dir, #{lighten($clr, $percent)}, #{darken($clr, $percent)});
   background-repeat: repeat-x;
 }
 
@@ -80,6 +80,13 @@
   margin-right: auto;
 }
 
+// allows background to be 100% width whilst content is contained and centered.
+@mixin constrainer($maxwidth: 1260px) {
+  $maxwidth: $maxwidth / 2;
+  padding-left: calc(50% - #{$maxwidth});
+  padding-right: calc(50% - #{$maxwidth});
+}
+
 // angled background stripes for disabled cards
 @mixin bg-stripes($color1: rgba(#fff, .25), $color2: transparent) {
   background-size: 6px 6px;
@@ -89,12 +96,6 @@
   background-repeat: repeat;
 }
 
-// allows background to be 100% width whilst content is contained and centered.
-@mixin full-bg($maxwidth: 1260px) {
-  $maxwidth: $maxwidth / 2;
-  padding-left: calc(50% - #{$maxwidth});
-  padding-right: calc(50% - #{$maxwidth});
-}
 
 // %placeholderclasses are used in other places as @extend %placeholderclass
 %plainlist {

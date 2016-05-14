@@ -8,8 +8,14 @@
 
     <h1 class="section-heading">{% widthratio correct_count review_session_count 100 %}% Accuracy</h1>
 
-    <h2 class="title">{{ incorrect_count }} Incorrect</h2>
+    {% if incorrect_count > 0 and correct_count > 0 %}
+    <div class="percentage-bar">
+      <span class="percentage" style="width:{% widthratio correct_count review_session_count 100 %}%;"></span>
+    </div>
+    {% endif %}
+
     {% if incorrect_count > 0 %}
+    <h2 class="title">{{ incorrect_count }} Incorrect</h2>
       <ul class="vocab-list -incorrect">
         {% for review in incorrect %}
           <li class="vocab-card">
@@ -32,9 +38,9 @@
       <h3 class="title"><span lang="ja">完璧だ！</span> (๑•̀ㅂ•́)و</h3>
     {% endif %}
 
-    <h2 class="title">{{ correct_count }} Correct</h2>
 
     {% if correct_count > 0 %}
+    <h2 class="title">{{ correct_count }} Correct</h2>
 
       <ul class="lattice-list -correct">
         {% for review in correct %}

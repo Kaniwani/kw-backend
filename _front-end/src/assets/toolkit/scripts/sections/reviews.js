@@ -44,6 +44,7 @@ let KW,
 // not including *half-width katakana / roman letters* since they should be considered typos
 const japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
 const onlyJapaneseChars = str => [...str].every(c => japRegex.test(c));
+const onlyKanji = str => [...str].every(c => c.charCodeAt(0) >= 19968 && c.charCodeAt(0) < 40879);
 //Grab CSRF token off of dummy form.
 const CSRF = $('#csrf').val();
 
@@ -62,7 +63,7 @@ function init() {
   updateStreak();
 
   // event listeners
-  wanakana.bind($userAnswer.get(0));
+  wanakana.bind(document.querySelector('#userAnswer'));
   wanakana.bind(document.querySelector('#newKana')); // new synonym form input
   wanakana.bind(document.querySelector('#newKanji')); // new synonym form input
   $userAnswer.keydown(handleShortcuts);
@@ -146,22 +147,46 @@ String.prototype.endsWith = function(suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
+String.prototype.startsWith = function(prefix) {
+  return this.slice(0, prefix.length) === prefix;
+};
+
+// Fixing the terminal n.
+function addTerminalN(str) {
+  if (str.endsWith('n')) answer = str.slice(0, -1) + 'ん';
+}
+
+// Add tilde to ime input
+function addStartingTilde(str) {
+  const tildeJA = '〜';
+  const tildeEN = '~';
+  if (str.startsWith(tildeEN)) answer = tildeJA + str.slice(1);
+  if (!str.startsWith(tildeJA)) answer = tildeJA + str;
+}
+
+function emptyString(str) {
+  return str === '';
+}
+
 function compareAnswer() {
-  answer = $userAnswer.val();
   let imeInput = false;
+  answer = $userAnswer.val().trim();
 
-  if(answer === '') return;
-  console.log('Comparing', answer, 'with vocab item: ');
-  console.log(currentVocab);
+  if (emptyString(answer)) return;
 
-  //Fixing the terminal n.
-  if (answer.endsWith('n')) {
-    answer = answer.slice(0, -1) + 'ん';
-  }
+  console.log('Comparing', answer, 'with vocab item:')
+  console.table(currentVocab);
+
+  addTerminalN(answer);
 
   if (onlyJapaneseChars(answer)) {
     // user used japanese IME, proceed
     imeInput = true;
+    console.log('Current vocab first kanji char starts with tilde:', currentVocab.characters[0].startsWith('〜'));
+    console.log('Answer was pure Kanji', onlyKanji(answer));
+    console.log('Input starts with 〜:', !answer.startsWith('〜'), '〜' + answer);
+    if (currentVocab.characters[0].startsWith('〜') && onlyKanji(answer)) addStartingTilde(answer);
+
   } else if (!wanakana.isHiragana(answer)) {
     // user used english that couldn't convert to full hiragana - don't proceed
     return nonHiraganaAnswer();
@@ -172,13 +197,16 @@ function compareAnswer() {
   const getMatchedReading = (hiraganaStr) => currentVocab.characters[currentVocab.readings.indexOf(hiraganaStr)]
 
   if (inReadings() || inCharacters()) {
+    let advanceDelay = 850;
     markRight();
-    //Fills the correct kanji into the input field based on the user's answers
-    if (wanakana.isHiragana(answer)) {
-	   	$userAnswer.val(getMatchedReading(answer));
-	  }
     processAnswer({correct: true});
-    if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), 900);
+    //Fills the correct kanji into the input field based on the user's answers
+    if (wanakana.isHiragana(answer)) $userAnswer.val(getMatchedReading(answer));
+    if (KW.settings.showCorrectOnSuccess) {
+      revealAnswers();
+      if (KW.settings.autoAdvanceCorrect) advanceDelay = 1400;
+    }
+    if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), advanceDelay);
   }
   //answer was not in the known readings.
   else {
@@ -406,6 +434,8 @@ function enterPressed(event) {
   }
 }
 
+Array.prototype.includes = function(x) { return this.indexOf(x) > -1 };
+
 function handleShortcuts(ev) {
   if (ev.which == 13) {
     ev.stopPropagation();
@@ -417,23 +447,23 @@ function handleShortcuts(ev) {
 
     switch(true) {
       // Pressing P toggles phonetic reading
-      case (ev.which == 80 || ev.which == 112):
+      case ([80, 112].includes(ev.which)):
         revealAnswers({kana: true});
         break;
       // Pressing K toggles the actual kanji reading.
-      case (ev.which == 75 || ev.which == 107):
+      case ([75, 107].includes(ev.which)):
         revealAnswers({kanji: true});
         break;
       // Pressing F toggles both item info boxes.
-      case (ev.which == 70 || ev.which == 102):
+      case ([70, 102].includes(ev.which)):
         revealAnswers();
         break;
-      // Pressing S toggles both add synonym modal.
-      case (ev.which == 83 || ev.which == 115):
+      // Pressing S toggles add synonym modal.
+      case ([83, 115].includes(ev.which)):
         modals.openModal(null, '#newSynonym', { backspaceClose: false, callbackOpen: synonymModal });
         break;
       // Pressing I or backspace/del ignores answer when input has been marked incorrect
-      case (ev.which == 73 || ev.which == 105 || ev.which == 8 || ev.which == 46):
+      case ([8, 46, 73, 105].includes(ev.which)):
         if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
         break;
     }

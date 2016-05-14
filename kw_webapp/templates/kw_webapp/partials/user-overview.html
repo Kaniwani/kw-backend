@@ -8,29 +8,19 @@
   </div>
 
   <div class="reviews">
-    <button type="button" id="forceSrs" class="pure-button">
-      <span class="_visuallyhidden">Refresh reviews</span>
-      <span class="i-refresh"></span>
-    </button>
     {% if user.profile.on_vacation %}
       <a id="reviewCount" href="{% url "kw:home" %}" class="pure-button button -disabled" role="button" >
         On Vacation!
       </a>
     {% elif review_count > 0 %}
-      <a id="reviewCount" href="{% url "kw:review" %}" class="pure-button button" role="button" >
-        {{ review_count }} Review{{ review_count|pluralize }}
-      </a>
+        <a id="reviewCount" href="{% url "kw:review" %}" class="pure-button button" role="button" >
+          {{ review_count }} Review{{ review_count|pluralize }}
+        </a>
     {% else %}
       <a id="reviewCount" href="{% url "kw:review" %}" class="pure-button button -disabled" role="button">
-        Next review: {{ next_review_date|naturaltime }}
+        <span class="-loading"></span>
       </a>
     {% endif %}
-  <!--
-    NOTE: upcoming review variables
-    TODO: style these puppies
-    <p style="color:white;">Next hour: {{ reviews_within_hour_count }}</p>
-    <p style="color:white;">Next day: {{ reviews_within_day_count }}</p>
-  -->
   </div>
 
 </div>

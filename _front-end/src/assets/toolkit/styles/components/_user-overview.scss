@@ -61,19 +61,28 @@
   > .reviews {
     margin-top: $unit-md;
 
-    .button,
-    #forceSrs {
-      margin-top: $unit-xs;
-      opacity: .85;
+    .button {
+    	min-width: 180px;
+    	font-size: 1.2em;
+    	font-weight: 700;
+      background-color: rgba(250,250,250, .95);
+      color: $black-light;
+      opacity: 0.95;
+      letter-spacing: 0.01em;
+      box-shadow: $shadow-bottom-light;
     }
 
-    .button:not(.-disabled),
-    #forceSrs {
-      transition: all .3s ease-out;
+    .button.-disabled {
+    	background-color: $black-light;
+    	color: $white;
+    }
+
+    .button:not(.-disabled) {
+      transition: all .2s ease-out;
 
       &:hover {
+      	box-shadow: $shadow-outer-light;
         opacity: 1;
-        color: $blue;
       }
     }
   }

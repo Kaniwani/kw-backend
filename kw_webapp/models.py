@@ -54,8 +54,9 @@ class Profile(models.Model):
     # General user-changeable settings
     unlocked_levels = models.ManyToManyField(Level)
     follow_me = models.BooleanField(default=True)
-    auto_expand_answer_on_failure = models.BooleanField(default=False)
     auto_advance_on_success = models.BooleanField(default=False)
+    auto_expand_answer_on_success = models.BooleanField(default=False)
+    auto_expand_answer_on_failure = models.BooleanField(default=False)
     only_review_burned = models.BooleanField(default=False)
 
     # Vacation Settings
