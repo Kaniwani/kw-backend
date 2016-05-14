@@ -7,6 +7,9 @@
   <div class="inner">
 
     <h1 class="section-heading">{% widthratio correct_count review_session_count 100 %}% Accuracy</h1>
+    <div class="percentage-bar">
+      <span class="percentage" style="width:{% widthratio correct_count review_session_count 100 %}%;"></span>
+    </div>
 
     <h2 class="title">{{ incorrect_count }} Incorrect</h2>
     {% if incorrect_count > 0 %}
