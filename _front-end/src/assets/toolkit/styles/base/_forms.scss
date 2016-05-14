@@ -1,5 +1,6 @@
 // crispy forms
-.help-block {
+.help-block,
+.errorlist li {
   display: block;
   margin-top: .5em;
   margin-bottom: .5em;
@@ -11,10 +12,18 @@
   &:before {
     @extend %icon-font;
     display: inline-block;
+    font-size: 18px;
     margin-right: .4em;
     color: $tan;
     content: '\e80f';
   }
+}
+
+.errorlist {
+	@extend %plainlist;
+	li:before {
+		color: $red;
+	}
 }
 
 .has-error .controls input {

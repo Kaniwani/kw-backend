@@ -1,7 +1,8 @@
 .pure-button {
   display: inline-block;
   zoom: 1;
-  line-height: normal;
+  line-height: 1;
+  min-width: 20px;
   white-space: nowrap;
   vertical-align: middle;
   text-align: center;
@@ -18,6 +19,8 @@
   font-size: 100%;
   padding: .5em 1em;
   color: #444;
+  min-width: 100px;
+  min-height: 40px;
   color: rgba(0, 0, 0, .8);
   border: 1px solid #999;
   border: 0 rgba(0, 0, 0, 0);

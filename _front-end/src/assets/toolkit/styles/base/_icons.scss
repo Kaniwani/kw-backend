@@ -59,7 +59,7 @@
 // change both border px and width/height to adjust spinner size
 .-loading {
   display: inline-block;
-  vertical-align: text-bottom;
+  vertical-align: middle;
   border-top: 2px solid rgba($black, 0.2);
   border-right: 2px solid rgba($black, 0.2);
   border-bottom: 2px solid rgba($black, 0.2);
@@ -71,8 +71,8 @@
 .-loading,
 .-loading:after {
   border-radius: 50%;
-  width: 1em;
-  height: 1em;
+  width: 1.25em;
+  height: 1.25em;
 }
 
 @keyframes loadspin {

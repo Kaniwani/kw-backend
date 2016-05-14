@@ -7,7 +7,6 @@ import toastr from '../vendor/toastr';
 if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
 toastr.options = config.toastr;
 
-
 function followChanged(formData) {
   return simpleStorage.get('KW').settings.followWanikani === false && formData.follow_me === 'on'
 }
@@ -34,8 +33,8 @@ function init() {
       simpleStorage.set('settingsSaved', true);
       $button.addClass('-hidden');
       $button.closest('div').append(`
-        <span class="btn btn-primary pure-button pure-button-primary" style="width:75px; margin-top:10px;">
-          <span class="-loading" style="margin-bottom: 3px;"></span>
+        <span class="btn btn-primary pure-button pure-button-primary" style="margin-top:10px;">
+          <span class="-loading"></span>
         </span>`
       );
     });
@@ -47,3 +46,4 @@ const api = {
 }
 
 export default api;
+
