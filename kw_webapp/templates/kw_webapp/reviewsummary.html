@@ -6,11 +6,11 @@
 <section class="summary-section">
   <div class="inner">
 
-    <h1 class="section-heading">{% widthratio correct_count review_session_count 100 %}% Accuracy</h1>
+    <h1 class="section-heading correctPercent">{% widthratio correct_count review_session_count 100 %}% Accuracy</h1>
 
     {% if incorrect_count > 0 and correct_count > 0 %}
     <div class="percentage-bar">
-      <span class="percentage" style="width:{% widthratio correct_count review_session_count 100 %}%;"></span>
+      <span class="percentage"></span>
     </div>
     {% endif %}
 
