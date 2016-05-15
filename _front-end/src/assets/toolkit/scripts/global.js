@@ -17,6 +17,7 @@ import home from './sections/home';
 import vocab from './sections/vocabulary';
 import levelVocab from './sections/levelVocab';
 import reviews from './sections/reviews';
+import summary from './sections/summary';
 import settings from './sections/settings';
 
 $(document).ready(() => {
@@ -28,6 +29,7 @@ $(document).ready(() => {
   home.init();
   vocab.init();
   reviews.init();
+  summary.init();
   settings.init();
 })
 
