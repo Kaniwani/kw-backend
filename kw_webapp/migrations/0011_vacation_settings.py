@@ -13,6 +13,12 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='profile',
+            name='on_vacation',
+            field=models.BooleanField(default=False),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='profile',
             name='vacation_date',
             field=models.DateTimeField(null=True, blank=True, default=None),
             preserve_default=True,
