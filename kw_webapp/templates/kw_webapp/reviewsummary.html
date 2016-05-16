@@ -8,11 +8,9 @@
 
     <h1 class="section-heading correctPercent">{% widthratio correct_count review_session_count 100 %}% Accuracy</h1>
 
-    {% if incorrect_count > 0 and correct_count > 0 %}
     <div class="percentage-bar">
       <span class="percentage"></span>
     </div>
-    {% endif %}
 
     {% if incorrect_count > 0 %}
     <h2 class="title">{{ incorrect_count }} Incorrect</h2>
