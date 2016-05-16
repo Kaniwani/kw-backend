@@ -10,8 +10,7 @@ $bp-level-card-2: '>=680px';
   > .wrap {
     display: block;
     background-color: $purple-light;
-    background-image: linear-gradient(to bottom, $purple-light, $purple);
-    background-repeat: repeat-x;
+    @include bg-gradient($purple-light);
     border-radius: 3px;
     color: $white-light;
     transition: background-color .6s ease-in-out;
