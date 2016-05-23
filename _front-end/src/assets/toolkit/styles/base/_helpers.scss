@@ -1,5 +1,5 @@
 @mixin section-spacing() {
-	margin-top: $unit-md;
+  margin-top: $unit-md;
   margin-bottom: $unit-md;
 
   @include media($bp-lg) {
@@ -20,20 +20,20 @@
 }
 
 // increases clickable/hoverable/tappable area for element without increasing size visually or adding internal padding
-@mixin tap-target($Y: .5em, $X: 1em) {
+@mixin tap-target($y: .5em, $x: 1em) {
   &:after {
     position: absolute;
-    content: '';
-    top: -$Y;
-    bottom: -$Y;
-    right: -$X;
-    left: -$X;
+    content: "";
+    top: -$y;
+    bottom: -$y;
+    right: -$x;
+    left: -$x;
   }
 }
 
 @mixin clearfix() {
   &:after {
-    content: '';
+    content: "";
     display: block; // yep block, we want margin collapsing!
     clear: both;
   }
@@ -54,21 +54,25 @@
 }
 
 // include under input {}
-@mixin placeholderColor($clr: #444) {
+@mixin placeholder-color($clr: #444) {
   &::-webkit-input-placeholder { /* WebKit, Blink, Edge */
     color: $clr;
   }
+
   &:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-     color: $clr;
-     opacity:  1;
+    color: $clr;
+    opacity:  1;
   }
+
   &::-moz-placeholder { /* Mozilla Firefox 19+ */
-     color: $clr;
-     opacity:  1;
+    color: $clr;
+    opacity:  1;
   }
+
   &:-ms-input-placeholder { /* Internet Explorer 10-11 */
-     color: $clr;
+    color: $clr;
   }
+
   &:placeholder-shown { /* Standard (https://drafts.csswg.org/selectors-4/#placeholder) */
     color: $clr;
   }
@@ -96,7 +100,6 @@
                                             $color1 75%, $color2 75%, $color2);
   background-repeat: repeat;
 }
-
 
 @mixin plainlist {
   list-style: none;

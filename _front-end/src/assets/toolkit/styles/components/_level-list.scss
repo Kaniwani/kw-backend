@@ -5,6 +5,7 @@
   flex-wrap: wrap;
   text-align: center;
   justify-content: center;
+
   @include media($bp-xl) {
     @include container($site-max-width);
   }
@@ -15,6 +16,7 @@
     min-width: 150px;
     z-index: 2;
     margin: 0 $unit-xs/2 $unit-xs;
+
     &.-srs {
       flex-basis: 180px;
       min-width: 180px;

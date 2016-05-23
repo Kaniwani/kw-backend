@@ -1,16 +1,16 @@
 /* Site Breakpoints - see _include-media.scss for usage */
-$bp-xs: '<sm'; // <480px in include-media
-$bp-sm: '>=sm'; // 480px in include-media
-$bp-md: '>=md'; // 768px in include-media
-$bp-lg: '>=lg'; // 1024px in include-media
-$bp-xl: '>=xl'; // 1280px in include-media
-$bp-xxl: '>=xxl'; // 2000px in include-media
+$bp-xs: "<sm"; // <480px in include-media
+$bp-sm: ">=sm"; // 480px in include-media
+$bp-md: ">=md"; // 768px in include-media
+$bp-lg: ">=lg"; // 1024px in include-media
+$bp-xl: ">=xl"; // 1280px in include-media
+$bp-xxl: ">=xxl"; // 2000px in include-media
 
 /* Custom Component Breakpoints */
 // should really be contained within components, not happy that these are used across several...
 // perhaps should only really be in site-header??
-$bp-nav-1: '>=615px';
-$bp-nav-2: '>=850px';
+$bp-nav-1: ">=615px";
+$bp-nav-2: ">=850px";
 
 $site-max-width: 1300px;
 

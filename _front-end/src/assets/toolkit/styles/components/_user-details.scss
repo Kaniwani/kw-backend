@@ -1,4 +1,5 @@
-$bp-user-details: '>=480px';
+$bp-user-details: ">=480px";
+
 .user-details {
   $ud-grey: #ddd;
 
@@ -25,6 +26,7 @@ $bp-user-details: '>=480px';
   .wkinfo,
   .userinfo {
     padding: $unit-md $unit-sm;
+
     @include media($bp-user-details) {
       lost-column: 1/2 0 0;
       padding: $unit-md 22px $unit-lg ;

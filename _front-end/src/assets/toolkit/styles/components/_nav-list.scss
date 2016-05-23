@@ -1,10 +1,9 @@
 .nav-list {
-	@include plainlist;
+  @include plainlist;
 
   .item {
-
     .nav-link {
-    	padding: 8px 16px;
+      padding: 8px 16px;
     }
 
     &:hover,

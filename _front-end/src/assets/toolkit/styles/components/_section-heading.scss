@@ -13,6 +13,7 @@
   > a {
     color: rgba($black-light, .95);
     transition: color .3s ease-out;
+
     &:hover {
       color: rgba($grey-dark, .85);
     }
@@ -20,9 +21,10 @@
 
   > .breadcrumb {
     color: $grey-dark;
+
     &:before {
       display: inline-block;
-      content: ' > ';
+      content: " > ";
       padding: 0 10px;
     }
   }
