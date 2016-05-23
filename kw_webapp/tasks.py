@@ -189,34 +189,32 @@ def sync_user_profile_with_wk(user):
     :return: boolean indicating the success of the API call.
     '''
     api_string = "https://www.wanikani.com/api/user/{}/user-information".format(user.profile.api_key)
-    r = requests.get(api_string)
-    if r.status_code == 200:
-        json_data = r.json()
-        try:
-            user_info = json_data["user_information"]
-            user.profile.title = user_info["title"]
-            user.profile.join_date = datetime.utcfromtimestamp(user_info["creation_date"])
-            user.profile.topics_count = user_info["topics_count"]
-            user.profile.posts_count = user_info["posts_count"]
-            user.profile.about = user_info["about"]
-            user.profile.set_website(user_info["website"])
-            user.profile.set_twitter_account(user_info["twitter"])
-            if user.profile.follow_me:
-                user.profile.unlocked_levels.get_or_create(level=user_info["level"])
-                if user_info["level"] < user.profile.level:  # we have detected a user reset on WK
-                    user.profile.handle_wanikani_reset(user_info["level"])
-                else:
-                    user.profile.level = user_info["level"]
+    json_data = make_api_call(api_string)
+    try:
+        user_info = json_data["user_information"]
+        user.profile.title = user_info["title"]
+        user.profile.join_date = datetime.utcfromtimestamp(user_info["creation_date"])
+        user.profile.topics_count = user_info["topics_count"]
+        user.profile.posts_count = user_info["posts_count"]
+        user.profile.about = user_info["about"]
+        user.profile.set_website(user_info["website"])
+        user.profile.set_twitter_account(user_info["twitter"])
+        if user.profile.follow_me:
+            user.profile.unlocked_levels.get_or_create(level=user_info["level"])
+            if user_info["level"] < user.profile.level:  # we have detected a user reset on WK
+                user.profile.handle_wanikani_reset(user_info["level"])
+            else:
+                user.profile.level = user_info["level"]
 
-            user.profile.gravatar = user_info["gravatar"]
-            user.profile.api_valid = True
-            user.profile.save()
+        user.profile.gravatar = user_info["gravatar"]
+        user.profile.api_valid = True
+        user.profile.save()
 
-            logger.info("Synced {}'s Profile.".format(user.username))
-            return True
-        except KeyError as e:
-            user.profile.api_valid = False
-            user.profile.save()
+        logger.info("Synced {}'s Profile.".format(user.username))
+        return True
+    except KeyError as e:
+        user.profile.api_valid = False
+        user.profile.save()
 
     else:
         return False
@@ -388,44 +386,37 @@ def process_vocabulary_response_for_unlock(user, response):
     return unlocked, locked
 
 
-def process_vocabulary_response_for_user(user, response):
+def process_vocabulary_response_for_user(user, json_data):
     """
     Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
     :param user:
-    :param response:
     :return:
     """
-    r = response
     new_review_count = 0
     new_synonym_count = 0
-    if r.status_code == 200:
-        json_data = r.json()
-        vocab_list = json_data['requested_information']
-        vocab_list = [vocab_json for vocab_json in vocab_list if
-                      vocab_json['user_specific'] is not None]  # filters out locked items.
-        for vocabulary_json in vocab_list:
-            user_specific = vocabulary_json['user_specific']
-            vocab = get_or_create_vocab_by_json(vocabulary_json)
-            vocab = associate_readings_to_vocab(vocab, vocabulary_json)
-            if user.profile.follow_me:
-                new_review, created = associate_vocab_to_user(vocab, user)
-                if created:
-                    new_review_count += 1
-                new_review, synonyms_added_count = add_synonyms_from_api_call_to_review(new_review, user_specific)
-                new_synonym_count += synonyms_added_count
-            else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
-                new_review, synonyms_added_count = associate_synonyms_to_vocab(user, vocab, user_specific)
-                new_synonym_count += synonyms_added_count
-            if new_review:
-                new_review.wanikani_srs = user_specific["srs"]
-                new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
-                new_review.wanikani_burned = user_specific["burned"]
-                new_review.save()
-        logger.info("Synced Vocabulary for {}".format(user.username))
-        return new_review_count, new_synonym_count
-    else:
-        logger.error("{} COULD NOT SYNC WITH WANIKANI. RETURNED STATUS CODE: {}".format(user.username, r.status_code))
-        return 0, 0
+    vocab_list = json_data['requested_information']
+    vocab_list = [vocab_json for vocab_json in vocab_list if
+                  vocab_json['user_specific'] is not None]  # filters out locked items.
+    for vocabulary_json in vocab_list:
+        user_specific = vocabulary_json['user_specific']
+        vocab = get_or_create_vocab_by_json(vocabulary_json)
+        vocab = associate_readings_to_vocab(vocab, vocabulary_json)
+        if user.profile.follow_me:
+            new_review, created = associate_vocab_to_user(vocab, user)
+            if created:
+                new_review_count += 1
+            new_review, synonyms_added_count = add_synonyms_from_api_call_to_review(new_review, user_specific)
+            new_synonym_count += synonyms_added_count
+        else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
+            new_review, synonyms_added_count = associate_synonyms_to_vocab(user, vocab, user_specific)
+            new_synonym_count += synonyms_added_count
+        if new_review:
+            new_review.wanikani_srs = user_specific["srs"]
+            new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
+            new_review.wanikani_burned = user_specific["burned"]
+            new_review.save()
+    logger.info("Synced Vocabulary for {}".format(user.username))
+    return new_review_count, new_synonym_count
 
 
 def sync_recent_unlocked_vocab_with_wk(user):
@@ -434,8 +425,8 @@ def sync_recent_unlocked_vocab_with_wk(user):
                   level in user.profile.unlocked_levels_list()]
         if levels:
             request_string = build_API_sync_string_for_user_for_levels(user, levels)
-            r = requests.get(request_string)
-            new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, r)
+            json_data = make_api_call(request_string)
+            new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, json_data)
             return new_review_count, new_synonym_count
     return 0, 0
 
@@ -479,14 +470,10 @@ def repopulate():
     url = "https://www.wanikani.com/api/user/" + constants.API_KEY + "/vocabulary/{}"
     logger.info("Staring DB Repopulation from WaniKani")
     for level in range(constants.LEVEL_MIN, constants.LEVEL_MAX + 1):
-        r = requests.get(url.format(level))
-        if r.status_code == 200:
-            json_data = r.json()
-            vocabulary_list = json_data['requested_information']
-            for vocabulary in vocabulary_list:
-                sync_single_vocabulary_item_by_json(vocabulary)
-        else:
-            logger.error("Status code returned from WaniKani API was not 200! It was {}".format(r.status_code))
+        json_data = make_api_call(url.format(level))
+        vocabulary_list = json_data['requested_information']
+        for vocabulary in vocabulary_list:
+            sync_single_vocabulary_item_by_json(vocabulary)
 
 
 def sync_single_vocabulary_item_by_json(vocabulary_json):
@@ -495,24 +482,6 @@ def sync_single_vocabulary_item_by_json(vocabulary_json):
     associate_readings_to_vocab(new_vocab, vocabulary_json)
     if created:
         logger.info("Found new Vocabulary item from WaniKani:{}".format(new_vocab.meaning))
-
-
-def correct_next_review_times():
-    '''
-    This is a one-time function that will need to be called when update 0.2 is pushed.
-    Seeing as we are adding a new field, ,which gets automatically calculated upon new reviews,
-    we must execute a one-time fix for all extant reviews.
-
-    :return: The number of affected reviews
-    '''
-    us = UserSpecific.objects.filter(next_review_date=None, streak__lte=8)
-    for review in us:
-        review.next_review_date = review.last_studied + timedelta(hours=constants.SRS_TIMES[review.streak])
-        # TODO dump this before the push.
-        review.save()
-
-    return us.count()
-
 
 def pull_user_synonyms_by_level(user, level):
     '''
