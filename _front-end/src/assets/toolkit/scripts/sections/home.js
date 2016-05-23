@@ -55,8 +55,6 @@ function init() {
 		$reviewButton.click(ev => {
 			if ($reviewButton.hasClass('-disabled')) ev.preventDefault();
 		});
-
-		$(document).keypress(handleKeyPress);
 	}
 }
 
