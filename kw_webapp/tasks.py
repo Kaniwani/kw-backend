@@ -4,7 +4,6 @@ import logging
 from datetime import timedelta, datetime
 
 from django.contrib.auth.models import User
-from django.db.models import F
 from django.db.models import Min
 from django.utils import timezone
 
@@ -188,33 +187,35 @@ def sync_user_profile_with_wk(user):
     :return: boolean indicating the success of the API call.
     '''
     api_string = "https://www.wanikani.com/api/user/{}/user-information".format(user.profile.api_key)
-    json_data = make_api_call(api_string)
+
     try:
-        user_info = json_data["user_information"]
-        user.profile.title = user_info["title"]
-        user.profile.join_date = datetime.utcfromtimestamp(user_info["creation_date"])
-        user.profile.topics_count = user_info["topics_count"]
-        user.profile.posts_count = user_info["posts_count"]
-        user.profile.about = user_info["about"]
-        user.profile.set_website(user_info["website"])
-        user.profile.set_twitter_account(user_info["twitter"])
-        if user.profile.follow_me:
-            user.profile.unlocked_levels.get_or_create(level=user_info["level"])
-            if user_info["level"] < user.profile.level:  # we have detected a user reset on WK
-                user.profile.handle_wanikani_reset(user_info["level"])
-            else:
-                user.profile.level = user_info["level"]
-
-        user.profile.gravatar = user_info["gravatar"]
-        user.profile.api_valid = True
-        user.profile.save()
-
-        logger.info("Synced {}'s Profile.".format(user.username))
-        return True
-    except KeyError as e:
-        user.profile.api_valid = False
+        json_data = make_api_call(api_string)
+    except exceptions.InvalidWaniKaniKey:
+        user.profile.api_valid = False;
         user.profile.save()
         return False
+
+    user_info = json_data["user_information"]
+    user.profile.title = user_info["title"]
+    user.profile.join_date = datetime.utcfromtimestamp(user_info["creation_date"])
+    user.profile.topics_count = user_info["topics_count"]
+    user.profile.posts_count = user_info["posts_count"]
+    user.profile.about = user_info["about"]
+    user.profile.set_website(user_info["website"])
+    user.profile.set_twitter_account(user_info["twitter"])
+    if user.profile.follow_me:
+        user.profile.unlocked_levels.get_or_create(level=user_info["level"])
+        if user_info["level"] < user.profile.level:  # we have detected a user reset on WK
+            user.profile.handle_wanikani_reset(user_info["level"])
+        else:
+            user.profile.level = user_info["level"]
+
+    user.profile.gravatar = user_info["gravatar"]
+    user.profile.api_valid = True
+    user.profile.save()
+
+    logger.info("Synced {}'s Profile.".format(user.username))
+    return True
 
 
 
