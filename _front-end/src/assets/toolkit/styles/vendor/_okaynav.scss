@@ -11,7 +11,7 @@ body.okayNav-loaded {
 }
 .okayNav ul {
   /* We want two navigations - one hidden and one visible */
-  @extend %plainlist;
+  @include plainlist;
   float: left;
 }
 .okayNav a {

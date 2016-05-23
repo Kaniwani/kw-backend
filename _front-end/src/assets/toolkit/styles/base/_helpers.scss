@@ -98,15 +98,14 @@
 }
 
 
-// %placeholderclasses are used in other places as @extend %placeholderclass
-%plainlist {
+@mixin plainlist {
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
 }
 
 // reset [type="button"] styling
-%plainbutton {
+@mixin plainbutton {
   background: none;
   border: 0;
   color: inherit;
@@ -116,8 +115,9 @@
   padding: 0;
   -webkit-appearance: button; /* for input */
   -webkit-user-select: none; /* for button */
-     -moz-user-select: none;
-      -ms-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+
   // pseudos
   &::-moz-focus-inner,
   &::-moz-focus-inner {
@@ -126,7 +126,7 @@
   }
 }
 
-%flexcenter {
+@mixin flexcenter {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -134,7 +134,7 @@
 }
 
 
-%visuallyhidden {
+@mixin visuallyhidden {
   position: absolute;
   height: 1px !important;
   width: 1px !important;
@@ -146,10 +146,9 @@
   padding: 0;
 }
 
-// an underscore _ denotes a utility class for use in markup
-// it's intentionally ugly to discourage use
-._visuallyhidden {
-  @extend %visuallyhidden;
+// u- denotes a utility class for use in markup like OOCSS
+.u-visuallyhidden {
+  @include visuallyhidden;
 }
 
 .-hidden {

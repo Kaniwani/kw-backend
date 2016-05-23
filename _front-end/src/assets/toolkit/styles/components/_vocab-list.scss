@@ -1,5 +1,5 @@
 .vocab-list {
-  @extend %plainlist;
+  @include plainlist;
   display: flex;
   flex-flow: row wrap;
   justify-content: center;

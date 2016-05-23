@@ -37,7 +37,7 @@ $bp-user-details: '>=480px';
     }
 
     .list {
-      @extend %plainlist;
+      @include plainlist;
     }
 
     .item {
@@ -62,7 +62,7 @@ $bp-user-details: '>=480px';
     }
 
     > .list {
-      @extend %plainlist;
+      @include plainlist;
       @include clearfix;
 
       > .item {

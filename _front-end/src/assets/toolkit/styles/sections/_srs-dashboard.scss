@@ -5,7 +5,7 @@
 	font-size: 0;
 
 	.list {
-		@extend %plainlist;
+		@include plainlist;
 
 		.item {
 			@extend %h4;

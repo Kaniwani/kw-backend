@@ -9,7 +9,7 @@
   }
 
   > .statslist {
-    @extend %plainlist;
+    @include plainlist;
     margin: .75em;
     float: right;
     font-size: responsive 16px 20px;

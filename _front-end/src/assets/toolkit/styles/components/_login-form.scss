@@ -4,7 +4,7 @@
   z-index: 2;
 
   .alert > ul {
-    @extend %plainlist;
+    @include plainlist;
     background: rgba($pink, .9);
     padding: $unit-xs $unit-sm;
     margin-bottom: $unit-sm;

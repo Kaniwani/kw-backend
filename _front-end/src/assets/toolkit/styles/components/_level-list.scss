@@ -1,5 +1,5 @@
 .level-list {
-  @extend %plainlist;
+  @include plainlist;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;

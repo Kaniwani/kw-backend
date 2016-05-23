@@ -27,13 +27,13 @@
       }
 
       .ja {
-        @extend %flexcenter;
+        @include flexcenter;
         flex-flow: column nowrap;
         flex: 0 1 auto;
       }
 
       .meaning {
-        @extend %flexcenter;
+        @include flexcenter;
         flex: 0 1 55%;
         padding: 0 $unit-xs;
         margin: 0; // <dd> has weird margins as default

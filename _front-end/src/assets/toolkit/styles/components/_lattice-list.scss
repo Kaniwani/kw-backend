@@ -1,5 +1,5 @@
 .lattice-list {
-  @extend %plainlist;
+  @include plainlist;
   display: flex;
   justify-content: center;
   flex-flow: row wrap;
