@@ -9,7 +9,7 @@
   padding: .25em;
   padding-left: 0;
   &:before {
-    @extend %icon-font;
+    @include icon-font;
     display: inline-block;
     margin-right: .4em;
     color: $tan;

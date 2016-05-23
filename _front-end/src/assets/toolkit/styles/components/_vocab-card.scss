@@ -128,10 +128,25 @@
       transition: background-color .3s ease-in;
       color: $grey-dark;
 
-      .icon { color: inherit; }
-      .kanji { text-shadow: 2px 2px 2px rgba($tan, .7); }
-      .kana { text-shadow: 1px 1px 2px rgba($tan, .95); }
-			.meaning { text-shadow: 1px 1px 1px rgba($tan, .7); }
+      .icon {
+        color: inherit;
+      }
+
+      .meaning {
+        text-shadow: 1px 1px 1px rgba($tan, .7);
+      }
+
+      .kana {
+        text-shadow: 1px 1px 2px rgba($tan, .95);
+      }
+
+      .kanji {
+        text-shadow: 2px 2px 2px rgba($tan, .7);
+
+        & + .kana:not(:last-child) {
+          border-top-color: rgba($tan, .3);
+        }
+      }
     }
   }
 
@@ -141,9 +156,17 @@
     border: 2px solid $purple-dark;
     color: $white-light;
 
-    .kanji { text-shadow: 2px 2px 2px rgba($purple-dark, .7); }
-    .kana { text-shadow: 1px 1px 2px rgba($purple-dark, .95); }
-		.meaning { text-shadow: 1px 1px 1px rgba($purple-dark, .7); }
+    .kanji {
+      text-shadow: 2px 2px 2px rgba($purple-dark, .7);
+    }
+
+    .kana {
+      text-shadow: 1px 1px 2px rgba($purple-dark, .95);
+    }
+
+    .meaning {
+      text-shadow: 1px 1px 1px rgba($purple-dark, .7);
+    }
   }
 
   &.-unlockable > .vocab-base:hover {

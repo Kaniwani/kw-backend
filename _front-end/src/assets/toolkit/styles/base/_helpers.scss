@@ -1,6 +1,7 @@
 @mixin section-spacing() {
 	margin-top: $unit-md;
   margin-bottom: $unit-md;
+
   @include media($bp-lg) {
     margin-top: $unit-lg;
     margin-bottom: $unit-lg;
