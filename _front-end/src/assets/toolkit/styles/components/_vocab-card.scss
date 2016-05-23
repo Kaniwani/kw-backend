@@ -1,7 +1,7 @@
 .vocab-card {
   $bp-vocab: '<=600px';
 
-  list-style-type: none;
+  list-style: none;
   background: $white-light;
   border-radius: 3px;
 
@@ -11,7 +11,7 @@
     color: $white-light;
 	  border: 2px solid transparent;
     border-radius: 3px;
-    transition: background-color .5s ease-out;
+    transition: background-color .3s ease-out;
 
     .readingset {
       margin: 0;
@@ -22,31 +22,18 @@
       flex: 1 0 100%;
       width: 100%;
       padding: $unit-sm;
+
       @include media($bp-lg) {
         padding: 20px $unit-sm;
       }
 
-      // horizontal separator between readings if more than 1
-      &:not(:only-child):not(:last-of-type) {
-        position: relative;
-        &:after {
-          content: '';
-          position: absolute;
-          left: 5%;
-          bottom: -1px;
-          width: 90%;
-          height: 2px;
-          background-color: transparentize($purple-dark, .4);
-        }
-      }
-
-      > .ja {
+      .ja {
         @extend %flexcenter;
         flex-flow: column nowrap;
         flex: 0 1 auto;
       }
 
-      > .meaning {
+      .meaning {
         @extend %flexcenter;
         flex: 0 1 55%;
         padding: 0 $unit-xs;
@@ -71,12 +58,8 @@
       text-shadow: 2px 2px 2px rgba($purple-dark, .7);
       padding-bottom: .05em;
 
-      @include media($bp-lg) {
-        line-height: 1.25;
-      }
-      @include media($bp-xl) {
-        line-height: 1.3;
-      }
+      @include media($bp-lg) { line-height: 1.25; }
+      @include media($bp-xl) { line-height: 1.3; }
 
       & + .kana:not(:last-child) {
         padding-top: .44em;
@@ -93,6 +76,7 @@
         transform: translateY(-50%);
         text-shadow: 0 1px 1px ($purple-dark, .7);
         transition: color .2s ease-out;
+
         &:hover {
           color: lighten($red, 8%);
         }
@@ -103,6 +87,7 @@
       line-height: 1.1;
       font-size: responsive 16px 19px;
       text-shadow: 1px 1px 2px rgba($purple-dark, .95);
+
       &:last-child {
         margin-bottom: .5em;
       }
@@ -112,12 +97,14 @@
       position: absolute;
       bottom: -6px;
       color: $white-light;
+
       &.-lockstatus {
         font-size: 20px;
         padding: 10px 15px;
         left: calc(100% - 40px);
         cursor: pointer;
       }
+
       &.-srslevel {
         right: 6px;
         top: 1px;
@@ -135,16 +122,33 @@
   }
 
   &.-standout {
-    box-shadow: 0 4px 10px 0 rgba($purple-dark, .5);
+    box-shadow: 0 2px 6px 0 rgba($black, .5);
+
     > .vocab-base {
-      @include bg-gradient(adjust-hue($purple, -7%));
+      @include bg-gradient($golden);
+      transition: background-color .3s ease-in;
+      color: $grey-dark;
+
+      .icon { color: inherit; }
+      .kanji { text-shadow: 2px 2px 2px rgba($tan, .7); }
+      .kana { text-shadow: 1px 1px 2px rgba($tan, .95); }
+			.meaning { text-shadow: 1px 1px 1px rgba($tan, .7); }
     }
   }
 
-   &.-locked > .vocab-base {
+  &.-locked > .vocab-base {
     @include bg-stripes;
     background-color: $purple-dark;
+<<<<<<< HEAD
     border-color: $purple-dark;
+=======
+    border: 2px solid $purple-dark;
+    color: $white-light;
+
+    .kanji { text-shadow: 2px 2px 2px rgba($purple-dark, .7); }
+    .kana { text-shadow: 1px 1px 2px rgba($purple-dark, .95); }
+		.meaning { text-shadow: 1px 1px 1px rgba($purple-dark, .7); }
+>>>>>>> dev
   }
 
   &.-unlockable > .vocab-base:hover {

@@ -46,7 +46,11 @@
 				text-shadow: $shadow-text-thin;
 				@include media($bp-md) {
 				  display: inline-block;
+<<<<<<< HEAD
 					vertical-align: text-bottom;
+=======
+				  line-height: 1;
+>>>>>>> dev
 				}
 			}
 
@@ -61,6 +65,7 @@
 				line-height: 1.3;
 				@include media($bp-md) {
 					margin-right: 3px;
+					line-height: .9;
 				}
 			}
 		}

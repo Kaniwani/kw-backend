@@ -1,29 +1,46 @@
 .summary-section {
 
-  > .inner {
-    text-align: center;
+	> .inner {
+		text-align: left;
 
-    .section-heading {
-      position: relative;
+		.section-heading {
+			position: relative;
+			color: $black-light;
+			text-align: center;
+		}
 
-      &:after {
-        content: '';
-        position: absolute;
-        bottom: -.2em;
-        left: 20%;
-        width: 60%;
-        height: 2px;
-        background-color: rgba($black-light, .2);
-      }
-    }
+		> .title {
+			margin-top: 1em;
+			margin-bottom: .4em;
+		}
 
-    > .title {
-      margin-top: 25px;
-      margin-bottom: 25px;
-    }
+		.vocab-list, .lattice-list {
+			justify-content: flex-start;
+		}
 
-    .vocab-list.-incorrect .vocab-card:only-child {
-      flex: 0 1 50%;
-    }
-  }
+		.vocab-list {
+			// account for card margins to align with other section gutters
+			margin-left: -5px;
+			margin-right: -5px;
+		}
+
+		.vocab-list.-incorrect .vocab-card:only-child {
+			flex: 0 1 50%;
+		}
+	}
+
+	.percentage-bar {
+		@include bg-gradient(rgba($purple-dark, .1), left);
+		height: 1.75rem;
+		border-radius: 3px;
+
+		.percentage {
+			@include bg-gradient($purple, left);
+			display: block;
+			height: 100%;
+			transition: width .8s ease-in-out;
+			width: 0%;
+		}
+	}
+
 }
