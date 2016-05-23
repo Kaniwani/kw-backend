@@ -239,8 +239,8 @@ def sync_with_wk(user, full_sync=False):
 
         #Async messaging system.
         if new_review_count or new_synonym_count:
+            logger.info("Sending message to front-end for user {}".format(user.username))
             messages.success(user, "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(new_review_count, new_synonym_count))
-
 
 
         return profile_sync_succeeded, new_review_count, new_synonym_count
