@@ -4,6 +4,7 @@ from datetime import timedelta
 import responses
 from django.test import TestCase
 from django.utils import timezone
+from django.utils.timezone import is_aware
 
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific
@@ -137,19 +138,17 @@ class TestTasks(TestCase):
         now = timezone.now()
         an_hour_ago = now - timedelta(hours=1)
         two_hours_ago = now - timedelta(hours=2)
-
         self.user.profile.vacation_date = an_hour_ago
         self.user.profile.save()
         self.review.last_studied = two_hours_ago
-        self.review.save()
         previously_studied = self.review.last_studied
+        self.review.save()
 
         user_returns_from_vacation(self.user)
-        #self.review.refresh_from_db()
-        rev = UserSpecific.objects.get(id=self.review.id)
-        print(rev)
-        self.assertNotEqual(rev.last_studied, previously_studied)
-        self.assertAlmostEqual(rev.last_studied, an_hour_ago, delta=timedelta(seconds=1))
+
+        self.review.refresh_from_db()
+        self.assertNotEqual(self.review.last_studied, previously_studied)
+        self.assertAlmostEqual(self.review.last_studied, an_hour_ago, delta=timedelta(seconds=1))
 
     def test_returning_review_count_that_is_time_delimited_functions_correctly(self):
         new_review = create_userspecific(create_vocab("arbitrary word"), self.user)

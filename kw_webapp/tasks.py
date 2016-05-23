@@ -3,7 +3,6 @@ from __future__ import absolute_import
 import logging
 from datetime import timedelta, datetime
 
-import requests
 from django.contrib.auth.models import User
 from django.db.models import F
 from django.db.models import Min
@@ -215,9 +214,8 @@ def sync_user_profile_with_wk(user):
     except KeyError as e:
         user.profile.api_valid = False
         user.profile.save()
-
-    else:
         return False
+
 
 
 @celery_app.task()
@@ -280,11 +278,11 @@ def associate_readings_to_vocab(vocab, vocabulary_json):
 
 
 def get_or_create_vocab_by_json(vocab_json):
-    '''
+    """
     if lookup by meaning fails, create a new vocab object and return it. See JSON Example here https://www.wanikani.com/api
     :param: vocab_json: a dictionary holding the information needed to create new vocabulary.
     :return:
-    '''
+    """
     try:
         vocab = get_vocab_by_meaning(vocab_json['meaning'])
     except Vocabulary.DoesNotExist as e:
@@ -389,6 +387,7 @@ def process_vocabulary_response_for_unlock(user, response):
 def process_vocabulary_response_for_user(user, json_data):
     """
     Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
+    :param json_data:
     :param user:
     :return:
     """
@@ -434,8 +433,8 @@ def sync_recent_unlocked_vocab_with_wk(user):
 def sync_unlocked_vocab_with_wk(user):
     if user.profile.unlocked_levels_list():
         request_string = build_API_sync_string_for_user(user)
-        r = requests.get(request_string)
-        new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, r)
+        response = make_api_call(request_string)
+        new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, response)
         return new_review_count, new_synonym_count
     else:
         return 0, 0
@@ -492,33 +491,29 @@ def pull_user_synonyms_by_level(user, level):
     :return: None
     '''
     request_string = build_API_sync_string_for_user_for_levels(user, level)
-    r = requests.get(request_string)
-    if r.status_code == 200:
-        json_data = r.json()
-        try:
-            vocabulary_list = json_data['requested_information']
-            for vocabulary in vocabulary_list:
-                meaning = vocabulary["meaning"]
-                if vocabulary['user_specific'] and vocabulary['user_specific']['user_synonyms']:
-                    try:
-                        review = UserSpecific.objects.get(user=user, vocabulary__meaning=meaning)
-                        for synonym in vocabulary['user_specific']['user_synonyms']:
-                            review.meaningsynonym_set.get_or_create(text=synonym)
-                        review.save()
-                    except UserSpecific.DoesNotExist as e:
-                        logger.error("Couldn't pull review during a synonym sync: {}".format(e))
-                    except KeyError as e:
-                        logger.error("No user_specific or synonyms?: {}".format(json_data))
-                    except UserSpecific.MultipleObjectsReturned:
-                        reviews = UserSpecific.objects.filter(user=user, vocabulary__meaning=meaning)
-                        for review in reviews:
-                            logger.error(
-                                "Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(
-                                    review))
-        except KeyError:
-            logger.error("NO requested info?: {}".format(json_data))
-    else:
-        logger.error("Status code returned from WaniKani API was not 200! It was {}".format(r.status_code))
+    json_data = make_api_call(request_string)
+    try:
+        vocabulary_list = json_data['requested_information']
+        for vocabulary in vocabulary_list:
+            meaning = vocabulary["meaning"]
+            if vocabulary['user_specific'] and vocabulary['user_specific']['user_synonyms']:
+                try:
+                    review = UserSpecific.objects.get(user=user, vocabulary__meaning=meaning)
+                    for synonym in vocabulary['user_specific']['user_synonyms']:
+                        review.meaningsynonym_set.get_or_create(text=synonym)
+                    review.save()
+                except UserSpecific.DoesNotExist as e:
+                    logger.error("Couldn't pull review during a synonym sync: {}".format(e))
+                except KeyError as e:
+                    logger.error("No user_specific or synonyms?: {}".format(json_data))
+                except UserSpecific.MultipleObjectsReturned:
+                    reviews = UserSpecific.objects.filter(user=user, vocabulary__meaning=meaning)
+                    for review in reviews:
+                        logger.error(
+                            "Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(
+                                review))
+    except KeyError:
+        logger.error("NO requested info?: {}".format(json_data))
 
 
 def pull_all_user_synonyms(user=None):
@@ -551,10 +546,20 @@ def user_returns_from_vacation(user):
         users_reviews = UserSpecific.objects.filter(user=user)
         elapsed_vacation_time = timezone.now() - vacation_date
         logger.info("User {} has been gone for timedelta: {}".format(user.username, str(elapsed_vacation_time)))
-        updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
-        users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
-        logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
-        all_srs(user)
+
+        #TODO This is an ultra temporary hack until I figure out F() expressions in 1.9
+        for rev in users_reviews:
+            lst = rev.last_studied
+            nsd = rev.next_review_date
+            rev.last_studied = lst + elapsed_vacation_time
+            rev.next_review_date = nsd + elapsed_vacation_time
+            rev.save()
+
+        #updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
+        #users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
+        #logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
+
     user.profile.vacation_date = None
     user.profile.on_vacation = False
     user.profile.save()
+    all_srs(user)

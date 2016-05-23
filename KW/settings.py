@@ -28,7 +28,7 @@ except ImportError:
     secrets.EMAIL_HOST_USER = "dontmatter@whatever.com"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
+MY_TIME_ZONE = 'America/New_York'
 
 sentry_class = 'raven.contrib.django.raven_compat.handlers.SentryHandler' if secrets.DEPLOY else 'logging.StreamHandler'
 sentry_level = 'ERROR' if secrets.DEPLOY else 'DEBUG'
@@ -134,7 +134,7 @@ BROKER_URL = 'redis://localhost:6379/0'
 #CELERY_ACCEPT_CONTENT = ['json']
 #CELERY_TASK_SERIALIZER = 'json'
 #CELERY_RESULTS_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'America/New_York'
+CELERY_TIMEZONE = MY_TIME_ZONE
 CELERYBEAT_SCHEDULE = {
     'all_user_srs_every_hour': {
         'task': 'kw_webapp.tasks.all_srs',
@@ -224,6 +224,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 
+TIME_ZONE = MY_TIME_ZONE
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -251,8 +252,6 @@ elif secrets.DB_TYPE == "sqlite":
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
