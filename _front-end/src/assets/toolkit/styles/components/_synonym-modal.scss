@@ -11,6 +11,7 @@
   border-radius: 0;
   background-color: rgba($grey-dark, .95);
   color: $white;
+
   &:hover {
     cursor: pointer;
     color: $white;
@@ -31,9 +32,11 @@
   text-align: center;
   margin: $unit-sm auto 0;
   padding: 0 5%;
+
   @include media($bp-md) {
     margin-top: $unit-lg;
   }
+
   .wrappinglabel {
     display: flex;
     margin-top: $unit-sm;
@@ -75,8 +78,9 @@
       .icon {
         transition: color .3s ease-out;
         font-size: responsive 18px 32px;
+
         &:hover {
-          color: darken( $grey-dark, 50% );
+          color: darken($grey-dark, 50%);
         }
       }
     }
@@ -103,6 +107,7 @@
     margin: $unit-sm auto;
     text-align: center;
     font-size: inherit;
+
     @include media($bp-md) {
       margin-top: $unit-md;
       margin-bottom: $unit-md;

@@ -9,7 +9,7 @@
   }
 
   > .statslist {
-    @extend %plainlist;
+    @include plainlist;
     margin: .75em;
     float: right;
     font-size: responsive 16px 20px;
@@ -31,16 +31,16 @@
     float: left;
     font-size: responsive 16px 20px;
     transition: opacity .3s ease-out;
-		color: $white;
+    color: $white;
 
-		.svg-icon {
-			width: 1.75em;
-			height: 1.75em;
-			fill: currentColor;
-		}
+    .svg-icon {
+      width: 1.75em;
+      height: 1.75em;
+      fill: currentColor;
+    }
 
     &:hover {
-    	opacity: 1;
+      opacity: 1;
     }
   }
 }

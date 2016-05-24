@@ -5,7 +5,7 @@
   font-size: 0;
 
   .list {
-    @extend %plainlist;
+    @include plainlist;
 
     .item {
       @extend %h4;
@@ -20,11 +20,26 @@
 
       &:hover {
         opacity: 1;
-        &.-apprentice .icon { color: mix($white, $pink, 55%); }
-        &.-guru .icon { color: mix($white, $purple, 55%); }
-        &.-master .icon { color: mix($white, $blue-dark, 55%); }
-        &.-enlightened .icon { color: mix($white, $blue-light, 55%); }
-        &.-burned .icon { color: mix($white, $black-light, 55%); }
+
+        &.-apprentice .icon {
+          color: mix($white, $pink, 55%);
+        }
+
+        &.-guru .icon {
+          color: mix($white, $purple, 55%);
+        }
+
+        &.-master .icon {
+          color: mix($white, $blue-dark, 55%);
+        }
+
+        &.-enlightened .icon {
+          color: mix($white, $blue-light, 55%);
+        }
+
+        &.-burned .icon {
+          color: mix($white, $black-light, 55%);
+        }
       }
 
       .link {
@@ -36,6 +51,7 @@
       // .title,
       .count {
         display: block;
+        vertical-align: middle;
         font-weight: 600;
         line-height: 1.3;
         margin: 0 auto;
@@ -44,6 +60,7 @@
         font-size: responsive 13px 21px;
         font-range: 400px 1400px;
         text-shadow: $shadow-text-thin;
+
         @include media($bp-md) {
           display: inline-block;
           line-height: 1;

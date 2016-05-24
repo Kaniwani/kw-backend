@@ -1,5 +1,5 @@
 .lattice-list {
-  @extend %plainlist;
+  @include plainlist;
   display: flex;
   justify-content: center;
   flex-flow: row wrap;
@@ -22,13 +22,15 @@
 
   &.-correct > .item {
     background: $green;
-    > .link{
-     text-shadow: 1px 1px 4px rgba(darken($green, 20), .7);
+
+    > .link {
+      text-shadow: 1px 1px 4px rgba(darken($green, 20), .7);
     }
   }
 
   &.-incorrect > .item {
     background: $red;
+
     > .link {
       text-shadow: 1px 1px 4px rgba(darken($red, 20), .7);
     }

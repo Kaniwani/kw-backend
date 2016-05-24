@@ -3,37 +3,39 @@
   color: $white;
   border-radius: 0 0 3px 3px;
   line-height: 1.3;
-	text-align: center;
-	padding-top: $unit-sm;
-	padding-bottom: $unit-sm;
+  text-align: center;
+  padding-top: $unit-sm;
+  padding-bottom: $unit-sm;
 
-	@include media($bp-md) {
-	  padding-top: 20px;
-	  padding-bottom: 20px;
-	}
+  @include media($bp-md) {
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
 
-	ul {
-		@extend %plainlist;
+  ul {
+    @include plainlist;
     display: flex;
     justify-content: center;
 
-		li {
-			width: 100%;
-			max-width: 150px;
-			@include media($bp-md) {
-				max-width: 200px;
-			}
+    li {
+      width: 100%;
+      max-width: 150px;
+      @include media($bp-md) {
+        max-width: 200px;
+      }
 
-			span {
-				display: block;
-				font-family: $ff-heading;
-			}
-			.number {
-				font-size: 1.5em;
-			}
-			.text {
-				font-size: .9em;
-			}
-		}
-	}
+      span {
+        display: block;
+        font-family: $ff-heading;
+      }
+
+      .number {
+        font-size: 1.5em;
+      }
+
+      .text {
+        font-size: .9em;
+      }
+    }
+  }
 }
