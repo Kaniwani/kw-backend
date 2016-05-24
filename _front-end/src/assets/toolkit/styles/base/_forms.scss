@@ -1,5 +1,6 @@
 // crispy forms
-.help-block {
+.help-block,
+.errorlist li {
   display: block;
   margin-top: .5em;
   margin-bottom: .5em;
@@ -8,12 +9,22 @@
   font-style: italic;
   padding: .25em;
   padding-left: 0;
+
   &:before {
-    @extend %icon-font;
+    @include icon-font;
     display: inline-block;
+    font-size: 18px;
     margin-right: .4em;
     color: $tan;
-    content: '\e80f';
+    content: "\e80f";
+  }
+}
+
+.errorlist {
+  @include plainlist;
+
+  li:before {
+    color: $red;
   }
 }
 
@@ -21,9 +32,7 @@
   border-color: $tan !important;
 }
 
-
 form {
-
   label + label {
     display: block;
     margin-top: $unit-sm;

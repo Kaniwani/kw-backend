@@ -3,31 +3,31 @@
     <li class="item -apprentice" title="Apprentice">
       <a class="link" href={% url 'kw:vocab_level' 'apprentice' %}>
         <span class="icon i-apprentice"></span>
-        <span class="count">{{ srs_apprentice_count }}</span>
+        <span class="count">{{ srs_apprentice_count|default:"〇" }}</span>
       </a>
     </li>
     <li class="item -guru" title="Guru">
       <a class="link" href={% url 'kw:vocab_level' 'guru' %}>
         <span class="icon i-guru"></span>
-        <span class="count">{{ srs_guru_count }}</span>
+        <span class="count">{{ srs_guru_count|default:"〇" }}</span>
       </a>
     </li>
     <li class="item -master" title="Master">
       <a class="link" href={% url 'kw:vocab_level' 'master' %}>
         <span class="icon i-master"></span>
-        <span class="count">{{ srs_master_count }}</span>
+        <span class="count">{{ srs_master_count|default:"〇" }}</span>
       </a>
     </li>
     <li class="item -enlightened" title="Enlightened">
       <a class="link" href={% url 'kw:vocab_level' 'enlightened' %}>
         <span class="icon i-enlightened"></span>
-        <span class="count">{{ srs_enlightened_count }}</span>
+        <span class="count">{{ srs_enlightened_count|default:"〇" }}</span>
       </a>
     </li>
     <li class="item -burned" title="Burned">
       <a class="link" href={% url 'kw:vocab_level' 'burned' %}>
         <span class="icon i-burned"></span>
-        <span class="count">{{ srs_burned_count }}</span>
+        <span class="count">{{ srs_burned_count|default:"〇" }}</span>
       </a>
     </li>
   </ul>

@@ -1,16 +1,17 @@
 .vocab-card {
-  $bp-vocab: '<=600px';
+  $bp-vocab: "<=600px";
 
   list-style: none;
   background: $white-light;
   border-radius: 3px;
 
   > .vocab-base {
-    @include bg-gradient($purple-light);
     position: relative;
     color: $white-light;
+    border: 2px solid transparent;
     border-radius: 3px;
     transition: background-color .3s ease-out;
+    @include bg-gradient($purple-light, bottom, 3%);
 
     .readingset {
       margin: 0;
@@ -27,13 +28,13 @@
       }
 
       .ja {
-        @extend %flexcenter;
+        @include flexcenter;
         flex-flow: column nowrap;
         flex: 0 1 auto;
       }
 
       .meaning {
-        @extend %flexcenter;
+        @include flexcenter;
         flex: 0 1 55%;
         padding: 0 $unit-xs;
         margin: 0; // <dd> has weird margins as default
@@ -62,7 +63,7 @@
 
       & + .kana:not(:last-child) {
         padding-top: .44em;
-        border-top: .2em solid rgba($purple-dark, .3);
+        border-top: .2em solid rgba($purple-dark, .5);
       }
 
       > .i-cancel {
@@ -128,11 +129,27 @@
       transition: background-color .3s ease-in;
       color: $grey-dark;
 
-      .icon { color: inherit; }
-      .kanji { text-shadow: 2px 2px 2px rgba($tan, .7); }
-      .kana { text-shadow: 1px 1px 2px rgba($tan, .95); }
-			.meaning { text-shadow: 1px 1px 1px rgba($tan, .7); }
+      .icon {
+        color: inherit;
+      }
+
+      .meaning {
+        text-shadow: 1px 1px 1px rgba($tan, .7);
+      }
+
+      .kana {
+        text-shadow: 1px 1px 2px rgba($tan, .95);
+      }
+
+      .kanji {
+        text-shadow: 2px 2px 2px rgba($tan, .7);
+
+        & + .kana:not(:last-child) {
+          border-top-color: rgba($tan, .3);
+        }
+      }
     }
+
   }
 
   &.-locked > .vocab-base {
@@ -141,10 +158,19 @@
     border: 2px solid $purple-dark;
     color: $white-light;
 
-    .kanji { text-shadow: 2px 2px 2px rgba($purple-dark, .7); }
-    .kana { text-shadow: 1px 1px 2px rgba($purple-dark, .95); }
-		.meaning { text-shadow: 1px 1px 1px rgba($purple-dark, .7); }
+    .kanji {
+      text-shadow: 2px 2px 2px rgba($purple-dark, .7);
+    }
+
+    .kana {
+      text-shadow: 1px 1px 2px rgba($purple-dark, .95);
+    }
+
+    .meaning {
+      text-shadow: 1px 1px 1px rgba($purple-dark, .7);
+    }
   }
+
 
   &.-unlockable > .vocab-base:hover {
     .i-unlock {

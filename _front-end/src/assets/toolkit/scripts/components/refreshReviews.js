@@ -18,7 +18,6 @@ function ajaxReviewCount() {
       console.log('Review count updated from server:', res)
       simpleStorage.set('recentlyRefreshed', true, {TTL: 19000}); // 19s throttle (updateReviewTime on 20s loop)
   });
-
 }
 
 let refreshReviews = function({forceGet} = {forceGet: false}) {

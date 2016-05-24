@@ -10,6 +10,7 @@ from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
 from datetime import timedelta, datetime
 from django.utils import timezone
 from django.db.models import F
+from async_messages import messages
 logger = logging.getLogger('kw.tasks')
 
 
@@ -54,6 +55,8 @@ def all_srs(user=None):
         else:
             logger.info("{} has no reviews for SRS level {}".format((user or "all users"), level[1]))
         review_set.update(needs_review=True)
+
+
     logger.info("Finished SRS run for {}.".format(user or "all users"))
 
 
@@ -202,6 +205,7 @@ def sync_user_profile_with_wk(user):
 
             user.profile.gravatar = user_info["gravatar"]
             user.profile.api_valid = True
+            user.profile.last_wanikani_sync_date = timezone.now()
             user.profile.save()
 
             logger.info("Synced {}'s Profile.".format(user.username))
@@ -220,7 +224,7 @@ def sync_with_wk(user, full_sync=False):
     Takes a user. Checks the vocab list from WK for all levels. If anything new has been unlocked on the WK side,
     it also unlocks it here on Kaniwani and creates a new review for the user.
 
-    :param recent_only: if set to True, will sync only user's most recent 3 levels. This is for during login when it is synchronous.
+    :param full_sync: if set to True, will sync only user's most recent 3 levels. This is for during login when it is synchronous.
     :param user: The user to check for new unlocks
     :return: None
     '''
@@ -232,6 +236,13 @@ def sync_with_wk(user, full_sync=False):
             new_review_count, new_synonym_count = sync_recent_unlocked_vocab_with_wk(user)
         else:
             new_review_count, new_synonym_count = sync_unlocked_vocab_with_wk(user)
+
+        #Async messaging system.
+        if new_review_count or new_synonym_count:
+            logger.info("Sending message to front-end for user {}".format(user.username))
+            messages.success(user, "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(new_review_count, new_synonym_count))
+
+
         return profile_sync_succeeded, new_review_count, new_synonym_count
     else:
         logger.warn(
