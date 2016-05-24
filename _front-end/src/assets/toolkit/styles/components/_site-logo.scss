@@ -1,7 +1,14 @@
 .site-logo {
   display: inline-block;
   font-family: $ff-heading;
-  transition: all .3s ease-out;
+  transition: color .3s ease-out;
+
+	&.is-animating {
+		> .text {
+			will-change: background-color;
+			transition: background-color 3s ease-in-out;
+		}
+	}
 
   &:hover {
     color: $black-light;

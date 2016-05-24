@@ -18,6 +18,7 @@
     display: flex;
     background: rgba($black, .7);
     cursor: wait;
+
     .title {
       opacity: 1;
     }
@@ -40,7 +41,7 @@
 
     @for $i from 1 through 7 {
       .letter:nth-child(#{$i}) {
-        transition: all .6s ease + ' ' + $i /8 + s;
+        transition: all .6s ease + " " + $i /8 + s;
       }
     }
   }

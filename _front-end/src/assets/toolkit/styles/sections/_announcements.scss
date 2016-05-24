@@ -1,16 +1,16 @@
 .announcements-section {
-	@include constrainer($site-max-width);
-	background-color: $white;
-	padding-bottom: $unit-md;
-	margin: 0 !important;
+  @include constrainer($site-max-width);
+  background-color: $white;
+  padding-bottom: $unit-md;
+  margin: 0 !important;
 
-	.title {
-		margin: 0;
-		padding: .75em 0 .5em;
-		color: $black-light;
-	}
+  .title {
+    margin: 0;
+    padding: .75em 0 .5em;
+    color: $black-light;
+  }
 
-	.accordion-list {
-		margin-top: 0;
-	}
+  .accordion-list {
+    margin-top: 0;
+  }
 }

@@ -1,0 +1,166 @@
+$toast-w: 300px;
+$toast-w-md: 450px;
+
+.toast-title {
+  font-weight: bold;
+}
+.toast-message {
+  -ms-word-wrap: break-word;
+  word-wrap: break-word;
+}
+.toast-message a,
+.toast-message label {
+  color: $white;
+}
+.toast-message a:hover {
+  color: $grey;
+  text-decoration: none;
+}
+.toast-message:before {
+  @include icon-font;
+  padding: .25em .5em .25em 0;
+}
+.toast-close-button {
+  position: relative;
+  right: -0.3em;
+  top: -0.3em;
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+  color: $white;
+  -webkit-text-shadow: 0 1px 0 $white;
+  text-shadow: 0 1px 0 $white;
+  opacity: 0.8;
+}
+.toast-close-button:hover,
+.toast-close-button:focus {
+  color: $black-dark;
+  text-decoration: none;
+  cursor: pointer;
+  opacity: 0.4;
+}
+/*Additional properties for button version
+ iOS requires the button element instead of an anchor tag.
+ If you want the anchor version, it requires `href="#"`.*/
+button.toast-close-button {
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  -webkit-appearance: none;
+}
+.toast-top-center {
+  top: 0;
+  right: 0;
+  width: 100%;
+}
+.toast-bottom-center {
+  bottom: 0;
+  right: 0;
+  width: 100%;
+}
+.toast-top-full-width {
+  top: 8px;
+  right: 0;
+  width: 100%;
+}
+.toast-bottom-full-width {
+  bottom: 0;
+  right: 0;
+  width: 100%;
+}
+.toast-top-left {
+  top: .5em;
+  left: .5em;
+}
+.toast-top-right {
+  top: .5em;
+  right: .5em;
+}
+.toast-bottom-right {
+  bottom: .5em;
+  right: .5em;
+}
+.toast-bottom-left {
+  bottom: .5em;
+  left: .5em;
+}
+#toast-container {
+  position: fixed;
+  z-index: 999999;
+  /*overrides*/
+
+}
+#toast-container * {
+  box-sizing: border-box;
+}
+#toast-container > div {
+  font-size: responsive 15px 20px;
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 .4em;
+  padding: .5em .75em;
+  width: $toast-w;
+  border-radius: 3px 3px 3px 3px;
+  background-position: .75em center;
+  background-repeat: no-repeat;
+  box-shadow: 0 0 12px $grey-light;
+  color: $white;
+  @include media($bp-md) {
+    width: $toast-w-md;
+  }
+}
+#toast-container > :hover {
+  box-shadow: 0 0 12px $black;
+  opacity: 1;
+  cursor: pointer;
+}
+#toast-container > .toast-success .toast-message:before {
+  @extend .i-ok;
+}
+#toast-container > .toast-error .toast-message:before {
+  @extend .i-cancel;
+}
+#toast-container > .toast-info .toast-message:before {
+  @extend .i-attention;
+}
+#toast-container > .toast-warning .toast-message:before {
+  @extend .i-attention;
+}
+#toast-container.toast-top-center > div,
+#toast-container.toast-bottom-center > div {
+  width: $toast-w;
+  margin: 0 auto .3em;
+  @include media($bp-md) {
+    width: $toast-w-md;
+  }
+}
+#toast-container.toast-top-full-width > div,
+#toast-container.toast-bottom-full-width > div {
+  width: 96%;
+  margin: auto;
+}
+.toast {
+  background-color: $black;
+}
+.toast-success {
+  background-color: $green;
+}
+.toast-error {
+  background-color: $red;
+}
+.toast-info {
+  background-color: $blue;
+}
+.toast-warning {
+  background-color: $tan;
+}
+
+.toast-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 4px;
+  background-color: $black-dark;
+  opacity: 0.4;
+}

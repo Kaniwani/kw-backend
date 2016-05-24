@@ -1,4 +1,7 @@
 language: python
+
+services:
+- redis-server
 python:
 - '3.5'
 - '3.4'

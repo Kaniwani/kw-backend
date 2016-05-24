@@ -1,8 +1,13 @@
-/// TODO: unlock ajax needs promises
-/// if you click several unlocks - the returns are weird (wrong icon changes - some are missed etc)
+import config from '../config';
+import im from '../vendor/include-media';
+import toastr from '../vendor/toastr';
+
+// vendor js configuration
+if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
+toastr.options = config.toastr;
 
 
-let CSRF;
+const CSRF = $('#csrf').val();
 
 function init() {
   // catch any window hashes if we arrived from summary page before anything else
@@ -14,7 +19,6 @@ function init() {
   // only run on vocab page
   if(/vocabulary\/.+\//.test(window.location.pathname)) {
     let $cards = $('.vocab-list').find('.vocab-card');
-    CSRF = $('#csrf').val();
 
     // if user has deeplinked from summary or elsewhere let's draw attention to the card
     let specificVocab = (window.location.href.match(/.*vocabulary\/.+\/(\#.+)/) || [])[1];

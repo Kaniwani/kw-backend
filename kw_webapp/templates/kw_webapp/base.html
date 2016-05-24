@@ -40,17 +40,6 @@
   <div class="site">
     {% block content %}{% endblock content %}
   </div>
-  <div class="sync-loader">
-    <h5 class="title">
-      <span class="letter">S</span>
-      <span class="letter">y</span>
-      <span class="letter">n</span>
-      <span class="letter">c</span>
-      <span class="letter">i</span>
-      <span class="letter">n</span>
-      <span class="letter">g</span>
-    </h5>
-  </div>
 
   <script>
     window.KW = {
@@ -58,7 +47,15 @@
         name: '{{ user.profile.user }}',
         level: '{{ user.profile.level }}',
         unlockedLevels: '{{ user.profile.unlocked_levels_list }}',
+        lastWKSyncDate: '{{ user.profile.last_wanikani_sync_date }}',
       },
+      messages: [
+        {% if messages %}
+          {% for message in messages %}
+            { "text":"{{message}}", "level": "{{message.tags}}" },
+          {% endfor %}
+        {% endif %}
+      ],
       nextReview: '{{ next_review_timestamp_local }}',
       reviewCount: '{{ review_count }}',
       reviewsWithinHourCount: '{{ reviews_within_hour_count }}',
