@@ -52,6 +52,8 @@ $bp-level-card-2: ">=680px";
       }
 
       &.-loading {
+        width: 1em;
+        height: 1em;
         left: calc(100% - 36px);
         bottom: 15px;
       }
