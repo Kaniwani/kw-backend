@@ -21,10 +21,11 @@
 }
 
 .errorlist {
-	@extend %plainlist;
-	li:before {
-		color: $red;
-	}
+  @include plainlist;
+
+  li:before {
+    color: $red;
+  }
 }
 
 .has-error .controls input {
