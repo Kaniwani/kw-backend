@@ -1,6 +1,6 @@
-$bp-level-card-1: '<500px';
-$bp-level-card-1-2: '>=500px','<680px';
-$bp-level-card-2: '>=680px';
+$bp-level-card-1: "<500px";
+$bp-level-card-1-2: ">=500px", "<680px";
+$bp-level-card-2: ">=680px";
 
 .level-card {
   position: relative;
@@ -9,18 +9,14 @@ $bp-level-card-2: '>=680px';
 
   > .wrap {
     display: block;
-<<<<<<< HEAD
-		@include bg-gradient($purple-light, bottom right);
-=======
-    background-color: $purple-light;
-    @include bg-gradient($purple-light);
->>>>>>> dev
     border-radius: 3px;
     color: $white-light;
     transition: background-color .6s ease-in-out;
     overflow: hidden;
     font-size: responsive 24px 30px;
     min-height: 4em;
+    background-color: $purple-light;
+    @include bg-gradient($purple-light, bottom right);
 
     > .levelnum {
       text-shadow: 1px 2px 2px rgba($purple-dark, .7);
@@ -49,6 +45,7 @@ $bp-level-card-2: '>=680px';
         transition: color .3s ease-out;
         color: $white-light;
         font-size: .85em;
+
         &:hover {
           color: $black;
           cursor: pointer;
@@ -89,12 +86,15 @@ $bp-level-card-2: '>=680px';
 
   &.-srs {
     transition: opacity .3s ease-out;
+
     &:hover {
       opacity: .9;
     }
+
     > .wrap {
       font-size: responsive 16px 22px;
       font-weight: 600;
+
       > .levelnum {
         margin: 0;
       }
@@ -103,30 +103,39 @@ $bp-level-card-2: '>=680px';
 
   &.-apprentice > .wrap {
     @include bg-gradient($pink);
+
     > .levelnum {
       text-shadow: 1px 2px 2px rgba($pink, .7);
     }
   }
+
   &.-guru > .wrap {
     @include bg-gradient($purple);
+
     > .levelnum {
       text-shadow: 1px 2px 2px rgba($purple, .7);
     }
   }
+
   &.-master > .wrap {
     @include bg-gradient($blue-dark);
+
     > .levelnum {
       text-shadow: 1px 2px 2px rgba($blue-dark, .7);
     }
   }
+
   &.-enlightened > .wrap {
     @include bg-gradient($blue-light);
+
     > .levelnum {
       text-shadow: 1px 2px 2px rgba($blue-light, .7);
     }
   }
+
   &.-burned > .wrap {
     @include bg-gradient($black-light);
+
     > .levelnum {
       text-shadow: 1px 2px 2px rgba($black-light, .7);
     }
