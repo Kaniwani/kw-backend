@@ -1,32 +1,32 @@
 // add new icons by visiting fontello and using config.json in icon folder to start with same settings
 
 @font-face {
-  font-family: 'fontello';
-  src: font('icons/fontello.eot?91272950');
-  src: font('icons/fontello.eot?91272950#iefix') format('embedded-opentype'),
-       font('icons/fontello.woff?91272950') format('woff'),
-       font('icons/fontello.ttf?91272950') format('truetype'),
-       font('icons/fontello.svg?91272950#fontello') format('svg');
-  font-weight: normal;
-  font-style: normal;
+	font-family: 'fontello';
+	src: font('icons/fontello.eot?91272950');
+	src: font('icons/fontello.eot?91272950#iefix') format('embedded-opentype'),
+			 font('icons/fontello.woff?91272950') format('woff'),
+			 font('icons/fontello.ttf?91272950') format('truetype'),
+			 font('icons/fontello.svg?91272950#fontello') format('svg');
+	font-weight: normal;
+	font-style: normal;
 }
 
 %icon-font {
-  font-family: "fontello";
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  speak: none;
-  line-height: 1;
+	font-family: "fontello";
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	speak: none;
+	line-height: 1;
 
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 [class^="i-"]:before,
 [class*=" i-"]:before {
-  @extend %icon-font;
+	@extend %icon-font;
 }
 
 .i-lock { &:before { content: '\e800'; } } /* '' */
@@ -58,32 +58,29 @@
 
 // change both border px and width/height to adjust spinner size
 .-loading {
-  display: inline-block;
-<<<<<<< HEAD
-=======
-  line-height: 1;
->>>>>>> dev
-  vertical-align: middle;
-  border-top: 2px solid rgba($black, 0.2);
-  border-right: 2px solid rgba($black, 0.2);
-  border-bottom: 2px solid rgba($black, 0.2);
-  border-left: 2px solid $white;
-  transform: translateZ(0);
-  animation: loadspin 1.2s infinite linear;
+	display: inline-block;
+	line-height: 1;
+	vertical-align: middle;
+	border-top: 2px solid rgba($black, 0.2);
+	border-right: 2px solid rgba($black, 0.2);
+	border-bottom: 2px solid rgba($black, 0.2);
+	border-left: 2px solid $white;
+	transform: translateZ(0);
+	animation: loadspin 1.2s infinite linear;
 }
 
 .-loading,
 .-loading:after {
-  border-radius: 50%;
-  width: 1.25em;
-  height: 1.25em;
+	border-radius: 50%;
+	width: 1.25em;
+	height: 1.25em;
 }
 
 @keyframes loadspin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }
