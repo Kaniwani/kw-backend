@@ -1,16 +1,18 @@
 /* Site Breakpoints - see _include-media.scss for usage */
-$bp-xs: '<sm'; // <480px in include-media
-$bp-sm: '>=sm'; // 480px in include-media
-$bp-md: '>=md'; // 768px in include-media
-$bp-lg: '>=lg'; // 1024px in include-media
-$bp-xl: '>=xl'; // 1280px in include-media
-$bp-xxl: '>=xxl'; // 2000px in include-media
+$bp-xs: "<sm"; // <480px in include-media
+$bp-sm: ">=sm"; // 480px in include-media
+$bp-md: ">=md"; // 768px in include-media
+$bp-lg: ">=lg"; // 1024px in include-media
+$bp-xl: ">=xl"; // 1280px in include-media
+$bp-xxl: ">=xxl"; // 2000px in include-media
 
 /* Custom Component Breakpoints */
 // should really be contained within components, not happy that these are used across several...
 // perhaps should only really be in site-header??
-$bp-nav-1: '>=615px';
-$bp-nav-2: '>=850px';
+$bp-nav-1: ">=615px";
+$bp-nav-2: ">=850px";
+
+$site-max-width: 1300px;
 
 /* Units */
 $unit-xs: 10px;
@@ -18,11 +20,6 @@ $unit-sm: 15px;
 $unit-md: 25px;
 $unit-lg: 30px;
 $unit-xl: 40px;
-
-
-$site-max-width: 1300px;
-$site-max-width-inner: $site-max-width - $unit-sm * 2;
-$site-max-width-inner-md: $site-max-width - $unit-md * 2;
 
 /* Greyscale */
 $white-light: hsl(0, 0%, 98%);
@@ -37,18 +34,11 @@ $black-dark: hsl(0, 0%, 0%);
 
 /* KaniWani colors */
 $purple-light: hsl(274, 100%, 50%);
-<<<<<<< HEAD
-$purple: hsl(262, 70%, 44%);
-$purple-dark: hsl(260, 58%, 42%);
-$blue-dark: hsl(228, 71%, 52%);
-=======
-$purple: hsl(272, 80%, 36%);
+$purple: hsl(270, 80%, 36%);
 $purple-dark: hsl(258, 58%, 42%);
 $blue-light: hsl(200, 100%, 41%);
->>>>>>> dev
 $blue: hsl(217, 63%, 57%);
 $blue-dark: hsl(228, 71%, 52%);
-$purple: hsl(282, 100%, 45%);
 $pink: hsl(314, 100%, 50%);
 $red: hsl(346, 75%, 54%);
 $green: hsl(107, 56%, 62%);
