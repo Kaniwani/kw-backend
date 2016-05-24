@@ -31,6 +31,7 @@ $bp-level-card-2: ">=680px";
       font-size: 22px;
       left: calc(100% - 32px);
       bottom: 12px;
+      transition: color .3s ease-in-out;
 
       &.i-lock {
         color: $black;
@@ -41,12 +42,11 @@ $bp-level-card-2: ">=680px";
       &.i-link {
         left: 22px;
         bottom: 10px;
-        transition: color .3s ease-out;
         color: $white-light;
         font-size: .85em;
 
         &:hover {
-          color: $black;
+          color: $white-dark;
           cursor: pointer;
         }
       }
@@ -75,21 +75,33 @@ $bp-level-card-2: ">=680px";
   }
 
   &.-unlockable {
-    > .wrap:hover {
-
-      .i-unlock {
-        cursor: pointer;
-        animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
-      }
+    .i-unlock {
+      color: $grey-light;
     }
 
     .levelnum {
       color: $white;
     }
+
+    > .wrap:hover {
+
+      .i-unlock {
+        cursor: pointer;
+        color: lighten($grey-light, 10%);
+        animation: wobble 1.25s infinite cubic-bezier(.55, .45, .55, .45);
+
+        &:hover {
+          color: $white;
+        }
+      }
+    }
+
   }
 
-  &.-unlocked:hover {
-    .i-unlocked {
+  &.-unlocked {
+
+    .i-unlocked:hover {
+      color: $white-dark;
       cursor: pointer;
     }
   }

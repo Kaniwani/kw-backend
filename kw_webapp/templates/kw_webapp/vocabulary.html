@@ -14,7 +14,7 @@
     <ul class="level-list">
       {% for level in levels %}
         {% if level.0 > user.profile.level %}
-          <li class="level-card -locked" title="Locked" data-level-id="{{ level.0 }}">
+          <li class="level-card -locked" data-level-id="{{ level.0 }}">
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
               <a class="icon i-link -hidden" title="View vocab" href="{% url "kw:vocab_level" level.0 %}"></a>
@@ -22,7 +22,7 @@
             </div>
           </li>
         {% elif level.1 == True %}
-          <li class="level-card -unlocked" title="Lock" data-level-id="{{ level.0 }}">
+          <li class="level-card -unlocked" data-level-id="{{ level.0 }}">
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
               <a class="icon i-link" title="View vocab" href="{% url "kw:vocab_level" level.0 %}" ></a>
@@ -30,7 +30,7 @@
             </div>
           </li>
         {% elif level.1 == False %}
-        <li class="level-card -locked -unlockable" title="Unlock" data-level-id="{{ level.0 }}">
+        <li class="level-card -locked -unlockable" data-level-id="{{ level.0 }}">
             <div class="wrap">
               <span class="levelnum">{{ level.0 }}</span>
               <a class="icon i-link -hidden" title="View vocab" href="{% url "kw:vocab_level" level.0 %}"></a>
