@@ -9,7 +9,6 @@
 
     .item {
       @extend %h4;
-      vertical-align: middle;
       display: inline-block;
       transition: all .3s ease-out;
       min-width: 65px;
@@ -51,18 +50,18 @@
       // .title,
       .count {
         display: block;
-        vertical-align: middle;
         font-weight: 600;
         line-height: 1.3;
         margin: 0 auto;
         color: $white;
         font-size: 16px;
-        font-size: responsive 13px 21px;
+        font-size: responsive 13px 20px;
         font-range: 400px 1400px;
         text-shadow: $shadow-text-thin;
 
         @include media($bp-md) {
           display: inline-block;
+          vertical-align: middle;
           line-height: 1;
         }
       }
@@ -71,11 +70,12 @@
         text-shadow: $shadow-text-thin;
         transition: color .2s ease-out;
         color: $white;
-        font-size: responsive 26px 34px;
+        line-height: 1.3;
+        font-size: responsive 26px 32px;
         font-range: 400px 1000px;
         margin: 0 auto;
         display: inline-block;
-        line-height: 1.3;
+        vertical-align: middle;
         @include media($bp-md) {
           margin-right: 3px;
           line-height: .9;

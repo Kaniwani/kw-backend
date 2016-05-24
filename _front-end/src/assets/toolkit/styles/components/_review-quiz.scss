@@ -11,13 +11,10 @@
 }
 
 .upper {
-  background-color: $purple-dark; // fallback
-  background-image: linear-gradient(to bottom, $purple-light, $purple-dark);
-
+  @include bg-gradient(mix($white, $purple-dark, 5%), bottom);
   background-repeat: repeat-x;
   color: $white;
   text-align: center;
-  height: auto;
   height: 25vh;
 
   @include media($bp-md) {

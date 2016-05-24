@@ -20,6 +20,7 @@
     li {
       width: 100%;
       max-width: 150px;
+
       @include media($bp-md) {
         max-width: 200px;
       }

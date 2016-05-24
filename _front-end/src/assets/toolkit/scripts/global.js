@@ -6,7 +6,7 @@
  */
 
 // safari fix zzzzzz - must come first in entrypoint
-import "babel-polyfill";
+import 'babel-polyfill';
 
 // components
 import invalidApiKey from './components/invalidApiKey';
@@ -19,8 +19,10 @@ import levelVocab from './sections/levelVocab';
 import reviews from './sections/reviews';
 import contact from './sections/contact';
 import settings from './sections/settings';
+import summary from './sections/summary';
 
 $(document).ready(() => {
+
   levelVocab.init(); // first so smoothscroll on deeplink can activate as early as possible
   invalidApiKey.init();
   revealToggle.init();
@@ -31,4 +33,6 @@ $(document).ready(() => {
   reviews.init();
   contact.init();
   settings.init();
-})
+  summary.init();
+
+});

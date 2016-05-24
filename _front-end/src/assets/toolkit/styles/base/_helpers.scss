@@ -49,6 +49,7 @@
 
 
 @mixin bg-gradient($clr, $dir: bottom, $percent: 5%) {
+  // fallback color
   background-color: $clr;
   background-image: linear-gradient(to $dir, #{lighten($clr, $percent)}, #{darken($clr, $percent)});
   background-repeat: repeat-x;

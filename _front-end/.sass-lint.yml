@@ -62,7 +62,7 @@ rules:
   no-color-literals: 0
   no-css-comments: 0
   no-debug: 1
-  no-duplicate-properties: 0
+  no-duplicate-properties: 1
   no-empty-rulesets: 1
   no-extends: 1
   no-ids: 1

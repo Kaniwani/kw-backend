@@ -6,12 +6,12 @@
   border-radius: 3px;
 
   > .vocab-base {
-    @include bg-gradient($purple-light);
     position: relative;
     color: $white-light;
     border: 2px solid transparent;
     border-radius: 3px;
     transition: background-color .3s ease-out;
+    @include bg-gradient($purple-light, bottom, 3%);
 
     .readingset {
       margin: 0;
