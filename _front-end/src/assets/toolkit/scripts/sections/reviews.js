@@ -122,7 +122,7 @@ function postSummary(path, params) {
   let form = document.createElement('form');
   form.setAttribute('method', 'post');
   form.setAttribute('action', path);
-  form.setAttribute('class', '_visuallyhidden');
+  form.setAttribute('class', 'u-visuallyhidden');
 
   for (let key in params) {
     if (params.hasOwnProperty(key)) {
