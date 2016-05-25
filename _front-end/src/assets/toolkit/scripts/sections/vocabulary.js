@@ -4,15 +4,19 @@ import config from '../config';
 import im from '../vendor/include-media';
 import toastr from '../vendor/toastr';
 
-// vendor js configuration
-if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
-toastr.options = config.toastr;
 
-const CSRF = $('#csrf').val();
-const currentLevel = simpleStorage.get('KW').user.level;
+let CSRF;
+let currentLevel;
 
 function init() {
   const $levelList = $('.level-list');
+
+  // vendor js configuration
+  if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
+  toastr.options = config.toastr;
+
+  CSRF = $('#csrf').val();
+  currentLevel = simpleStorage.get('KW').user.level;
 
   // if container element exists on current page
   if($levelList.length) {

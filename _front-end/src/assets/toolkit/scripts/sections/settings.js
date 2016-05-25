@@ -3,15 +3,16 @@ import config from '../config';
 import im from '../vendor/include-media';
 import toastr from '../vendor/toastr';
 
-// vendor js configuration
-if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
-toastr.options = config.toastr;
 
 function followChanged(formData) {
   return simpleStorage.get('KW').settings.followWanikani === false && formData.follow_me === 'on'
 }
 
 function init() {
+  // vendor js configuration
+  if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
+  toastr.options = config.toastr;
+
   // are we on settings page?
   if (/settings/.test(window.location.pathname)) {
     const saved = simpleStorage.get('settingsSaved');

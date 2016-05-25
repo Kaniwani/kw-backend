@@ -2,14 +2,15 @@ import config from '../config';
 import im from '../vendor/include-media';
 import toastr from '../vendor/toastr';
 
-// vendor js configuration
-if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
-toastr.options = config.toastr;
-
-
-const CSRF = $('#csrf').val();
+let CSRF;
 
 function init() {
+  CSRF = $('#csrf').val();
+
+  // vendor js configuration
+  if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
+  toastr.options = config.toastr;
+
   // catch any window hashes if we arrived from summary page before anything else
   if (window.location.hash) {
     smoothScroll.init();
