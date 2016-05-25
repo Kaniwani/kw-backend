@@ -37,7 +37,7 @@ class Level(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User)
     api_key = models.CharField(max_length=255)
-    api_valid = models.BooleanField(default=False)
+    api_valid = models.BooleanField(default=True)
     gravatar = models.CharField(max_length=255)
     about = models.CharField(max_length=255, default="")
     website = models.CharField(max_length=255, default="N/A", null=True)
