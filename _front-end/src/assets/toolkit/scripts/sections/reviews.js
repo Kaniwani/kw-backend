@@ -71,7 +71,7 @@ function init() {
   wanakana.bind(document.querySelector('#newKanji')); // new synonym form input
   $userAnswer.keydown(handleShortcuts);
 
-  // rotate or record on 'submit'
+  // rotate or record on 'submit' rather than submitting form and page refreshing
   $submitButton.click(enterPressed);
   $answerPanel.submit(enterPressed);
   $ignoreButton.click(ignoreAnswer);
@@ -427,6 +427,7 @@ function enterPressed(event) {
     event.stopPropagation();
     event.preventDefault();
   }
+
   if ($userAnswer.hasClass('-marked')) {
     if ($userAnswer.hasClass('-correct')) {
       rotateVocab({correct: true});
