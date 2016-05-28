@@ -134,7 +134,7 @@ gulp.task('assemble', function (done) {
 });
 
 // remove console.log statements
-gulp.task('stripLogs', function () {
+gulp.task('stripDebug', function () {
   return gulp.src(config.dest + '/assets/scripts/global.js')
         .pipe(stripDebug())
         .pipe(gulp.dest(config.dest + '/assets/scripts'));
@@ -198,7 +198,8 @@ gulp.task('serve', function () {
   gulp.watch('src/assets/toolkit/styles/**/*.scss', ['styles:toolkit:watch']);
 
   gulp.task('scripts:watch', ['scripts'], reload);
-  gulp.watch('src/assets/{fabricator,toolkit}/scripts/**/*.js', ['scripts:watch']).on('change', webpackCache);
+  gulp.watch('src/assets/{fabricator,toolkit}/scripts/**/*.js', ['scripts:watch'])
+      .on('change', webpackCache);
 
   gulp.task('images:watch', ['images'], reload);
   gulp.watch(config.src.images, ['images:watch']);
@@ -223,10 +224,10 @@ gulp.task('default', ['clean'], function () {
     if (!config.prod) {
       gulp.start('serve');
     }
-    // temporarily disabled to test keyboard shortcuts issue for user Rukishou
-    // if (config.prod) {
-    //  gulp.start('stripLogs');
-    // }
+
+    if (config.prod) {
+     gulp.start('stripDebug');
+    }
   });
 
 });
