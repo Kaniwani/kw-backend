@@ -10,7 +10,7 @@ from kw_webapp.models import Vocabulary, UserSpecific
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
-    user_returns_from_vacation, get_users_future_reviews
+    user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile
@@ -76,7 +76,6 @@ class TestTasks(TestCase):
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [5, 7])
 
     def test_create_new_vocab_based_on_json_works(self):
-
         vocab = create_new_vocabulary(single_vocab_requested_information)
         self.assertIsInstance(vocab, Vocabulary)
 
@@ -148,7 +147,6 @@ class TestTasks(TestCase):
         self.assertNotEqual(self.review.last_studied, previously_studied)
         self.assertAlmostEqual(self.review.last_studied, an_hour_ago, delta=timedelta(seconds=1))
 
-
     def test_returning_review_count_that_is_time_delimited_functions_correctly(self):
         new_review = create_userspecific(create_vocab("arbitrary word"), self.user)
         new_review.needs_review = False
@@ -181,5 +179,26 @@ class TestTasks(TestCase):
 
         self.assertGreater(future_reviews.count(), 0)
 
+    @responses.activate
+    def test_when_reading_level_changes_on_wanikani_we_catch_that_change_and_comply(self):
+        resp_body = sample_api_responses.single_vocab_response
+        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+                      json=resp_body,
+                      status=200,
+                      content_type='application/json')
 
+        sync_unlocked_vocab_with_wk(self.user)
 
+        modified_response = deepcopy(self.user, sample_api_responses.single_vocab_response)
+        modified_response['requested_information']['level'] = 2
+
+        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+                      json=modified_response,
+                      status=200,
+                      content_type='application/json')
+
+        process_vocabulary_response_for_userresp_body(modified_response)
+
+        vocabulary = get_vocab_by_meaning(modified_response['meaning'])
+
+        self.assertTrue(vocabulary.reading_set.count() == 1)

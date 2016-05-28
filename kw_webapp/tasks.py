@@ -255,17 +255,11 @@ def create_new_vocabulary(vocabulary_json):
     :param vocabulary_json: A JSON object representing a single vocabulary, as provided by Wanikani.
     :return: The newly created Vocabulary object.
     '''
-
-    character = vocabulary_json["character"]
     kana_list = [reading.strip() for reading in
                  vocabulary_json["kana"].split(",")]  # Splits out multiple readings for one vocab.
     meaning = vocabulary_json["meaning"]
-    level = vocabulary_json["level"]
     vocab = Vocabulary.objects.create(meaning=meaning)
-    for reading in kana_list:
-        vocab.reading_set.get_or_create(kana=reading, character=character, level=level)
-        logger.info("added reading to {}: {} ".format(vocab, reading))
-
+    vocab = associate_readings_to_vocab(vocab, vocabulary_json)
     logger.info("Created new vocabulary with meaning {} and legal readings {}".format(meaning, kana_list))
     return vocab
 
@@ -276,11 +270,14 @@ def associate_readings_to_vocab(vocab, vocabulary_json):
     character = vocabulary_json["character"]
     level = vocabulary_json["level"]
     for reading in kana_list:
-        new_reading, created = vocab.reading_set.get_or_create(kana=reading, character=character, level=level)
+        new_reading, created = vocab.reading_set.get_or_create(kana=reading, character=character)
+        new_reading.level = level
+        new_reading.save()
         if created:
             logger.info("""Created new reading: {}, level {}
                                      associated to vocab {}""".format(new_reading.kana, new_reading.level,
                                                                       new_reading.vocabulary.meaning))
+
     return vocab
 
 
