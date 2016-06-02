@@ -18,6 +18,10 @@
     color: $white;
     font-size: 1.8em;
     text-shadow: 1px 1px 4px rgba($purple-dark, .7);
+
+    &.-multiline[data-hint]:after {
+      text-align: center;
+    }
   }
 
   &.-correct > .item {
