@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidde
     Http404
 from django.shortcuts import get_object_or_404, render_to_response, render
 from django.core.urlresolvers import reverse_lazy
-from django.contrib.auth import logout
+from django.contrib.auth import logout, authenticate, login
 from django.template import RequestContext
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, ListView, View
@@ -514,6 +514,10 @@ class Register(FormView):
         logger.info("New User Created: {}, with API key {}.".format(user.username, form.cleaned_data['api_key']))
         Profile.objects.create(
                 user=user, api_key=form.cleaned_data['api_key'], level=1)
+
+        sync_with_wk(user)
+        user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1'])
+        login(self.request, user)
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
 

@@ -39,6 +39,9 @@ let KW,
     $synonymForm = $('#synonymForm');
 
 
+$(document).keypress(function(event) {
+  console.log('keypress', event.which);
+});
 
 // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
 // not including *half-width katakana / roman letters* since they should be considered typos
@@ -57,7 +60,7 @@ function init() {
   remainingVocab = window.sessionVocab;
   startCount = remainingVocab.length;
 
-  $reviewsLeft.text(startCount - 1)
+  $reviewsLeft.text(startCount - 1);
   currentVocab = remainingVocab.shift();
   updateKanaKanjiDetails();
   updateStreak();
@@ -169,22 +172,20 @@ function emptyString(str) {
 }
 
 function compareAnswer() {
+  console.log('compareAnswer called');
   let imeInput = false;
   answer = $userAnswer.val().trim();
 
   if (emptyString(answer)) return;
 
-  console.log('Comparing', answer, 'with vocab item:')
-  console.table(currentVocab);
+  // console.log('Comparing', answer, 'with vocab item:')
+  // console.table(currentVocab);
 
   addTerminalN(answer);
 
   if (onlyJapaneseChars(answer)) {
     // user used japanese IME, proceed
     imeInput = true;
-    console.log('Current vocab first kanji char starts with tilde:', currentVocab.characters[0].startsWith('〜'));
-    console.log('Answer was pure Kanji', onlyKanji(answer));
-    console.log('Input starts with 〜:', !answer.startsWith('〜'), '〜' + answer);
     if (currentVocab.characters[0].startsWith('〜') && onlyKanji(answer)) addStartingTilde(answer);
 
   } else if (!wanakana.isHiragana(answer)) {
@@ -220,6 +221,7 @@ function compareAnswer() {
 }
 
 function synonymModal() {
+  console.log('synonymModal called');
   let $form = $('#synonymForm');
   let $answerField = $(wanakana.isHiragana(answer) ? '#newKana' : '#newKanji');
   let $notAnswerField = $('.input').not($answerField);
@@ -238,6 +240,7 @@ function synonymModal() {
 }
 
 function handleSynonymForm(ev) {
+  console.log('handleSynonymForm called');
   ev.preventDefault();
   let $this = $(this);
   let vocabID = currentVocab.user_specific_id;
@@ -277,6 +280,7 @@ function addSynonym(vocabID, {kana, kanji} = {}) {
 }
 
 function processAnswer({correct} = {}) {
+  console.log('processAnswer called')
   let previouslyWrong,
       currentvocabID = currentVocab.user_specific_id;
 
@@ -385,13 +389,14 @@ function revealAnswers({kana, kanji} = {}) {
 }
 
 function rotateVocab({ignored = false, correct = false} = {}) {
+  console.log('rotateVocab called')
   if (ignored) {
     // put ignored answer back onto end of review queue
     remainingVocab.push(currentVocab);
   }
 
   if (remainingVocab.length === 0) {
-    console.log('Summary post data', answerCorrectness);
+    // console.log('Summary post data', answerCorrectness);
     return postSummary('/kw/summary/', answerCorrectness);
   }
 
@@ -404,13 +409,13 @@ function rotateVocab({ignored = false, correct = false} = {}) {
 
   // guard against 0 / 0 (when first answer ignored)
   let percentCorrect = Math.floor((correctTotal / answeredTotal) * 100) || 0;
-  console.log(`
-    remainingVocab.length: ${remainingVocab.length},
-    currentVocab: ${currentVocab.meaning},
-    correctTotal: ${correctTotal},
-    answeredTotal: ${answeredTotal},
-    percentCorrect: ${percentCorrect}`
-  );
+  // console.log(`
+  //   remainingVocab.length: ${remainingVocab.length},
+  //   currentVocab: ${currentVocab.meaning},
+  //   correctTotal: ${correctTotal},
+  //   answeredTotal: ${answeredTotal},
+  //   percentCorrect: ${percentCorrect}`
+  // );
   $reviewsCorrect.html(percentCorrect);
   $meaning.html(currentVocab.meaning);
 
@@ -436,35 +441,46 @@ function enterPressed(event) {
 }
 
 function handleShortcuts(ev) {
-  if (ev.which == 13) {
+  if (ev.which === 13) {
+    console.log('handleShortcuts: 13;', 'ev.which was:', ev.which)
     ev.stopPropagation();
     ev.preventDefault();
     enterPressed(null);
   } else if ($userAnswer.hasClass('-marked')) {
+    console.log('handleShortcuts: -marked not 13;', 'ev.which was:', ev.which)
     ev.stopPropagation();
     ev.preventDefault();
 
     switch(true) {
       // Pressing P toggles phonetic reading
-      case (ev.which == 80 || ev.which == 112):
+      case (ev.which === 80 || ev.which === 112):
+        console.log('case: P', 'ev.which was:', ev.which);
         revealAnswers({kana: true});
         break;
       // Pressing K toggles the actual kanji reading.
-      case (ev.which == 75 || ev.which == 107):
+      case (ev.which === 75 || ev.which === 107):
+        console.log('case: K', 'ev.which was:', ev.which);
         revealAnswers({kanji: true});
         break;
       // Pressing F toggles both item info boxes.
-      case (ev.which == 70 || ev.which == 102):
+      case (ev.which === 70 || ev.which === 102):
+        console.log('case: F', 'ev.which was:', ev.which);
         revealAnswers();
         break;
       // Pressing S toggles both add synonym modal.
-      case (ev.which == 83 || ev.which == 115):
-        modals.openModal(null, '#newSynonym', { backspaceClose: false, callbackOpen: synonymModal });
+      case (ev.which === 83 || ev.which === 115):
+        console.log('case: S', 'ev.which was:', ev.which);
+        modals.openModal(null, '#newSynonym', {
+          backspaceClose: false, callbackOpen: synonymModal
+        });
         break;
       // Pressing I or backspace/del ignores answer when input has been marked incorrect
-      case (ev.which == 73 || ev.which == 105 || ev.which == 8 || ev.which == 46):
+      case (ev.which === 73 || ev.which === 105 || ev.which === 8 || ev.which === 46):
+        console.log('case: I', 'ev.which was:', ev.which);
         if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
         break;
+      default:
+        console.log('switch passed through to default');
     }
   }
 }
