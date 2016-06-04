@@ -39,10 +39,6 @@ let KW,
     $synonymForm = $('#synonymForm');
 
 
-$(document).keypress(function(event) {
-  console.log('keypress', event.which);
-});
-
 // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
 // not including *half-width katakana / roman letters* since they should be considered typos
 const japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
@@ -69,12 +65,17 @@ function init() {
   wanakana.bind(document.querySelector('#userAnswer'));
   wanakana.bind(document.querySelector('#newKana')); // new synonym form input
   wanakana.bind(document.querySelector('#newKanji')); // new synonym form input
-  $userAnswer.keydown(handleShortcuts);
+  $userAnswer.keypress(handleShortcuts);
 
   // rotate or record on 'submit' rather than submitting form and page refreshing
   $submitButton.click(enterPressed);
   $answerPanel.submit(enterPressed);
   $ignoreButton.click(ignoreAnswer);
+
+  // DEBUG
+  $userAnswer.keypress(function(event) {
+    console.log('kp', event.which, String.fromCharCode(event.which));
+  });
 
   $synonymButton.click(synonymModal);
   $synonymForm.submit(handleSynonymForm);
@@ -103,7 +104,11 @@ function streakLevelUp() {
   let rank = getSrsRank(currentVocab.streak);
   let newRank = getSrsRank(currentVocab.streak + 1);
 
-  // if we went up a rank
+  // TODO: sometimes a user gets an answer wrong, dropping them to 1/3 from 2/3 of a certain rank
+  // Then when they get the answer correct later in the same review, we notice that they are at the
+  // bottom level of a rank, and incorrectly assume they "ranked up" when really
+  // they are still in the same belt as before they got it wrong
+  // More data needs to be stored the item to properly determine how their rank changed
   if (newRank !== rank) {
     $srsUp.attr('data-after', newRank).addClass(`-animating -${newRank}`);
     $streakIcon.attr('class', `icon i-${newRank} -marked`)
@@ -178,8 +183,8 @@ function compareAnswer() {
 
   if (emptyString(answer)) return;
 
-  // console.log('Comparing', answer, 'with vocab item:')
-  // console.table(currentVocab);
+  console.log('Comparing', answer, 'with vocab item:')
+  console.table(currentVocab);
 
   addTerminalN(answer);
 
@@ -207,7 +212,7 @@ function compareAnswer() {
       revealAnswers();
       if (KW.settings.autoAdvanceCorrect) advanceDelay = 1400;
     }
-    if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), advanceDelay);
+    if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(null, true), advanceDelay);
   }
   //answer was not in the known readings.
   else {
@@ -319,6 +324,7 @@ function recordAnswer(vocabID, correctness, previouslyWrong) {
 }
 
 function ignoreAnswer({ animate = true } = {}) {
+  console.log('ignoreAnswer called')
   if (animate) {
     $userAnswer.addClass('shake');
     setTimeout(() => rotateVocab({ ignored: true }), 600);
@@ -416,13 +422,16 @@ function rotateVocab({ignored = false, correct = false} = {}) {
   //   answeredTotal: ${answeredTotal},
   //   percentCorrect: ${percentCorrect}`
   // );
+
+  // TODO: this is slightly off if user ignored incorrect answer - need to account for that
   $reviewsCorrect.html(percentCorrect);
   $meaning.html(currentVocab.meaning);
 
   resetQuizUI();
 }
 
-function enterPressed(event) {
+function enterPressed(event, auto = false) {
+  console.log('eP:', event, 'auto?', auto);
   if (event != null) {
     event.stopPropagation();
     event.preventDefault();
@@ -442,45 +451,45 @@ function enterPressed(event) {
 
 function handleShortcuts(ev) {
   if (ev.which === 13) {
-    console.log('handleShortcuts: 13;', 'ev.which was:', ev.which)
+    console.log('handleShortcuts: 13;', 'event was:', ev)
     ev.stopPropagation();
     ev.preventDefault();
     enterPressed(null);
   } else if ($userAnswer.hasClass('-marked')) {
-    console.log('handleShortcuts: -marked not 13;', 'ev.which was:', ev.which)
+    console.log('handleShortcuts: -marked not 13;', 'ev was:', ev)
     ev.stopPropagation();
     ev.preventDefault();
 
     switch(true) {
       // Pressing P toggles phonetic reading
       case (ev.which === 80 || ev.which === 112):
-        console.log('case: P', 'ev.which was:', ev.which);
+        console.log('case: P', 'event was:', ev);
         revealAnswers({kana: true});
         break;
       // Pressing K toggles the actual kanji reading.
       case (ev.which === 75 || ev.which === 107):
-        console.log('case: K', 'ev.which was:', ev.which);
+        console.log('case: K', 'event was:', ev);
         revealAnswers({kanji: true});
         break;
       // Pressing F toggles both item info boxes.
       case (ev.which === 70 || ev.which === 102):
-        console.log('case: F', 'ev.which was:', ev.which);
+        console.log('case: F', 'event was:', ev);
         revealAnswers();
         break;
       // Pressing S toggles both add synonym modal.
       case (ev.which === 83 || ev.which === 115):
-        console.log('case: S', 'ev.which was:', ev.which);
+        console.log('case: S', 'event was:', ev);
         modals.openModal(null, '#newSynonym', {
           backspaceClose: false, callbackOpen: synonymModal
         });
         break;
       // Pressing I or backspace/del ignores answer when input has been marked incorrect
       case (ev.which === 73 || ev.which === 105 || ev.which === 8 || ev.which === 46):
-        console.log('case: I', 'ev.which was:', ev.which);
+        console.log('case: I', 'event was:', ev);
         if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
         break;
       default:
-        console.log('switch passed through to default');
+        console.log('switch through to default');
     }
   }
 }
