@@ -12,6 +12,13 @@ modals.init({ backspaceClose: false, callbackOpen: synonymModal });
 // and have much better organisation / handling of state
 
 
+function debuglogger(...args) {
+  if (window.KWDEBUG === true) {
+    console.log(...args);
+  }
+}
+
+
 let KW,
     currentVocab,
     remainingVocab,
@@ -74,7 +81,7 @@ function init() {
 
   // DEBUG
   $userAnswer.keypress(function(event) {
-    console.log('kp', event.which, String.fromCharCode(event.which));
+    debuglogger('kp', event.which, String.fromCharCode(event.which));
   });
 
   $synonymButton.click(synonymModal);
@@ -177,14 +184,14 @@ function emptyString(str) {
 }
 
 function compareAnswer() {
-  console.log('compareAnswer called');
+  debuglogger('compareAnswer called');
   let imeInput = false;
   answer = $userAnswer.val().trim();
 
   if (emptyString(answer)) return;
 
-  console.log('Comparing', answer, 'with vocab item:')
-  console.table(currentVocab);
+  debuglogger('Comparing', answer, 'with vocab item:')
+  if (window.KWDEBUG === true) console.table(currentVocab);
 
   addTerminalN(answer);
 
@@ -226,7 +233,7 @@ function compareAnswer() {
 }
 
 function synonymModal() {
-  console.log('synonymModal called');
+  debuglogger('synonymModal called');
   let $form = $('#synonymForm');
   let $answerField = $(wanakana.isHiragana(answer) ? '#newKana' : '#newKanji');
   let $notAnswerField = $('.input').not($answerField);
@@ -245,7 +252,7 @@ function synonymModal() {
 }
 
 function handleSynonymForm(ev) {
-  console.log('handleSynonymForm called');
+  debuglogger('handleSynonymForm called');
   ev.preventDefault();
   let $this = $(this);
   let vocabID = currentVocab.user_specific_id;
@@ -280,12 +287,12 @@ function addSynonym(vocabID, {kana, kanji} = {}) {
     kanji: kanji,
   })
   .always(res => {
-    console.log(res);
+    debuglogger(res);
   });
 }
 
 function processAnswer({correct} = {}) {
-  console.log('processAnswer called')
+  debuglogger('processAnswer called')
   let previouslyWrong,
       currentvocabID = currentVocab.user_specific_id;
 
@@ -319,12 +326,12 @@ function recordAnswer(vocabID, correctness, previouslyWrong) {
       wrong_before: previouslyWrong
     })
     .always(res => {
-      console.log(res);
+      debuglogger(res);
     });
 }
 
 function ignoreAnswer({ animate = true } = {}) {
-  console.log('ignoreAnswer called')
+  debuglogger('ignoreAnswer called')
   if (animate) {
     $userAnswer.addClass('shake');
     setTimeout(() => rotateVocab({ ignored: true }), 600);
@@ -395,14 +402,14 @@ function revealAnswers({kana, kanji} = {}) {
 }
 
 function rotateVocab({ignored = false, correct = false} = {}) {
-  console.log('rotateVocab called')
+  debuglogger('rotateVocab called')
   if (ignored) {
     // put ignored answer back onto end of review queue
     remainingVocab.push(currentVocab);
   }
 
   if (remainingVocab.length === 0) {
-    // console.log('Summary post data', answerCorrectness);
+    // debuglogger('Summary post data', answerCorrectness);
     return postSummary('/kw/summary/', answerCorrectness);
   }
 
@@ -415,7 +422,7 @@ function rotateVocab({ignored = false, correct = false} = {}) {
 
   // guard against 0 / 0 (when first answer ignored)
   let percentCorrect = Math.floor((correctTotal / answeredTotal) * 100) || 0;
-  // console.log(`
+  // debuglogger(`
   //   remainingVocab.length: ${remainingVocab.length},
   //   currentVocab: ${currentVocab.meaning},
   //   correctTotal: ${correctTotal},
@@ -431,7 +438,7 @@ function rotateVocab({ignored = false, correct = false} = {}) {
 }
 
 function enterPressed(event, auto = false) {
-  console.log('eP:', event, 'auto?', auto);
+  debuglogger('eP:', event, 'auto?', auto);
   if (event != null) {
     event.stopPropagation();
     event.preventDefault();
@@ -451,45 +458,45 @@ function enterPressed(event, auto = false) {
 
 function handleShortcuts(ev) {
   if (ev.which === 13) {
-    console.log('handleShortcuts: 13;', 'event was:', ev)
+    debuglogger('handleShortcuts: not -marked, 13;')
     ev.stopPropagation();
     ev.preventDefault();
     enterPressed(null);
   } else if ($userAnswer.hasClass('-marked')) {
-    console.log('handleShortcuts: -marked not 13;', 'ev was:', ev)
+    debuglogger('handleShortcuts: -marked, not 13;')
     ev.stopPropagation();
     ev.preventDefault();
 
     switch(true) {
       // Pressing P toggles phonetic reading
       case (ev.which === 80 || ev.which === 112):
-        console.log('case: P', 'event was:', ev);
+        debuglogger('case: P', 'event was:', ev);
         revealAnswers({kana: true});
         break;
       // Pressing K toggles the actual kanji reading.
       case (ev.which === 75 || ev.which === 107):
-        console.log('case: K', 'event was:', ev);
+        debuglogger('case: K', 'event was:', ev);
         revealAnswers({kanji: true});
         break;
       // Pressing F toggles both item info boxes.
       case (ev.which === 70 || ev.which === 102):
-        console.log('case: F', 'event was:', ev);
+        debuglogger('case: F', 'event was:', ev);
         revealAnswers();
         break;
       // Pressing S toggles both add synonym modal.
       case (ev.which === 83 || ev.which === 115):
-        console.log('case: S', 'event was:', ev);
+        debuglogger('case: S', 'event was:', ev);
         modals.openModal(null, '#newSynonym', {
           backspaceClose: false, callbackOpen: synonymModal
         });
         break;
-      // Pressing I or backspace/del ignores answer when input has been marked incorrect
-      case (ev.which === 73 || ev.which === 105 || ev.which === 8 || ev.which === 46):
-        console.log('case: I', 'event was:', ev);
+      // Pressing I ignores answer when input has been marked incorrect
+      case (ev.which === 73 || ev.which === 105):
+        debuglogger('case: I', 'event was:', ev);
         if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
         break;
       default:
-        console.log('switch through to default');
+        debuglogger('switch through to default');
     }
   }
 }
