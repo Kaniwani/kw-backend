@@ -4,6 +4,7 @@ from datetime import timedelta
 import responses
 from django.test import TestCase
 from django.utils import timezone
+from django.utils.timezone import is_aware
 
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific
@@ -103,6 +104,8 @@ class TestTasks(TestCase):
 
     @responses.activate
     def test_unlock_all_unlocks_all(self):
+        self.user.profile.api_valid = True
+        self.user.profile.save()
         resp_body = sample_api_responses.single_vocab_response
         level_list = [level for level in range(1, self.user.profile.level + 1)]
         responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, level_list),
@@ -135,16 +138,15 @@ class TestTasks(TestCase):
         now = timezone.now()
         an_hour_ago = now - timedelta(hours=1)
         two_hours_ago = now - timedelta(hours=2)
-
         self.user.profile.vacation_date = an_hour_ago
         self.user.profile.save()
         self.review.last_studied = two_hours_ago
-        self.review.save()
         previously_studied = self.review.last_studied
+        self.review.save()
 
         user_returns_from_vacation(self.user)
-        self.review.refresh_from_db()
 
+        self.review.refresh_from_db()
         self.assertNotEqual(self.review.last_studied, previously_studied)
         self.assertAlmostEqual(self.review.last_studied, an_hour_ago, delta=timedelta(seconds=1))
 

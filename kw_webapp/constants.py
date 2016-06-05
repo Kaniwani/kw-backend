@@ -41,3 +41,4 @@ API_KEY = "0158f285fa5e1254b84355ce92ccfa99"
 
 TWITTER_USERNAME_REGEX = re.compile("[a-zA-Z0-9_]+")
 HTTP_S_REGEX = re.compile("https?://")
+
