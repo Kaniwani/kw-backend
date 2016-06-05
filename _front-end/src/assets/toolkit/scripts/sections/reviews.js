@@ -43,8 +43,12 @@ const answerCorrectness = [];
 // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
 // not including *half-width katakana / roman letters* since they should be considered typos
 const japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
-const onlyJapaneseChars = str => [...str].every(c => japRegex.test(c));
-const onlyKanji = str => [...str].every(c => c.charCodeAt(0) >= 19968 && c.charCodeAt(0) < 40879);
+function onlyJapaneseChars(str) {
+  return [...str].every(char => japRegex.test(char));
+}
+function onlyKanji(str) {
+  return [...str].every(char => char.charCodeAt(0) >= 19968 && char.charCodeAt(0) < 40879);
+}
 // Grab CSRF token off of dummy form.
 const CSRF = $('#csrf').val();
 
@@ -139,7 +143,7 @@ function postSummary(path, params) {
   // TODO: this is crazytown, treating an array as an object - need to refactor
   for (let key in params) {
     if (params.hasOwnProperty(key)) {
-      let hiddenField = document.createElement('input');
+      const hiddenField = document.createElement('input');
       hiddenField.setAttribute('type', 'hidden');
       hiddenField.setAttribute('name', key);
       hiddenField.setAttribute('value', params[key]);
@@ -157,7 +161,7 @@ function postSummary(path, params) {
   form.submit();
 }
 
-String.prototype.endsWith = function(suffix) {
+String.prototype.endsWith = function (suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
@@ -184,7 +188,6 @@ function emptyString(str) {
 
 function compareAnswer() {
   kwlog('compareAnswer called');
-  let imeInput = false;
   answer = $userAnswer.val().trim();
 
   if (emptyString(answer)) return;
@@ -196,7 +199,6 @@ function compareAnswer() {
 
   if (onlyJapaneseChars(answer)) {
     // user used japanese IME, proceed
-    imeInput = true;
     if (currentVocab.characters[0].startsWith('〜') && onlyKanji(answer)) addStartingTilde(answer);
   } else if (!wanakana.isHiragana(answer)) {
     // user used english that couldn't convert to full hiragana - don't proceed
@@ -210,8 +212,8 @@ function compareAnswer() {
   if (inReadings() || inCharacters()) {
     let advanceDelay = 800;
     markRight();
-    processAnswer({correct: true});
-    //Fills the correct kanji into the input field based on the user's answers
+    processAnswer({ correct: true });
+    // Fills the correct kanji into the input field based on the user's answers
     if (wanakana.isHiragana(answer)) $userAnswer.val(getMatchedReading(answer));
     if (KW.settings.showCorrectOnSuccess) {
       revealAnswers();
@@ -224,10 +226,7 @@ function compareAnswer() {
       },
       advanceDelay);
     }
-  }
-
-  // answer was not in the known readings.
-  else {
+  } else {
     markWrong();
     // don't processAnswer() here
     // wait for submission or ignore answer - which is handled by event listeners for submit/enter
@@ -299,7 +298,7 @@ function addSynonym(vocabID, { kana, kanji } = {}) {
   });
 }
 
-function processAnswer({correct} = {}) {
+function processAnswer({ correct } = {}) {
   kwlog('processAnswer called');
   const currentvocabID = currentVocab.user_specific_id;
   let previouslyWrong;
