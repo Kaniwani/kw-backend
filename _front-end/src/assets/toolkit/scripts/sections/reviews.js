@@ -100,6 +100,7 @@ function getSrsRank(num) {
 
 function updateStreak() {
   const rank = getSrsRank(currentVocab.streak);
+  // using .attr('class') to completely wipe prev classes on update
   $streakIcon.attr('class', `icon i-${rank}`);
   $streakIcon.closest('.streak').attr('data-hint', `${rank}`);
 }
@@ -116,7 +117,8 @@ function streakLevelUp() {
   if (newRank !== rank) {
     $srsUp.attr('data-after', newRank).addClass(`-animating -${newRank}`);
     $streakIcon.attr('class', `icon i-${newRank} -marked`)
-               .closest('.streak').attr('data-hint', `${newRank}`);
+               .closest('.streak')
+               .attr('data-hint', `${newRank}`);
   }
 }
 
@@ -129,8 +131,9 @@ function earlyTermination(ev) {
   ev.preventDefault();
   if (answeredTotal === 0) {
     window.location = '/kw/';
+  } else {
+    postSummary('/kw/summary/', answerCorrectness);
   }
-  postSummary('/kw/summary/', answerCorrectness);
 }
 
 function postSummary(path, params) {
@@ -304,11 +307,10 @@ function processAnswer({ correct } = {}) {
   let previouslyWrong;
 
   if (correct === true) {
-
     // Ensures this is the first time the vocab has been answered in this session,
     // so it goes in the right container(incorrect/correct)
 
-    // TODO: this is crazytown, treating an array as an object - need to refactor
+    // TODO: this is crazytown, treating an array as an object - need to refactor as obj
     if ($.inArray(currentvocabID, Object.keys(answerCorrectness)) === -1) {
       answerCorrectness[currentvocabID] = 1;
       previouslyWrong = false;
@@ -441,13 +443,13 @@ function rotateVocab({ ignored = false, correct = false } = {}) {
 
   // guard against 0 / 0 (when first answer ignored)
   const percentCorrect = Math.floor((correctTotal / answeredTotal) * 100) || 0;
-  // kwlog(`
-  //   remainingVocab.length: ${remainingVocab.length},
-  //   currentVocab: ${currentVocab.meaning},
-  //   correctTotal: ${correctTotal},
-  //   answeredTotal: ${answeredTotal},
-  //   percentCorrect: ${percentCorrect}`
-  // );
+  kwlog(`
+    remainingVocab.length: ${remainingVocab.length},
+    currentVocab: ${currentVocab.meaning},
+    correctTotal: ${correctTotal},
+    answeredTotal: ${answeredTotal},
+    percentCorrect: ${percentCorrect}`
+  );
 
   // TODO: this is slightly off if user ignored incorrect answer - need to account for that
   $reviewsCorrect.html(percentCorrect);
