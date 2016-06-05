@@ -13,7 +13,7 @@ from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab
     user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
-from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile
+from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading
 
 
 class TestTasks(TestCase):
@@ -21,6 +21,7 @@ class TestTasks(TestCase):
         self.user = create_user("Tadgh")
         create_profile(self.user, "any_key", 5)
         self.vocabulary = create_vocab("radioactive bat")
+        self.reading = create_reading(self.vocabulary, "ねこ", "猫", 2)
         self.review = create_userspecific(self.vocabulary, self.user)
 
     def test_userspecifics_needing_review_are_flagged(self):
@@ -182,23 +183,17 @@ class TestTasks(TestCase):
     @responses.activate
     def test_when_reading_level_changes_on_wanikani_we_catch_that_change_and_comply(self):
         resp_body = sample_api_responses.single_vocab_response
+
+
+        #Mock response so that the level changes on our default vocab.
         responses.add(responses.GET, build_API_sync_string_for_user(self.user),
-                      json=resp_body,
+                      json=sample_api_responses.single_vocab_response,
                       status=200,
                       content_type='application/json')
+
 
         sync_unlocked_vocab_with_wk(self.user)
 
-        modified_response = deepcopy(self.user, sample_api_responses.single_vocab_response)
-        modified_response['requested_information']['level'] = 2
+        vocabulary = get_vocab_by_meaning("radioactive bat")
 
-        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
-                      json=modified_response,
-                      status=200,
-                      content_type='application/json')
-
-        process_vocabulary_response_for_userresp_body(modified_response)
-
-        vocabulary = get_vocab_by_meaning(modified_response['meaning'])
-
-        self.assertTrue(vocabulary.reading_set.count() == 1)
+        self.assertEqual(vocabulary.reading_set.count(), 1)
