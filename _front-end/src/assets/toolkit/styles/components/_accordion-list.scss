@@ -1,24 +1,24 @@
-$accordion-list-bg-color: $grey;
+$accordion-list-bg-color: $grey-dark;
 $accordion-border: 2px solid $grey-light;
 
 .accordion-list {
-	border: $accordion-border;
-	border-radius: 4px;
-	dd + dt {
-  	border-top: $accordion-border;
-	}
+  border: $accordion-border;
+  border-radius: 4px;
+
+  dd + dt {
+    border-top: $accordion-border;
+  }
 }
 
 .accordion-title {
-  @extend %h3;
-	display: block;
+  @extend %h4;
+  display: block;
   background-color: $accordion-list-bg-color;
-  font-weight: 700;
   text-decoration: none;
-  color: #fff;
+  color: $white-light;
   transition: background-color .3s ease-in-out;
-	text-align: center;
-	padding: .4em 1em;
+  text-align: center;
+  padding: .6em 1em;
 
   &:hover {
     background-color: darken($accordion-list-bg-color, 10%);
@@ -27,6 +27,11 @@ $accordion-border: 2px solid $grey-light;
   &.is-expanded {
     background-color: darken($accordion-list-bg-color, 15%);
   }
+
+  .time {
+    font-size: .85em;
+  }
+
 }
 
 .accordion-content {
@@ -35,10 +40,11 @@ $accordion-border: 2px solid $grey-light;
   overflow: hidden;
   max-height: 50em;
   transition: max-height .6s;
+  background-color: $white-light;
 
   @include media($bp-md) {
     max-height: 15em;
-    transition: max-height .4s
+    transition: max-height .4s;
   }
 
   &.is-collapsed {
@@ -46,29 +52,34 @@ $accordion-border: 2px solid $grey-light;
   }
 
   .content-inner {
-		@include container(800px);
-		padding: $unit-sm $unit-md $unit-md;
-		@include media($bp-md) {
-			padding: $unit-md $unit-lg $unit-lg;
-		}
+    @include container(800px);
+    padding: $unit-sm $unit-md $unit-md;
 
-		h1, h2, h3, h4 {
-			margin-top: 0;
-		}
+    @include media($bp-md) {
+      padding: $unit-md $unit-lg $unit-lg;
+    }
 
-		ul {
-			padding-left: 1.5em;
-		}
+    h1,
+    h2,
+    h3,
+    h4 {
+      margin-top: 0;
+    }
 
-		li {
-			margin-bottom: .4em;
-		}
-	}
+    ul {
+      padding-left: 1.5em;
+    }
+
+    li {
+      margin-bottom: .4em;
+    }
+  }
 }
 
 .animateIn {
   animation: accordionIn 0.45s normal ease-in-out both 1;
 }
+
 .animateOut {
   animation: accordionOut 0.45s alternate ease-in-out both 1;
 }
@@ -79,6 +90,7 @@ $accordion-border: 2px solid $grey-light;
     transform: scale(0.9) rotateX(-60deg);
     transform-origin: 50% 0;
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -90,8 +102,9 @@ $accordion-border: 2px solid $grey-light;
     opacity: 1;
     transform: scale(1);
   }
+
   100% {
     opacity: 0;
-     transform: scale(0.9) rotateX(-60deg);
+    transform: scale(0.9) rotateX(-60deg);
   }
 }

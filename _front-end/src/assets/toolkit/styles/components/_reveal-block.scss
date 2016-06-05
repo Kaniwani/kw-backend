@@ -1,8 +1,12 @@
 .reveal-block {
-
   &:not(:only-child) {
-    &:last-child > .button {
+    &:first-of-type > .button {
       border-left: none;
+    }
+
+    &:last-of-type > .button {
+      border-left: none;
+      border-right: none;
     }
   }
 
@@ -12,15 +16,17 @@
     padding-top: .75em;
     padding-bottom: .75em;
     border-radius: 0;
-    background-color: rgba($grey-dark, .75);
+    background-color: rgba($grey-dark, .9);
     color: $white;
+
 
     &.-disabled {
       overflow: hidden;
       transition: all .1s ease-in;
       filter: blur(1px);
-      cursor: not-allowed;
-      opacity: .85;
+      // cursor: not-allowed;
+      cursor: default;
+      opacity: 0;
     }
 
     &:not(.-disabled):hover,
@@ -32,17 +38,17 @@
   }
 
   > .reveal {
-    transition: all .15s ease;
+    transition: all .15s ease-out;
     overflow-y: hidden;
     max-height: 300px;
 
     &.-hidden {
-      transition: all .15s ease;
+      transition: all .15s ease-out;
       max-height: 0;
     }
 
     > .text {
-      background-color: $white;
+      background-color: rgba($white, .95);
       text-align: center;
       padding: $unit-xs $unit-sm;
       max-width: 100%;

@@ -4,7 +4,7 @@
   z-index: 2;
 
   .alert > ul {
-    @extend %plainlist;
+    @include plainlist;
     background: rgba($pink, .9);
     padding: $unit-xs $unit-sm;
     margin-bottom: $unit-sm;
@@ -13,11 +13,11 @@
   }
 
   input {
-    @include placeholderColor($white);
+    @include placeholder-color($white);
   }
 
   input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+    -webkit-box-shadow: 0 0 0 1000px white inset !important;
     -webkit-text-fill-color: $blue-dark !important;
   }
 
@@ -25,7 +25,7 @@
     display: block;
     min-width: 250px;
     padding: $unit-xs $unit-sm;
-    margin: 5px auto 10px auto;
+    margin: 5px auto 10px;
     appearance: none;
     outline: 0;
     border: 1px solid transparentize($white, .6);

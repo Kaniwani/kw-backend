@@ -1,18 +1,12 @@
 .review-section {
-  position: relative;
+  display: table;
+  width: 100%;
+  height: 100%;
 
   > .review-header {
-    color: $white;
-    overflow: visible;
-
-    > .inner {
-      position: absolute;
-      top: 0;
-      width: 100%;
-    }
-
-    > .inner > .homelink > .icon {
-      color: $white;
-    }
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
   }
 }

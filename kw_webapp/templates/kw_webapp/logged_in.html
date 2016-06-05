@@ -5,16 +5,10 @@
 
 <header class="site-header" role="banner">
   <div class="inner">
-    <a href="/" class="site-logo">
-      <span class="text">
-        <span lang="ja" class="kana">かに&#8202;わに</span>
-        <span lang="ja" class="kanji">蟹鰐</span>
-      </span>
-    </a>
+    {% include 'partials/site-logo.html' %}
 
-    <nav class="site-nav">
-      <a href="#0" class="expandToggle">☰ Menu</a>
-      <ul class="nav-list toggleTarget">
+    <nav id="nav-main" class="okayNav">
+      <ul class="nav-list">
         <li class="item {% ancestor 'kw:review' %} {% if user.profile.on_vacation %}-disabled{% endif %}">
           <a href="{% url "kw:review" %}" class="nav-link">
             <span class="text">Reviews

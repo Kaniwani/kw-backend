@@ -1,7 +1,6 @@
 .settings-section {
 
   > .inner {
-
     input[type="text"] {
       min-width: 280px;
       @include media($bp-lg) {

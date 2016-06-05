@@ -4,43 +4,29 @@
 
   > .inner {
     display: flex;
-    min-height: 80px; // yay flexbox fixes
+    height: auto;
     flex-wrap: nowrap;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 
     > .site-logo {
-      // no-flex
-      display: inline-block;
-      float: left;
-      vertical-align: middle;
-      //
-      margin: 10px;
-      margin-left: 0;
+      display: block;
       flex-shrink: 0;
-      align-self: center;
-      @include media($bp-nav-1) {
-        align-self: center;
-      }
-    }
+      width: 60px;
+      margin-top: 4px;
+      height: auto;
 
-    > .site-nav {
-      // no-flex fallbacks
-      display: inline-block;
-      float: right;
-      vertical-align: middle;
-      //
-      max-width: calc(100% - 90px);
-      align-self: center;
-      font-size: 14px;
-
-      @include media($bp-nav-1) {
-        align-self: center;
+      @include media($bp-md) {
+        width: 75px;
+        margin-top: 3px;
+        margin-bottom: -2px;
       }
 
-      @include media($bp-nav-2) {
-        font-size: 16px;
+      @include media($bp-lg) {
+        width: 85px;
+        margin-top: 3px;
+        margin-bottom: -2px;
       }
     }
   }

@@ -246,3 +246,8 @@ class TestViews(TestCase):
 
         self.assertAlmostEqual(correct_time, self.review.next_review_date, delta=timedelta(seconds=1))
 
+    def test_early_termination_redirects_to_home_when_no_reviews_were_done(self):
+
+        response = self.client.post(reverse("kw:summary"), follow=True)
+
+        self.assertRedirects(response, reverse("kw:home"))

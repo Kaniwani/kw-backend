@@ -1,26 +1,29 @@
 import refreshReviews from '../components/refreshReviews.js';
 
-let CSRF,
-    user,
-    $reviewCount,
-    $levelList,
-    $levels,
-    $icon,
-    $card,
-    level,
-    currentLevel;
+import config from '../config';
+import im from '../vendor/include-media';
+import toastr from '../vendor/toastr';
+
+
+let CSRF;
+let currentLevel;
 
 function init() {
-  $levelList = $('.level-list');
+  const $levelList = $('.level-list');
+
+  // vendor js configuration
+  if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
+  toastr.options = config.toastr;
+
+  CSRF = $('#csrf').val();
+  currentLevel = simpleStorage.get('KW').user.level;
 
   // if container element exists on current page
   if($levelList.length) {
 
     // cache selector elements/unchanging vars
-    CSRF = $('#csrf').val();
-    currentLevel = simpleStorage.get('KW').user.level;
-    $levels = $levelList.find('.level-card');
-    $reviewCount = $('.nav-link > .text > .count')
+    const $levels = $levelList.find('.level-card');
+    const $reviewCount = $('.nav-link > .text > .count')
 
     // Attach events
     $levelList.on('click', '[class*="i-unlock"]', handleLockClick);
@@ -31,24 +34,25 @@ function init() {
 function handleLockClick(event) {
   event.preventDefault();
 
-  $icon = $(this);
-  $card = $icon.closest(".level-card");
-  level = $card.data("level-id");
+  const $icon = $(this),
+        $card = $icon.closest(".level-card"),
+        level = $card.data("level-id");
 
   if ($card.hasClass('-unlocked')) {
     notie.confirm(`Are you sure you want to relock level ${level}?
-      </br>This will reset the SRS for all items in this level.`, 'Yeah!', 'Nope', reLockLevel);
+      </br>This will reset the SRS for all items in this level.`, 'Yeah!', 'Nope', () => reLockLevel($card, $icon, level));
   } else {
-    unLockLevel();
+    unLockLevel($card, $icon, level);
   }
 }
 
-function unLockLevel() {
+function unLockLevel($card, $icon, level) {
   $icon.removeClass("i-unlock i-unlocked").addClass('-loading');
 
   $.post("/kw/levelunlock/", {level: level, csrfmiddlewaretoken: CSRF})
    .done(res => {
-      notie.alert(1, res, 8);
+      toastr.success(res);
+      // notie.alert(1, res, 8);
 
       $icon.removeClass("-loading").addClass('i-unlocked').attr('title', 'Relock');
       $card.removeClass("-locked -unlockable");
@@ -61,7 +65,7 @@ function unLockLevel() {
    .fail(res => handleAjaxFail(res, level, 'unlock'));
 }
 
-function reLockLevel() {
+function reLockLevel($card, $icon, level) {
   $icon.removeClass("i-unlock i-unlocked").addClass('-loading');
 
   $.post("/kw/levellock/", {level: level, csrfmiddlewaretoken: CSRF})
@@ -71,7 +75,9 @@ function reLockLevel() {
 
       if (level === currentLevel) res += currentLevelMsg;
 
-      notie.alert(1, res, 20);
+      toastr.success(res);
+      // notie.alert(1, res, 20);
+
 
       $icon.removeClass("-loading").addClass("i-unlock").attr('title', 'Unlock');
       $card.removeClass("-unlocked");

@@ -11,17 +11,16 @@
 }
 
 .upper {
-  background-color: $purple;
-  background-image: linear-gradient(to bottom, $purple-light, $purple);
+  @include bg-gradient(mix($white, $purple-dark, 5%), bottom);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFAA00FF, endColorstr=#FF9300DD, GradientType=0);
   color: $white;
   text-align: center;
-  height: auto;
   height: 25vh;
+
   @include media($bp-md) {
     height: 33vh;
   }
+
   @include media($bp-lg) {
     height: 40vh;
   }
@@ -110,10 +109,21 @@
     }
   }
 
-  .answer.-marked::-webkit-input-placeholder { color: $white; }
-  .answer.-marked::-moz-placeholder { color: $white;  }
-  .answer.-marked:-ms-input-placeholder { color: $white; }
-  .answer.-marked:placeholder-shown { color: $white; }
+  .answer.-marked::-webkit-input-placeholder {
+    color: $white;
+  }
+
+  .answer.-marked::-moz-placeholder {
+    color: $white;
+  }
+
+  .answer.-marked:-ms-input-placeholder {
+    color: $white;
+  }
+
+  .answer.-marked:placeholder-shown {
+    color: $white;
+  }
 
   .submitwrap,
   .streak {
@@ -128,6 +138,7 @@
       font-range: 300px 1600px;
       line-height: normal;
       color: $grey-dark;
+
       &.-marked {
         color: $white;
         text-shadow: $shadow-text-thin;
@@ -145,6 +156,7 @@
 
   .streak {
     left: 0;
+
     .icon {
       &.-fadeOutUp {
         color: $white;
@@ -160,24 +172,29 @@
     border: 0;
     border-radius: 0;
     box-shadow: none;
+
     &.-answer {
       .icon:before {
         display: inline-block;
         vertical-align: middle;
       }
     }
+
     &.-ignore {
       right: 3em;
       opacity: .5;
       transition: opacity .3s ease-out;
+
       .icon {
         color: $white;
       }
+
       &:hover,
       &:focus {
         opacity: 1;
       }
     }
+
     &:focus {
       .submitwrap .icon:before {
         outline: 1px dashed $grey-light;
@@ -203,14 +220,26 @@
       padding: .1em .5em .22em;
       background: $green;
 
-      &.-guru { background: lighten($purple-light, 15%); }
-      &.-master { background: $blue; }
-      &.-enlightened { background: lighten($blue-light, 15%); }
-      &.-burned { background: $black-light; }
+      &.-guru {
+        background: lighten($purple-light, 15%);
+      }
+
+      &.-master {
+        background: $blue;
+      }
+
+      &.-enlightened {
+        background: lighten($blue-light, 15%);
+      }
+
+      &.-burned {
+        background: $black-light;
+      }
 
       &.-animating {
         animation: srsRankUp .75s ease 0s 1 normal both running;
       }
+
       // srs rank
       &:after {
         font-variant: small-caps;
@@ -219,6 +248,7 @@
         content: attr(data-after);
         margin-left: 6px;
       }
+
       // icon
       &:before {
         font-size: .8em;

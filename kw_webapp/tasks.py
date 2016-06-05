@@ -1,20 +1,15 @@
 from __future__ import absolute_import
-
 import logging
-from datetime import timedelta, datetime
-
 from django.contrib.auth.models import User
 from django.db.models import Min
-from django.utils import timezone
-
-
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
-
 from KW.celery import app as celery_app
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
-
+from datetime import timedelta, datetime
+from django.utils import timezone
+from async_messages import messages
 logger = logging.getLogger('kw.tasks')
 
 
@@ -211,9 +206,11 @@ def sync_user_profile_with_wk(user):
         else:
             user.profile.level = user_info["level"]
 
-    user.profile.gravatar = user_info["gravatar"]
-    user.profile.api_valid = True
-    user.profile.save()
+
+            user.profile.gravatar = user_info["gravatar"]
+            user.profile.api_valid = True
+            user.profile.last_wanikani_sync_date = timezone.now()
+            user.profile.save()
 
     logger.info("Synced {}'s Profile.".format(user.username))
     return True
@@ -227,7 +224,6 @@ def sync_with_wk(user, full_sync=False):
     it also unlocks it here on Kaniwani and creates a new review for the user.
 
     :param full_sync:
-    :param recent_only: if set to True, will sync only user's most recent 3 levels. This is for during login when it is synchronous.
     :param user: The user to check for new unlocks
     :return: None
     '''
@@ -239,6 +235,13 @@ def sync_with_wk(user, full_sync=False):
             new_review_count, new_synonym_count = sync_recent_unlocked_vocab_with_wk(user)
         else:
             new_review_count, new_synonym_count = sync_unlocked_vocab_with_wk(user)
+
+        #Async messaging system.
+        if new_review_count or new_synonym_count:
+            logger.info("Sending message to front-end for user {}".format(user.username))
+            messages.success(user, "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(new_review_count, new_synonym_count))
+
+
         return profile_sync_succeeded, new_review_count, new_synonym_count
     else:
         logger.warn(
@@ -251,17 +254,11 @@ def create_new_vocabulary(vocabulary_json):
     :param vocabulary_json: A JSON object representing a single vocabulary, as provided by Wanikani.
     :return: The newly created Vocabulary object.
     '''
-
-    character = vocabulary_json["character"]
     kana_list = [reading.strip() for reading in
                  vocabulary_json["kana"].split(",")]  # Splits out multiple readings for one vocab.
     meaning = vocabulary_json["meaning"]
-    level = vocabulary_json["level"]
     vocab = Vocabulary.objects.create(meaning=meaning)
-    for reading in kana_list:
-        vocab.reading_set.get_or_create(kana=reading, character=character, level=level)
-        logger.info("added reading to {}: {} ".format(vocab, reading))
-
+    vocab = associate_readings_to_vocab(vocab, vocabulary_json)
     logger.info("Created new vocabulary with meaning {} and legal readings {}".format(meaning, kana_list))
     return vocab
 
@@ -272,7 +269,9 @@ def associate_readings_to_vocab(vocab, vocabulary_json):
     character = vocabulary_json["character"]
     level = vocabulary_json["level"]
     for reading in kana_list:
-        new_reading, created = vocab.reading_set.get_or_create(kana=reading, character=character, level=level)
+        new_reading, created = vocab.reading_set.get_or_create(kana=reading, character=character)
+        new_reading.level = level
+        new_reading.save()
         if created:
             logger.info("""Created new reading: {}, level {}
                                      associated to vocab {}""".format(new_reading.kana, new_reading.level,
@@ -440,7 +439,6 @@ def sync_unlocked_vocab_with_wk(user):
         return new_review_count, new_synonym_count
     else:
         return 0, 0
-
 
 
 @celery_app.task()

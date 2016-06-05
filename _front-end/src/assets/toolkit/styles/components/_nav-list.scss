@@ -1,24 +1,9 @@
 .nav-list {
-  @extend %plainlist;
-  display: flex;
-  flex-wrap: wrap;
-  text-align: right;
-  justify-content: flex-end;
+  @include plainlist;
 
-  @include media($bp-nav-1) {
-    text-align: center;
-  }
-
-  @include media($bp-nav-2) {
-    justify-content: center;
-  }
-
-  > .item {
-    padding: 8px 16px;
-    flex: 1 1 100%;
-
-    @include media($bp-nav-1) {
-      flex: 0 1 auto;
+  .item {
+    .nav-link {
+      padding: 8px 16px;
     }
 
     &:hover,

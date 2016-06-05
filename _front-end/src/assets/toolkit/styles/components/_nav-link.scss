@@ -1,5 +1,4 @@
 .nav-link {
-  @include tap-target(8px, 18px);
   display: flex;
   position: relative;
   justify-content: flex-end;
@@ -22,7 +21,8 @@
     .count {
       display: inline-block;
       color: $blue-light;
-      :not(:empty) {
+
+      &:not(:empty) {
         margin-left: 3px;
       }
     }
@@ -35,7 +35,7 @@
     &:after {
       display: block;
       position: absolute;
-      content: '';
+      content: "";
       width: 0;
       bottom: 0;
       left: 50%;

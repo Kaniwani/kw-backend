@@ -1,79 +1,84 @@
 .srs-dashboard {
+  @include constrainer(800px);
+  background: rgba($black, .6);
   text-align: center;
   font-size: 0;
+
   .list {
-    @extend %plainlist;
+    @include plainlist;
 
     .item {
       @extend %h4;
       display: inline-block;
-      vertical-align: middle;
-      width: 50%;
-      padding: .6em .4em;
-      box-shadow: $shadow-outer-light;
-      transition: opacity .3s ease-out;
-      &:last-child {
-        width: 100%;
+      transition: all .3s ease-out;
+      min-width: 65px;
+
+      @include media($bp-md) {
+        min-width: 115px;
       }
 
       &:hover {
-        opacity: .9;
-      }
+        opacity: 1;
 
-      @include media($bp-md) {
-        width: 33.33%;
-        &:nth-child(n+4) {
-          width: 50%;
+        &.-apprentice .icon {
+          color: mix($white, $pink, 55%);
+        }
+
+        &.-guru .icon {
+          color: mix($white, $purple, 55%);
+        }
+
+        &.-master .icon {
+          color: mix($white, $blue-dark, 55%);
+        }
+
+        &.-enlightened .icon {
+          color: mix($white, $blue-light, 55%);
+        }
+
+        &.-burned .icon {
+          color: mix($white, $black-light, 55%);
         }
       }
-
-      @include media($bp-lg) {
-        width: 20%;
-        &:nth-child(n+4) {
-          width: 20%;
-        }
-      }
-
-      &.-apprentice { @include bg-gradient($pink); }
-      &.-guru { @include bg-gradient($purple); }
-      &.-master { @include bg-gradient($blue-dark); }
-      &.-enlightened { @include bg-gradient($blue-light); }
-      &.-burned { @include bg-gradient($black-light); }
 
       .link {
         display: inline-block;
         width: 100%;
+        padding: 0 .4em .75em;
       }
 
-      .count,
-      .title {
-        display: inline-block;
-        vertical-align: middle;
+      // .title,
+      .count {
+        display: block;
         font-weight: 600;
         line-height: 1.3;
         margin: 0 auto;
         color: $white;
         font-size: 16px;
-        font-size: responsive 16px 24px;
+        font-size: responsive 13px 20px;
         font-range: 400px 1400px;
-        @include media($bp-lg) {
-          display: block;
+        text-shadow: $shadow-text-thin;
+
+        @include media($bp-md) {
+          display: inline-block;
+          vertical-align: middle;
+          line-height: 1;
         }
       }
 
-      .count {
+      .icon {
         text-shadow: $shadow-text-thin;
-      }
-
-      .title {
-        font-weight: 600;
-        color: lighten($grey-light, 23%);
-        font-size: responsive 12px 16px;
-        margin-left: 4px;
-        margin-top: 3px;
-        @include media($bp-lg) {
-          margin-left: auto;
-          padding-bottom: .3em;
+        transition: color .2s ease-out;
+        color: $white;
+        line-height: 1.3;
+        font-size: responsive 26px 32px;
+        font-range: 400px 1000px;
+        margin: 0 auto;
+        display: inline-block;
+        vertical-align: middle;
+        @include media($bp-md) {
+          margin-right: 3px;
+          line-height: .9;
         }
       }
     }

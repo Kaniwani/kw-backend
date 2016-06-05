@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidde
     Http404
 from django.shortcuts import get_object_or_404, render
 from django.core.urlresolvers import reverse_lazy
-from django.contrib.auth import logout
+from django.contrib.auth import logout, authenticate, login
 from django.views.generic import TemplateView, ListView, View
 from django.views.generic.edit import FormView, UpdateView
 from django.utils import timezone
@@ -252,8 +252,7 @@ class LevelVocab(LoginRequiredMixin, TemplateView):
         context = super(LevelVocab, self).get_context_data()
         level = self.kwargs['level']
         user = self.request.user
-        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level).distinct().order_by(
-            "vocabulary__meaning")
+        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level).distinct().order_by("vocabulary__meaning")
         context['reviews'] = level_vocab
         context['selected_level'] = level
         return context
@@ -390,9 +389,16 @@ class ReviewSummary(LoginRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         logger.info("{} navigated to review summary page.".format(request.user.username))
+
         all_reviews = request.POST
+
+        if len(all_reviews) <= 1:
+            #The post data is only populated by the CSRF token. No reviews were done
+            return HttpResponseRedirect(reverse_lazy("kw:home"))
+
         correct = []
         incorrect = []
+
         for review_id in all_reviews:
             try:
                 if int(all_reviews[review_id]) > 0:
@@ -431,7 +437,11 @@ class Register(FormView):
         user = form.save()
         logger.info("New User Created: {}, with API key {}.".format(user.username, form.cleaned_data['api_key']))
         Profile.objects.create(
-            user=user, api_key=form.cleaned_data['api_key'], level=1)
+                user=user, api_key=form.cleaned_data['api_key'], level=1)
+
+        sync_with_wk(user)
+        user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1'])
+        login(self.request, user)
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
 

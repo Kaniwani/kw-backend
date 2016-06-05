@@ -1,6 +1,16 @@
+import config from '../config';
+import im from '../vendor/include-media';
+import toastr from '../vendor/toastr';
+
 let CSRF;
 
 function init() {
+  CSRF = $('#csrf').val();
+
+  // vendor js configuration
+  if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
+  toastr.options = config.toastr;
+
   // catch any window hashes if we arrived from summary page before anything else
   if (window.location.hash) {
     smoothScroll.init();
@@ -10,7 +20,6 @@ function init() {
   // only run on vocab page
   if(/vocabulary\/.+\//.test(window.location.pathname)) {
     let $cards = $('.vocab-list').find('.vocab-card');
-    CSRF = $('#csrf').val();
 
     // if user has deeplinked from summary or elsewhere let's draw attention to the card
     let specificVocab = (window.location.href.match(/.*vocabulary\/.+\/(\#.+)/) || [])[1];

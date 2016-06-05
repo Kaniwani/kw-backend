@@ -1,16 +1,16 @@
 /* Site Breakpoints - see _include-media.scss for usage */
-$bp-xs: '<sm'; // <480px in include-media
-$bp-sm: '>=sm'; // 480px in include-media
-$bp-md: '>=md'; // 768px in include-media
-$bp-lg: '>=lg'; // 1024px in include-media
-$bp-xl: '>=xl'; // 1200px in include-media
-$bp-xxl: '>=xxl'; // 2000px in include-media
+$bp-xs: "<sm"; // <480px in include-media
+$bp-sm: ">=sm"; // 480px in include-media
+$bp-md: ">=md"; // 768px in include-media
+$bp-lg: ">=lg"; // 1024px in include-media
+$bp-xl: ">=xl"; // 1280px in include-media
+$bp-xxl: ">=xxl"; // 2000px in include-media
 
 /* Custom Component Breakpoints */
 // should really be contained within components, not happy that these are used across several...
 // perhaps should only really be in site-header??
-$bp-nav-1: '>=615px';
-$bp-nav-2: '>=850px';
+$bp-nav-1: ">=615px";
+$bp-nav-2: ">=850px";
 
 $site-max-width: 1300px;
 
@@ -23,22 +23,22 @@ $unit-xl: 40px;
 
 /* Greyscale */
 $white-light: hsl(0, 0%, 98%);
-$white:  hsl(0, 0%, 96%);
-$white-dark: hsl(0, 0%, 87%);
+$white: hsl(0, 0%, 94%);
+$white-dark: hsl(0, 0%, 85%);
 $grey-light: hsl(0, 0%, 67%);
 $grey: hsl(0, 0%, 55%);
 $grey-dark: hsl(0, 0%, 38%);
 $black-light: hsl(0, 0%, 30%);
-$black: hsl(0, 0%, 16%);
-$black-dark: hsl(0, 0%, 0%);
+$black: hsl(0, 0%, 23%);
+$black-dark: hsl(0, 0%, 8%);
 
 /* KaniWani colors */
+$purple-light: hsl(270, 80%, 52%);
+$purple: hsl(274, 90%, 48%);
+$purple-dark: hsl(262, 58%, 46%);
 $blue-light: hsl(200, 100%, 41%);
-$purple-light: hsl(280, 100%, 50%);
-$purple-dark: hsl(280, 80%, 36%);
-$blue-dark: hsl(228, 71%, 52%);
 $blue: hsl(217, 63%, 57%);
-$purple: hsl(282, 100%, 45%);
+$blue-dark: hsl(228, 71%, 52%);
 $pink: hsl(314, 100%, 50%);
 $red: hsl(346, 75%, 54%);
 $green: hsl(107, 56%, 62%);
@@ -55,3 +55,6 @@ $shadow-inner-top: inset 1px 10px 9px -6px rgba($black,.25);
 $shadow-inner-medium: inset 0 3px 20px -8px rgba($black, .25);
 $shadow-outer-light: 0 0 25px -5px rgba($black, .25);
 $shadow-bottom-light: 0 1px 12px rgba($black, .1);
+
+/* Borders */
+$border-radius: 3px;

@@ -29,6 +29,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%; /* 1, 3 */
+
   &.-syncing {
     overflow: hidden;
   }
@@ -42,17 +43,18 @@ body {
 .site-content {
   flex: 1 0 auto; /* 2 */
   width: 100%;
+
   & > [class*="-section"]:not(.-no-section-spacing) {
-   @include section-spacing;
+    @include section-spacing;
   }
 }
 
-.site-content::after {
-  content: '\00a0'; /* &nbsp; */
-  display: block;
-  height: 0px;
-  visibility: hidden;
-}
+// .site-content::after {
+//   content: '\00a0'; /* &nbsp; */
+//   display: block;
+//   height: 0px;
+//   visibility: hidden;
+// }
 /* / sticky-footer */
 
 // matches .whatever-section, .something-section
@@ -63,6 +65,7 @@ body {
 
     > .inner {
       @include section-gutters;
+
       p {
         max-width: 800px;
       }

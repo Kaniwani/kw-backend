@@ -1,0 +1,27 @@
+ .review-bg {
+  $image-bg-color: #e5e5e5;
+  display: table-row;
+  width: 100%;
+  height: 100%;
+  background-color: $image-bg-color;
+
+  .bg-image {
+    width: 100%;
+    height: 100%;
+    opacity: .9;
+    background-image: image("backgrounds/reviews/reviews-800.png");
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: auto;
+
+    @include media(">=600px") {
+      background-size: contain;
+      background-image: image("backgrounds/reviews/reviews-1200.png");
+    }
+
+    @include media(">=1200px") {
+      background-size: cover;
+      background-image: image("backgrounds/svg/reviews.svg");
+    }
+  }
+}

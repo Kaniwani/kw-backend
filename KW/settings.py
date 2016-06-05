@@ -194,6 +194,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
+    'async_messages.middleware.AsyncMiddleware',
 )
 
 REST_FRAMEWORK = {
@@ -201,6 +202,13 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated'
     ],
     'PAGE_SIZE': 10
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_cache.RedisCache',
+        'LOCATION': 'localhost:6379'
+    }
 }
 
 ROOT_URLCONF = 'KW.urls'
@@ -281,7 +289,8 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 "KW.preprocessors.review_count_preprocessor",
                 "KW.preprocessors.srs_level_count_preprocessor",
-                'django.template.context_processors.request'
+                'django.template.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
             ],
             "debug": True
         }
