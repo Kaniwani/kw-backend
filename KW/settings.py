@@ -13,7 +13,6 @@ from collections import namedtuple
 from datetime import timedelta
 import os
 from django.core.urlresolvers import reverse_lazy
-import raven
 
 try:
     import KW.secrets as secrets
@@ -23,15 +22,14 @@ except ImportError:
     secrets.DB_TYPE = "sqlite"
     secrets.DEPLOY = False
     secrets.SECRET_KEY = "samplekey"
-    secrets.RAVEN_DSN = "Whatever"
     secrets.EMAIL_HOST_PASSWORD = "nope"
     secrets.EMAIL_HOST_USER = "dontmatter@whatever.com"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 MY_TIME_ZONE = 'America/New_York'
 
-sentry_class = 'raven.contrib.django.raven_compat.handlers.SentryHandler' if secrets.DEPLOY else 'logging.StreamHandler'
-sentry_level = 'ERROR' if secrets.DEPLOY else 'DEBUG'
+logging_class = 'logging.StreamHandler'
+logging_level = 'ERROR' if secrets.DEPLOY else 'DEBUG'
 
 
 LOGGING = {
@@ -49,10 +47,6 @@ LOGGING = {
         }
     },
     'handlers': {
-        'sentry': {
-            'level': sentry_level,
-            'class': sentry_class,
-        },
         'views': {
             'level': 'DEBUG',
             'class': 'logging.handlers.TimedRotatingFileHandler',
@@ -98,22 +92,22 @@ LOGGING = {
     },
     'loggers': {
         'kw.views': {
-            'handlers': ['views', 'errors', 'sentry'],
+            'handlers': ['views', 'errors'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.models': {
-            'handlers': ['models', 'errors', 'sentry'],
+            'handlers': ['models', 'errors'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.tasks': {
-            'handlers': ['tasks', 'errors', 'sentry'],
+            'handlers': ['tasks', 'errors'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.db_repopulator': {
-            'handlers': ['sporadic_tasks', 'errors', 'sentry'],
+            'handlers': ['sporadic_tasks', 'errors'],
             'level': 'DEBUG',
             'propagate': True,
         },
@@ -178,19 +172,18 @@ LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 INSTALLED_APPS = (
-    'kw_webapp', #Make sure this is the top entry in order to correctly override template folders.
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.humanize',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
+    #'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
-    'raven.contrib.django.raven_compat',
     'rest_framework',
     'lineage',
+    'kw_webapp', #Make sure this is the top entry in order to correctly override template folders.
 )
 
 MIDDLEWARE_CLASSES = (
@@ -225,6 +218,7 @@ EMAIL_USE_TLS = True
 
 
 TIME_ZONE = MY_TIME_ZONE
+#SITE_ID = 1
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases

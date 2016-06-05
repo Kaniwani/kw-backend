@@ -1,4 +1,4 @@
-from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.contrib.auth.signals import user_logged_in
 from kw_webapp.tasks import sync_with_wk
 
 
