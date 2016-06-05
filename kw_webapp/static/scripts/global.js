@@ -11263,7 +11263,7 @@
 
 	function updateStreak() {
 	  var streak = currentVocab.streak;
-	  var iconClass = streak > 8 ? 'i-burned' : streak > 7 ? 'i-enlightened' : streak > 5 ? 'i-master' : streak > 2 ? 'i-guru' : 'i-apprentice';
+	  var iconClass = streak > 8 ? 'i-burned' : streak > 7 ? 'i-enlightened' : streak > 6 ? 'i-master' : streak > 4 ? 'i-guru' : 'i-apprentice';
 
 	  $streakIcon.addClass(iconClass).attr('title', iconClass.slice(2));
 	}

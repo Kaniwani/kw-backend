@@ -89,8 +89,8 @@ function init() {
 function getSrsRank(num) {
   return num > 8 ? 'burned' :
          num > 7 ? 'enlightened' :
-         num > 5 ? 'master' :
-         num > 2 ? 'guru' : 'apprentice';
+         num > 6 ? 'master' :
+         num > 4 ? 'guru' : 'apprentice';
 }
 
 function updateStreak() {

@@ -3,37 +3,30 @@ import re
 from collections import OrderedDict
 from datetime import timedelta
 
+#Check these values here: https://cdn.wanikani.com/assets/guide/srs-visualization-4580afac174836361bdc3d3758bd6c7f.png
 SRS_TIMES = {
-    0: 4,  # Apprentice
+    #STREAK : HOURS_UNTIL_NEXT_REVIEW
+    0: 0,  # Apprentice
     1: 4,  # Apprentice
     2: 8,  # Apprentice (8 hours)
-    3: 24,  # Guru (1 day)
+    3: 24,  # Apprentice (1 day)
     4: 72,  # Guru (3 days)
-    5: 168,  # Guru (7 days)
-    6: 336,  # Master  (14 days)
-    7: 720,  # Master (30 days)
-    8: 2160,  # Enlightened (90 days)
-    9: 4320,  # Burned (180 days)
+    5: 168,  # Guru (1 week)
+    6: 336,  # Guru -> Master  (2 weeks)
+    7: 720,  # Master -> Enlightened (1 month)
+    8: 2880,  # Enlightened -> Burned (4 months)
 }
 
 # The level arrangement I believe to be exposed by WK API.
 
 KANIWANI_SRS_LEVELS = OrderedDict()
-KANIWANI_SRS_LEVELS["apprentice"] = [0, 1, 2]
-KANIWANI_SRS_LEVELS["guru"] = [3, 4, 5]
-KANIWANI_SRS_LEVELS["master"] = [6, 7]
+KANIWANI_SRS_LEVELS["apprentice"] = [0, 1, 2, 3, 4]
+KANIWANI_SRS_LEVELS["guru"] = [5, 6]
+KANIWANI_SRS_LEVELS["master"] = [7]
 KANIWANI_SRS_LEVELS["enlightened"] = [8]
 KANIWANI_SRS_LEVELS["burned"] = [9]
 
 REVIEW_ROUNDING_TIME = timedelta(minutes=15)
-
-WANIKANI_SRS_LEVELS = {
-    "apprentice": [0, 1, 2, 3, 4],
-    "guru": [5, 6],
-    "master": [7],
-    "enlightened": [8],
-    "burned": [9]
-}
 
 LEVEL_MIN = 1
 LEVEL_MAX = 60
