@@ -1,7 +1,7 @@
 import wanakana from '../vendor/wanakana.min';
 import { revealToggle } from '../components/revealToggle';
+import kwlog from '../util/kwlog';
 import '../util/serializeObject';
-import '../util/kwlog';
 import modals from '../vendor/modals';
 modals.init({ backspaceClose: false, callbackOpen: synonymModal, callbackClose: allowShortcuts });
 
@@ -123,6 +123,9 @@ function updateKanaKanjiDetails() {
 
 function earlyTermination(ev) {
   ev.preventDefault();
+  if (answeredTotal === 0) {
+    window.location = '/kw/';
+  }
   postSummary('/kw/summary/', answerCorrectness);
 }
 
@@ -132,10 +135,12 @@ function postSummary(path, params) {
   form.setAttribute('action', path);
   form.setAttribute('class', 'u-visuallyhidden');
 
+  console.log(params)
   params.forEach(param => {
+    console.log(param, params[param])
     const hiddenField = document.createElement('input');
     hiddenField.setAttribute('type', 'hidden');
-    hiddenField.setAttribute('name', param);
+    hiddenField.setAttribute('name', params[val]);
     hiddenField.setAttribute('value', params[param]);
 
     form.appendChild(hiddenField);
@@ -154,13 +159,13 @@ String.prototype.endsWith = function(suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
-String.prototype.startsWith = function(prefix) {
+String.prototype.startsWith = function (prefix) {
   return this.slice(0, prefix.length) === prefix;
 };
 
 // Fixing the terminal n.
 function addTerminalN(str) {
-  if (str.endsWith('n')) answer = str.slice(0, -1) + 'ん';
+  if (str.endsWith('n')) answer = `${str.slice(0, -1)}ん`;
 }
 
 // Add tilde to ime input
@@ -182,7 +187,7 @@ function compareAnswer() {
 
   if (emptyString(answer)) return;
 
-  kwlog('Comparing', answer, 'with vocab item:')
+  kwlog('Comparing', answer, 'with vocab item:');
   if (window.KWDEBUG === true) console.table(currentVocab);
 
   addTerminalN(answer);
@@ -191,7 +196,6 @@ function compareAnswer() {
     // user used japanese IME, proceed
     imeInput = true;
     if (currentVocab.characters[0].startsWith('〜') && onlyKanji(answer)) addStartingTilde(answer);
-
   } else if (!wanakana.isHiragana(answer)) {
     // user used english that couldn't convert to full hiragana - don't proceed
     return nonHiraganaAnswer();
@@ -211,12 +215,16 @@ function compareAnswer() {
       revealAnswers();
       if (KW.settings.autoAdvanceCorrect) advanceDelay = 1200;
     }
-    if (KW.settings.autoAdvanceCorrect) setTimeout(() => {
-      enterPressed(null, true);
+
+    if (KW.settings.autoAdvanceCorrect) {
+      setTimeout(() => {
+        enterPressed(null, true);
       },
-    advanceDelay);
+      advanceDelay);
+    }
   }
-  //answer was not in the known readings.
+
+  // answer was not in the known readings.
   else {
     markWrong();
     // don't processAnswer() here
