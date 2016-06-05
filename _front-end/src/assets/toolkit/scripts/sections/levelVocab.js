@@ -1,6 +1,8 @@
 import config from '../config';
 import im from '../vendor/include-media';
 import toastr from '../vendor/toastr';
+import kwlog from '../util/kwlog';
+
 
 let CSRF;
 
@@ -58,7 +60,7 @@ function handleIconClick(event) {
       // brittle selecting, but user synonyms always have both present so it's safe unless markup changes...
       [$icon.closest('.kanji'), $icon.closest('.kanji').prev('.kana')].forEach(el => $(el).fadeOut(600));
     })
-    .always(res => console.log(res));
+    .always(res => kwlog(res));
   }
 
   function toggleLock(id) {
@@ -70,7 +72,7 @@ function handleIconClick(event) {
       $card.toggleClass('-locked -unlockable');
       $icon.toggleClass('i-unlock').toggleClass('i-unlocked');
     })
-    .always(res => console.log(res));
+    .always(res => kwlog(res));
   }
 }
 
