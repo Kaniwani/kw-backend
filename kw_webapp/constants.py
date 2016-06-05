@@ -7,10 +7,10 @@ from datetime import timedelta
 SRS_TIMES = {
     #STREAK : HOURS_UNTIL_NEXT_REVIEW
     0: 0,  # Apprentice
-    1: 4,  # Apprentice
+    1: 4,  # Apprentice (4 hours)
     2: 8,  # Apprentice (8 hours)
     3: 24,  # Apprentice (1 day)
-    4: 72,  # Guru (3 days)
+    4: 72,  # Apprentice -> Guru (3 days)
     5: 168,  # Guru (1 week)
     6: 336,  # Guru -> Master  (2 weeks)
     7: 720,  # Master -> Enlightened (1 month)
@@ -32,6 +32,9 @@ LEVEL_MIN = 1
 LEVEL_MAX = 60
 API_KEY = "0158f285fa5e1254b84355ce92ccfa99"
 
+# NOTE: we no longer display user's WK twitter/webpage bio info
+# No plans to do so in the future
+# Can safely remove these, associated tests, and model data for twitter/webpage
 TWITTER_USERNAME_REGEX = re.compile("[a-zA-Z0-9_]+")
 HTTP_S_REGEX = re.compile("https?://")
 
