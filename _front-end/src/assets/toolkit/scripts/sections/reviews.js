@@ -207,19 +207,22 @@ function compareAnswer() {
 
   const inReadings = () => $.inArray(answer, currentVocab.readings) != -1;
   const inCharacters = () => $.inArray(answer, currentVocab.characters) != -1;
-  const getMatchedReading = (hiraganaStr) => currentVocab.characters[currentVocab.readings.indexOf(hiraganaStr)]
+  const getMatchedReading = (hiraganaStr) => currentVocab.characters[currentVocab.readings.indexOf(hiraganaStr)];
 
   if (inReadings() || inCharacters()) {
-    let advanceDelay = 850;
+    let advanceDelay = 800;
     markRight();
     processAnswer({correct: true});
     //Fills the correct kanji into the input field based on the user's answers
     if (wanakana.isHiragana(answer)) $userAnswer.val(getMatchedReading(answer));
     if (KW.settings.showCorrectOnSuccess) {
       revealAnswers();
-      if (KW.settings.autoAdvanceCorrect) advanceDelay = 1400;
+      if (KW.settings.autoAdvanceCorrect) advanceDelay = 1200;
     }
-    if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(null, true), advanceDelay);
+    if (KW.settings.autoAdvanceCorrect) setTimeout(() => {
+      enterPressed(null, true);
+      },
+    advanceDelay);
   }
   //answer was not in the known readings.
   else {
