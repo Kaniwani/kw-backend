@@ -163,6 +163,7 @@ def unlock_eligible_vocab_from_levels(user, levels):
         response = make_api_call(api_call_string)
         unlocked, locked = process_vocabulary_response_for_unlock(user, response)
     except exceptions.InvalidWaniKaniKey:
+        logger.error("Invalid key found for user {}".format(user.username))
         user.profile.api_valid = False
         user.profile.save()
     except exceptions.WanikaniAPIException:
@@ -225,6 +226,7 @@ def sync_with_wk(user, full_sync=False):
     Takes a user. Checks the vocab list from WK for all levels. If anything new has been unlocked on the WK side,
     it also unlocks it here on Kaniwani and creates a new review for the user.
 
+    :param full_sync:
     :param recent_only: if set to True, will sync only user's most recent 3 levels. This is for during login when it is synchronous.
     :param user: The user to check for new unlocks
     :return: None
@@ -358,14 +360,13 @@ def get_users_future_reviews(user, time_limit=None):
     return queryset
 
 
-def process_vocabulary_response_for_unlock(user, response):
+def process_vocabulary_response_for_unlock(user, json_data):
     """
-    Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
+    Given a JSON Object from WK, iterate over the list of vocabulary, and synchronize the user.
     :param user:
-    :param response:
+    :param json_data:
     :return:
     """
-    json_data = response
     vocab_list = json_data['requested_information']
     vocab_list = [vocab_json for vocab_json in vocab_list if
                   vocab_json['user_specific'] is not None]  # filters out locked items.

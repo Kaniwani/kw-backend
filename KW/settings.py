@@ -177,7 +177,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    #'django.contrib.sites',
+    'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'crispy_forms',
@@ -218,7 +218,7 @@ EMAIL_USE_TLS = True
 
 
 TIME_ZONE = MY_TIME_ZONE
-#SITE_ID = 1
+SITE_ID = 1
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
