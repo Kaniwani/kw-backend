@@ -12,14 +12,6 @@
       <span class="percentage"></span>
     </div>
 
-    <p> {{incorrect_count}} {{correct_count}} </p>
-
-    {% if incorrect_count < 0 and correct_count < 0 %}
-    <h2 class="title">
-      Nothing answered, nothing gained!
-    </h2>
-    {% endif %}
-
     {% if incorrect_count > 0 %}
     <h2 class="title">{{ incorrect_count }} Incorrect</h2>
       <ul class="vocab-list -incorrect">
@@ -40,7 +32,7 @@
         {% endfor %}
       </ul>
 
-    {% elif incorrect_count < 1 and correct_count > 1 %}
+    {% else %}
       <h3 class="title"><span lang="ja">完璧だ！</span> (๑•̀ㅂ•́)و</h3>
     {% endif %}
 
@@ -58,7 +50,7 @@
         {% endfor %}
       </ul>
 
-    {% elif correct_count < 1 and incorrect_count > 1 %}
+    {% else %}
       <h3 class="title"><span lang="ja">残念だよ</span> (๑◕︵◕๑)</h3>
     {% endif %}
 

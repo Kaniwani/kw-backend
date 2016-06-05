@@ -135,16 +135,18 @@ function postSummary(path, params) {
   form.setAttribute('action', path);
   form.setAttribute('class', 'u-visuallyhidden');
 
-  console.log(params)
-  params.forEach(param => {
-    console.log(param, params[param])
-    const hiddenField = document.createElement('input');
-    hiddenField.setAttribute('type', 'hidden');
-    hiddenField.setAttribute('name', params[val]);
-    hiddenField.setAttribute('value', params[param]);
 
-    form.appendChild(hiddenField);
-  });
+  // TODO: this is crazytown, treating an array as an object - need to refactor
+  for (let key in params) {
+    if (params.hasOwnProperty(key)) {
+      let hiddenField = document.createElement('input');
+      hiddenField.setAttribute('type', 'hidden');
+      hiddenField.setAttribute('name', key);
+      hiddenField.setAttribute('value', params[key]);
+
+      form.appendChild(hiddenField);
+    }
+  }
 
   // CSRF hackery.
   const CsrfField = document.createElement('input');
@@ -303,8 +305,11 @@ function processAnswer({correct} = {}) {
   let previouslyWrong;
 
   if (correct === true) {
+
     // Ensures this is the first time the vocab has been answered in this session,
     // so it goes in the right container(incorrect/correct)
+
+    // TODO: this is crazytown, treating an array as an object - need to refactor
     if ($.inArray(currentvocabID, Object.keys(answerCorrectness)) === -1) {
       answerCorrectness[currentvocabID] = 1;
       previouslyWrong = false;
