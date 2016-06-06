@@ -119,7 +119,7 @@ function srsRankChange({ correct = false } = {}) {
   const rankUp = !prevWrong && newRank.val > rank.val && newRank.name !== rank.name;
   const rankDown = newRank.val < rank.val && newRank.name !== rank.name;
 
-  kwlog('rank:', rank, 'newRank:', newRank, 'rankUp:', rankUp, 'rankDown:', rankDown, 'prevWrong;', prevWrong);
+  kwlog('--- srsRankChange---\n', 'rank:', rank, '\nnewRank:', newRank, '\nrankUp:', rankUp, '\nrankDown:', rankDown, '\nprevWrong:', prevWrong);
 
   if (rankUp) {
     $srsUp.attr('data-after', newRank.name).addClass(`is-animating -${newRank.name}`);
