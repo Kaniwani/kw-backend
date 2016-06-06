@@ -35,24 +35,24 @@ def all_srs(user=None):
     :return: None
     '''
     logger.info("Beginning SRS run for {}.".format(user or "all users"))
-    hours = [4, 4, 8, 24, 72, 168, 336, 720, 2160]
-    srs_level = zip(map(lambda x: past_time(x), hours), range(0, 9))
-    for level in srs_level:
+    for streak, srs_timing in constants.SRS_TIMES.items():
+
+        study_threshold = past_time(srs_timing)
         if user and not user.profile.on_vacation:
             review_set = UserSpecific.objects.filter(user=user,
-                                                     last_studied__lte=level[0],
-                                                     streak=level[1],
+                                                     last_studied__lte=study_threshold,
+                                                     streak=streak,
                                                      needs_review=False)
         else:
             review_set = UserSpecific.objects.filter(user__profile__on_vacation=False,
-                                                     last_studied__lte=level[0],
-                                                     streak=level[1],
+                                                     last_studied__lte=study_threshold,
+                                                     streak=streak,
                                                      needs_review=False)
         if review_set.count() > 0:
             logger.info(
-                "{} has {} reviews for SRS level {}".format((user or "all users"), review_set.count(), level[1]))
+                "{} has {} reviews for SRS level {}".format((user or "all users"), review_set.count(), streak))
         else:
-            logger.info("{} has no reviews for SRS level {}".format((user or "all users"), level[1]))
+            logger.info("{} has no reviews for SRS level {}".format((user or "all users"), streak))
         review_set.update(needs_review=True)
     logger.info("Finished SRS run for {}.".format(user or "all users"))
 
