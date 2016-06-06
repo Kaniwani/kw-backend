@@ -3,7 +3,11 @@ import { revealToggle } from '../components/revealToggle';
 import kwlog from '../util/kwlog';
 import '../util/serializeObject';
 import modals from '../vendor/modals';
-modals.init({ backspaceClose: false, callbackOpen: synonymModal, callbackClose: enableShortcuts });
+modals.init({
+  backspaceClose: false,
+  callbackOpen: synonymModal,
+  callbackClose: enableShortcuts,
+});
 
 
 // would really like to do a massive refactor, break out some functions as importable helpers
@@ -18,12 +22,13 @@ const $reviewsDone = $('#reviewsDone');
 const $reviewsCorrect = $('#reviewsCorrect');
 const $progressBar = $('.progress-bar > .value');
 const $meaning = $('#meaning');
-const $streakIcon = $('.streak > .icon');
+const $srsIndicator = $('.streak > .icon');
 const $userAnswer = $('#userAnswer');
 const $answerPanel = $('#answerpanel');
 const $submitButton = $('#submitAnswer');
 const $ignoreButton = $('#ignoreAnswer');
 const $srsUp = $('#srsUp > .content');
+const $srsDown = $('#srsDown > .content');
 const $reveal = $('.reveal');
 const $detailKana = $('#detailKana');
 const $detailKanji = $('#detailKanji');
@@ -66,7 +71,7 @@ function init() {
   $reviewsLeft.text(startCount - 1);
   currentVocab = remainingVocab.shift();
   updateKanaKanjiDetails();
-  updateStreak();
+  updateSrsIndicator(currentVocab.streak);
 
   // event listeners
   wanakana.bind(document.querySelector('#userAnswer'));
@@ -93,34 +98,37 @@ function init() {
   $homeLink.click(earlyTermination);
 }
 
-function getSrsRank(num) {
+function getSrsRankName(num) {
   return num > 8 ? 'burned' :
          num > 7 ? 'enlightened' :
          num > 6 ? 'master' :
          num > 4 ? 'guru' : 'apprentice';
 }
 
-function updateStreak() {
-  const rank = getSrsRank(currentVocab.streak);
+function updateSrsIndicator(rankName) {
   // using .attr('class') to completely wipe prev classes on update
-  $streakIcon.attr('class', `icon i-${rank}`);
-  $streakIcon.closest('.streak').attr('data-hint', `${rank}`);
+  $srsIndicator.attr('class', `icon i-${rankName}`);
+  $srsIndicator.closest('.streak').attr('data-hint', `${rankName}`);
 }
 
-function streakLevelUp() {
-  const rank = getSrsRank(currentVocab.streak);
-  const newRank = getSrsRank(currentVocab.streak + 1);
+function srsRankChange({ correct = false } = {}) {
+  const rank = { val: currentVocab.streak, name: getSrsRankName(currentVocab.streak) };
+  const adjustedRank = currentVocab.streak + (correct ? 1 : -1);
+  const prevWrong = currentVocab.previouslyWrong;
+  const newRank = { val: adjustedRank, name: getSrsRankName(adjustedRank) };
+  const rankUp = !prevWrong && newRank.val > rank.val && newRank.name !== rank.name;
+  const rankDown = newRank.val < rank.val && newRank.name !== rank.name;
 
-  // TODO: sometimes a user gets an answer wrong, dropping them to 1/3 from 2/3 of a certain rank
-  // Then when they get the answer correct later in the same review, we notice that they are at the
-  // bottom level of a rank, and incorrectly assume they "ranked up" when really
-  // they are still in the same belt as before they got it wrong
-  // More data needs to be stored the item to properly determine how their rank changed
-  if (newRank !== rank) {
-    $srsUp.attr('data-after', newRank).addClass(`-animating -${newRank}`);
-    $streakIcon.attr('class', `icon i-${newRank} -marked`)
-               .closest('.streak')
-               .attr('data-hint', `${newRank}`);
+  kwlog('rank:', rank, 'newRank:', newRank, 'rankUp:', rankUp, 'rankDown:', rankDown, 'prevWrong;', prevWrong);
+
+  if (rankUp) {
+    $srsUp.attr('data-after', newRank.name).addClass(`is-animating -${newRank.name}`);
+    updateSrsIndicator(newRank.name);
+  }
+
+  if (rankDown) {
+    $srsDown.attr('data-after', newRank.name).addClass(`is-animating -${newRank.name}`);
+    updateSrsIndicator(newRank.name);
   }
 }
 
@@ -166,28 +174,28 @@ function postSummary(path, params) {
   form.submit();
 }
 
-String.prototype.endsWith = function (suffix) {
-  return this.indexOf(suffix, this.length - suffix.length) !== -1;
-};
+function endsWith(str, suffix) {
+  return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
 
-String.prototype.startsWith = function (prefix) {
-  return this.slice(0, prefix.length) === prefix;
-};
+function startsWith(str, prefix) {
+  return str.slice(0, prefix.length) === prefix;
+}
 
 // Fixing the terminal n.
 function addTerminalN(str) {
-  if (str.endsWith('n')) answer = `${str.slice(0, -1)}ん`;
+  if (endsWith(str, 'n')) answer = `${str.slice(0, -1)}ん`;
 }
 
 // Add tilde to ime input
 function addStartingTilde(str) {
   const tildeJA = '〜';
   const tildeEN = '~';
-  if (str.startsWith(tildeEN)) answer = tildeJA + str.slice(1);
-  if (!str.startsWith(tildeJA)) answer = tildeJA + str;
+  if (startsWith(str, tildeEN)) answer = tildeJA + str.slice(1);
+  if (!startsWith(str, tildeJA)) answer = tildeJA + str;
 }
 
-function emptyString(str) {
+function isEmptyString(str) {
   return str === '';
 }
 
@@ -195,10 +203,10 @@ function compareAnswer() {
   kwlog('compareAnswer called');
   answer = $userAnswer.val().trim();
 
-  if (emptyString(answer)) return;
+  if (isEmptyString(answer)) return;
 
   kwlog('Comparing', answer, 'with vocab item:');
-  if (window.KWDEBUG === true) console.table(currentVocab);
+  if (!!window.KWDEBUG) console.table(currentVocab);
 
   addTerminalN(answer);
 
@@ -216,10 +224,13 @@ function compareAnswer() {
 
   if (inReadings() || inCharacters()) {
     let advanceDelay = 800;
+
     markRight();
     processAnswer({ correct: true });
+
     // Fills the correct kanji into the input field based on the user's answers
     if (wanakana.isHiragana(answer)) $userAnswer.val(getMatchedReading(answer));
+
     if (KW.settings.showCorrectOnSuccess) {
       revealAnswers();
       if (KW.settings.autoAdvanceCorrect) advanceDelay = 1400;
@@ -303,10 +314,10 @@ function addSynonym(vocabID, { kana, kanji } = {}) {
   });
 }
 
-function processAnswer({ correct } = {}) {
+function processAnswer({ correct = false } = {}) {
   kwlog('processAnswer called');
+
   const currentvocabID = currentVocab.user_specific_id;
-  let previouslyWrong;
 
   if (correct === true) {
     // Ensures this is the first time the vocab has been answered in this session,
@@ -315,21 +326,22 @@ function processAnswer({ correct } = {}) {
     // TODO: this is crazytown, treating an array as an object - need to refactor as obj
     if ($.inArray(currentvocabID, Object.keys(answerCorrectness)) === -1) {
       answerCorrectness[currentvocabID] = 1;
-      previouslyWrong = false;
+      currentVocab.previouslyWrong = false;
     } else {
-      previouslyWrong = true;
+      currentVocab.previouslyWrong = true;
     }
     correctTotal += 1;
     updateProgressBar(correctTotal / startCount * 100);
+    srsRankChange({ correct: true });
   } else if (correct === false) {
     answerCorrectness[currentvocabID] = -1;
-    previouslyWrong = true;
-    currentVocab.streak -= 1;
+    currentVocab.previouslyWrong = true;
     remainingVocab.push(currentVocab);
+    srsRankChange({ correct: false });
   }
 
   answeredTotal += 1;
-  recordAnswer(currentvocabID, correct, previouslyWrong); // record on server
+  recordAnswer(currentvocabID, correct, currentVocab.previouslyWrong); // record on server
 }
 
 function recordAnswer(vocabID, correctness, previouslyWrong) {
@@ -375,7 +387,7 @@ function markWrong() {
   enableShortcuts();
   clearColors();
   $userAnswer.addClass('-marked -incorrect').prop({ disabled: true });
-  $streakIcon.addClass('-marked');
+  $srsIndicator.addClass('-marked');
   $ignoreButton.removeClass('-hidden');
   $synonymButton.removeClass('-hidden');
 }
@@ -384,8 +396,7 @@ function markRight() {
   enableShortcuts();
   clearColors();
   $userAnswer.addClass('-marked -correct').prop({ disabled: true });
-  $streakIcon.addClass('-marked');
-  streakLevelUp();
+  $srsIndicator.addClass('-marked');
 }
 
 function updateProgressBar(percent) {
@@ -394,11 +405,12 @@ function updateProgressBar(percent) {
 
 function resetQuizUI() {
   clearColors();
-  updateStreak();
   disableButtons();
   disableShortcuts();
   updateKanaKanjiDetails();
-  $srsUp.removeClass('-animating');
+  updateSrsIndicator(currentVocab.streak);
+  $srsUp.removeClass('is-animating');
+  $srsDown.removeClass('is-animating');
   $userAnswer.removeClass('shake');
   $userAnswer.val('').prop({ disabled: false }).focus();
 }
@@ -427,7 +439,8 @@ function revealAnswers({ kana, kanji } = {}) {
 
 function rotateVocab({ ignored = false, correct = false } = {}) {
   kwlog('rotateVocab called');
-  if (ignored) {
+
+  if (!!ignored) {
     // put ignored answer back onto end of review queue
     remainingVocab.push(currentVocab);
   }
@@ -439,13 +452,14 @@ function rotateVocab({ ignored = false, correct = false } = {}) {
 
   currentVocab = remainingVocab.shift();
 
-  if (correct) {
+  if (!!correct) {
     $reviewsLeft.html(remainingVocab.length);
     $reviewsDone.html(correctTotal);
   }
 
   // guard against 0 / 0 (when first answer ignored)
   const percentCorrect = Math.floor((correctTotal / answeredTotal) * 100) || 0;
+
   kwlog(`
     remainingVocab.length: ${remainingVocab.length},
     currentVocab: ${currentVocab.meaning},
@@ -454,7 +468,6 @@ function rotateVocab({ ignored = false, correct = false } = {}) {
     percentCorrect: ${percentCorrect}`
   );
 
-  // TODO: this is slightly off if user ignored incorrect answer - need to account for that
   $reviewsCorrect.html(percentCorrect);
   $meaning.html(currentVocab.meaning);
 

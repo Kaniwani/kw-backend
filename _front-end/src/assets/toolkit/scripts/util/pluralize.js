@@ -1,8 +1,10 @@
 // add 's' to string if number is zero or plural
-const pluralize = function(text, num) {
-  num = +num;
-  if (Number.isNaN(num)) console.warn('pluralize received non-number');
-  return `${num} ${text + (num > 1 || num == 0 ? "s" : "")}`;
+
+export default function pluralize(text, num) {
+  const number = parseInt(num, 10);
+
+  if (Number.isNaN(number)) console.warn('pluralize received non-number');
+
+  return `${number} ${text + (number > 1 || number === 0 ? 's' : '')}`;
 }
 
-export default pluralize;

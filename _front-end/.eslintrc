@@ -5,6 +5,7 @@
     "node": "true"
   },
   "rules" : {
+    "max-len": [1],
     "id-length": [1, {
       "min": 2,
       "properties": "never",

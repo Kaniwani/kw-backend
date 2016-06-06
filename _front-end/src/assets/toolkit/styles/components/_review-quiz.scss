@@ -202,9 +202,10 @@
     }
   }
 
-  .srs-up {
+  .srs-up,
+  .srs-down {
     position: absolute;
-    top: -2.5em;
+    top: 0;
     left: 0%;
     width: 100%;
     font-size: 1.25em;
@@ -218,6 +219,27 @@
       z-index: 4;
       border-radius: 3px;
       padding: .1em .5em .22em;
+
+      // srs rank
+      &:after {
+        font-variant: small-caps;
+        font-family: $ff-heading;
+        font-weight: 600;
+        content: attr(data-after);
+        margin-left: 6px;
+      }
+
+      // icon
+      &:before {
+        font-size: .8em;
+      }
+    }
+  }
+
+  .srs-up {
+    top: -2.5em;
+
+    > .content {
       background: $green;
 
       &.-guru {
@@ -236,23 +258,30 @@
         background: $black-light;
       }
 
-      &.-animating {
+      &.is-animating {
         animation: srsRankUp .75s ease 0s 1 normal both running;
-      }
-
-      // srs rank
-      &:after {
-        font-variant: small-caps;
-        font-family: $ff-heading;
-        font-weight: 600;
-        content: attr(data-after);
-        margin-left: 6px;
-      }
-
-      // icon
-      &:before {
-        font-size: .8em;
       }
     }
   }
+
+  .srs-down {
+    top: -2.3em;
+
+    > .content {
+      background: $red;
+
+      // minus symbol isn't vertically centered
+      &:before {
+        position: relative;
+        top: 1px;
+      }
+
+      &.is-animating {
+        animation: srsRankDown .75s ease 0s 1 normal both running;
+      }
+    }
+  }
+
 }
+
+
