@@ -24,7 +24,7 @@ function ajaxReviewCount() {
   });
 }
 
-const refreshReviews = ({ forceGet } = { forceGet: false }) => {
+function refreshReviews({ forceGet } = { forceGet: false }) {
   $navCount = $('#navReviewCount');
   $buttonCount = $('#reviewCount');
   recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
@@ -37,6 +37,6 @@ const refreshReviews = ({ forceGet } = { forceGet: false }) => {
   );
 
   if (!recentlyRefreshed || forceGet) ajaxReviewCount();
-};
+}
 
 export default refreshReviews;

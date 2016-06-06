@@ -1,14 +1,17 @@
+import kwlog from './kwlog';
+
 // map python True/False passed from view as strings to JS true/false booleans
-const strToBoolean = function(o) {
-  if (o == null) {
-    console.warn('Invalid input provided to strToBoolean:', o);
-    return;
+function strToBoolean(obj) {
+  if (obj == null) {
+    kwlog('Invalid input provided to strToBoolean:', obj);
+  } else {
+    for (let key of Object.keys(obj)) {
+      const val = obj[key];
+      obj[key] = !!(val === 'True');
+    }
   }
-  for (let k of Object.keys(o)) {
-    let v = o[k];
-    o[k] = (v === 'True' ? true : false);
-  }
-  return o;
-};
+
+  return obj;
+}
 
 export default strToBoolean;

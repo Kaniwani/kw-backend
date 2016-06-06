@@ -1,5 +1,7 @@
-export default function kwlog(...args) {
+function kwlog(...args) {
   if (window.KWDEBUG === true) {
     console.log(...args);
   }
 }
+
+export default kwlog;
