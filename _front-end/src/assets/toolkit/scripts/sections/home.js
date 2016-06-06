@@ -1,6 +1,5 @@
 import config from '../config';
 import refreshReviews from '../components/refreshReviews';
-import pluralize from '../util/pluralize';
 import strToBoolean from '../util/strToBoolean';
 import timeago from '../vendor/timeago';
 import toastr from '../vendor/toastr';

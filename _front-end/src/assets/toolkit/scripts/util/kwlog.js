@@ -1,8 +1,5 @@
-// only log is debug turned on
-const kwlog = function (...args) {
+export default function kwlog(...args) {
   if (window.KWDEBUG === true) {
     console.log(...args);
   }
-};
-
-export default kwlog;
+}
