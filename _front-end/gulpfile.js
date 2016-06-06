@@ -21,7 +21,6 @@ var assemble = require('fabricator-assemble'),
     lost = require('lost'),
     autoprefixer = require('autoprefixer'),
     browserSync = require('browser-sync'),
-    spawn = require('child_process').spawn, // for casper tests
     reload = browserSync.reload;
 
 
@@ -141,23 +140,6 @@ gulp.task('stripDebug', function () {
 
 });
 
-// functionality tests
-gulp.task('test', function () {
-    var tests = ['test/test.js'];
-
-    var casperChild = spawn('casperjs', ['test'].concat(tests));
-
-    casperChild.stdout.on('data', function (data) {
-        gutil.log('CasperJS:', data.toString().slice(0, -1)); // Remove \n
-    });
-
-    casperChild.on('close', function (code) {
-        var success = code === 0; // Will be 1 in the event of failure
-
-        // Do something with success here
-    });
-});
-
 // server
 gulp.task('serve', function () {
 
@@ -226,7 +208,7 @@ gulp.task('default', ['clean'], function () {
     }
 
     if (config.prod) {
-     gulp.start('stripDebug');
+     // gulp.start('stripDebug');
     }
   });
 

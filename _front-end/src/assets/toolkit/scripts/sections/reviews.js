@@ -1,8 +1,9 @@
 import wanakana from '../vendor/wanakana.min';
 import { revealToggle } from '../components/revealToggle';
+import kwlog from '../util/kwlog';
 import '../util/serializeObject';
 import modals from '../vendor/modals';
-modals.init({ backspaceClose: false, callbackOpen: synonymModal });
+modals.init({ backspaceClose: false, callbackOpen: synonymModal, callbackClose: enableShortcuts });
 
 
 // would really like to do a massive refactor, break out some functions as importable helpers
@@ -11,44 +12,48 @@ modals.init({ backspaceClose: false, callbackOpen: synonymModal });
 // instead we could load the page with a <div id="reactReview"></div> and ajax in the data
 // and have much better organisation / handling of state
 
+const $homeLink = $('.homelink');
+const $reviewsLeft = $('#reviewsLeft');
+const $reviewsDone = $('#reviewsDone');
+const $reviewsCorrect = $('#reviewsCorrect');
+const $progressBar = $('.progress-bar > .value');
+const $meaning = $('#meaning');
+const $streakIcon = $('.streak > .icon');
+const $userAnswer = $('#userAnswer');
+const $answerPanel = $('#answerpanel');
+const $submitButton = $('#submitAnswer');
+const $ignoreButton = $('#ignoreAnswer');
+const $srsUp = $('#srsUp > .content');
+const $reveal = $('.reveal');
+const $detailKana = $('#detailKana');
+const $detailKanji = $('#detailKanji');
+const $synonymButton = $('#addSynonym');
+const $synonymForm = $('#synonymForm');
 
-let KW,
-    currentVocab,
-    remainingVocab,
-    startCount,
-    answer,
-    correctTotal = 0,
-    answeredTotal = 0,
-    answerCorrectness = [],
-    $homeLink = $('.homelink'),
-    $reviewsLeft = $('#reviewsLeft'),
-    $reviewsDone = $('#reviewsDone'),
-    $reviewsCorrect = $('#reviewsCorrect'),
-    $progressBar = $('.progress-bar > .value'),
-    $meaning = $('#meaning'),
-    $streakIcon = $('.streak > .icon'),
-    $userAnswer = $('#userAnswer'),
-    $answerPanel = $('#answerpanel'),
-    $submitButton = $('#submitAnswer'),
-    $ignoreButton = $('#ignoreAnswer'),
-    $srsUp = $('#srsUp > .content'),
-    $reveal = $('.reveal'),
-    $detailKana = $('#detailKana'),
-    $detailKanji = $('#detailKanji'),
-    $synonymButton = $('#addSynonym'),
-    $synonymForm = $('#synonymForm');
+let KW;
+let currentVocab;
+let remainingVocab;
+let startCount;
+let answer;
+let correctTotal = 0;
+let answeredTotal = 0;
+let autoAdvancing = false;
+const answerCorrectness = [];
 
-
-$(document).keypress(function(event) {
-  console.log('keypress', event.which);
-});
+window.KWDEBUG = true;
 
 // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
 // not including *half-width katakana / roman letters* since they should be considered typos
 const japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
-const onlyJapaneseChars = str => [...str].every(c => japRegex.test(c));
-const onlyKanji = str => [...str].every(c => c.charCodeAt(0) >= 19968 && c.charCodeAt(0) < 40879);
-//Grab CSRF token off of dummy form.
+function onlyJapaneseChars(str) {
+  return [...str].every(char => japRegex.test(char));
+}
+
+function onlyKanji(str) {
+  return [...str].every(char => char.charCodeAt(0) >= 19968 && char.charCodeAt(0) < 40879);
+}
+
+// Grab CSRF token off of dummy form.
 const CSRF = $('#csrf').val();
 
 function init() {
@@ -69,12 +74,16 @@ function init() {
   wanakana.bind(document.querySelector('#userAnswer'));
   wanakana.bind(document.querySelector('#newKana')); // new synonym form input
   wanakana.bind(document.querySelector('#newKanji')); // new synonym form input
-  $userAnswer.keydown(handleShortcuts);
 
   // rotate or record on 'submit' rather than submitting form and page refreshing
   $submitButton.click(enterPressed);
   $answerPanel.submit(enterPressed);
   $ignoreButton.click(ignoreAnswer);
+
+  // DEBUG
+  $userAnswer.keydown((event) => {
+    kwlog('kp', event.which, String.fromCharCode(event.which));
+  });
 
   $synonymButton.click(synonymModal);
   $synonymForm.submit(handleSynonymForm);
@@ -94,20 +103,26 @@ function getSrsRank(num) {
 }
 
 function updateStreak() {
-  let rank = getSrsRank(currentVocab.streak);
-  $streakIcon.attr('class', `icon i-${rank}`)
+  const rank = getSrsRank(currentVocab.streak);
+  // using .attr('class') to completely wipe prev classes on update
+  $streakIcon.attr('class', `icon i-${rank}`);
   $streakIcon.closest('.streak').attr('data-hint', `${rank}`);
 }
 
 function streakLevelUp() {
-  let rank = getSrsRank(currentVocab.streak);
-  let newRank = getSrsRank(currentVocab.streak + 1);
+  const rank = getSrsRank(currentVocab.streak);
+  const newRank = getSrsRank(currentVocab.streak + 1);
 
-  // if we went up a rank
+  // TODO: sometimes a user gets an answer wrong, dropping them to 1/3 from 2/3 of a certain rank
+  // Then when they get the answer correct later in the same review, we notice that they are at the
+  // bottom level of a rank, and incorrectly assume they "ranked up" when really
+  // they are still in the same belt as before they got it wrong
+  // More data needs to be stored the item to properly determine how their rank changed
   if (newRank !== rank) {
     $srsUp.attr('data-after', newRank).addClass(`-animating -${newRank}`);
     $streakIcon.attr('class', `icon i-${newRank} -marked`)
-               .closest('.streak').attr('data-hint', `${newRank}`);
+               .closest('.streak')
+               .attr('data-hint', `${newRank}`);
   }
 }
 
@@ -118,18 +133,24 @@ function updateKanaKanjiDetails() {
 
 function earlyTermination(ev) {
   ev.preventDefault();
-  postSummary('/kw/summary/', answerCorrectness);
+  if (answeredTotal === 0) {
+    window.location = '/kw/';
+  } else {
+    postSummary('/kw/summary/', answerCorrectness);
+  }
 }
 
 function postSummary(path, params) {
-  let form = document.createElement('form');
+  const form = document.createElement('form');
   form.setAttribute('method', 'post');
   form.setAttribute('action', path);
   form.setAttribute('class', 'u-visuallyhidden');
 
+
+  // TODO: this is crazytown, treating an array as an object - need to refactor
   for (let key in params) {
     if (params.hasOwnProperty(key)) {
-      let hiddenField = document.createElement('input');
+      const hiddenField = document.createElement('input');
       hiddenField.setAttribute('type', 'hidden');
       hiddenField.setAttribute('name', key);
       hiddenField.setAttribute('value', params[key]);
@@ -137,26 +158,27 @@ function postSummary(path, params) {
       form.appendChild(hiddenField);
     }
   }
-  //CSRF hackery.
-  let csrf_field = document.createElement('input');
-  csrf_field.setAttribute('name', 'csrfmiddlewaretoken');
-  csrf_field.setAttribute('value', CSRF);
-  form.appendChild(csrf_field);
+
+  // CSRF hackery.
+  const CsrfField = document.createElement('input');
+  CsrfField.setAttribute('name', 'csrfmiddlewaretoken');
+  CsrfField.setAttribute('value', CSRF);
+  form.appendChild(CsrfField);
   document.body.appendChild(form);
   form.submit();
 }
 
-String.prototype.endsWith = function(suffix) {
+String.prototype.endsWith = function (suffix) {
   return this.indexOf(suffix, this.length - suffix.length) !== -1;
 };
 
-String.prototype.startsWith = function(prefix) {
+String.prototype.startsWith = function (prefix) {
   return this.slice(0, prefix.length) === prefix;
 };
 
 // Fixing the terminal n.
 function addTerminalN(str) {
-  if (str.endsWith('n')) answer = str.slice(0, -1) + 'ん';
+  if (str.endsWith('n')) answer = `${str.slice(0, -1)}ん`;
 }
 
 // Add tilde to ime input
@@ -172,45 +194,47 @@ function emptyString(str) {
 }
 
 function compareAnswer() {
-  console.log('compareAnswer called');
-  let imeInput = false;
+  kwlog('compareAnswer called');
   answer = $userAnswer.val().trim();
 
   if (emptyString(answer)) return;
 
-  // console.log('Comparing', answer, 'with vocab item:')
-  // console.table(currentVocab);
+  kwlog('Comparing', answer, 'with vocab item:');
+  if (window.KWDEBUG === true) console.table(currentVocab);
 
   addTerminalN(answer);
 
   if (onlyJapaneseChars(answer)) {
     // user used japanese IME, proceed
-    imeInput = true;
     if (currentVocab.characters[0].startsWith('〜') && onlyKanji(answer)) addStartingTilde(answer);
-
   } else if (!wanakana.isHiragana(answer)) {
     // user used english that couldn't convert to full hiragana - don't proceed
     return nonHiraganaAnswer();
   }
 
-  const inReadings = () => $.inArray(answer, currentVocab.readings) != -1;
-  const inCharacters = () => $.inArray(answer, currentVocab.characters) != -1;
-  const getMatchedReading = (hiraganaStr) => currentVocab.characters[currentVocab.readings.indexOf(hiraganaStr)]
+  const inReadings = () => $.inArray(answer, currentVocab.readings) !== -1;
+  const inCharacters = () => $.inArray(answer, currentVocab.characters) !== -1;
+  const getMatchedReading = (hiraganaStr) => currentVocab.characters[currentVocab.readings.indexOf(hiraganaStr)];
 
   if (inReadings() || inCharacters()) {
-    let advanceDelay = 850;
+    let advanceDelay = 800;
     markRight();
-    processAnswer({correct: true});
-    //Fills the correct kanji into the input field based on the user's answers
+    processAnswer({ correct: true });
+    // Fills the correct kanji into the input field based on the user's answers
     if (wanakana.isHiragana(answer)) $userAnswer.val(getMatchedReading(answer));
     if (KW.settings.showCorrectOnSuccess) {
       revealAnswers();
       if (KW.settings.autoAdvanceCorrect) advanceDelay = 1400;
     }
-    if (KW.settings.autoAdvanceCorrect) setTimeout(() => enterPressed(), advanceDelay);
-  }
-  //answer was not in the known readings.
-  else {
+
+    if (KW.settings.autoAdvanceCorrect) {
+      autoAdvancing = true;
+      setTimeout(() => {
+        // user advancing early by themselves sets autoAdvancing to false;
+        if (autoAdvancing) enterPressed(null);
+      }, advanceDelay);
+    }
+  } else {
     markWrong();
     // don't processAnswer() here
     // wait for submission or ignore answer - which is handled by event listeners for submit/enter
@@ -221,14 +245,16 @@ function compareAnswer() {
 }
 
 function synonymModal() {
-  console.log('synonymModal called');
-  let $form = $('#synonymForm');
-  let $answerField = $(wanakana.isHiragana(answer) ? '#newKana' : '#newKanji');
-  let $notAnswerField = $('.input').not($answerField);
+  kwlog('synonymModal called');
+  disableShortcuts();
+
+  const $form = $('#synonymForm');
+  const $answerField = $(wanakana.isHiragana(answer) ? '#newKana' : '#newKanji');
+  const $notAnswerField = $('.input').not($answerField);
 
   // prepopulate
-  $form.find('.wrappinglabel').each(function(i,el) {
-    let $el = $(el);
+  $form.find('.wrappinglabel').each((i, el) => {
+    const $el = $(el);
     $el.find('.input').val('');
     $el.find('.jisho').removeClass('-ghost');
   });
@@ -240,15 +266,15 @@ function synonymModal() {
 }
 
 function handleSynonymForm(ev) {
-  console.log('handleSynonymForm called');
+  kwlog('handleSynonymForm called');
   ev.preventDefault();
-  let $this = $(this);
-  let vocabID = currentVocab.user_specific_id;
-  let $submitButton = $this.find('#synonymSubmit');
-  let $validation = $this.find('.validation');
-  let data = $this.serializeObject();
+  const $this = $(this);
+  const vocabID = currentVocab.user_specific_id;
+  const $submitButton = $this.find('#synonymSubmit');
+  const $validation = $this.find('.validation');
+  const data = $this.serializeObject();
 
-  if (Object.keys(data).every(k => data[k] !== '' && onlyJapaneseChars(data[k]))) {
+  if (Object.keys(data).every(key => data[key] !== '' && onlyJapaneseChars(data[key]))) {
     $validation.addClass('-hidden');
     addSynonym(vocabID, data);
     $submitButton.html('<span class="icon -loading"></span>');
@@ -262,7 +288,7 @@ function handleSynonymForm(ev) {
   }
 }
 
-function addSynonym(vocabID, {kana, kanji} = {}) {
+function addSynonym(vocabID, { kana, kanji } = {}) {
   // add for when in-memory item is returned to review queue
   currentVocab.readings.push(kana);
   currentVocab.characters.push(kanji);
@@ -271,22 +297,25 @@ function addSynonym(vocabID, {kana, kanji} = {}) {
   $.post('/kw/synonym/add', {
     csrfmiddlewaretoken: CSRF,
     user_specific_id: vocabID,
-    kana: kana,
-    kanji: kanji,
+    kana,
+    kanji,
   })
   .always(res => {
-    console.log(res);
+    kwlog(res);
   });
 }
 
-function processAnswer({correct} = {}) {
-  console.log('processAnswer called')
-  let previouslyWrong,
-      currentvocabID = currentVocab.user_specific_id;
+function processAnswer({ correct } = {}) {
+  kwlog('processAnswer called');
+  const currentvocabID = currentVocab.user_specific_id;
+  let previouslyWrong;
 
   if (correct === true) {
-    // Ensures this is the first time the vocab has been answered in this session, so it goes in the right container(incorrect/correct)
-    if ($.inArray(currentvocabID, Object.keys(answerCorrectness)) == -1) {
+    // Ensures this is the first time the vocab has been answered in this session,
+    // so it goes in the right container(incorrect/correct)
+
+    // TODO: this is crazytown, treating an array as an object - need to refactor as obj
+    if ($.inArray(currentvocabID, Object.keys(answerCorrectness)) === -1) {
       answerCorrectness[currentvocabID] = 1;
       previouslyWrong = false;
     } else {
@@ -294,7 +323,6 @@ function processAnswer({correct} = {}) {
     }
     correctTotal += 1;
     updateProgressBar(correctTotal / startCount * 100);
-
   } else if (correct === false) {
     answerCorrectness[currentvocabID] = -1;
     previouslyWrong = true;
@@ -308,17 +336,18 @@ function processAnswer({correct} = {}) {
 
 function recordAnswer(vocabID, correctness, previouslyWrong) {
   $.post('/kw/record_answer/', {
-      csrfmiddlewaretoken: CSRF,
-      user_specific_id: vocabID,
-      user_correct: correctness,
-      wrong_before: previouslyWrong
-    })
-    .always(res => {
-      console.log(res);
-    });
+    csrfmiddlewaretoken: CSRF,
+    user_specific_id: vocabID,
+    user_correct: correctness,
+    wrong_before: previouslyWrong,
+  })
+  .always(res => {
+    kwlog(res);
+  });
 }
 
 function ignoreAnswer({ animate = true } = {}) {
+  kwlog('ignoreAnswer called');
   if (animate) {
     $userAnswer.addClass('shake');
     setTimeout(() => rotateVocab({ ignored: true }), 600);
@@ -336,34 +365,44 @@ function nonHiraganaAnswer() {
   $userAnswer.addClass('-invalid');
 }
 
+function enableShortcuts() {
+  $(document).on('keydown.KWshortcuts', handleShortcuts);
+}
+
+function disableShortcuts() {
+  $(document).off('keydown.KWshortcuts', handleShortcuts);
+}
+
 function markWrong() {
+  enableShortcuts();
   clearColors();
-  $userAnswer.addClass('-marked -incorrect');
+  $userAnswer.addClass('-marked -incorrect').prop({ disabled: true });
   $streakIcon.addClass('-marked');
   $ignoreButton.removeClass('-hidden');
   $synonymButton.removeClass('-hidden');
 }
 
 function markRight() {
+  enableShortcuts();
   clearColors();
-  $userAnswer.addClass('-marked -correct');
+  $userAnswer.addClass('-marked -correct').prop({ disabled: true });
   $streakIcon.addClass('-marked');
   streakLevelUp();
 }
 
 function updateProgressBar(percent) {
-  $progressBar.css('width', percent + '%');
+  $progressBar.css({ width: `${percent}%` });
 }
 
 function resetQuizUI() {
   clearColors();
   updateStreak();
   disableButtons();
+  disableShortcuts();
   updateKanaKanjiDetails();
   $srsUp.removeClass('-animating');
   $userAnswer.removeClass('shake');
-  $userAnswer.val('');
-  $userAnswer.focus();
+  $userAnswer.val('').prop({ disabled: false }).focus();
 }
 
 function disableButtons() {
@@ -379,7 +418,7 @@ function enableButtons() {
   $detailKana.find('.button').removeClass('-disabled');
 }
 
-function revealAnswers({kana, kanji} = {}) {
+function revealAnswers({ kana, kanji } = {}) {
   if (!!kana) revealToggle($detailKana.find('.button'));
   else if (!!kanji) revealToggle($detailKanji.find('.button'));
   else {
@@ -388,15 +427,15 @@ function revealAnswers({kana, kanji} = {}) {
   }
 }
 
-function rotateVocab({ignored = false, correct = false} = {}) {
-  console.log('rotateVocab called')
+function rotateVocab({ ignored = false, correct = false } = {}) {
+  kwlog('rotateVocab called');
   if (ignored) {
     // put ignored answer back onto end of review queue
     remainingVocab.push(currentVocab);
   }
 
   if (remainingVocab.length === 0) {
-    // console.log('Summary post data', answerCorrectness);
+    // kwlog('Summary post data', answerCorrectness);
     return postSummary('/kw/summary/', answerCorrectness);
   }
 
@@ -408,14 +447,16 @@ function rotateVocab({ignored = false, correct = false} = {}) {
   }
 
   // guard against 0 / 0 (when first answer ignored)
-  let percentCorrect = Math.floor((correctTotal / answeredTotal) * 100) || 0;
-  // console.log(`
-  //   remainingVocab.length: ${remainingVocab.length},
-  //   currentVocab: ${currentVocab.meaning},
-  //   correctTotal: ${correctTotal},
-  //   answeredTotal: ${answeredTotal},
-  //   percentCorrect: ${percentCorrect}`
-  // );
+  const percentCorrect = Math.floor((correctTotal / answeredTotal) * 100) || 0;
+  kwlog(`
+    remainingVocab.length: ${remainingVocab.length},
+    currentVocab: ${currentVocab.meaning},
+    correctTotal: ${correctTotal},
+    answeredTotal: ${answeredTotal},
+    percentCorrect: ${percentCorrect}`
+  );
+
+  // TODO: this is slightly off if user ignored incorrect answer - need to account for that
   $reviewsCorrect.html(percentCorrect);
   $meaning.html(currentVocab.meaning);
 
@@ -423,17 +464,21 @@ function rotateVocab({ignored = false, correct = false} = {}) {
 }
 
 function enterPressed(event) {
+  kwlog('eP:', event, 'autoAdvancing:', autoAdvancing);
+
   if (event != null) {
     event.stopPropagation();
     event.preventDefault();
   }
 
+  autoAdvancing = false;
+
   if ($userAnswer.hasClass('-marked')) {
     if ($userAnswer.hasClass('-correct')) {
-      rotateVocab({correct: true});
-    } else if($userAnswer.hasClass('-incorrect')) {
-      processAnswer({correct: false});
-      rotateVocab({correct: false});
+      rotateVocab({ correct: true });
+    } else if ($userAnswer.hasClass('-incorrect')) {
+      processAnswer({ correct: false });
+      rotateVocab({ correct: false });
     }
   } else {
     compareAnswer();
@@ -442,52 +487,58 @@ function enterPressed(event) {
 
 function handleShortcuts(ev) {
   if (ev.which === 13) {
-    console.log('handleShortcuts: 13;', 'ev.which was:', ev.which)
+    kwlog('handleShortcuts: not -marked, 13;');
     ev.stopPropagation();
     ev.preventDefault();
     enterPressed(null);
   } else if ($userAnswer.hasClass('-marked')) {
-    console.log('handleShortcuts: -marked not 13;', 'ev.which was:', ev.which)
+    kwlog('handleShortcuts: -marked, not 13;');
     ev.stopPropagation();
     ev.preventDefault();
 
-    switch(true) {
+    switch (true) {
       // Pressing P toggles phonetic reading
       case (ev.which === 80 || ev.which === 112):
-        console.log('case: P', 'ev.which was:', ev.which);
-        revealAnswers({kana: true});
+        kwlog('case: P', 'event was:', ev);
+        revealAnswers({ kana: true });
         break;
+
       // Pressing K toggles the actual kanji reading.
       case (ev.which === 75 || ev.which === 107):
-        console.log('case: K', 'ev.which was:', ev.which);
-        revealAnswers({kanji: true});
+        kwlog('case: K', 'event was:', ev);
+        revealAnswers({ kanji: true });
         break;
+
       // Pressing F toggles both item info boxes.
       case (ev.which === 70 || ev.which === 102):
-        console.log('case: F', 'ev.which was:', ev.which);
+        kwlog('case: F', 'event was:', ev);
         revealAnswers();
         break;
+
       // Pressing S toggles both add synonym modal.
       case (ev.which === 83 || ev.which === 115):
-        console.log('case: S', 'ev.which was:', ev.which);
+        kwlog('case: S', 'event was:', ev);
         modals.openModal(null, '#newSynonym', {
-          backspaceClose: false, callbackOpen: synonymModal
+          backspaceClose: false,
+          callbackOpen: synonymModal,
+          callbackClose: enableShortcuts,
         });
         break;
-      // Pressing I or backspace/del ignores answer when input has been marked incorrect
-      case (ev.which === 73 || ev.which === 105 || ev.which === 8 || ev.which === 46):
-        console.log('case: I', 'ev.which was:', ev.which);
+
+      // Pressing I ignores answer when input has been marked incorrect
+      case (ev.which === 73 || ev.which === 105 || ev.which === 8):
+        kwlog('case: I', 'event was:', ev);
         if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
         break;
+
       default:
-        console.log('switch passed through to default');
+        kwlog('switch through to default');
     }
   }
 }
 
-
 const api = {
-  init: init
+  init,
 };
 
 export default api;

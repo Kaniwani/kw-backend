@@ -1,4 +1,6 @@
-import pluralize from '../util/pluralize.js';
+import pluralize from '../util/pluralize';
+import kwlog from '../util/kwlog';
+
 
 let $navCount,
     $buttonCount,
@@ -15,7 +17,7 @@ function ajaxReviewCount() {
         if ($buttonCount.length) $buttonCount.text(pluralize('Review', res)).removeClass('-disabled');
       }
 
-      console.log('Review count updated from server:', res)
+      kwlog('Review count updated from server:', res)
       simpleStorage.set('recentlyRefreshed', true, {TTL: 19000}); // 19s throttle (updateReviewTime on 20s loop)
   });
 }
@@ -25,7 +27,7 @@ let refreshReviews = function({forceGet} = {forceGet: false}) {
   $buttonCount = $("#reviewCount");
   recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
 
-  console.log(`
+  kwlog(`
     --- Refresh reviews attempted to be called ---
     recentlyRefreshed: ${recentlyRefreshed}, forceGet: ${forceGet}
     Are we hitting server? ${!recentlyRefreshed || forceGet ? 'yes' : 'no'}
