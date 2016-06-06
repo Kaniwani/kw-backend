@@ -129,7 +129,7 @@ class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
     character = models.CharField(max_length=255)
     kana = models.CharField(max_length=255)
-    level = models.PositiveIntegerField(validators=[
+    level = models.PositiveIntegerField(null=True, validators=[
         MinValueValidator(constants.LEVEL_MIN),
         MaxValueValidator(constants.LEVEL_MAX),
     ])

@@ -1,4 +1,7 @@
+import requests
 from django.utils import timezone
+
+from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Profile
 from kw_webapp.tasks import unlock_eligible_vocab_from_levels
 
