@@ -3,7 +3,7 @@ import { revealToggle } from '../components/revealToggle';
 import kwlog from '../util/kwlog';
 import '../util/serializeObject';
 import modals from '../vendor/modals';
-modals.init({ backspaceClose: false, callbackOpen: synonymModal, callbackClose: allowShortcuts });
+modals.init({ backspaceClose: false, callbackOpen: synonymModal, callbackClose: enableShortcuts });
 
 
 // would really like to do a massive refactor, break out some functions as importable helpers
@@ -37,8 +37,10 @@ let startCount;
 let answer;
 let correctTotal = 0;
 let answeredTotal = 0;
+let autoAdvancing = false;
 const answerCorrectness = [];
 
+window.KWDEBUG = true;
 
 // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
 // not including *half-width katakana / roman letters* since they should be considered typos
@@ -46,9 +48,11 @@ const japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u
 function onlyJapaneseChars(str) {
   return [...str].every(char => japRegex.test(char));
 }
+
 function onlyKanji(str) {
   return [...str].every(char => char.charCodeAt(0) >= 19968 && char.charCodeAt(0) < 40879);
 }
+
 // Grab CSRF token off of dummy form.
 const CSRF = $('#csrf').val();
 
@@ -220,14 +224,15 @@ function compareAnswer() {
     if (wanakana.isHiragana(answer)) $userAnswer.val(getMatchedReading(answer));
     if (KW.settings.showCorrectOnSuccess) {
       revealAnswers();
-      if (KW.settings.autoAdvanceCorrect) advanceDelay = 1200;
+      if (KW.settings.autoAdvanceCorrect) advanceDelay = 1400;
     }
 
     if (KW.settings.autoAdvanceCorrect) {
+      autoAdvancing = true;
       setTimeout(() => {
-        enterPressed(null, true);
-      },
-      advanceDelay);
+        // user advancing early by themselves sets autoAdvancing to false;
+        if (autoAdvancing) enterPressed(null);
+      }, advanceDelay);
     }
   } else {
     markWrong();
@@ -276,7 +281,6 @@ function handleSynonymForm(ev) {
     setTimeout(() => {
       ignoreAnswer({ animate: false });
       modals.closeModals();
-      allowShortcuts();
       $submitButton.html('Submit');
     }, 750);
   } else {
@@ -361,7 +365,7 @@ function nonHiraganaAnswer() {
   $userAnswer.addClass('-invalid');
 }
 
-function allowShortcuts() {
+function enableShortcuts() {
   $(document).on('keydown.KWshortcuts', handleShortcuts);
 }
 
@@ -370,7 +374,7 @@ function disableShortcuts() {
 }
 
 function markWrong() {
-  allowShortcuts();
+  enableShortcuts();
   clearColors();
   $userAnswer.addClass('-marked -incorrect').prop({ disabled: true });
   $streakIcon.addClass('-marked');
@@ -379,6 +383,7 @@ function markWrong() {
 }
 
 function markRight() {
+  enableShortcuts();
   clearColors();
   $userAnswer.addClass('-marked -correct').prop({ disabled: true });
   $streakIcon.addClass('-marked');
@@ -458,18 +463,21 @@ function rotateVocab({ ignored = false, correct = false } = {}) {
   resetQuizUI();
 }
 
-function enterPressed(event, auto = false) {
-  kwlog('eP:', event, 'auto?', auto);
+function enterPressed(event) {
+  kwlog('eP:', event, 'autoAdvancing:', autoAdvancing);
+
   if (event != null) {
     event.stopPropagation();
     event.preventDefault();
   }
 
+  autoAdvancing = false;
+
   if ($userAnswer.hasClass('-marked')) {
     if ($userAnswer.hasClass('-correct')) {
       rotateVocab({ correct: true });
     } else if ($userAnswer.hasClass('-incorrect')) {
-      processAnswer({ correct: false});
+      processAnswer({ correct: false });
       rotateVocab({ correct: false });
     }
   } else {
@@ -513,7 +521,7 @@ function handleShortcuts(ev) {
         modals.openModal(null, '#newSynonym', {
           backspaceClose: false,
           callbackOpen: synonymModal,
-          callbackClose: allowShortcuts,
+          callbackClose: enableShortcuts,
         });
         break;
 
