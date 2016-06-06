@@ -40,8 +40,6 @@ let answeredTotal = 0;
 let autoAdvancing = false;
 const answerCorrectness = [];
 
-window.KWDEBUG = true;
-
 // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
 // not including *half-width katakana / roman letters* since they should be considered typos
 const japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
