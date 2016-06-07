@@ -14,11 +14,11 @@ function init() {
   if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
   toastr.options = config.toastr;
 
+  window.KWDEBUG = true;
+
   // catch any window hashes if we arrived from summary page before anything else
-  if (window.location.hash) {
-    // smoothScroll.init();
-    // smoothScrollDeepLink();
-  }
+  const deeplink = window.location.hash;
+  if (deeplink) smoothScrollDeepLink(deeplink);
 
   // only run on vocab page
   if (/vocabulary\/.+\//.test(window.location.pathname)) {
@@ -33,13 +33,13 @@ function init() {
   }
 }
 
-function smoothScrollDeepLink() {
-  // const hash = smoothScroll.escapeCharacters(window.location.hash); // Escape the hash
-  // const el = document.querySelector(hash);
-  // if (el != null) {
-  //   smoothScroll.animateScroll(hash, null /* toggle */, {offset: 50});
-  //   el.classList.add('-standout');
-  // }
+function smoothScrollDeepLink(target) {
+  const Jumper = new Jump();
+  const el = document.querySelector(target);
+  if (el != null) {
+    Jumper.jump(el, { duration: 1000, offset: -50 });
+    el.classList.add('-standout');
+  }
 }
 
 function handleIconClick(event) {
