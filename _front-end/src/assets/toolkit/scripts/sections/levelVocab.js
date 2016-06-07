@@ -24,10 +24,6 @@ function init() {
   if (/vocabulary\/.+\//.test(window.location.pathname)) {
     let $cards = $('.vocab-list').find('.vocab-card');
 
-    // if user has deeplinked from summary or elsewhere let's draw attention to the card
-    const specificVocab = (window.location.href.match(/.*vocabulary\/.+\/(\#.+)/) || [])[1];
-    if (specificVocab) $(specificVocab).addClass('-standout');
-
     // Attach events
     $cards.on('click', '.icon', handleIconClick);
   }
