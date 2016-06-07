@@ -415,8 +415,8 @@ function resetQuizUI() {
   disableShortcuts();
   updateKanaKanjiDetails();
   updateSrsIndicator(currentVocab.streak);
-  $srsUp.removeClass('is-animating');
-  $srsDown.removeClass('is-animating');
+  $srsUp.attr('class', 'content icon i-plus');
+  $srsDown.attr('class', 'content icon i-plus');
   $userAnswer.removeClass('shake');
   $userAnswer.val('').prop({ disabled: false }).focus();
 }
