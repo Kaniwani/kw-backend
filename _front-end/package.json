@@ -51,6 +51,7 @@
     "gulp-strip-debug": "^1.1.0",
     "gulp-util": "^3.0.6",
     "imports-loader": "^0.6.4",
+    "jump.js": "^0.4.0",
     "lost": "^6.7.1",
     "postcss-responsive-type": "^0.3.2",
     "run-sequence": "^1.1.2",
