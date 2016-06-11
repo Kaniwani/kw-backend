@@ -1,5 +1,4 @@
 import wanakana from '../vendor/wanakana.min';
-import { revealToggle } from '../components/revealToggle';
 import kwlog from '../util/kwlog';
 import '../util/serializeObject';
 import modals from '../vendor/modals';
@@ -82,6 +81,10 @@ function init() {
   $submitButton.click(enterPressed);
   $answerPanel.submit(enterPressed);
   $ignoreButton.click(ignoreAnswer);
+  $('.revealToggle').click((ev) => {
+    let $this = $(this);
+    if (!$this.hasClass('-disabled')) revealToggle($this);
+  });
 
   // DEBUG
   $userAnswer.keydown((event) => {
@@ -221,7 +224,8 @@ function compareAnswer() {
     if (currentVocab.characters[0].startsWith('〜') && onlyKanji(answer)) addStartingTilde(answer);
   } else if (!wanakana.isHiragana(answer)) {
     // user used english that couldn't convert to full hiragana - don't proceed
-    return nonHiraganaAnswer();
+    nonHiraganaAnswer();
+    return;
   }
 
   const inReadings = () => $.inArray(answer, currentVocab.readings) !== -1;
@@ -434,6 +438,10 @@ function enableButtons() {
   $detailKana.find('.button').removeClass('-disabled');
 }
 
+function revealToggle($el) {
+  $el.siblings('.revealTarget').toggleClass('-hidden');
+}
+
 function revealAnswers({ kana, kanji } = {}) {
   if (!!kana) revealToggle($detailKana.find('.button'));
   else if (!!kanji) revealToggle($detailKanji.find('.button'));
@@ -453,7 +461,8 @@ function rotateVocab({ ignored = false, correct = false } = {}) {
 
   if (remainingVocab.length === 0) {
     // kwlog('Summary post data', answerCorrectness);
-    return postSummary('/kw/summary/', answerCorrectness);
+    postSummary('/kw/summary/', answerCorrectness);
+    return;
   }
 
   currentVocab = remainingVocab.shift();

@@ -10,7 +10,6 @@ import 'babel-polyfill';
 
 // components
 import invalidApiKey from './components/invalidApiKey';
-import revealToggle from './components/revealToggle';
 import accordionContainer from './components/accordionContainer';
 import login from './sections/login';
 import home from './sections/home';
@@ -23,7 +22,6 @@ import summary from './sections/summary';
 
 $(document).ready(() => {
   invalidApiKey.init();
-  revealToggle.init();
   accordionContainer.init();
   login.init();
   home.init();
