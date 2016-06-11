@@ -36,7 +36,14 @@
     background: $red;
 
     > .link {
+      text-align: center;
+      padding: .25em .4em;
+      font-size: 2em;
       text-shadow: 1px 1px 4px rgba(darken($red, 20), .7);
+
+      .en {
+        font-size: .75em;
+      }
     }
   }
 }
