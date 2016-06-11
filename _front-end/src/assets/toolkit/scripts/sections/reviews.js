@@ -519,8 +519,6 @@ function handleShortcuts(ev) {
     enterPressed(null);
   } else if ($userAnswer.hasClass('-marked')) {
     kwlog('handleShortcuts: -marked, not 13;');
-    ev.stopPropagation();
-    ev.preventDefault();
 
     switch (true) {
       // Pressing P toggles phonetic reading
@@ -553,6 +551,7 @@ function handleShortcuts(ev) {
 
       // Pressing I ignores answer when input has been marked incorrect
       case (ev.which === 73 || ev.which === 105 || ev.which === 8):
+        ev.preventDefault();
         kwlog('case: I', 'event was:', ev);
         if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
         break;
