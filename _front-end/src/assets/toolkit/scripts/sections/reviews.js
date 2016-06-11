@@ -81,16 +81,6 @@ function init() {
   $submitButton.click(enterPressed);
   $answerPanel.submit(enterPressed);
   $ignoreButton.click(ignoreAnswer);
-  $('.revealToggle').click((ev) => {
-    let $this = $(this);
-    if (!$this.hasClass('-disabled')) revealToggle($this);
-  });
-
-  // DEBUG
-  $userAnswer.keydown((event) => {
-    kwlog('kp', event.which, String.fromCharCode(event.which));
-  });
-
   $synonymButton.click(synonymModal);
   $synonymForm.submit(handleSynonymForm);
 
@@ -98,7 +88,18 @@ function init() {
   $meaning.html(currentVocab.meaning);
   $userAnswer.focus();
 
+  $('.revealToggle').click((ev) => {
+    let $this = $(this);
+    if (!$this.hasClass('-disabled')) revealToggle($this);
+  });
   $homeLink.click(earlyTermination);
+
+  // DEBUG
+  if (!!window.KWDEBUG) {
+    $userAnswer.keydown((event) => {
+      kwlog('kp', event.which, String.fromCharCode(event.which));
+    });
+  }
 }
 
 function getSrsRankName(num) {
