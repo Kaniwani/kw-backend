@@ -146,9 +146,9 @@ CELERYBEAT_SCHEDULE = {
 }
 
 #RAVEN DSN SETTINGS
-RAVEN_CONFIG = {
-    'dsn': secrets.RAVEN_DSN,
-}
+#RAVEN_CONFIG = {
+#    'dsn': secrets.RAVEN_DSN,
+#}
 
 
 # Quick-start development settings - unsuitable for production
@@ -296,3 +296,9 @@ TEMPLATES = [
         }
     }
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'kw_webapp.backends.EmailOrUsernameAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend'
+]
+
