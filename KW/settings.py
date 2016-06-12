@@ -216,8 +216,7 @@ ROOT_URLCONF = 'KW.urls'
 WSGI_APPLICATION = 'KW.wsgi.application'
 
 #EMAIL BACKEND SETTINGS
-#MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
-MANAGERS = [("Gary", "tadgh@cs.toronto.edu",)]
+MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
 DEFAULT_FROM_EMAIL = "gary@kaniwani.com"
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = secrets.EMAIL_HOST_USER
