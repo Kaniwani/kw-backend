@@ -146,9 +146,9 @@ CELERYBEAT_SCHEDULE = {
 }
 
 #RAVEN DSN SETTINGS
-RAVEN_CONFIG = {
-    'dsn': secrets.RAVEN_DSN,
-}
+#RAVEN_CONFIG = {
+#    'dsn': secrets.RAVEN_DSN,
+#}
 
 
 # Quick-start development settings - unsuitable for production
@@ -216,7 +216,8 @@ ROOT_URLCONF = 'KW.urls'
 WSGI_APPLICATION = 'KW.wsgi.application'
 
 #EMAIL BACKEND SETTINGS
-MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
+#MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
+MANAGERS = [("Gary", "tadgh@cs.toronto.edu",)]
 DEFAULT_FROM_EMAIL = "gary@kaniwani.com"
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = secrets.EMAIL_HOST_USER
