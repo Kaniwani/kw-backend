@@ -296,3 +296,9 @@ TEMPLATES = [
         }
     }
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'kw_webapp.backends.EmailOrUsernameAuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend'
+]
+
