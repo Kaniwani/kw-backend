@@ -1,10 +1,9 @@
 Hello Gary and Duncan! Here is a fresh message from a user!
-
-<b>username:</b> {{user.username}}
-<b>registered email:</b> {{user.email}}
+username: {{user.username}}
+registered email: {{user.email}}
 
 Name: {{ name }}
 Email: {{ email }}
 
 -------------------------
-{{ body }}
+{{ body|safe}}

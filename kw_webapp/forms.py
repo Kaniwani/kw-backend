@@ -6,8 +6,11 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 import requests
+
+from KW import settings
 from kw_webapp.models import Profile
 from django.utils.translation import ugettext, ugettext_lazy as _
+from contact_form.forms import ContactForm
 
 
 
@@ -128,3 +131,15 @@ class SettingsForm(ModelForm):
                 raise ValidationError("API Key not associated with a WaniKani User!")
         print("cleaned api Key...")
         return api_key
+
+
+#Vaguely modified class which allows us to add the calling user into the recipients field.
+class UserContactCustomForm(ContactForm):
+
+    #Jam the originating User into the recipient list so we can reply-all to them.
+    def recipient_list(self):
+        recipients = [mail_tuple[1] for mail_tuple in settings.MANAGERS]
+        recipients.append(self.cleaned_data['email'])
+        return recipients
+
+

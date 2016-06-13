@@ -445,6 +445,10 @@ class Register(FormView):
         return HttpResponseRedirect(reverse_lazy("kw:home"))
 
 
+class Sent(TemplateView):
+    template_name = "contact_form/contact_form_sent.html"
+
+
 @login_required()
 def home(request):
     return HttpResponseRedirect(reverse_lazy('kw:home'))
