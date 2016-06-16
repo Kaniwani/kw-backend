@@ -540,7 +540,7 @@ function handleShortcuts(ev) {
         revealAnswers();
         break;
 
-      // Pressing S toggles both add synonym modal.
+      // Pressing S toggles add synonym modal.
       case (ev.which === 83 || ev.which === 115):
         kwlog('case: S', 'event was:', ev);
         modals.openModal(null, '#newSynonym', {
