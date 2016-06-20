@@ -5,7 +5,7 @@
     "node": "true"
   },
   "rules" : {
-    "max-len": [1],
+    "max-len": [1, 140, 2, { "ignoreComments": true, "ignoreUrls": true }],
     "id-length": [1, {
       "min": 2,
       "properties": "never",
