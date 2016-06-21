@@ -491,7 +491,7 @@ function rotateVocab({ ignored = false, correct = false } = {}) {
 }
 
 function enterPressed(event) {
-  kwlog('eP:', event, 'autoAdvancing:', autoAdvancing);
+  kwlog('enterPressed:', event, 'autoAdvancing:', autoAdvancing);
 
   if (event != null) {
     event.stopPropagation();
@@ -514,35 +514,35 @@ function enterPressed(event) {
 
 function handleShortcuts(ev) {
   if (ev.which === 13) {
-    kwlog('handleShortcuts: not -marked, 13;');
+    kwlog('handleShortcuts called: not -marked, keycode:', ev.which);
     ev.stopPropagation();
     ev.preventDefault();
     enterPressed(null);
   } else if ($userAnswer.hasClass('-marked')) {
-    kwlog('handleShortcuts: -marked, not 13;');
+    kwlog('handleShortcuts called: -marked, keycode:', ev.which);
 
     switch (true) {
       // Pressing P toggles phonetic reading
       case (ev.which === 80 || ev.which === 112):
-        kwlog('case: P', 'event was:', ev);
+        kwlog('switch case: P');
         revealAnswers({ kana: true });
         break;
 
       // Pressing K toggles the actual kanji reading.
       case (ev.which === 75 || ev.which === 107):
-        kwlog('case: K', 'event was:', ev);
+        kwlog('switch case: K');
         revealAnswers({ kanji: true });
         break;
 
       // Pressing F toggles both item info boxes.
       case (ev.which === 70 || ev.which === 102):
-        kwlog('case: F', 'event was:', ev);
+        kwlog('switch case: F');
         revealAnswers();
         break;
 
       // Pressing S toggles add synonym modal.
       case (ev.which === 83 || ev.which === 115):
-        kwlog('case: S', 'event was:', ev);
+        kwlog('switch case: S');
         modals.openModal(null, '#newSynonym', {
           backspaceClose: false,
           callbackOpen: synonymModal,
@@ -558,7 +558,7 @@ function handleShortcuts(ev) {
         break;
 
       default:
-        kwlog('switch through to default');
+        kwlog('handleShortcuts switch fell through to default');
     }
   }
 }
