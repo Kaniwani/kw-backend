@@ -147,6 +147,7 @@ gulp.task('serve', function () {
     server: {
       baseDir: config.dest
     },
+    https: true,
     notify: false,
     logPrefix: 'FABRICATOR'
   });

@@ -5,12 +5,7 @@
 
 <header class="site-header" role="banner">
   <div class="inner">
-    <a href="/" class="site-logo">
-      <span class="text">
-        <span lang="ja" class="kana">かに&#8202;わに</span>
-        <span lang="ja" class="kanji">蟹鰐</span>
-      </span>
-    </a>
+    {% include 'partials/site-logo.html' %}
 
     <nav id="nav-main" class="okayNav">
       <ul class="nav-list">
@@ -31,8 +26,8 @@
             <span class="text">About</span>
           </a>
         </li>
-        <li class="item {% ancestor 'contact:contact_form' %}">
-          <a href="{% url "contact:contact_form" %}" class="nav-link">
+        <li class="item {% ancestor 'contact_form' %}">
+          <a href="{% url "contact_form" %}" class="nav-link">
             <span class="text">Contact</span>
           </a>
         </li>

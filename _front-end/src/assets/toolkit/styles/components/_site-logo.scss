@@ -1,64 +1,22 @@
 .site-logo {
   display: inline-block;
-  font-family: $ff-heading;
-  transition: color .3s ease-out;
-
-	&.is-animating {
-		> .text {
-			will-change: background-color;
-			transition: background-color 3s ease-in-out;
-		}
-	}
+  max-width: 120px;
+  height: auto;
+  color: #30c0f9;
+  transition: color .7s ease;
 
   &:hover {
-    color: $black-light;
-    text-decoration: none;
-
-    > .text {
-      background: $purple;
-    }
+    transition: color .8s ease-out;
+    color: $purple-light;
   }
 
-  > .text {
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
-    font-family: $ff-japanese;
-    border-radius: 100%;
-    box-shadow: $shadow-inner-light, $shadow-outer-light;
-    transition: background-color .3s ease-out;
-    background: $grey-dark;
-    height: 60px;
-    width: 60px;
+  svg {
+    width: 100%;
+    height: 100%;
 
-    @include media($bp-nav-1) {
-      height: 75px;
-      width: 75px;
-    }
-
-    .kana,
-    .kanji {
-      display: block;
-      color: $white;
-      line-height: 1;
-    }
-
-    .kana {
-      display: none;
-      font-size: 13px;
-
-      @include media($bp-nav-1) {
-        display: block;
-      }
-    }
-
-    .kanji {
-      margin-top: 2px;
-      font-size: 22px;
-
-      @include media($bp-nav-1) {
-        font-size: 28px;
-      }
+    .bg {
+      color: inherit;
+      fill: currentColor;
     }
   }
 }

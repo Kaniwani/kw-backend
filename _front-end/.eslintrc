@@ -1,13 +1,27 @@
 {
-  'extends': 'airbnb',
-  'rules' : {
-    'id-length': [1, {'min': 2, 'properties': 'never', 'exceptions': ['s','v','i','a','b','x','y','o']}],
-    'quote-props': [1, 'consistent-as-needed'],
-    'no-cond-assign': [2, 'except-parens'],
-    'space-infix-ops': 0,
-    'no-unused-vars': [1, {'vars': 'local', 'args': 'none'}],
-    'default-case': 0,
-    'no-param-reassign': 1,
-    'quotes': [1, "single", "avoid-escape"]
+  "extends": "airbnb",
+  "env": {
+    "browser": "true",
+    "node": "true"
+  },
+  "rules" : {
+    "max-len": [1, 140, 2, { "ignoreComments": true, "ignoreUrls": true }],
+    "id-length": [1, {
+      "min": 2,
+      "properties": "never",
+      "exceptions": ["$", "_", "s", "o", "v", "i", "a", "b", "x", "y"]
+    }],
+    "no-use-before-define": ["error", { "functions": false, "classes": true }],
+    "quote-props": [1, "consistent-as-needed"],
+    "no-cond-assign": [2, "except-parens"],
+    "space-infix-ops": 0,
+    "spaced-comment": 1,
+    "no-unused-vars": [1, {
+      "vars": "local",
+      "args": "none"
+    }],
+    "default-case": 0,
+    "no-param-reassign": 1,
+    "quotes": [1, "single", "avoid-escape"]
   }
 }

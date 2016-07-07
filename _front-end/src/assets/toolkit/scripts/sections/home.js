@@ -1,7 +1,7 @@
 import config from '../config';
 import refreshReviews from '../components/refreshReviews';
-import pluralize from '../util/pluralize';
 import strToBoolean from '../util/strToBoolean';
+import kwlog from '../util/kwlog';
 import timeago from '../vendor/timeago';
 import toastr from '../vendor/toastr';
 import im from '../vendor/include-media';
@@ -10,11 +10,12 @@ const sitenav = $('#nav-main').okayNav();
 
 // vendor js configuration
 Object.assign($.timeago.settings, config.timeago.settings);
-Object.assign($.timeago.settings.strings, config.timeago.strings)
+Object.assign($.timeago.settings.strings, config.timeago.strings);
 
 let KW;
 
 function displayMessages() {
+  kwlog('messages', KW.messages);
   KW.messages.forEach(({text, level}) => toastr[level](text));
 }
 
@@ -40,8 +41,8 @@ function init() {
   KW.nextReview = new Date(Math.ceil(+KW.nextReview));
   simpleStorage.set('KW', KW);
 
-  // toast notifications
-  displayMessages();
+  // need to get some promises happening instead, too many race conditions
+  setTimeout(() => displayMessages(), 700);
 
   // are we on home page?
   if (window.location.pathname === '/kw/') {

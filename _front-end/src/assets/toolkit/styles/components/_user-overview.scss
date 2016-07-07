@@ -3,24 +3,6 @@
   padding: $unit-md $unit-md $unit-md * 2;
   text-align: center;
 
-  // triangle
-  &:after {
-    border-color: transparent transparent $black;
-    border-style: none solid solid;
-    border-width: 20px;
-    opacity: .6;
-    bottom: 0;
-    content: "";
-    height: 0;
-    left: 50%;
-    margin-left: -20px;
-    position: absolute;
-    width: 0;
-    z-index: 1;
-    // anti-alias jagged lines on firefox
-    -moz-transform: scale(.9999);
-  }
-
   > .name {
     margin-top: 0;
     text-shadow: $shadow-text-thin;

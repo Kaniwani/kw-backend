@@ -60,6 +60,22 @@
   }
 }
 
+@keyframes srsRankDown {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -3.5em, 0);
+  }
+
+  30% {
+    opacity: .1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @function plusMinus($n) {
   @return if(random(2) > 1, -#{$n}, +#{$n});
 }
