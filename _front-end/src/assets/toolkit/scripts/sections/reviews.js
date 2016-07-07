@@ -423,7 +423,7 @@ function resetQuizUI() {
   updateKanaKanjiDetails();
   updateSrsIndicator(getSrsRankName(currentVocab.streak));
   $srsUp.attr('class', 'content icon i-plus');
-  $srsDown.attr('class', 'content icon i-plus');
+  $srsDown.attr('class', 'content icon i-minus');
   $userAnswer.removeClass('shake');
   $userAnswer.val('').prop({ disabled: false }).focus();
 }
