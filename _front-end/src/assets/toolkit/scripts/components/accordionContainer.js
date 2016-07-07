@@ -27,7 +27,7 @@ function init() {
         let $title = $(title);
         if ($title.hasClass('is-expanded')) {
           let $content = $title.closest('dt').next();
-          let accH = $content.find('.content-inner').outerHeight();
+          let accH = $content.find('.content-inner').get(0).clientHeight;
           $content.css('max-height', accH);
         }
       });
@@ -48,7 +48,7 @@ function init() {
       $content.toggleClass('is-collapsed');
 
       let hash = $title.attr('href');
-      accH = $title.hasClass('is-expanded') ? $inner.outerHeight() : 0;
+      accH = $title.hasClass('is-expanded') ? $inner.get(0).clientHeight : 0;
 
       $content.toggleClass('animateIn');
       $content.toggleClass('animateOut');
