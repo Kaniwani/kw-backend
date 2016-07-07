@@ -385,17 +385,18 @@ function nonHiraganaAnswer() {
 }
 
 function enableShortcuts() {
-  $(document).on('keydown.KWshortcuts', handleShortcuts);
+  document.addEventListener('keypress', handleShortcuts);
 }
 
 function disableShortcuts() {
-  $(document).off('keydown.KWshortcuts', handleShortcuts);
+  document.removeEventListener('keypress', handleShortcuts);
 }
 
 function markWrong() {
   enableShortcuts();
   clearColors();
   $userAnswer.addClass('-marked -incorrect').prop({ disabled: true });
+  $userAnswer.blur();
   $srsIndicator.addClass('-marked');
   srsRankChange({ correct: false });
   $ignoreButton.removeClass('-hidden');
@@ -406,6 +407,7 @@ function markRight() {
   enableShortcuts();
   clearColors();
   $userAnswer.addClass('-marked -correct').prop({ disabled: true });
+  $userAnswer.blur();
   $srsIndicator.addClass('-marked');
   srsRankChange({ correct: true });
 }
