@@ -35,27 +35,27 @@ body.okayNav-loaded {
 }
 /* Link styling for the off-screen part of the nav */
 .okayNav__nav--invisible {
-	background-color: whitesmoke;
+  background-color: whitesmoke;
   position: absolute;
-	z-index: 2;
-  top: 95px;
+  z-index: 2;
+  top: 63px;
   bottom: 0;
   -webkit-overflow-scrolling: touch;
 }
 .okayNav__nav--invisible {
-	a {
-		text-align: right;
-	  display: block;
-	  width: 200px;
-	  padding: $unit-sm $unit-md;
-	  background: whitesmoke;
-	}
-	.item {
-		box-shadow: -4px 0 8px -5px rgba($black, 0.15)
-	}
-	.item:last-of-type a {
-  	border-bottom-left-radius: 10px;
-  	box-shadow: 0 3px 6px rgba($black, .1);
+  a {
+    text-align: right;
+    display: block;
+    width: 200px;
+    padding: $unit-sm $unit-md;
+    background: whitesmoke;
+  }
+  .item {
+    box-shadow: -4px 0 8px -5px rgba($black, 0.15)
+  }
+  .item:last-of-type a {
+    border-bottom-left-radius: 10px;
+    box-shadow: 0 3px 6px rgba($black, .1);
   }
 }
 .okayNav__nav--invisible.nav-left {
@@ -74,7 +74,7 @@ body.okayNav-loaded {
 }
 /* Kebab icon */
 .okayNav__menu-toggle {
-	@include tap-target(8px, 8px);
+  @include tap-target(8px, 8px);
   position: relative;
   z-index: 1;
   top: 8px;
