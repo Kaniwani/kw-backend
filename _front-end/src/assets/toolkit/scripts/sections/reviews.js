@@ -343,12 +343,10 @@ function processAnswer({ correct = false } = {}) {
     }
     correctTotal += 1;
     updateProgressBar(correctTotal / startCount * 100);
-    srsRankChange({ correct: true });
   } else if (correct === false) {
     answerCorrectness[currentvocabID] = -1;
     currentVocab.previouslyWrong = true;
     remainingVocab.push(currentVocab);
-    srsRankChange({ correct: false });
   }
 
   answeredTotal += 1;
@@ -399,6 +397,7 @@ function markWrong() {
   clearColors();
   $userAnswer.addClass('-marked -incorrect').prop({ disabled: true });
   $srsIndicator.addClass('-marked');
+  srsRankChange({ correct: false });
   $ignoreButton.removeClass('-hidden');
   $synonymButton.removeClass('-hidden');
 }
@@ -408,6 +407,7 @@ function markRight() {
   clearColors();
   $userAnswer.addClass('-marked -correct').prop({ disabled: true });
   $srsIndicator.addClass('-marked');
+  srsRankChange({ correct: true });
 }
 
 function updateProgressBar(percent) {
