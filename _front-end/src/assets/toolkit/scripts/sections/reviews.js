@@ -70,7 +70,7 @@ function init() {
   $reviewsLeft.text(startCount - 1);
   currentVocab = remainingVocab.shift();
   updateKanaKanjiDetails();
-  updateSrsIndicator(currentVocab.streak);
+  updateSrsIndicator(getSrsRankName(currentVocab.streak));
 
   // event listeners
   wanakana.bind(document.querySelector('#userAnswer'));
@@ -419,7 +419,7 @@ function resetQuizUI() {
   disableButtons();
   disableShortcuts();
   updateKanaKanjiDetails();
-  updateSrsIndicator(currentVocab.streak);
+  updateSrsIndicator(getSrsRankName(currentVocab.streak));
   $srsUp.attr('class', 'content icon i-plus');
   $srsDown.attr('class', 'content icon i-plus');
   $userAnswer.removeClass('shake');
