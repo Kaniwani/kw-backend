@@ -386,11 +386,11 @@ function nonHiraganaAnswer() {
 }
 
 function enableShortcuts() {
-  document.addEventListener('keypress', handleShortcuts);
+  document.addEventListener('keydown', handleShortcuts);
 }
 
 function disableShortcuts() {
-  document.removeEventListener('keypress', handleShortcuts);
+  document.removeEventListener('keydown', handleShortcuts);
 }
 
 function markWrong() {
@@ -518,8 +518,8 @@ function enterPressed(event) {
 function handleShortcuts(ev) {
   if (ev.which === 13) {
     kwlog('handleShortcuts called: not -marked, keycode:', ev.which);
-    ev.stopPropagation();
     ev.preventDefault();
+    ev.stopPropagation();
     enterPressed(null);
   } else if ($userAnswer.hasClass('-marked')) {
     kwlog('handleShortcuts called: -marked, keycode:', ev.which);
