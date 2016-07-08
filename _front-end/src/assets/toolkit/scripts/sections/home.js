@@ -21,13 +21,13 @@ function displayMessages() {
 
 function updateReviewTime($el) {
   const now = Date.now();
-  const next = Date.parse(KW.nextReview);
+  const next = KW.nextReview.getTime();
 
   window.KWDEBUG = true;
   kwlog(
     '\nclient date now utc', now,
     '\nparse backend next review local', next,
-    '\nparse backend next review utc', Date.parse(KW.nextReviewUTC)
+    '\nparse backend next review utc', KW.nextReviewUTC.getTime()
   );
 
   if (now > next) {
