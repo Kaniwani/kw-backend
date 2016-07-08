@@ -4,6 +4,7 @@
  * This should be the full compiled js from project src (same as public/assets/js/)
  *
  */
+import documentReady from './util/documentReady';
 
 // safari fix zzzzzz - must come first in entrypoint
 import 'babel-polyfill';
@@ -20,7 +21,7 @@ import contact from './sections/contact';
 import settings from './sections/settings';
 import summary from './sections/summary';
 
-$(document).ready(() => {
+documentReady(() => {
   invalidApiKey.init();
   accordionContainer.init();
   login.init();

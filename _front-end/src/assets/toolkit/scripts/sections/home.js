@@ -16,13 +16,14 @@ let KW;
 
 function displayMessages() {
   kwlog('messages', KW.messages);
-  KW.messages.forEach(({text, level}) => toastr[level](text));
+  KW.messages.forEach(({ text, level }) => toastr[level](text));
 }
 
 function updateReviewTime($el) {
   let now = Date.now(),
       next = Date.parse(KW.nextReview);
 
+  kwlog(now, next, $el.get(0), $.timeago(KW.nextReview));
   if (now > next) {
     refreshReviews();
     clearInterval(KW.reviewTimer);
@@ -42,14 +43,14 @@ function init() {
   simpleStorage.set('KW', KW);
 
   // need to get some promises happening instead, too many race conditions
-  setTimeout(() => displayMessages(), 700);
+  setTimeout(() => displayMessages(), 1500);
 
   // are we on home page?
   if (window.location.pathname === '/kw/') {
     let $refreshButton = $("#forceSrs");
     let $reviewButton = $("#reviewCount");
 
-    if (!KW.settings.onVacation) {
+    if (KW.settings.onVacation === false) {
       updateReviewTime($reviewButton);
       KW.reviewTimer = setInterval(() => updateReviewTime($reviewButton), 10000 /* 10s */);
     }
