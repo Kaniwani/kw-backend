@@ -88,10 +88,11 @@ function init() {
   $meaning.html(currentVocab.meaning);
   $userAnswer.focus();
 
-  $('.revealToggle').click((ev) => {
+  $('.revealToggle').click(function revealButtonClick() {
     let $this = $(this);
     if (!$this.hasClass('-disabled')) revealToggle($this);
   });
+
   $homeLink.click(earlyTermination);
 
   // DEBUG
