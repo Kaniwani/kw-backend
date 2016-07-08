@@ -21,13 +21,13 @@ function displayMessages() {
 
 function updateReviewTime($el) {
   const now = Date.now();
-  const next = KW.nextReview.getTime();
+  const next = KW.nextReview;
 
   window.KWDEBUG = true;
   kwlog(
     '\nclient date now utc', now,
-    '\nparse backend next review local', next,
-    '\nparse backend next review utc', KW.nextReviewUTC.getTime()
+    '\nbackend next review local', next,
+    '\nbackend next review utc', KW.nextReviewUTC
   );
 
   if (now > next) {
@@ -45,8 +45,8 @@ function init() {
   // let's update storage KW with any template provided changes
   KW = Object.assign(simpleStorage.get('KW') || {}, window.KW);
   KW.settings = strToBoolean(KW.settings);
-  KW.nextReview = new Date(Math.ceil(+KW.nextReview));
-  KW.nextReviewUTC = new Date(Math.ceil(+KW.nextReviewUTC));
+  KW.nextReview = Math.ceil(+KW.nextReview);
+  KW.nextReviewUTC = Math.ceil(+KW.nextReviewUTC);
   simpleStorage.set('KW', KW);
 
   // need to get some promises happening instead, too many race conditions
