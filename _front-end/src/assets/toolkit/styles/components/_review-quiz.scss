@@ -78,8 +78,11 @@
     // hide stupid X on IE
     ::-ms-clear {;}
 
-    &.-marked {
-      color: $white;
+    &.-marked,
+    &[disabled] {
+      -webkit-text-fill-color: $white; /* Override iOS / Android font color change */
+      -webkit-opacity: 1; /* Override iOS opacity change affecting text & background color */
+      color: $white; /* Override IE font color change */
 
       ~ .submit.-answer .icon {
         color: $white;
