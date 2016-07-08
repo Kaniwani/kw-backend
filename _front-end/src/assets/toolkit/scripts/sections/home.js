@@ -20,10 +20,16 @@ function displayMessages() {
 }
 
 function updateReviewTime($el) {
-  let now = Date.now(),
-      next = Date.parse(KW.nextReview);
+  const now = Date.now();
+  const next = Date.parse(KW.nextReview);
 
-  kwlog(now, next, $el.get(0), $.timeago(KW.nextReview));
+  window.KWDEBUG = true;
+  kwlog(
+    '\nclient date now utc', now,
+    '\nparse backend next review local', next,
+    '\nparse backend next review utc', Date.parse(KW.nextReviewUTC)
+  );
+
   if (now > next) {
     refreshReviews();
     clearInterval(KW.reviewTimer);
@@ -40,6 +46,7 @@ function init() {
   KW = Object.assign(simpleStorage.get('KW') || {}, window.KW);
   KW.settings = strToBoolean(KW.settings);
   KW.nextReview = new Date(Math.ceil(+KW.nextReview));
+  KW.nextReviewUTC = new Date(Math.ceil(+KW.nextReviewUTC));
   simpleStorage.set('KW', KW);
 
   // need to get some promises happening instead, too many race conditions
