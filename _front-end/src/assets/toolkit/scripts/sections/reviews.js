@@ -216,8 +216,8 @@ function compareAnswer() {
 
   if (isEmptyString(answer)) return;
 
-  kwlog('Comparing', answer, 'with vocab item:');
-  if (!!window.KWDEBUG) console.table(currentVocab);
+  kwlog('Comparing', answer, `with vocab item ${currentVocab.user_specific_id}:`);
+  if (!!window.KWDEBUG) console.group(currentVocab);
 
   addTerminalN(answer);
 
