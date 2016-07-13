@@ -110,7 +110,7 @@ class Dashboard(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(Dashboard, self).get_context_data()
-        context['announcements'] = Announcement.objects.all().order_by('-pub_date')[:2]
+        context['announcements'] = Announcement.objects.all().order_by('-pub_date')[:5]
         return context
 
 
