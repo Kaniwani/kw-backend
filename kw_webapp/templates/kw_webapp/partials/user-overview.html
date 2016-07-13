@@ -13,12 +13,12 @@
         On Vacation!
       </a>
     {% elif review_count > 0 %}
-      <a id="reviewCount" href="{% url "kw:review" %}" class="pure-button button" role="button" >
-        {{ review_count }} Review{{ review_count|pluralize }}
-      </a>
+        <a id="reviewCount" href="{% url "kw:review" %}" class="pure-button button" role="button" >
+          {{ review_count }} Review{{ review_count|pluralize }}
+        </a>
     {% else %}
       <a id="reviewCount" href="{% url "kw:review" %}" class="pure-button button -disabled" role="button">
-        Next review: {{ next_review_date|naturaltime }}
+        <span class="-loading"></span>
       </a>
     {% endif %}
   </div>

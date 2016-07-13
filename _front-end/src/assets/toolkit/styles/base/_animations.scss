@@ -60,13 +60,28 @@
   }
 }
 
+@keyframes srsRankDown {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -3.5em, 0);
+  }
+
+  30% {
+    opacity: .1;
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
 
 @function plusMinus($n) {
-	@return if(random(2) > 1, -#{$n}, +#{$n});
+  @return if(random(2) > 1, -#{$n}, +#{$n});
 }
 
 @function calcDrift($L, $D) {
-	@return if($L > 50, #{-$D}vw, #{$D}vw);
+  @return if($L > 50, #{-$D}vw, #{$D}vw);
 }
 
 @mixin turtle-animation($i, $imgSize, $opacity, $duration, $delay, $rotate, $drift) {
@@ -80,7 +95,6 @@
   animation-name: turtle-float-#{$i};
   animation-duration: #{$duration}s;
   animation-delay: #{$delay}s;
-
 
   @keyframes turtle-float-#{$i} {
     33% {

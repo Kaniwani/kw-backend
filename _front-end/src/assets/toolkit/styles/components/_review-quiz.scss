@@ -11,19 +11,16 @@
 }
 
 .upper {
-  background-color: $purple;
-  background-image: linear-gradient(to bottom, $purple-light, $purple);
-	// background: linear-gradient(to bottom, #773AB7 , #512DA8); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+  @include bg-gradient(mix($white, $purple-dark, 5%), bottom);
   background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#FFAA00FF, endColorstr=#FF9300DD, GradientType=0);
   color: $white;
   text-align: center;
-  height: auto;
   height: 25vh;
+
   @include media($bp-md) {
     height: 33vh;
   }
+
   @include media($bp-lg) {
     height: 40vh;
   }
@@ -80,8 +77,11 @@
     // hide stupid X on IE
     ::-ms-clear {;}
 
-    &.-marked {
-      color: $white;
+    &.-marked,
+    &[disabled] {
+      -webkit-text-fill-color: $white; /* Override iOS / Android font color change */
+      -webkit-opacity: 1; /* Override iOS opacity change affecting text & background color */
+      color: $white; /* Override IE font color change */
 
       ~ .submit.-answer .icon {
         color: $white;
@@ -111,10 +111,21 @@
     }
   }
 
-  .answer.-marked::-webkit-input-placeholder { color: $white; }
-  .answer.-marked::-moz-placeholder { color: $white;  }
-  .answer.-marked:-ms-input-placeholder { color: $white; }
-  .answer.-marked:placeholder-shown { color: $white; }
+  .answer.-marked::-webkit-input-placeholder {
+    color: $white;
+  }
+
+  .answer.-marked::-moz-placeholder {
+    color: $white;
+  }
+
+  .answer.-marked:-ms-input-placeholder {
+    color: $white;
+  }
+
+  .answer.-marked:placeholder-shown {
+    color: $white;
+  }
 
   .submitwrap,
   .streak {
@@ -129,6 +140,7 @@
       font-range: 300px 1600px;
       line-height: normal;
       color: $grey-dark;
+
       &.-marked {
         color: $white;
         text-shadow: $shadow-text-thin;
@@ -146,6 +158,7 @@
 
   .streak {
     left: 0;
+
     .icon {
       &.-fadeOutUp {
         color: $white;
@@ -161,24 +174,29 @@
     border: 0;
     border-radius: 0;
     box-shadow: none;
+
     &.-answer {
       .icon:before {
         display: inline-block;
         vertical-align: middle;
       }
     }
+
     &.-ignore {
       right: 3em;
       opacity: .5;
       transition: opacity .3s ease-out;
+
       .icon {
         color: $white;
       }
+
       &:hover,
       &:focus {
         opacity: 1;
       }
     }
+
     &:focus {
       .submitwrap .icon:before {
         outline: 1px dashed $grey-light;
@@ -186,9 +204,10 @@
     }
   }
 
-  .srs-up {
+  .srs-up,
+  .srs-down {
     position: absolute;
-    top: -2.5em;
+    top: 0;
     left: 0%;
     width: 100%;
     font-size: 1.25em;
@@ -202,16 +221,7 @@
       z-index: 4;
       border-radius: 3px;
       padding: .1em .5em .22em;
-      background: $green;
 
-      &.-guru { background: lighten($purple-light, 15%); }
-      &.-master { background: $blue; }
-      &.-enlightened { background: lighten($blue-light, 15%); }
-      &.-burned { background: $black-light; }
-
-      &.-animating {
-        animation: srsRankUp .75s ease 0s 1 normal both running;
-      }
       // srs rank
       &:after {
         font-variant: small-caps;
@@ -220,10 +230,60 @@
         content: attr(data-after);
         margin-left: 6px;
       }
+
       // icon
       &:before {
         font-size: .8em;
       }
     }
   }
+
+  .srs-up {
+    top: -2.5em;
+
+    > .content {
+      background: $green;
+
+      &.-guru {
+        background: lighten($purple-light, 15%);
+      }
+
+      &.-master {
+        background: $blue;
+      }
+
+      &.-enlightened {
+        background: lighten($blue-light, 15%);
+      }
+
+      &.-burned {
+        background: $black-light;
+      }
+
+      &.is-animating {
+        animation: srsRankUp .75s ease 0s 1 normal both running;
+      }
+    }
+  }
+
+  .srs-down {
+    top: -2.3em;
+
+    > .content {
+      background: $red;
+
+      // minus symbol isn't vertically centered
+      &:before {
+        position: relative;
+        top: 1px;
+      }
+
+      &.is-animating {
+        animation: srsRankDown .75s ease 0s 1 normal both running;
+      }
+    }
+  }
+
 }
+
+

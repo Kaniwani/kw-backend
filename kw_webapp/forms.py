@@ -6,8 +6,11 @@ from django import forms
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 import requests
+
+from KW import settings
 from kw_webapp.models import Profile
 from django.utils.translation import ugettext, ugettext_lazy as _
+from contact_form.forms import ContactForm
 
 
 
@@ -20,9 +23,6 @@ class UserLoginForm(AuthenticationForm):
         self.fields['username'].widget.attrs['placeholder'] = "Username"
         self.fields['password'].widget.attrs['placeholder'] = "Password"
         self.fields['password'].label = False
-        self.helper.layout[1].insert(2,layout.HTML(
-          '<a href="{% url "register" %}" class="link -register">Not a member? Register here</a>'
-        ))
         self.helper.add_input(Submit("submit", "Sign In", css_class='button -submit'))
         self.helper.form_class = 'login-form'
         self.helper.form_method = 'post'
@@ -93,7 +93,7 @@ class UserCreateForm(UserCreationForm):
 class SettingsForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['api_key', 'level',  'follow_me', 'auto_advance_on_success', 'auto_expand_answer_on_failure', 'only_review_burned', 'on_vacation']
+        fields = ['api_key', 'level',  'follow_me', 'auto_advance_on_success', 'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'only_review_burned', 'on_vacation']
         help_texts = {
             "follow_me": ("If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani."),
             "on_vacation": ("Enabling this setting will prevent your reviews from accumulating.")
@@ -101,6 +101,7 @@ class SettingsForm(ModelForm):
         labels = {
             "follow_me": "Follow Wanikani Progress",
             "auto_advance_on_success": "Automatically advance to next item in review if answer was correct.",
+            "auto_expand_answer_on_success": "Automatically show kanji and kana if you answer correctly.",
             "auto_expand_answer_on_failure": "Automatically show kanji and kana if you answer incorrectly.",
             "only_review_burned": "Review only items that you have burned in Wanikani.",
             "on_vacation": "Vacation Mode"
@@ -118,7 +119,8 @@ class SettingsForm(ModelForm):
         self.helper.help_text_inline = False
         self.helper.error_text_inline = False
         super(SettingsForm, self).__init__(*args, **kwargs)
-        self.fields['level'].widget.attrs['readonly'] = True
+        #self.fields['level'].widget.attrs['readonly'] = True
+        self.fields['level'].disabled = True
 
     def clean_api_key(self):
         api_key = self.cleaned_data['api_key']
@@ -129,3 +131,15 @@ class SettingsForm(ModelForm):
                 raise ValidationError("API Key not associated with a WaniKani User!")
         print("cleaned api Key...")
         return api_key
+
+
+#Vaguely modified class which allows us to add the calling user into the recipients field.
+class UserContactCustomForm(ContactForm):
+
+    #Jam the originating User into the recipient list so we can reply-all to them.
+    def recipient_list(self):
+        recipients = [mail_tuple[1] for mail_tuple in settings.MANAGERS]
+        recipients.append(self.cleaned_data['email'])
+        return recipients
+
+

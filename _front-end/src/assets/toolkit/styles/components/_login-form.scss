@@ -1,14 +1,14 @@
 .login-form {
-	$login-grey: #e5e5e5;
-	$login-red: #E05D4F;
-	$border-radius: 10px;
+  $login-grey: #e5e5e5;
+  $login-red: #E05D4F;
+  $border-radius: 10px;
 
   position: relative;
   padding: 0;
   z-index: 2;
 
   .alert > ul {
-    @extend %plainlist;
+    @include plainlist;
     background: rgba($pink, .9);
     padding: $unit-xs $unit-sm;
     margin-bottom: $unit-sm;
@@ -17,7 +17,7 @@
   }
 
   input {
-    @include placeholderColor($grey-light);
+    @include placeholder-color($grey-light);
   }
 
   input:-webkit-autofill {
@@ -49,13 +49,13 @@
 
   .button[type="submit"],
   .button[type="submit"].-submit {
-  	margin: 20px auto 4px;
-  	background-color: $login-red;
+    margin: 20px auto 4px;
+    background-color: $login-red;
     min-width: 220px;
     color: $white;
     border-radius: $border-radius;
     &:focus {
-    	min-width: 228px;
+      min-width: 228px;
     }
   }
 }

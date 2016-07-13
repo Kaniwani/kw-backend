@@ -1,15 +1,16 @@
 .review-extra {
-	position: relative;
+  position: relative;
 
   > .row {
     @include clearfix;
-  	position: absolute;
-  	width: 100%;
-  	z-index: 2;
+    position: absolute;
+    width: 100%;
+    z-index: 2;
   }
 
   .reveal-block {
-  	background-color: transparent;
+    background-color: transparent;
+
     @include media($bp-md) {
       lost-column: 1/2 0 0;
     }

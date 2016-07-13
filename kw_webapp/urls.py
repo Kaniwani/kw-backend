@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from kw_webapp.views import Review, RecordAnswer, Dashboard, ReviewSummary, UnlockLevels, \
     UnlockRequested, ForceSRSCheck, About, Settings, LevelVocab, ToggleVocabLockStatus, LockRequested, \

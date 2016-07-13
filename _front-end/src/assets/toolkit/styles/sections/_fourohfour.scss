@@ -2,7 +2,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  background: image('404.png') no-repeat 15% center fixed;
+  background: image("404.png") no-repeat 15% center fixed;
   background-size: cover;
 
   > .text {
@@ -10,7 +10,7 @@
     float: right;
     text-align: right;
 
-    // line break after 'and remember,'
+    // line break after "and remember,"
     h4 {
       max-width: 24em;
       margin-left: auto;

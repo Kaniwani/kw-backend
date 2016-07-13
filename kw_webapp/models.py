@@ -37,7 +37,7 @@ class Level(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User)
     api_key = models.CharField(max_length=255)
-    api_valid = models.BooleanField(default=False)
+    api_valid = models.BooleanField(default=True)
     gravatar = models.CharField(max_length=255)
     about = models.CharField(max_length=255, default="")
     website = models.CharField(max_length=255, default="N/A", null=True)
@@ -46,6 +46,7 @@ class Profile(models.Model):
     posts_count = models.PositiveIntegerField(default=0)
     title = models.CharField(max_length=255, default="Turtles", null=True)
     join_date = models.DateField(auto_now_add=True, null=True)
+    last_wanikani_sync_date = models.DateTimeField(auto_now_add=True, null=True)
     level = models.PositiveIntegerField(null=True, validators=[
         MinValueValidator(constants.LEVEL_MIN),
         MaxValueValidator(constants.LEVEL_MAX),
@@ -54,8 +55,9 @@ class Profile(models.Model):
     # General user-changeable settings
     unlocked_levels = models.ManyToManyField(Level)
     follow_me = models.BooleanField(default=True)
-    auto_expand_answer_on_failure = models.BooleanField(default=False)
     auto_advance_on_success = models.BooleanField(default=False)
+    auto_expand_answer_on_success = models.BooleanField(default=False)
+    auto_expand_answer_on_failure = models.BooleanField(default=False)
     only_review_burned = models.BooleanField(default=False)
 
     # Vacation Settings
@@ -127,7 +129,7 @@ class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
     character = models.CharField(max_length=255)
     kana = models.CharField(max_length=255)
-    level = models.PositiveIntegerField(validators=[
+    level = models.PositiveIntegerField(null=True, validators=[
         MinValueValidator(constants.LEVEL_MIN),
         MaxValueValidator(constants.LEVEL_MAX),
     ])

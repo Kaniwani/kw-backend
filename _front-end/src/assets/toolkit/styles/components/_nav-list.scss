@@ -1,8 +1,10 @@
 .nav-list {
-	@extend %plainlist;
+  @include plainlist;
 
   .item {
-    padding: 8px 16px;
+    .nav-link {
+      padding: 8px 16px;
+    }
 
     &:hover,
     &.-active {

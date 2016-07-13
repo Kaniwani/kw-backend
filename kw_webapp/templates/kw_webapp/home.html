@@ -3,15 +3,14 @@
 {% block content %}
   {{ block.super }}
   {% if not user.profile.api_valid %}
-    <p id="invalidApiKey" class="_visuallyhidden">Woah your API key is invalid!</br> Fix it at the <a href="{% url "kw:settings" %}">Settings page</a>.</p>
+    <p id="invalidApiKey" class="u-visuallyhidden">Woah your API key is invalid!</br> Fix it at the <a href="{% url "kw:settings" %}">Settings page</a>.</p>
   {% endif %}
 
   <section class="user-section -fullwidth -no-section-spacing">
     {% include 'partials/user-overview.html' %}
-    {% include 'partials/reviews-dashboard.html' %}
+    {% include 'partials/user-dashboards.html' %}
   </section>
 
-  {% include 'partials/srs-dashboard.html' %}
   {% include 'partials/announcements.html' %}
 </div>
 <!-- / .site-content -->

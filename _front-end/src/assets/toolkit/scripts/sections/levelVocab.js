@@ -1,35 +1,39 @@
-/// TODO: unlock ajax needs promises
-/// if you click several unlocks - the returns are weird (wrong icon changes - some are missed etc)
+import config from '../config';
+import im from '../vendor/include-media';
+import toastr from '../vendor/toastr';
+import kwlog from '../util/kwlog';
+import Jump from 'jump.js';
 
 
 let CSRF;
 
 function init() {
+  CSRF = $('#csrf').val();
+
+  // vendor js configuration
+  if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
+  toastr.options = config.toastr;
+
+  window.KWDEBUG = true;
+
   // catch any window hashes if we arrived from summary page before anything else
-  if (window.location.hash) {
-    smoothScroll.init();
-    smoothScrollDeepLink();
-  }
+  const deeplink = window.location.hash;
+  if (deeplink) smoothScrollDeepLink(deeplink);
 
   // only run on vocab page
-  if(/vocabulary\/.+\//.test(window.location.pathname)) {
+  if (/vocabulary\/.+\//.test(window.location.pathname)) {
     let $cards = $('.vocab-list').find('.vocab-card');
-    CSRF = $('#csrf').val();
-
-    // if user has deeplinked from summary or elsewhere let's draw attention to the card
-    let specificVocab = (window.location.href.match(/.*vocabulary\/.+\/(\#.+)/) || [])[1];
-    if (specificVocab) $(specificVocab).addClass('-standout');
 
     // Attach events
     $cards.on('click', '.icon', handleIconClick);
   }
 }
 
-function smoothScrollDeepLink() {
-  let hash = smoothScroll.escapeCharacters(window.location.hash); // Escape the hash
-  let el = document.querySelector(hash);
+function smoothScrollDeepLink(target) {
+  const Jumper = new Jump();
+  const el = document.querySelector(target);
   if (el != null) {
-    smoothScroll.animateScroll(hash, null /* toggle */, {offset: 50});
+    Jumper.jump(el, { duration: 1000, offset: -50 });
     el.classList.add('-standout');
   }
 }
@@ -47,25 +51,25 @@ function handleIconClick(event) {
   function removeSynonym(id) {
     $.post('/kw/synonym/remove', {
       synonym_id: id,
-      csrfmiddlewaretoken: CSRF
+      csrfmiddlewaretoken: CSRF,
     })
     .done(res => {
-      // brittle selecting, but user synonyms always have both present so it's safe unless markup changes...
-      [$icon.closest('.kanji'), $icon.closest('.kanji').prev('.kana')].forEach(el => $(el).fadeOut(600));
+      [$icon.closest('.kanji'),
+       $icon.closest('.kanji').prev('.kana')].forEach(el => $(el).fadeOut(600));
     })
-    .always(res => console.log(res));
+    .always(res => kwlog(res));
   }
 
   function toggleLock(id) {
     $.post('/kw/togglevocab/', {
       review_id: id,
-      csrfmiddlewaretoken: CSRF
+      csrfmiddlewaretoken: CSRF,
     })
     .done(res => {
       $card.toggleClass('-locked -unlockable');
       $icon.toggleClass('i-unlock').toggleClass('i-unlocked');
     })
-    .always(res => console.log(res));
+    .always(res => kwlog(res));
   }
 }
 

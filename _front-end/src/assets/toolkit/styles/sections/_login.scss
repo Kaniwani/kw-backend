@@ -1,27 +1,27 @@
 .login-section {
-	$login-grey: #e5e5e5;
-	$border-radius: 10px;
+  $login-grey: #e5e5e5;
+  $border-radius: 10px;
 
   position: relative;
   display: block;
   min-height: 100vh;
   width: 100%;
-  overflow: auto;
+  overflow-x: hidden;
   color: $grey-dark;
   background: $login-grey;
   background-image: image('backgrounds/login/login-1200.png');
   background-size: 100%;
-  background-position: bottom 30% center;
+  background-position: bottom 1rem center;
   background-repeat: no-repeat;
 
-	@include media($bp-lg) {
- 	  background-position: top center;
-		background-size: inherit;
-	}
+  @include media($bp-lg) {
+    background-position: top center;
+    background-size: inherit;
+  }
 
-	@include media($bp-xxl) {
-	  background-image: image('backgrounds/login/login-1800.png');
-	}
+  @include media($bp-xxl) {
+    background-image: image('backgrounds/login/login-1800.png');
+  }
 
   > .container {
     max-width: 600px;
@@ -29,9 +29,9 @@
     z-index: 2;
     margin: 5vh auto;
 
-		@include media($bp-sm) {
-		  margin-top: 10vh;
-		}
+    @include media($bp-sm) {
+      margin-top: 10vh;
+    }
 
     @include media($bp-lg) {
       margin: 290px auto 0;
@@ -43,10 +43,10 @@
       line-height: 1;
       z-index: 2;
       color: $grey-dark;
-  	  font-size: responsive 25px 60px;
-	    @include media($bp-lg) {
-    	  text-shadow: 0 1px 1px rgba($black-light, .7);
-  	  }
+      font-size: responsive 25px 60px;
+      @include media($bp-lg) {
+        text-shadow: 0 1px 1px rgba($black-light, .7);
+      }
     }
 
     > p {
@@ -55,21 +55,61 @@
     }
   }
 
-	&:not(.-registration) {
-		#id_username {
-			border: 0;
-			border-bottom: 2px solid $login-grey;
-			border-radius: $border-radius $border-radius 0 0;
-		}
+  &.-registration {
+    background: none;
 
-		#id_password {
-			border: 0;
-			border-radius: 0 0 $border-radius $border-radius;
-		}
-	}
+    .form-group {
+      margin: .75rem 0;
+      label {
+        display: block;
+        margin-bottom: .25rem;
+      }
+    }
 
-  > .link {
-  	text-align: center;
+    @include media($bp-lg) {
+      >.container {
+        margin: 1rem auto 0;
+      }
+    }
   }
 
+  &:not(.-registration) {
+    #id_username {
+      border: 0;
+      border-bottom: 2px solid $login-grey;
+      border-radius: $border-radius $border-radius 0 0;
+    }
+
+    #id_password {
+      border: 0;
+      border-radius: 0 0 $border-radius $border-radius;
+    }
+  }
+
+  .link {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    font-size: .8rem;
+    position: static;
+    text-decoration: underline;
+    overflow: hidden;
+
+    &.-swap {
+      position: absolute;
+      top: 0;
+      right: -1.5rem;
+      margin: 0;
+      background-color: $white-light;
+      border-radius: 0 0 0 10px;
+      padding: .5rem 2rem .5rem .75rem;
+      box-shadow: 0 1px 12px -3px rgba(0,0,0, .6);
+      text-decoration: none;
+      transition: transform .38s ease-in .12s;
+      &:hover:not(:active) {
+        transition: transform .32s ease-out;
+        transform: translateX(-1rem);
+      }
+    }
+  }
 }

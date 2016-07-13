@@ -1,10 +1,18 @@
 import '../util/serializeObject';
+import config from '../config';
+import im from '../vendor/include-media';
+import toastr from '../vendor/toastr';
+
 
 function followChanged(formData) {
   return simpleStorage.get('KW').settings.followWanikani === false && formData.follow_me === 'on'
 }
 
 function init() {
+  // vendor js configuration
+  if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
+  toastr.options = config.toastr;
+
   // are we on settings page?
   if (/settings/.test(window.location.pathname)) {
     const saved = simpleStorage.get('settingsSaved');
@@ -15,7 +23,7 @@ function init() {
     if (!!saved) {
       simpleStorage.deleteKey('settingsSaved');
       // animation on page load can be a bit janky - let's delay notification slightly
-      setTimeout(() => notie.alert(1, 'Settings saved!', 1), 300);
+      setTimeout(() => toastr.success('Settings saved.'), 300);
     }
 
     // on form submit, set flag for notification
@@ -26,8 +34,8 @@ function init() {
       simpleStorage.set('settingsSaved', true);
       $button.addClass('-hidden');
       $button.closest('div').append(`
-        <span class="btn btn-primary pure-button pure-button-primary" style="width:75px; margin-top:10px;">
-          <span class="-loading" style="margin-bottom: 3px;"></span>
+        <span class="btn btn-primary pure-button pure-button-primary" style="margin-top:10px;">
+          <span class="-loading"></span>
         </span>`
       );
     });
@@ -39,3 +47,4 @@ const api = {
 }
 
 export default api;
+
