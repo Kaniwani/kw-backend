@@ -563,3 +563,5 @@ def user_returns_from_vacation(user):
     user.profile.on_vacation = False
     user.profile.save()
     all_srs(user)
+
+

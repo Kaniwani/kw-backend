@@ -45,3 +45,11 @@ def create_profile_for_user(user):
     p = Profile(user=user, api_key="INVALID_KEY", level=1, api_valid=False)
     p.save()
     return p
+
+
+def correct_next_review_dates():
+    us = UserSpecific.objects.all()
+    i = 0
+    for u in us:
+        u.set_next_review_time_based_on_last_studied()
+        print(i, u)
