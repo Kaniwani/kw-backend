@@ -327,8 +327,8 @@ class RecordAnswer(LoginRequiredMixin, View):
         previously_wrong = True if request.POST['wrong_before'] == 'true' else False
         review = get_object_or_404(UserSpecific, pk=review_id)
 
-        if not review.can_be_managed_by(self.request.user):
-            return HttpResponseForbidden("You can't modify that object!")
+        if not review.can_be_managed_by(self.request.user) or not review.needs_review:
+            return HttpResponseForbidden("You can't modify that object at this time!")
 
         data_logger.info(
             "{}|{}|{}|{}".format(review.user.username, review.vocabulary.meaning, user_correct, review.streak,
@@ -376,7 +376,6 @@ class Review(LoginRequiredMixin, ListView):
 
         user = self.request.user
         res = get_users_current_reviews(user).order_by('?')
-        print(res.all())
         return res
 
 
