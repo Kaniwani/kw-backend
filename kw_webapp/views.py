@@ -328,7 +328,7 @@ class RecordAnswer(LoginRequiredMixin, View):
         review = get_object_or_404(UserSpecific, pk=review_id)
 
         if not review.can_be_managed_by(self.request.user) or not review.needs_review:
-            return HttpResponseForbidden("You can't modify that object!")
+            return HttpResponseForbidden("You can't modify that object at this time!")
 
         data_logger.info(
             "{}|{}|{}|{}".format(review.user.username, review.vocabulary.meaning, user_correct, review.streak,
