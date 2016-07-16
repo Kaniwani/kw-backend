@@ -61,7 +61,7 @@
     "webpack": "^1.12"
   },
   "dependencies": {
-    "jquery": "^3",
+    "jquery": "^3.1",
     "notie": "^2.1",
     "simplestorage.js": "^0.2"
   }
