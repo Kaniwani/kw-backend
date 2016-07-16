@@ -23,11 +23,9 @@ function updateReviewTime($el) {
   const now = Date.now();
   const next = KW.nextReview;
 
-  window.KWDEBUG = true;
   kwlog(
     '\nclient date now utc', now,
-    '\nbackend next review local', next,
-    '\nbackend next review utc', KW.nextReviewUTC
+    '\nbackend next review local', next
   );
 
   if (now > next) {
