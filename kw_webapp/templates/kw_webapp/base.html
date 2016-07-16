@@ -50,14 +50,14 @@
         lastWKSyncDate: '{{ user.profile.last_wanikani_sync_date }}',
       },
       messages: [
-        {% if messages %}
-          {% for message in messages %}
-            { "text":"{{message}}", "level": "{{message.tags}}" },
-          {% endfor %}
-        {% endif %}
+        {% for message in messages %}
+          {
+            "text":"{{message}}",
+            "level": "{{message.tags}}"
+          },
+        {% endfor %}
       ],
       nextReview: '{{ next_review_timestamp_local }}',
-      nextReviewUTC: '{{ next_review_timestamp_utc }}',
       reviewCount: '{{ review_count }}',
       reviewsWithinHourCount: '{{ reviews_within_hour_count }}',
       reviewsWithinDayCount: '{{ reviews_within_day_count }}',
