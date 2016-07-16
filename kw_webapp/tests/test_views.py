@@ -251,3 +251,10 @@ class TestViews(TestCase):
         response = self.client.post(reverse("kw:summary"), follow=True)
 
         self.assertRedirects(response, reverse("kw:home"))
+
+    def test_reviewing_that_does_not_need_to_be_reviewed_fails(self):
+        self.review.needs_review = False
+        self.review.save()
+
+        response = self.client.post(reverse("kw:record_answer"),data={'user_correct': "true", 'user_specific_id': self.review.id, 'wrong_before': 'false'})
+        self.assertTrue(isinstance(response, HttpResponseForbidden))

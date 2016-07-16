@@ -1,8 +1,10 @@
 from itertools import chain
 
+from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseForbidden
 from django.test import Client, TestCase
+from django.utils import timezone
 
 from kw_webapp import constants
 from kw_webapp.models import MeaningSynonym, UserSpecific, Profile
@@ -213,7 +215,7 @@ class TestModels(TestCase):
         self.user.profile.save()
         self.user.profile.unlocked_levels.get_or_create(level=5)
 
-        #Create a review at current level
+        #Create a review at current levelwait,
         vocab = create_vocab("ANY WORD")
         create_reading(vocab, "some reading", "some char", self.user.profile.level)
         create_userspecific(vocab, self.user)
@@ -236,4 +238,20 @@ class TestModels(TestCase):
         unlocked_levels = self.user.profile.unlocked_levels_list()
 
         self.assertTrue(old_level not in unlocked_levels)
+
+    def test_updating_next_review_date_based_on_last_studied_works(self):
+        current_time = timezone.now()
+        self.review.last_studied = current_time
+        self.review.streak = 4
+        delta_hours = constants.SRS_TIMES[4]
+        future_time = current_time + timedelta(hours=delta_hours)
+
+        self.review.save()
+
+        self.review.set_next_review_time_based_on_last_studied()
+
+        self.review.refresh_from_db()
+
+        self.assertTrue(self.review.next_review_date - future_time < timedelta(minutes=15))
+
 

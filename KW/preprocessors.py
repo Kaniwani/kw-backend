@@ -26,15 +26,13 @@ def review_count_preprocessor(request):
                     context_dict['next_review_date'] = next_review_date
                     context_dict['next_review_timestamp_local'] = next_review_date.timestamp() * 1000
                     context_dict['next_review_timestamp_utc'] = int(time.mktime(next_review_date.timetuple())) * 1000 #TODO potentially remove?
-
-
             one_hour = datetime.timedelta(hours=1)
             today = datetime.timedelta(hours=24)
             context_dict['reviews_within_hour_count'] = get_users_future_reviews(request.user, time_limit=one_hour).count()
             context_dict['reviews_within_day_count'] = get_users_future_reviews(request.user, time_limit=today).count()
             return context_dict
-
     return context_dict
+
 
 def srs_level_count_preprocessor(request):
     """
