@@ -177,8 +177,12 @@ class UserSpecific(models.Model):
         return synonym, created
 
     def set_next_review_time(self):
-        self.next_review_date = timezone.now() + timedelta(hours=constants.SRS_TIMES[self.streak])
-        self._round_review_time_up()
+        if self.streak not in constants.SRS_TIMES.keys():
+            self.next_review_date = None
+        else:
+
+            self.next_review_date = timezone.now() + timedelta(hours=constants.SRS_TIMES[self.streak])
+            self._round_review_time_up()
         self.save()
 
     def _round_review_time_up(self):
