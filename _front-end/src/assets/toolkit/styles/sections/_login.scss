@@ -90,25 +90,34 @@
     display: block;
     text-align: center;
     margin-top: 1rem;
-    font-size: .8rem;
+    font-size: .75rem;
     position: static;
     text-decoration: underline;
     overflow: hidden;
 
+    &.-forgot {
+      display: inline-block;
+      padding: .3rem .5rem;
+      background: $login-grey;
+      border-radius: $border-radius / 2;
+    }
+
     &.-swap {
       position: absolute;
       top: 0;
-      right: -1.5rem;
+      right: -1.4rem;
       margin: 0;
+      font-size: .85rem;
+      padding: .5rem 2.15rem .5rem .85rem;
+
       background-color: $white-light;
       border-radius: 0 0 0 10px;
-      padding: .5rem 2rem .5rem .75rem;
       box-shadow: 0 1px 12px -3px rgba(0,0,0, .6);
       text-decoration: none;
       transition: transform .38s ease-in .12s;
       &:hover:not(:active) {
-        transition: transform .32s ease-out;
-        transform: translateX(-1rem);
+        transition: transform .28s ease-out;
+        transform: translateX(-.75rem);
       }
     }
   }
