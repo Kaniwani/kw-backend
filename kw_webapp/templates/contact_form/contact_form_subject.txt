@@ -1,1 +1,1 @@
-An incoming message from a Kaniwani user!
+An incoming message from Kaniwani user {{user.username}}
