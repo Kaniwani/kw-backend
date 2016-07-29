@@ -17,12 +17,12 @@ from contact_form.forms import ContactForm
 class UserLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(UserLoginForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(form=self)
         self.fields['username'].label = False
         self.fields['username'].css_class = "False"
         self.fields['username'].widget.attrs['placeholder'] = "Username"
         self.fields['password'].widget.attrs['placeholder'] = "Password"
         self.fields['password'].label = False
-        self.helper = FormHelper()
         self.helper.add_input(Submit("submit", "Sign In", css_class='button -submit'))
         self.helper.form_class = 'login-form'
         self.helper.form_method = 'post'
@@ -60,11 +60,11 @@ class UserCreateForm(UserCreationForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = ''
-        self.helper.add_input(Submit("submit", "Submit", css_class='button -submit'))
         self.helper.form_class = 'login-form'
         self.helper.form_style = "default"
         self.helper.help_text_inline = True
         self.helper.error_text_inline = False
+        self.helper.add_input(Submit("submit", "Submit", css_class='button -submit'))
 
     def clean_email(self):
         email = self.cleaned_data["email"]
