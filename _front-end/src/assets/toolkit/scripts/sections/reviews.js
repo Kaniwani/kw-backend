@@ -23,7 +23,7 @@ const $progressBar = $('.progress-bar > .value');
 const $meaning = $('#meaning');
 const $srsIndicator = $('.streak > .icon');
 const $userAnswer = $('#userAnswer');
-const $answerPanel = $('#answerpanel');
+const $answerPanel = $('#answerPanel');
 const $submitButton = $('#submitAnswer');
 const $ignoreButton = $('#ignoreAnswer');
 const $srsUp = $('#srsUp > .content');
@@ -377,12 +377,12 @@ function ignoreAnswer({ animate = true } = {}) {
 }
 
 function clearColors() {
-  $userAnswer.removeClass('-marked -correct -incorrect -invalid');
+  $answerPanel.removeClass('-marked -correct -incorrect -invalid');
 }
 
 function nonHiraganaAnswer() {
   clearColors();
-  $userAnswer.addClass('-invalid');
+  $answerPanel.addClass('-invalid');
 }
 
 function enableShortcuts() {
@@ -396,9 +396,10 @@ function disableShortcuts() {
 function markWrong() {
   enableShortcuts();
   clearColors();
-  $userAnswer.addClass('-marked -incorrect').prop({ disabled: true });
+  kwlog($answerPanel);
+  $answerPanel.addClass('-marked -incorrect');
+  $userAnswer.prop({ disabled: true });
   $userAnswer.blur();
-  $srsIndicator.addClass('-marked');
   srsRankChange({ correct: false });
   $ignoreButton.removeClass('-hidden');
   $synonymButton.removeClass('-hidden');
@@ -407,9 +408,9 @@ function markWrong() {
 function markRight() {
   enableShortcuts();
   clearColors();
-  $userAnswer.addClass('-marked -correct').prop({ disabled: true });
+  $answerPanel.addClass('-marked -correct');
+  $userAnswer.prop({ disabled: true });
   $userAnswer.blur();
-  $srsIndicator.addClass('-marked');
   srsRankChange({ correct: true });
 }
 
@@ -503,10 +504,10 @@ function enterPressed(event) {
 
   autoAdvancing = false;
 
-  if ($userAnswer.hasClass('-marked')) {
-    if ($userAnswer.hasClass('-correct')) {
+  if ($answerPanel.hasClass('-marked')) {
+    if ($answerPanel.hasClass('-correct')) {
       rotateVocab({ correct: true });
-    } else if ($userAnswer.hasClass('-incorrect')) {
+    } else if ($answerPanel.hasClass('-incorrect')) {
       processAnswer({ correct: false });
       rotateVocab({ correct: false });
     }
@@ -521,7 +522,7 @@ function handleShortcuts(ev) {
     ev.preventDefault();
     ev.stopPropagation();
     enterPressed(null);
-  } else if ($userAnswer.hasClass('-marked')) {
+  } else if ($answerPanel.hasClass('-marked')) {
     kwlog('handleShortcuts called: -marked, keycode:', ev.which);
 
     switch (true) {
@@ -557,7 +558,7 @@ function handleShortcuts(ev) {
       case (ev.which === 73 || ev.which === 105 || ev.which === 8):
         ev.preventDefault();
         kwlog('case: I', 'event was:', ev);
-        if ($userAnswer.hasClass('-incorrect')) ignoreAnswer();
+        if ($answerPanel.hasClass('-incorrect')) ignoreAnswer();
         break;
 
       default:
