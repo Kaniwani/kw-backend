@@ -181,6 +181,11 @@ class UserSpecific(models.Model):
         self._round_review_time_up()
         self.save()
 
+    def set_next_review_time_based_on_last_studied(self):
+        self.next_review_date = self.last_studied + timedelta(hours=constants.SRS_TIMES[self.streak])
+        self._round_review_time_up()
+        self.save()
+
     def _round_review_time_up(self):
         original_date = self.next_review_date
         round_to = constants.REVIEW_ROUNDING_TIME.total_seconds()

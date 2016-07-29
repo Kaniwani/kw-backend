@@ -6,7 +6,7 @@ from datetime import timedelta
 #Check these values here: https://cdn.wanikani.com/assets/guide/srs-visualization-4580afac174836361bdc3d3758bd6c7f.png
 SRS_TIMES = {
     #STREAK : HOURS_UNTIL_NEXT_REVIEW
-    0: 0,  # Apprentice
+    0: 4,  # Apprentice
     1: 4,  # Apprentice (4 hours)
     2: 8,  # Apprentice (8 hours)
     3: 24,  # Apprentice (1 day)
@@ -18,7 +18,6 @@ SRS_TIMES = {
 }
 
 # The level arrangement I believe to be exposed by WK API.
-
 KANIWANI_SRS_LEVELS = OrderedDict()
 KANIWANI_SRS_LEVELS["apprentice"] = [0, 1, 2, 3, 4]
 KANIWANI_SRS_LEVELS["guru"] = [5, 6]
