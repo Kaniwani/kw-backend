@@ -100,10 +100,10 @@ class SettingsForm(ModelForm):
         }
         labels = {
             "follow_me": "Follow WaniKani Progress",
+            "only_review_burned": "Review only items that you have burned in WaniKani.",
             "auto_advance_on_success": "Automatically advance to next item in review if answer was correct.",
             "auto_expand_answer_on_success": "Automatically show kanji and kana if you answer correctly.",
             "auto_expand_answer_on_failure": "Automatically show kanji and kana if you answer incorrectly.",
-            "only_review_burned": "Review only items that you have burned in WaniKani.",
             "on_vacation": "Vacation Mode"
         }
     def __init__(self, *args, **kwargs):
