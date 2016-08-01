@@ -95,15 +95,15 @@ class SettingsForm(ModelForm):
         model = Profile
         fields = ['api_key', 'level',  'follow_me', 'auto_advance_on_success', 'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'only_review_burned', 'on_vacation']
         help_texts = {
-            "follow_me": ("If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani."),
+            "follow_me": ("If you disable this, KaniWani will no longer automatically unlock things as you unlock them in WaniKani."),
             "on_vacation": ("Enabling this setting will prevent your reviews from accumulating.")
         }
         labels = {
-            "follow_me": "Follow Wanikani Progress",
+            "follow_me": "Follow WaniKani Progress",
             "auto_advance_on_success": "Automatically advance to next item in review if answer was correct.",
             "auto_expand_answer_on_success": "Automatically show kanji and kana if you answer correctly.",
             "auto_expand_answer_on_failure": "Automatically show kanji and kana if you answer incorrectly.",
-            "only_review_burned": "Review only items that you have burned in Wanikani.",
+            "only_review_burned": "Review only items that you have burned in WaniKani.",
             "on_vacation": "Vacation Mode"
         }
     def __init__(self, *args, **kwargs):
