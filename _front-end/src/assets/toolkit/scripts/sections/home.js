@@ -23,12 +23,19 @@ function updateReviewTime($el) {
   const now = Date.now();
   const next = KW.nextReview;
 
+  window.KWDEBUG = true;
+
   kwlog(
     '\nclient date now utc', now,
     '\nbackend next review local', next
+    , next === 0, +KW.user.level === 1
   );
 
-  if (now > next) {
+  if (next === 0 && +KW.user.level === 1) { // user has no WK vocab
+    $el.html('No vocabulary unlocked');
+    $el.addClass('hint--bottom hint--rounded -multiline');
+    $el.attr('data-hint', 'You need to complete some vocabulary lessons on WaniKani!')
+  } else if (now > next) {
     refreshReviews();
     clearInterval(KW.reviewTimer);
   } else {
