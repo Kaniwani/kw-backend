@@ -83,6 +83,8 @@ class UserCreateForm(UserCreationForm):
             json_data = r.json()
             if "error" in json_data.keys():
                 raise ValidationError("API Key not associated with a WaniKani User!")
+        else:
+            raise ValidationError("Invalid!")
         return api_key
 
     class Meta:
