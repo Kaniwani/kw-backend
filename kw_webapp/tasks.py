@@ -199,18 +199,14 @@ def sync_user_profile_with_wk(user):
     user.profile.about = user_info["about"]
     user.profile.set_website(user_info["website"])
     user.profile.set_twitter_account(user_info["twitter"])
+    user.profile.gravatar = user_info["gravatar"]
+    user.profile.last_wanikani_sync_date = timezone.now()
+    user.profile.api_valid = True
     if user.profile.follow_me:
         user.profile.unlocked_levels.get_or_create(level=user_info["level"])
-        if user_info["level"] < user.profile.level:  # we have detected a user reset on WK
-            user.profile.handle_wanikani_reset(user_info["level"])
-        else:
-            user.profile.level = user_info["level"]
+        user.profile.handle_wanikani_level_change(user_info["level"])
 
-
-            user.profile.gravatar = user_info["gravatar"]
-            user.profile.api_valid = True
-            user.profile.last_wanikani_sync_date = timezone.now()
-            user.profile.save()
+    user.profile.save()
 
     logger.info("Synced {}'s Profile.".format(user.username))
     return True
