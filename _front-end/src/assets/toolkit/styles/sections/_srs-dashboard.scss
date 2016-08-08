@@ -16,6 +16,12 @@
         min-width: 115px;
       }
 
+      // prevent tooltips appearing instantly when moving mouse around page
+      &[data-hint]:hover:before,
+      &[data-hint]:hover:after {
+        transition-delay: 350ms;
+      }
+
       &:hover {
         opacity: 1;
 

@@ -1,30 +1,30 @@
 <div class="srs-dashboard">
   <ul class="list">
-    <li class="item -apprentice" title="Apprentice">
+    <li class="item -apprentice hint--bottom hint--rounded" data-hint="Apprentice">
       <a class="link" href={% url 'kw:vocab_level' 'apprentice' %}>
         <span class="icon i-apprentice"></span>
         <span class="count">{{ srs_apprentice_count|default:"&#8203;" }}</span>
       </a>
     </li>
-    <li class="item -guru" title="Guru">
+    <li class="item -guru hint--bottom hint--rounded" data-hint="Guru">
       <a class="link" href={% url 'kw:vocab_level' 'guru' %}>
         <span class="icon i-guru"></span>
         <span class="count">{{ srs_guru_count|default:"&#8203;" }}</span>
       </a>
     </li>
-    <li class="item -master" title="Master">
+    <li class="item -master hint--bottom hint--rounded" data-hint="Master">
       <a class="link" href={% url 'kw:vocab_level' 'master' %}>
         <span class="icon i-master"></span>
         <span class="count">{{ srs_master_count|default:"&#8203;" }}</span>
       </a>
     </li>
-    <li class="item -enlightened" title="Enlightened">
+    <li class="item -enlightened hint--bottom hint--rounded" data-hint="Enlightened">
       <a class="link" href={% url 'kw:vocab_level' 'enlightened' %}>
         <span class="icon i-enlightened"></span>
         <span class="count">{{ srs_enlightened_count|default:"&#8203;" }}</span>
       </a>
     </li>
-    <li class="item -burned" title="Burned">
+    <li class="item -burned hint--bottom hint--rounded" data-hint="Burned">
       <a class="link" href={% url 'kw:vocab_level' 'burned' %}>
         <span class="icon i-burned"></span>
         <span class="count">{{ srs_burned_count|default:"&#8203;" }}</span>

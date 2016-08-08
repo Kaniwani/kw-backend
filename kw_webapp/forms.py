@@ -17,12 +17,12 @@ from contact_form.forms import ContactForm
 class UserLoginForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super(UserLoginForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper(form=self)
         self.fields['username'].label = False
         self.fields['username'].css_class = "False"
         self.fields['username'].widget.attrs['placeholder'] = "Username"
         self.fields['password'].widget.attrs['placeholder'] = "Password"
         self.fields['password'].label = False
-        self.helper = FormHelper()
         self.helper.add_input(Submit("submit", "Sign In", css_class='button -submit'))
         self.helper.form_class = 'login-form'
         self.helper.form_method = 'post'
@@ -60,11 +60,11 @@ class UserCreateForm(UserCreationForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_action = ''
-        self.helper.add_input(Submit("submit", "Submit", css_class='button -submit'))
         self.helper.form_class = 'login-form'
         self.helper.form_style = "default"
         self.helper.help_text_inline = True
         self.helper.error_text_inline = False
+        self.helper.add_input(Submit("submit", "Submit", css_class='button -submit'))
 
     def clean_email(self):
         email = self.cleaned_data["email"]
@@ -97,15 +97,15 @@ class SettingsForm(ModelForm):
         model = Profile
         fields = ['api_key', 'level',  'follow_me', 'auto_advance_on_success', 'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'only_review_burned', 'on_vacation']
         help_texts = {
-            "follow_me": ("If you disable this, Kaniwani will no longer automatically unlock things as you unlock them in Wanikani."),
+            "follow_me": ("If you disable this, KaniWani will no longer automatically unlock things as you unlock them in WaniKani."),
             "on_vacation": ("Enabling this setting will prevent your reviews from accumulating.")
         }
         labels = {
-            "follow_me": "Follow Wanikani Progress",
+            "follow_me": "Follow WaniKani Progress",
+            "only_review_burned": "Review only items that you have burned in WaniKani.",
             "auto_advance_on_success": "Automatically advance to next item in review if answer was correct.",
             "auto_expand_answer_on_success": "Automatically show kanji and kana if you answer correctly.",
             "auto_expand_answer_on_failure": "Automatically show kanji and kana if you answer incorrectly.",
-            "only_review_burned": "Review only items that you have burned in Wanikani.",
             "on_vacation": "Vacation Mode"
         }
     def __init__(self, *args, **kwargs):

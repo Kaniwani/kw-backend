@@ -20,14 +20,26 @@ function displayMessages() {
 }
 
 function updateReviewTime($el) {
-  let now = Date.now(),
-      next = Date.parse(KW.nextReview);
+  const now = Date.now();
+  const next = KW.nextReview;
 
-  kwlog(now, next, $el.get(0), $.timeago(KW.nextReview));
-  if (now > next) {
+  kwlog(
+    '\nclient date now utc', now,
+    '\nbackend next review local', next
+    , next === 0, +KW.user.level === 1
+  );
+
+  if (next === 0 && +KW.user.level === 1) {
+    // user has no WK vocab
+    $el.html('No vocabulary unlocked');
+    $el.addClass('hint--bottom hint--rounded -multiline');
+    $el.attr('data-hint', 'You need to complete some vocabulary lessons on WaniKani!')
+  } else if (now > next) {
+    // reviews ready!
     refreshReviews();
     clearInterval(KW.reviewTimer);
   } else {
+    // update countdown timer
     $el.html(`Next review: ${$.timeago(KW.nextReview)}`);
   }
 }
@@ -39,7 +51,8 @@ function init() {
   // let's update storage KW with any template provided changes
   KW = Object.assign(simpleStorage.get('KW') || {}, window.KW);
   KW.settings = strToBoolean(KW.settings);
-  KW.nextReview = new Date(Math.ceil(+KW.nextReview));
+  KW.nextReview = Math.ceil(+KW.nextReview);
+  KW.nextReviewUTC = Math.ceil(+KW.nextReviewUTC);
   simpleStorage.set('KW', KW);
 
   // need to get some promises happening instead, too many race conditions
