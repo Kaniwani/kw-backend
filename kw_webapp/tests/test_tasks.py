@@ -4,7 +4,6 @@ from datetime import timedelta
 import responses
 from django.test import TestCase
 from django.utils import timezone
-from django.utils.timezone import is_aware
 
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific

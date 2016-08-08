@@ -253,5 +253,3 @@ class TestModels(TestCase):
         self.review.refresh_from_db()
 
         self.assertTrue(self.review.next_review_date - future_time < timedelta(minutes=15))
-
-
