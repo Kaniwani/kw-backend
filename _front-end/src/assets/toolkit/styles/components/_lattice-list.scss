@@ -14,7 +14,7 @@
 
   > .item > .link {
     display: block;
-    padding: .15em .5em;
+    padding: .1em .5em .15em;
     color: $white;
     font-size: 1.8em;
     text-shadow: 1px 1px 4px rgba($purple-dark, .7);
@@ -34,6 +34,7 @@
 
   &.-incorrect > .item {
     background: $red;
+    flex: 1 1 auto;
 
     > .link {
       text-align: center;
@@ -42,7 +43,9 @@
       text-shadow: 1px 1px 4px rgba(darken($red, 20), .7);
 
       .en {
-        font-size: .75em;
+        font-weight: 600;
+        font-size: .5em;
+        padding-bottom: .4em;
       }
     }
   }
