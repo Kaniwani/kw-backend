@@ -7,7 +7,6 @@ var assemble = require('fabricator-assemble'),
     gulp = require('gulp'),
     gutil = require('gulp-util'),
     gulpif = require('gulp-if'),
-    stripDebug = require('gulp-strip-debug'),
     imagemin = require('gulp-imagemin'),
     rename = require('gulp-rename'),
     runSequence = require('run-sequence'),
@@ -132,14 +131,6 @@ gulp.task('assemble', function (done) {
   done();
 });
 
-// remove console.log statements
-gulp.task('stripDebug', function () {
-  return gulp.src(config.dest + '/assets/scripts/global.js')
-        .pipe(stripDebug())
-        .pipe(gulp.dest(config.dest + '/assets/scripts'));
-
-});
-
 // server
 gulp.task('serve', function () {
 
@@ -147,7 +138,7 @@ gulp.task('serve', function () {
     server: {
       baseDir: config.dest
     },
-    https: true,
+    https: false,
     notify: false,
     logPrefix: 'FABRICATOR'
   });
@@ -206,10 +197,6 @@ gulp.task('default', ['clean'], function () {
   runSequence(tasks, function () {
     if (!config.prod) {
       gulp.start('serve');
-    }
-
-    if (config.prod) {
-     // gulp.start('stripDebug');
     }
   });
 
