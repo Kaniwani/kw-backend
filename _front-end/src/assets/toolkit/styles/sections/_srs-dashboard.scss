@@ -19,7 +19,7 @@
       // prevent tooltips appearing instantly when moving mouse around page
       &[data-hint]:hover:before,
       &[data-hint]:hover:after {
-        transition-delay: 500ms;
+        transition-delay: 700ms;
       }
 
       .link {

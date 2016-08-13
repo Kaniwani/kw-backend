@@ -55,11 +55,34 @@
     }
   }
 
+  .link {
+    display: inline-block;
+    vertical-align: bottom;
+    padding: 0 .6rem;
+    background: $login-grey;
+    border-radius: $border-radius / 2;
+    text-align: center;
+    margin-top: .85rem;
+    font-size: .75rem;
+    position: static;
+    overflow: hidden;
+
+    &:hover,
+    &:focus {
+      text-decoration: underline;
+    }
+
+    &.-strong {
+      font-weight: 600;
+    }
+  }
+
   &.-registration {
     background: none;
 
     .form-group {
       margin: .75rem 0;
+
       label {
         display: block;
         margin-bottom: .25rem;
@@ -83,47 +106,6 @@
     #id_password {
       border: 0;
       border-radius: 0 0 $border-radius $border-radius;
-    }
-  }
-
-  .link {
-    display: block;
-    text-align: center;
-    margin-top: .75rem;
-    font-size: .75rem;
-    position: static;
-    text-decoration: underline;
-    overflow: hidden;
-
-    &.-forgot,
-    &.-register {
-      display: inline-block;
-      padding: .3rem .5rem;
-      background: $login-grey;
-      border-radius: $border-radius / 2;
-    }
-
-    &.-register {
-      font-variant: small-caps;
-    }
-
-    &.-swap {
-      position: absolute;
-      top: 0;
-      right: -1.4rem;
-      margin: 0;
-      font-size: .85rem;
-      padding: .5rem 2.15rem .5rem .85rem;
-
-      background-color: $white-light;
-      border-radius: 0 0 0 10px;
-      box-shadow: 0 1px 12px -3px rgba(0,0,0, .6);
-      text-decoration: none;
-      transition: transform .38s ease-in .12s;
-      &:hover:not(:active) {
-        transition: transform .28s ease-out;
-        transform: translateX(-.75rem);
-      }
     }
   }
 }
