@@ -139,6 +139,11 @@ body.okayNav-loaded {
       width: 100%;
     }
   }
+
+  .nav-link:focus .text:after {
+    opacity: 1;
+    width: 100%;
+  }
 }
 
 .okayNav__menu-toggle span {

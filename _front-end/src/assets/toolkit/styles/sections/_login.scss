@@ -89,17 +89,22 @@
   .link {
     display: block;
     text-align: center;
-    margin-top: 1rem;
+    margin-top: .75rem;
     font-size: .75rem;
     position: static;
     text-decoration: underline;
     overflow: hidden;
 
-    &.-forgot {
+    &.-forgot,
+    &.-register {
       display: inline-block;
       padding: .3rem .5rem;
       background: $login-grey;
       border-radius: $border-radius / 2;
+    }
+
+    &.-register {
+      font-variant: small-caps;
     }
 
     &.-swap {
