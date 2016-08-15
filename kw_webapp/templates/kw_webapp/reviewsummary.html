@@ -14,18 +14,21 @@
 
     {% if incorrect_count > 0 %}
       <h2 class="title">{{ incorrect_count }} Incorrect</h2>
-      <ul class="lattice-list -incorrect">
+      <ul class="vocab-list -incorrect">
         {% for review in incorrect %}
-        {% with review.vocabulary.reading_set.first as reading %}
-          <li class="item">
-            <a class="link hint--top hint--rounded"
-               data-hint="{{ reading.kana }}"
-               href="{% url "kw:vocab" %}{{ review.vocabulary.reading_set.all.0.level }}#vocab{{ review.vocabulary.id }}">
-              <div class="ja" lang="ja" >{{ reading.character }}</div>
-              <div class="en">{{ review.vocabulary.meaning }}</div>
-            </a>
+          <li class="vocab-card">
+            <div class="vocab-base">
+              <a href="{% url "kw:vocab" %}{{ review.vocabulary.reading_set.all.0.level }}#vocab{{ review.vocabulary.id }}" class="readingset">
+                <div class="ja">
+                  {% for reading in review.vocabulary.reading_set.all %}
+                    {% ifchanged %}<span lang="ja" class="kana">{{ reading.kana }}</span> {% endifchanged %}
+                    {% ifchanged %}<span lang="ja" class="kanji">{{ reading.character }}</span> {% endifchanged %}
+                  {% endfor %}
+                </div>
+                <div class="meaning">{{ review.vocabulary.meaning }}</div>
+              </a>
+            </div>
           </li>
-        {% endwith %}
         {% endfor %}
       </ul>
     {% else %}
