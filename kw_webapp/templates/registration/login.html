@@ -10,10 +10,9 @@
 
     {% crispy form %}
 
-    <a href="{% url "password_reset" %}" class="link -forgot">Forgot password</a>
+    <a href="{% url "register" %}" class="link -strong">New account</a>
+    <a href="{% url "password_reset" %}" class="link">Forgot password</a>
   </div>
-
-  <a href="{% url "register" %}" class="link -swap">Sign Up!</a>
 
 </div>
 

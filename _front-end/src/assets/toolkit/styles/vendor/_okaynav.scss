@@ -35,7 +35,7 @@ body.okayNav-loaded {
 }
 /* Link styling for the off-screen part of the nav */
 .okayNav__nav--invisible {
-  background-color: whitesmoke;
+  background-color: $white;
   position: absolute;
   z-index: 2;
   top: 63px;
@@ -48,7 +48,7 @@ body.okayNav-loaded {
     display: block;
     width: 200px;
     padding: $unit-sm $unit-md;
-    background: whitesmoke;
+    background: $white;
   }
   .item {
     box-shadow: -4px 0 8px -5px rgba($black, 0.15)
@@ -138,6 +138,11 @@ body.okayNav-loaded {
       opacity: 1;
       width: 100%;
     }
+  }
+
+  .nav-link:focus .text:after {
+    opacity: 1;
+    width: 100%;
   }
 }
 

@@ -42,6 +42,7 @@ let answer;
 let correctTotal = 0;
 let answeredTotal = 0;
 let autoAdvancing = false;
+let ignored = false;
 const answerCorrectness = [];
 
 // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
@@ -368,11 +369,18 @@ function recordAnswer(vocabID, correctness, previouslyWrong) {
 
 function ignoreAnswer({ animate = true } = {}) {
   kwlog('ignoreAnswer called');
-  if (animate) {
-    $userAnswer.addClass('shake');
-    setTimeout(() => rotateVocab({ ignored: true }), 600);
-  } else {
-    rotateVocab({ ignored: true });
+
+  if (ignored === false) {
+
+    ignored = true;
+    kwlog('ignoreAnswer applied');
+
+    if (animate) {
+      $userAnswer.addClass('shake');
+      setTimeout(() => rotateVocab(), 600);
+    } else {
+      rotateVocab();
+    }
   }
 }
 
@@ -428,6 +436,7 @@ function resetQuizUI() {
   $srsDown.attr('class', 'content icon i-minus');
   $userAnswer.removeClass('shake');
   $userAnswer.val('').prop({ disabled: false }).focus();
+  ignored = false;
 }
 
 function disableButtons() {
@@ -456,11 +465,11 @@ function revealAnswers({ kana, kanji } = {}) {
   }
 }
 
-function rotateVocab({ ignored = false, correct = false } = {}) {
+function rotateVocab({ correct = false } = {}) {
   kwlog('rotateVocab called');
 
-  if (!!ignored) {
-    // put ignored answer back onto end of review queue
+  // put ignored answer back onto end of review queue
+  if (ignored === true) {
     remainingVocab.push(currentVocab);
   }
 

@@ -6,21 +6,21 @@
   align-items: stretch;
   align-content: center;
 
-  > .vocab-card {
+  .vocab-card {
     display: flex;
     flex-flow: column nowrap;
     align-items: stretch;
     flex: 1 1 auto;
     margin: $unit-xs / 2;
 
-    > .vocab-base {
+    .vocab-base {
       display: flex;
       flex-flow: column nowrap;
       align-content: center;
       justify-content: center;
       align-items: center;
       max-width: 100%;
-      flex: 1 0 100%;
+      flex: 1 0 auto;
     }
   }
 

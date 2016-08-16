@@ -19,31 +19,7 @@
       // prevent tooltips appearing instantly when moving mouse around page
       &[data-hint]:hover:before,
       &[data-hint]:hover:after {
-        transition-delay: 350ms;
-      }
-
-      &:hover {
-        opacity: 1;
-
-        &.-apprentice .link {
-          color: mix($white, $pink, 60%);
-        }
-
-        &.-guru .link {
-          color: mix($white, $purple, 60%);
-        }
-
-        &.-master .link {
-          color: mix($white, $blue-dark, 60%);
-        }
-
-        &.-enlightened .link {
-          color: mix($white, $blue-light, 60%);
-        }
-
-        &.-burned .link {
-          color: mix($white, $black-light, 60%);
-        }
+        transition-delay: 700ms;
       }
 
       .link {
@@ -52,6 +28,11 @@
         padding: .66em .4em;
         color: $white;
         transition: color .2s ease-out;
+
+        &:hover,
+        &:focus {
+          color: mix($white, $purple-light, 50%);
+        }
       }
 
       // .title,

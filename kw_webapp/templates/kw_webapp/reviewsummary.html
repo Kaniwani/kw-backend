@@ -13,7 +13,7 @@
     </div>
 
     {% if incorrect_count > 0 %}
-    <h2 class="title">{{ incorrect_count }} Incorrect</h2>
+      <h2 class="title">{{ incorrect_count }} Incorrect</h2>
       <ul class="vocab-list -incorrect">
         {% for review in incorrect %}
           <li class="vocab-card">
@@ -31,14 +31,13 @@
           </li>
         {% endfor %}
       </ul>
-
     {% else %}
       <h3 class="title"><span lang="ja">完璧だ！</span> (๑•̀ㅂ•́)و</h3>
     {% endif %}
 
 
     {% if correct_count > 0 %}
-    <h2 class="title">{{ correct_count }} Correct</h2>
+      <h2 class="title">{{ correct_count }} Correct</h2>
 
       <ul class="lattice-list -correct">
         {% for review in correct %}

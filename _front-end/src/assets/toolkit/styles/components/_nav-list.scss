@@ -4,6 +4,11 @@
   .item {
     .nav-link {
       padding: 8px 16px;
+
+      &:focus .text:after {
+       opacity: 1;
+        width: 100%;
+      }
     }
 
     &:hover,

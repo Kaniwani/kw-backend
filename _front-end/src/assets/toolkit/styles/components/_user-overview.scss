@@ -55,6 +55,7 @@
       opacity: 0.95;
       letter-spacing: 0.01em;
       box-shadow: $shadow-bottom-light;
+
       @include media($bp-md) {
         line-height: 1.3;
       }
@@ -68,7 +69,8 @@
     .button:not(.-disabled) {
       transition: all .2s ease-out;
 
-      &:hover {
+      &:hover,
+      &:focus {
         box-shadow: $shadow-outer-light;
         opacity: 1;
       }
