@@ -19,6 +19,12 @@
     font-size: 1.8em;
     text-shadow: 1px 1px 4px rgba($purple-dark, .7);
 
+    // show tooltips quickly, slow fade on hide is fine
+    &[data-hint]:hover:before,
+    &[data-hint]:hover:after {
+      transition-duration: 10ms;
+    }
+
     &.-multiline[data-hint]:after {
       text-align: center;
     }
