@@ -5,8 +5,6 @@ import kwlog from '../util/kwlog';
 import timeago from '../vendor/timeago';
 import toastr from '../vendor/toastr';
 import im from '../vendor/include-media';
-import okayNav from '../vendor/jquery.okayNav';
-const sitenav = $('#nav-main').okayNav();
 
 // vendor js configuration
 Object.assign($.timeago.settings, config.timeago.settings);

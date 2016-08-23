@@ -4,6 +4,10 @@
  */
 body.okayNav-loaded {
   overflow-x: hidden;
+
+  .site-header {
+    position: relative;
+  }
 }
 .okayNav:not(.loaded) {
   visibility: hidden;

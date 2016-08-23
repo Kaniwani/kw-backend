@@ -21,7 +21,10 @@ import contact from './sections/contact';
 import settings from './sections/settings';
 import summary from './sections/summary';
 
+import okayNav from './vendor/jquery.okayNav';
+
 documentReady(() => {
+  const sitenav = $('#nav-main').okayNav({ swipe_enabled: false });
   invalidApiKey.init();
   accordionContainer.init();
   login.init();
