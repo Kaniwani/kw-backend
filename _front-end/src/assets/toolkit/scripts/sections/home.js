@@ -22,18 +22,25 @@ function displayMessages() {
 function updateReviewTime($el) {
   const now = Date.now();
   const next = KW.nextReview;
+  const noWkVocab = (next === 0 && +KW.user.level === 1);
+  const noWkBurnedVocab = (KW.settings.burnedOnly && +KW.user.level > 1);
 
   kwlog(
     '\nclient date now utc', now,
     '\nbackend next review local', next
-    , next === 0, +KW.user.level === 1
+    , noWkVocab
+    , noWkBurnedVocab
   );
 
-  if (next === 0 && +KW.user.level === 1) {
+  if (noWkVocab || noWkBurnedVocab) {
     // user has no WK vocab
     $el.html('No vocabulary unlocked');
     $el.addClass('hint--bottom hint--rounded -multiline');
-    $el.attr('data-hint', 'You need to complete some vocabulary lessons on WaniKani!')
+    $el.attr(
+      'data-hint',
+      noWkVocab ? 'You need to complete some vocabulary lessons on WaniKani!'
+                : 'You need to burn some WaniKani vocabulary!'
+    )
   } else if (now > next) {
     // reviews ready!
     refreshReviews();
