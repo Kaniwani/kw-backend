@@ -1,6 +1,7 @@
 .site-header {
   background: $white;
   box-shadow: $shadow-bottom-light;
+  position: relative;
 
   > .inner {
     display: flex;

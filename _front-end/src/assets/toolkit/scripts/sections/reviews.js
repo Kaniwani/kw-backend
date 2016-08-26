@@ -1,3 +1,7 @@
+/*
+defer the server recording of the correct answer until the user advances (same behaviour as incorrect) and enable an ignore answer shortcut key for correct answers so you could ignore them secretly. There would be no ignore button on the green correct answer field like there is on the red incorrect ones. Only the keypress (after the field turns green) would register.  In a sense this would be a hidden feature.  Are you using a US keyboard layout with a laptop/desktop? I'm thinking   \   located above the enter key would probably be best.
+*/
+
 import wanakana from '../vendor/wanakana.min';
 import kwlog from '../util/kwlog';
 import '../util/serializeObject';
