@@ -11,12 +11,12 @@ $accordion-border: 2px solid $grey-light;
 }
 
 .accordion-title {
-  @extend %h4;
   display: block;
   background-color: $accordion-list-bg-color;
   text-decoration: none;
   color: $white-light;
   transition: background-color .3s ease-in-out;
+  font-size: responsive 16px 20px;
   text-align: center;
   padding: .6em 1em;
 
