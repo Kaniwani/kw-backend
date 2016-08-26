@@ -2,11 +2,13 @@
   @include plainlist;
 
   .item {
+    display: inline-block;
+
     .nav-link {
       padding: 8px 16px;
 
       &:focus .text:after {
-       opacity: 1;
+        opacity: 1;
         width: 100%;
       }
     }
@@ -22,6 +24,16 @@
 
     &.-disabled {
       pointer-events: none; // modern & IE11+
+    }
+  }
+
+  &.-vertical .item {
+    display: block;
+  }
+
+  @include media('<md') {
+    .item:not(.-mobileonly) {
+      display: none;
     }
   }
 }

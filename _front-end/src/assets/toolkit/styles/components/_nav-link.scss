@@ -1,13 +1,9 @@
 .nav-link {
   display: flex;
   position: relative;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
   color: $black-light;
-
-  @include media($bp-nav-1) {
-    justify-content: center;
-  }
 
   &:hover {
     color: $black-light;

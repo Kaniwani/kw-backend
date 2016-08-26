@@ -10,15 +10,12 @@ html {
 
 html {
   height: 100vh;
+  overflow-x: hidden;
 }
 
 body {
   background: $white-light;
   height: 100%;
-}
-
-// for okaynav offcanvas menu
-html, body {
   overflow-x: hidden;
 }
 
@@ -45,7 +42,7 @@ html, body {
   flex: 1 0 auto; /* 2 */
   width: 100%;
 
-  & > [class*="-section"]:not(.-no-section-spacing) {
+  .site-content > [class*="-section"]:not(.-no-section-spacing) {
     @include section-spacing;
   }
 }

@@ -1,0 +1,55 @@
+/* Kebab icon */
+
+.kebab-toggle {
+  // hide on large screens
+  @include media($bp-md) {
+    position: absolute;
+    user-select: none;
+    pointer-events: none;
+    opacity: 0;
+  }
+}
+
+.kebab-toggle-button {
+  @include tap-target(8px, 8px);
+  @include plainbutton;
+  position: relative;
+  z-index: 1;
+  top: 8px;
+  float: right;
+  width: 40px;
+  height: 25px;
+  cursor: pointer;
+  transition: transform 400ms cubic-bezier(0.55, 0, 0.1, 1);
+}
+
+.kebab-toggle-button.-active {
+  /* Kebab icon when off-screen nav is open */
+  transform: rotate(90deg);
+}
+
+.kebab-toggle-button span {
+  position: absolute;
+  right: 0;
+  left: 0;
+  display: block;
+  width: 4px;
+  height: 4px;
+  margin: auto;
+  pointer-events: none;
+  border-radius: 50%;
+  background-color: $grey-dark;
+
+  &:nth-child(1) {
+    top: 0;
+  }
+
+  &:nth-child(2) {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &:nth-child(3) {
+    bottom: 0;
+  }
+}

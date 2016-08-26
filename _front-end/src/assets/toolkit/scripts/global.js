@@ -12,6 +12,7 @@ import 'babel-polyfill';
 // components
 import invalidApiKey from './components/invalidApiKey';
 import accordionContainer from './components/accordionContainer';
+import siteNav from './components/siteNav.js';
 import login from './sections/login';
 import home from './sections/home';
 import vocab from './sections/vocabulary';
@@ -21,18 +22,16 @@ import contact from './sections/contact';
 import settings from './sections/settings';
 import summary from './sections/summary';
 
-import okayNav from './vendor/jquery.okayNav';
-
 documentReady(() => {
-  const sitenav = $('#nav-main').okayNav({ swipe_enabled: false });
   invalidApiKey.init();
   accordionContainer.init();
-  login.init();
-  home.init();
-  vocab.init();
-  levelVocab.init();
-  reviews.init();
-  contact.init();
-  settings.init();
-  summary.init();
+  siteNav.init();
+  // login.init();
+  // home.init();
+  // vocab.init();
+  // levelVocab.init();
+  // reviews.init();
+  // contact.init();
+  // settings.init();
+  // summary.init();
 });
