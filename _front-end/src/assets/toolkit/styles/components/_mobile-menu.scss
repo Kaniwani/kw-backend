@@ -1,5 +1,4 @@
 .mobile-menu {
-  $bp-nav: '<680px'; // also in nav-list.scss
   position: fixed;
   width: 180px;
   height: 100%;
@@ -28,7 +27,7 @@
   right: 0;
 
   // in case user changes orientation, hide because normal menu visible
-  @include media($bp-nav) {
+  @include media('>' + $bp-nav) {
     right: -180px;
   }
 }

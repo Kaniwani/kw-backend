@@ -2,7 +2,7 @@
 
 .kebab-toggle {
   // hide on large screens
-  @include media($bp-md) {
+  @include media('>' + $bp-nav) {
     position: absolute;
     user-select: none;
     pointer-events: none;

@@ -1,5 +1,4 @@
 .nav-list {
-  $bp-nav: '<680px'; // also in mobile-menu.scss
   @include plainlist;
 
   .item {
@@ -32,7 +31,7 @@
     display: block;
   }
 
-  @include media($bp-nav) {
+  @include media('<' + $bp-nav) {
     .item:not(.-mobileonly) {
       display: none;
     }
