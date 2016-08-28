@@ -243,7 +243,6 @@ function compareAnswer() {
     let advanceDelay = 800;
 
     markRight();
-    processAnswer({ correct: true });
 
     // Fills the correct kanji into the input field based on the user's answers
     if (wanakana.isHiragana(answer)) $userAnswer.val(getMatchedReading(answer));
@@ -519,6 +518,7 @@ function enterPressed(event) {
 
   if ($answerPanel.hasClass('-marked')) {
     if ($answerPanel.hasClass('-correct')) {
+      processAnswer({ correct: true });
       rotateVocab({ correct: true });
     } else if ($answerPanel.hasClass('-incorrect')) {
       processAnswer({ correct: false });
@@ -572,6 +572,13 @@ function handleShortcuts(ev) {
         ev.preventDefault();
         kwlog('case: I', 'event was:', ev);
         if ($answerPanel.hasClass('-incorrect')) ignoreAnswer();
+        break;
+
+      // Secret hidden ninja ability to ignore CORRECT answer for user Meem0
+      case (ev.which === 220):
+        ev.preventDefault();
+        kwlog('case: \\', 'event was:', ev);
+        if ($answerPanel.hasClass('-correct')) ignoreAnswer();
         break;
 
       default:
