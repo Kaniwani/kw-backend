@@ -1,9 +1,16 @@
 import pluralize from '../util/pluralize';
 import kwlog from '../util/kwlog';
+var Favico = require('../vendor/favico');
 
 let $navCount;
 let $buttonCount;
 let recentlyRefreshed;
+let favicon = new Favico({
+  animation: 'pop',
+  position: 'down',
+  bgColor: '#8523E7', // $purple-light
+});
+
 
 function ajaxReviewCount() {
   $.get('/kw/force_srs/')
@@ -13,6 +20,8 @@ function ajaxReviewCount() {
 
     if (count > 0) {
       $navCount.text(count);
+      favicon.badge(count);
+
       if ($buttonCount.length) {
         $buttonCount.text(pluralize('Review', count)).removeClass('-disabled');
       }
@@ -28,6 +37,9 @@ function refreshReviews({ forceGet } = { forceGet: false }) {
   $navCount = $('#navReviewCount');
   $buttonCount = $('#reviewCount');
   recentlyRefreshed = simpleStorage.get('recentlyRefreshed');
+
+  const faviconCount = +$('#navReviewCount').text();
+  if (faviconCount > 0) favicon.badge(faviconCount);
 
   kwlog(`
     --- refreshReviews ---

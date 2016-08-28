@@ -21,31 +21,26 @@ function updateReviewTime($el) {
   const now = Date.now();
   const next = KW.nextReview;
   const noWkVocab = (next === 0 && +KW.user.level === 1);
-  const noWkBurnedVocab = (KW.settings.burnedOnly && +KW.user.level > 1);
 
   kwlog(
     '\nclient date now utc', now,
-    '\nbackend next review local', next
-    , noWkVocab
-    , noWkBurnedVocab
+    '\nbackend next review local', next,
+    '\nuser is level 1 and has no next review date', noWkVocab
   );
 
-  if (noWkVocab || noWkBurnedVocab) {
+  if (noWkVocab) {
     // user has no WK vocab
     $el.html('No vocabulary unlocked');
     $el.addClass('hint--bottom hint--rounded -multiline');
-    $el.attr(
-      'data-hint',
-      noWkVocab ? 'You need to complete some vocabulary lessons on WaniKani!'
-                : 'You need to burn some WaniKani vocabulary!'
-    )
+    $el.attr('data-hint', 'You need to complete some vocabulary lessons on WaniKani!');
   } else if (now > next) {
     // reviews ready!
     refreshReviews();
     clearInterval(KW.reviewTimer);
   } else {
     // update countdown timer
-    $el.html(`Next review: ${$.timeago(KW.nextReview)}`);
+    const countdownText = $.timeago(KW.nextReview);
+    $el.html(`Next review: ${countdownText}`);
   }
 }
 
