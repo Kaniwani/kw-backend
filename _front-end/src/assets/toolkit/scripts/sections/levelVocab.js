@@ -14,8 +14,6 @@ function init() {
   if (im.lessThan('md')) config.toastr.positionClass = 'toast-top-full-width';
   toastr.options = config.toastr;
 
-  window.KWDEBUG = true;
-
   // catch any window hashes if we arrived from summary page before anything else
   const deeplink = window.location.hash;
   if (deeplink) smoothScrollDeepLink(deeplink);
