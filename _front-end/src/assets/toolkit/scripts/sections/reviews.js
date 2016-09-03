@@ -1,7 +1,3 @@
-/*
-defer the server recording of the correct answer until the user advances (same behaviour as incorrect) and enable an ignore answer shortcut key for correct answers so you could ignore them secretly. There would be no ignore button on the green correct answer field like there is on the red incorrect ones. Only the keypress (after the field turns green) would register.  In a sense this would be a hidden feature.  Are you using a US keyboard layout with a laptop/desktop? I'm thinking   \   located above the enter key would probably be best.
-*/
-
 import wanakana from '../vendor/wanakana.min';
 import kwlog from '../util/kwlog';
 import '../util/serializeObject';
@@ -12,13 +8,7 @@ modals.init({
   callbackClose: enableShortcuts,
 });
 
-
-// would really like to do a massive refactor, break out some functions as importable helpers
-// undecided how I want to reorganise but it's becoming a spiderweb
-// might use react just for reviews - since the template is only used to load in the review object
-// instead we could load the page with a <div id="reactReview"></div> and ajax in the data
-// and have much better organisation / handling of state
-
+// cachey cache
 const $homeLink = $('.homelink');
 const $reviewsLeft = $('#reviewsLeft');
 const $reviewsDone = $('#reviewsDone');
@@ -52,6 +42,7 @@ const answerCorrectness = [];
 // http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
 // not including *half-width katakana / roman letters* since they should be considered typos
 const japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
+
 function onlyJapaneseChars(str) {
   return [...str].every(char => japRegex.test(char));
 }
@@ -85,7 +76,7 @@ function init() {
   // rotate or record on 'submit' rather than submitting form and page refreshing
   $submitButton.click(enterPressed);
   $answerPanel.submit(enterPressed);
-  $ignoreButton.click(ignoreAnswer);
+  $ignoreButton.click(ignoreIncorrectAnswer);
   $synonymButton.click(synonymModal);
   $synonymForm.submit(handleSynonymForm);
 
@@ -304,7 +295,7 @@ function handleSynonymForm(ev) {
     addSynonym(vocabID, data);
     $submitButton.html('<span class="icon -loading"></span>');
     setTimeout(() => {
-      ignoreAnswer({ animate: false });
+      ignoreIncorrectAnswer({ animate: false });
       modals.closeModals();
       $submitButton.html('Submit');
     }, 750);
@@ -339,7 +330,7 @@ function processAnswer({ correct = false } = {}) {
     // Ensures this is the first time the vocab has been answered in this session,
     // so it goes in the right container(incorrect/correct)
 
-    // TODO: this is crazytown, treating an array as an object - need to refactor as obj
+    // TODO: this is crazytown, treating an array as an object - should refactor as obj
     if ($.inArray(currentvocabID, Object.keys(answerCorrectness)) === -1) {
       answerCorrectness[currentvocabID] = 1;
       currentVocab.previouslyWrong = false;
@@ -370,13 +361,34 @@ function recordAnswer(vocabID, correctness, previouslyWrong) {
   });
 }
 
-function ignoreAnswer({ animate = true } = {}) {
-  kwlog('ignoreAnswer called');
+function ignoreIncorrectAnswer({ animate = true } = {}) {
+  kwlog('ignoreIncorrectAnswer called');
 
   if (ignored === false) {
 
+    // using ignored flag to guard against multiple ignore submission spams before quiz ui has fully reset/rotated
     ignored = true;
-    kwlog('ignoreAnswer applied');
+    kwlog('ignoreIncorrectAnswer applied');
+    remainingVocab.push(currentVocab);
+
+    if (animate) {
+      $userAnswer.addClass('shake');
+      setTimeout(() => rotateVocab(), 600);
+    } else {
+      rotateVocab();
+    }
+  }
+}
+
+function ignoreCorrectAnswer({ animate = true } = {}) {
+  kwlog('ignoreCorrectAnswer called');
+
+  if (ignored === false) {
+
+    // using ignored flag to guard against multiple ignore submission spams before quiz ui has fully reset/rotated
+    ignored = true;
+    kwlog('ignoreCorrectAnswer applied');
+    processAnswer({ correct: false });
 
     if (animate) {
       $userAnswer.addClass('shake');
@@ -470,11 +482,6 @@ function revealAnswers({ kana, kanji } = {}) {
 
 function rotateVocab({ correct = false } = {}) {
   kwlog('rotateVocab called');
-
-  // put ignored answer back onto end of review queue
-  if (ignored === true) {
-    remainingVocab.push(currentVocab);
-  }
 
   if (remainingVocab.length === 0) {
     // kwlog('Summary post data', answerCorrectness);
@@ -571,14 +578,17 @@ function handleShortcuts(ev) {
       case (ev.which === 73 || ev.which === 105 || ev.which === 8):
         ev.preventDefault();
         kwlog('case: I', 'event was:', ev);
-        if ($answerPanel.hasClass('-incorrect')) ignoreAnswer();
+        if ($answerPanel.hasClass('-incorrect')) ignoreIncorrectAnswer();
         break;
 
       // Secret hidden ninja ability to ignore CORRECT answer for user Meem0
       case (ev.which === 220):
         ev.preventDefault();
         kwlog('case: \\', 'event was:', ev);
-        if ($answerPanel.hasClass('-correct')) ignoreAnswer();
+        if ($answerPanel.hasClass('-correct')) {
+          $answerPanel.addClass('-incorrect').removeClass('-correct');
+          ignoreCorrectAnswer();
+        }
         break;
 
       default:
