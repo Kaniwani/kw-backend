@@ -20,19 +20,20 @@ function displayMessages() {
 function updateReviewTime($el) {
   const now = Date.now();
   const next = KW.nextReview;
-  const noWkVocab = (next === 0 && +KW.user.level === 1);
+  const noWkVocab = (+next === 0 && +KW.reviewCount < 1);
 
   kwlog(
     '\nclient date now utc', now,
-    '\nbackend next review local', next,
-    '\nuser is level 1 and has no next review date', noWkVocab
+    '\nreview count', +KW.reviewCount,
+    '\nbackend next review local', +next,
+    '\nuser has no unlocked vocab', noWkVocab
   );
 
   if (noWkVocab) {
     // user has no WK vocab
     $el.html('No vocabulary unlocked');
-    $el.addClass('hint--bottom hint--rounded -multiline');
-    $el.attr('data-hint', 'You need to complete some vocabulary lessons on WaniKani!');
+    $el.addClass('hint--top hint--rounded -multiline');
+    $el.attr('data-hint', 'You may need to complete some vocabulary lessons on WaniKani or unlock more levels on the Kaniwani vocabulary page!');
   } else if (now > next) {
     // reviews ready!
     refreshReviews();
