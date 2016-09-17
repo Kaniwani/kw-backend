@@ -575,7 +575,7 @@ function handleShortcuts(ev) {
         break;
 
       // Pressing I ignores answer when input has been marked incorrect
-      case (ev.which === 73 || ev.which === 105 || ev.which === 8):
+      case (ev.which === 73 || ev.which === 105 || ev.which === 8 || ev.which === 191):
         ev.preventDefault();
         kwlog('case: I', 'event was:', ev);
         if ($answerPanel.hasClass('-incorrect')) ignoreIncorrectAnswer();
