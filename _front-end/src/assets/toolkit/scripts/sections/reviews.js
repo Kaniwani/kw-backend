@@ -160,7 +160,6 @@ function postSummary(path, params) {
   form.setAttribute('class', 'u-visuallyhidden');
 
 
-  // TODO: this is crazytown, treating an array as an object - need to refactor
   for (let key in params) {
     if (params.hasOwnProperty(key)) {
       const hiddenField = document.createElement('input');
@@ -537,7 +536,7 @@ function enterPressed(event) {
 }
 
 function handleShortcuts(ev) {
-  if (ev.which === 13) {
+  if (ignored !== true && ev.which === 13) {
     kwlog('handleShortcuts called: not -marked, keycode:', ev.which);
     ev.preventDefault();
     ev.stopPropagation();
