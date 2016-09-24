@@ -245,7 +245,7 @@ function compareAnswer() {
     if (KW.settings.autoAdvanceCorrect) {
       autoAdvancing = true;
       setTimeout(() => {
-        // user advancing early by themselves sets autoAdvancing to false;
+        // user advancing early by themselves sets autoAdvancing to false and blocks this
         if (autoAdvancing) enterPressed(null);
       }, advanceDelay);
     }
@@ -368,34 +368,21 @@ function ignoreIncorrectAnswer({ animate = true } = {}) {
     // using ignored flag to guard against multiple ignore submission spams before quiz ui has fully reset/rotated
     ignored = true;
     kwlog('ignoreIncorrectAnswer applied');
-    remainingVocab.push(currentVocab);
 
-    if (animate) {
+    if (!!animate) {
       $userAnswer.addClass('shake');
-      setTimeout(() => rotateVocab(), 600);
+      setTimeout(() => rotateVocab(), 200);
     } else {
+      // synonymModal call
       rotateVocab();
     }
   }
 }
 
-function ignoreCorrectAnswer({ animate = true } = {}) {
-  kwlog('ignoreCorrectAnswer called');
-
-  if (ignored === false) {
-
-    // using ignored flag to guard against multiple ignore submission spams before quiz ui has fully reset/rotated
-    ignored = true;
-    kwlog('ignoreCorrectAnswer applied');
-    processAnswer({ correct: false });
-
-    if (animate) {
-      $userAnswer.addClass('shake');
-      setTimeout(() => rotateVocab(), 600);
-    } else {
-      rotateVocab();
-    }
-  }
+function ignoreCorrectAnswer() {
+  kwlog('ignoreCorrectAnswer applied');
+  $userAnswer.addClass('shake');
+  processAnswer({ correct: false });
 }
 
 function clearColors() {
@@ -482,9 +469,13 @@ function revealAnswers({ kana, kanji } = {}) {
 function rotateVocab({ correct = false } = {}) {
   kwlog('rotateVocab called');
 
+  if (ignored === true) {
+    remainingVocab.push(currentVocab);
+  }
+
   if (remainingVocab.length === 0) {
     // kwlog('Summary post data', answerCorrectness);
-    setTimeout(()=> postSummary('/kw/summary/', answerCorrectness, 1000);
+    setTimeout(() => postSummary('/kw/summary/', answerCorrectness), 1000);
     return;
   }
 
