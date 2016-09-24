@@ -484,7 +484,7 @@ function rotateVocab({ correct = false } = {}) {
 
   if (remainingVocab.length === 0) {
     // kwlog('Summary post data', answerCorrectness);
-    postSummary('/kw/summary/', answerCorrectness);
+    setTimeout(()=> postSummary('/kw/summary/', answerCorrectness, 1000);
     return;
   }
 
