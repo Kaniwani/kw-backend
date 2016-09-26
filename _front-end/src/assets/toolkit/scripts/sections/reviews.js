@@ -371,7 +371,7 @@ function ignoreIncorrectAnswer({ animate = true } = {}) {
 
     if (!!animate) {
       $userAnswer.addClass('shake');
-      setTimeout(() => rotateVocab(), 200);
+      setTimeout(() => rotateVocab(), 600);
     } else {
       // synonymModal call
       rotateVocab();
