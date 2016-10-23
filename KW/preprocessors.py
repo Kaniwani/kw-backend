@@ -50,3 +50,5 @@ def srs_level_count_preprocessor(request):
                 context_dict['srs_burned_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['burned']).count()
                 context_dict['srs_level_names'] = constants.KANIWANI_SRS_LEVELS.keys()
     return context_dict
+
+

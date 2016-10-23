@@ -46,7 +46,18 @@ LOGGING = {
             'format': '%(asctime)s---%(message)s'
         }
     },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
     'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
         'views': {
             'level': 'DEBUG',
             'class': 'logging.handlers.TimedRotatingFileHandler',
@@ -92,27 +103,27 @@ LOGGING = {
     },
     'loggers': {
         'kw.views': {
-            'handlers': ['views', 'errors'],
+            'handlers': ['views', 'errors', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.models': {
-            'handlers': ['models', 'errors'],
+            'handlers': ['models', 'errors', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.tasks': {
-            'handlers': ['tasks', 'errors'],
+            'handlers': ['tasks', 'errors', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.db_repopulator': {
-            'handlers': ['sporadic_tasks', 'errors'],
+            'handlers': ['sporadic_tasks', 'errors', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.review_data': {
-            'handlers':['review_data'],
+            'handlers':['review_data', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
@@ -195,6 +206,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'async_messages.middleware.AsyncMiddleware',
+    'KW.LoggingMiddleware.ExceptionLoggingMiddleware'
 )
 
 REST_FRAMEWORK = {
