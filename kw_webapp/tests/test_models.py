@@ -97,11 +97,11 @@ class TestModels(TestCase):
         self.assertIn("kitty", review.synonyms_string())
 
     def test_get_all_readings_returns_original_and_added_readings(self):
-        self.vocabulary.reading_set.create(kana="what", character="ars", level=5)
+        self.vocabulary.readings.create(kana="what", character="ars", level=5)
         review = create_userspecific(self.vocabulary, self.user)
         review.answersynonym_set.create(kana="shwoop", character="fwoop")
 
-        expected = list(chain(self.vocabulary.reading_set.all(), review.answersynonym_set.all()))
+        expected = list(chain(self.vocabulary.readings.all(), review.answersynonym_set.all()))
 
         self.assertListEqual(expected, review.get_all_readings())
 

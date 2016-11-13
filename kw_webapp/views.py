@@ -18,7 +18,6 @@ from kw_webapp import constants
 from kw_webapp.mixins import ValidApiRequiredMixin
 from kw_webapp.models import Profile, UserSpecific, Announcement, AnswerSynonym
 from kw_webapp.forms import UserCreateForm, SettingsForm
-from kw_webapp.serializers import UserSerializer, ReviewSerializer, ProfileSerializer
 from kw_webapp.tasks import all_srs, unlock_eligible_vocab_from_levels, lock_level_for_user, \
     unlock_all_possible_levels_for_user, sync_user_profile_with_wk, sync_with_wk, get_wanikani_level_by_api_key, \
     get_users_current_reviews, \
@@ -73,33 +72,6 @@ class Settings(LoginRequiredMixin, UpdateView):
         print(form.errors)
         context['form'] = form
         return self.render_to_response(context)
-
-
-class UserViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-
-
-class ReviewViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
-    queryset = UserSpecific.objects.all()
-    serializer_class = ReviewSerializer
-    pagination_class = None
-
-    def get_queryset(self):
-        user = self.request.user
-        queryset = UserSpecific.objects.filter(user=user, needs_review=True)
-        return queryset
-
-
-class ProfileViewSet(LoginRequiredMixin, viewsets.ModelViewSet):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        queryset = Profile.objects.filter(user=user)
-        return queryset
-
 
 class About(LoginRequiredMixin, TemplateView):
     template_name = "kw_webapp/about.html"
@@ -252,7 +224,8 @@ class LevelVocab(LoginRequiredMixin, TemplateView):
         context = super(LevelVocab, self).get_context_data()
         level = self.kwargs['level']
         user = self.request.user
-        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level).distinct().order_by("vocabulary__meaning")
+        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level).distinct().order_by(
+            "vocabulary__meaning")
         context['reviews'] = level_vocab
         context['selected_level'] = level
         return context
@@ -378,6 +351,13 @@ class Review(LoginRequiredMixin, ListView):
         return res
 
 
+class PagedReview(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        user = self.request.user
+        reviews = get_users_current_reviews(user).order_by('?')[:100]
+        return JsonResponse({"reviews": list(reviews)})
+
+
 class ReviewSummary(LoginRequiredMixin, TemplateView):
     template_name = "kw_webapp/reviewsummary.html"
 
@@ -391,7 +371,7 @@ class ReviewSummary(LoginRequiredMixin, TemplateView):
         all_reviews = request.POST
 
         if len(all_reviews) <= 1:
-            #The post data is only populated by the CSRF token. No reviews were done
+            # The post data is only populated by the CSRF token. No reviews were done
             return HttpResponseRedirect(reverse_lazy("kw:home"))
 
         correct = []
@@ -435,7 +415,7 @@ class Register(FormView):
         user = form.save()
         logger.info("New User Created: {}, with API key {}.".format(user.username, form.cleaned_data['api_key']))
         Profile.objects.create(
-                user=user, api_key=form.cleaned_data['api_key'], level=1)
+            user=user, api_key=form.cleaned_data['api_key'], level=1)
 
         sync_with_wk(user)
         user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1'])

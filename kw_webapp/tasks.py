@@ -265,7 +265,7 @@ def associate_readings_to_vocab(vocab, vocabulary_json):
     character = vocabulary_json["character"]
     level = vocabulary_json["level"]
     for reading in kana_list:
-        new_reading, created = vocab.reading_set.get_or_create(kana=reading, character=character)
+        new_reading, created = vocab.readings.get_or_create(kana=reading, character=character)
         new_reading.level = level
         new_reading.save()
         if created:

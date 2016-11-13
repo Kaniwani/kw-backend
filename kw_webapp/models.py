@@ -35,7 +35,7 @@ class Level(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
     api_key = models.CharField(max_length=255)
     api_valid = models.BooleanField(default=True)
     gravatar = models.CharField(max_length=255)
@@ -113,20 +113,20 @@ class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
 
     def reading_count(self):
-        return self.reading_set.all().count()
+        return self.readings.all().count()
 
     def available_readings(self, level):
-        return self.reading_set.filter(level__lte=level)
+        return self.readings.filter(level__lte=level)
 
     def get_absolute_url(self):
-        return "https://www.wanikani.com/vocabulary/{}/".format(self.reading_set.all()[0])
+        return "https://www.wanikani.com/vocabulary/{}/".format(self.readings.all()[0])
 
     def __str__(self):
         return self.meaning
 
 
 class Reading(models.Model):
-    vocabulary = models.ForeignKey(Vocabulary)
+    vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
     character = models.CharField(max_length=255)
     kana = models.CharField(max_length=255)
     level = models.PositiveIntegerField(null=True, validators=[
@@ -140,7 +140,7 @@ class Reading(models.Model):
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name='reviews', on_delete=models.CASCADE)
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)
     streak = models.PositiveIntegerField(default=0)
@@ -155,7 +155,7 @@ class UserSpecific(models.Model):
     wanikani_burned = models.BooleanField(default=False)
 
     def get_all_readings(self):
-        return list(chain(self.vocabulary.reading_set.all(), self.answersynonym_set.all()))
+        return list(chain(self.vocabulary.readings.all(), self.answersynonym_set.all()))
 
     def can_be_managed_by(self, user):
         return self.user == user or user.is_superuser

@@ -29,6 +29,7 @@ def _get_error(response):
 
 def make_api_call(api_url):
     response = requests.get(api_url)
+    print(response.content)
     if _has_no_errors(response):
         return response.json()
     elif _has_invalid_key_error(response):

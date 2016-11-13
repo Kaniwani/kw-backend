@@ -12,14 +12,11 @@ from kw_webapp.views import Register
 
 admin.autodiscover()
 
-router = routers.DefaultRouter()
-router.register(r'user', kw_webapp.views.UserViewSet)
-router.register(r'review', kw_webapp.views.ReviewViewSet)
-router.register(r'profile', kw_webapp.views.ProfileViewSet)
-
 urlpatterns = (
     url(r'^$', 'kw_webapp.views.home', name='home'),
 
+    ##API
+    url(r'^api/', include('api.urls', namespace='api')),
 
     ##All Auth Stuff
     url(r'^auth/login/$', 'django.contrib.auth.views.login',
@@ -36,7 +33,7 @@ urlpatterns = (
     url(r'^auth/password_reset/sent/$', 'django.contrib.auth.views.password_reset_done',
         name="password_reset_done",
         kwargs={"template_name": "registration/password_reset_done.html"}),
-    url(r'auth/password_reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
+    url(r'^auth/password_reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
         'django.contrib.auth.views.password_reset_confirm', name='password_reset_confirm'),
     url(r'^auth/password_reset/complete/$', 'django.contrib.auth.views.password_reset_complete',
         name="password_reset_complete"),
@@ -47,11 +44,6 @@ urlpatterns = (
     url(r'^contact/sent/$', TemplateView.as_view(template_name="contact_form/contact_form_sent.html"),
         name='contact_form_sent'),
 
-    ##TODO API AUth stuff, for later
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^api/', include(router.urls)),
-
-
     ##KW SRS Stuff.
-    url(r'^kw/', include('kw_webapp.urls', namespace='kw')),
+    url(r'^kw/', include('kw_webapp.urls', namespace='kw'))
 )

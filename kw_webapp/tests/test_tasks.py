@@ -60,8 +60,8 @@ class TestTasks(TestCase):
         self.assertEqual(correct_string, api_call)
 
     def test_locking_level_removes_all_reviews_at_that_level(self):
-        self.vocabulary.reading_set.create(level=5, kana="猫", character="whatever")
-        self.vocabulary.reading_set.create(level=5, kana="猫二", character="whatever2")
+        self.vocabulary.readings.create(level=5, kana="猫", character="whatever")
+        self.vocabulary.readings.create(level=5, kana="猫二", character="whatever2")
 
         lock_level_for_user(5, self.user)
 
@@ -71,7 +71,7 @@ class TestTasks(TestCase):
     def test_locking_level_removes_level_from_unlocked_list(self):
         self.user.profile.unlocked_levels.get_or_create(level=7)
         self.user.profile.unlocked_levels.get_or_create(level=6)
-        self.vocabulary.reading_set.create(level=6, kana="猫二", character="whatever2")
+        self.vocabulary.readings.create(level=6, kana="猫二", character="whatever2")
 
         lock_level_for_user(6, self.user)
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [5, 7])
@@ -197,4 +197,4 @@ class TestTasks(TestCase):
 
         vocabulary = get_vocab_by_meaning("radioactive bat")
 
-        self.assertEqual(vocabulary.reading_set.count(), 1)
+        self.assertEqual(vocabulary.readings.count(), 1)
