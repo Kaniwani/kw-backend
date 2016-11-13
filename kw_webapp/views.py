@@ -347,7 +347,7 @@ class Review(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        res = get_users_current_reviews(user).order_by('?')[:500]
+        res = get_users_current_reviews(user).order_by('?')[:300]
         return res
 
 
