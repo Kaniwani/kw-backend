@@ -103,7 +103,7 @@ class Profile(models.Model):
             expired_reviews.delete()
 
     def get_overleveled_reviews(self):
-        return UserSpecific.objects.filter(user=self.user, vocabulary__reading__level__gt=self.user.profile.level)
+        return UserSpecific.objects.filter(user=self.user, vocabulary__readings__level__gt=self.user.profile.level)
 
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())

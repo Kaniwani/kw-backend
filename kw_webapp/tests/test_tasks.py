@@ -65,7 +65,7 @@ class TestTasks(TestCase):
 
         lock_level_for_user(5, self.user)
 
-        available_reviews = UserSpecific.objects.filter(user=self.user, vocabulary__reading__level=5).all()
+        available_reviews = UserSpecific.objects.filter(user=self.user, vocabulary__readings__level=5).all()
         self.assertFalse(available_reviews)
 
     def test_locking_level_removes_level_from_unlocked_list(self):

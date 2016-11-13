@@ -224,7 +224,7 @@ class LevelVocab(LoginRequiredMixin, TemplateView):
         context = super(LevelVocab, self).get_context_data()
         level = self.kwargs['level']
         user = self.request.user
-        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__reading__level=level).distinct().order_by(
+        level_vocab = UserSpecific.objects.filter(user=user, vocabulary__readings__level=level).distinct().order_by(
             "vocabulary__meaning")
         context['reviews'] = level_vocab
         context['selected_level'] = level
@@ -349,13 +349,6 @@ class Review(LoginRequiredMixin, ListView):
         user = self.request.user
         res = get_users_current_reviews(user).order_by('?')[:300]
         return res
-
-
-class PagedReview(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
-        user = self.request.user
-        reviews = get_users_current_reviews(user).order_by('?')[:100]
-        return JsonResponse({"reviews": list(reviews)})
 
 
 class ReviewSummary(LoginRequiredMixin, TemplateView):

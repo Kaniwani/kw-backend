@@ -2,12 +2,11 @@ from django.conf.urls import url
 
 from kw_webapp.views import Review, RecordAnswer, Dashboard, ReviewSummary, UnlockLevels, \
     UnlockRequested, ForceSRSCheck, About, Settings, LevelVocab, ToggleVocabLockStatus, LockRequested, \
-    UnlockAll, Error404, SyncRequested, SRSVocab, AddSynonym, RemoveSynonym, PagedReview
+    UnlockAll, Error404, SyncRequested, SRSVocab, AddSynonym, RemoveSynonym
 
 urlpatterns = (
                    url(r'^$', Dashboard.as_view(), name="home"),
                    url(r'^review/$', Review.as_view(), name="review"),
-                   url(r'^review/chunk$', PagedReview.as_view(), name="review"),
                    url(r'^summary/$', ReviewSummary.as_view(), name="summary"),
                    url(r'^record_answer/$', RecordAnswer.as_view(), name="record_answer"),
                    url(r'^vocabulary/$', UnlockLevels.as_view(), name="vocab"),
