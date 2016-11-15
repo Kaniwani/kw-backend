@@ -195,6 +195,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'lineage',
     'kw_webapp', #Make sure this is the top entry in order to correctly override template folders.
+    'rest_framework_docs'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -210,10 +211,15 @@ MIDDLEWARE_CLASSES = (
 )
 
 REST_FRAMEWORK = {
-    #'DEFAULT_PERMISSION_CLASSES': [
-    #    'rest_framework.permissions.IsAuthenticated'
-    #],
-    'PAGE_SIZE': 10
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated'
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+}
+REST_FRAMEWORK_DOCS = {
+    'HIDE_DICS': False
 }
 
 CACHES = {
