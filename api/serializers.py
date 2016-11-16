@@ -10,11 +10,12 @@ class LevelSerializer(serializers.ModelSerializer):
         fields = ('level',)
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(source='user.username')
+    name = serializers.ReadOnlyField(source='user.username')
+    reviews_count = serializers.ReadOnlyField(source='user.reviews.count')
     unlocked_levels = serializers.StringRelatedField(many=True)
     class Meta:
         model = Profile
-        fields = ('user', 'api_key', 'api_valid', 'join_date', 'last_wanikani_sync_date',
+        fields = ('name', 'reviews_count', 'api_key', 'api_valid', 'join_date', 'last_wanikani_sync_date',
                   'level', 'unlocked_levels', 'follow_me', 'auto_advance_on_success',
                   'auto_expand_answer_on_success', 'auto_expand_answer_on_failure',
                   'only_review_burned', 'on_vacation', 'vacation_date')
