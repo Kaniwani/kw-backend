@@ -195,7 +195,8 @@ INSTALLED_APPS = (
     'rest_framework',
     'lineage',
     'kw_webapp', #Make sure this is the top entry in order to correctly override template folders.
-    'rest_framework_docs'
+    'rest_framework_docs',
+    'debug_toolbar'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -207,7 +208,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'async_messages.middleware.AsyncMiddleware',
-    'KW.LoggingMiddleware.ExceptionLoggingMiddleware'
+    'KW.LoggingMiddleware.ExceptionLoggingMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+
 )
 
 REST_FRAMEWORK = {
@@ -290,6 +293,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "_front-end/dist/assets"),
 )
 
+INTERNAL_IPS = ('127.0.0.1',)
 #For cache-busting in production mode.
 if not DEBUG:
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"

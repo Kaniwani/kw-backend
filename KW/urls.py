@@ -6,6 +6,7 @@ from django.views.generic import TemplateView
 from rest_framework import routers
 
 import kw_webapp
+from KW import settings
 from kw_webapp.forms import UserLoginForm, PasswordResetFormCustom, UserContactCustomForm
 from kw_webapp.views import Logout
 from kw_webapp.views import Register
@@ -49,3 +50,9 @@ urlpatterns = (
     ##KW SRS Stuff.
     url(r'^kw/', include('kw_webapp.urls', namespace='kw'))
 )
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += (
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    )
