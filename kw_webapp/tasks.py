@@ -444,8 +444,12 @@ def sync_all_users_to_wk():
 
     :return: the number of users successfully synced to WK.
     '''
+    one_week_ago = past_time(24 * 7)
     logger.info("Beginning Bi-daily Sync for all user!")
     users = User.objects.all().exclude(profile__isnull=True)
+    print(users.count())
+    users = User.objects.filter(last_login__gte=one_week_ago)
+    print(users.count())
     affected_count = 0
     for user in users:
         sync_with_wk.delay(user, full_sync=True)
