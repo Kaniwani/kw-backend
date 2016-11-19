@@ -10,7 +10,7 @@ from kw_webapp.models import Vocabulary, UserSpecific
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
-    user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user
+    user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user, sync_all_users_to_wk
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading
@@ -180,6 +180,16 @@ class TestTasks(TestCase):
         future_reviews = get_users_future_reviews(self.user, time_limit="this is not a timedelta")
 
         self.assertGreater(future_reviews.count(), 0)
+
+    def test_update_all_users_only_gets_active_users(self):
+        user2 = create_user("sup")
+        user2.last_login = past_time(24 * 8)
+        self.user.last_login = past_time(24 * 6)
+        user2.save()
+        create_profile(user2, "any_key", 5)
+        self.user.save()
+        sync_all_users_to_wk()
+
 
     @responses.activate
     def test_when_reading_level_changes_on_wanikani_we_catch_that_change_and_comply(self):
