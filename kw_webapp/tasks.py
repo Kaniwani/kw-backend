@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 import logging
+
+from celery import shared_task
 from django.contrib.auth.models import User
 from django.db.models import Min
 from kw_webapp.wanikani import make_api_call
@@ -26,7 +28,7 @@ def past_time(hours_ago):
     return now - srs_level_hours
 
 
-@celery_app.task()
+@shared_task
 def all_srs(user=None):
     '''
     Task that performs an SRS update for users. Checks user current streak and last_reviewed_date in order to determine
@@ -143,7 +145,7 @@ def unlock_all_possible_levels_for_user(user):
     return level_list, unlocked, locked
 
 
-@celery_app.task()
+@shared_task
 def unlock_eligible_vocab_from_levels(user, levels):
     """
     I don't like duplicating code like this, but its for the purpose of reducing API call load on WaniKani. It's a hassle if the user caps out.
@@ -175,7 +177,7 @@ def get_wanikani_level_by_api_key(api_key):
     return level
 
 
-@celery_app.task()
+@shared_task
 def sync_user_profile_with_wk(user):
     '''
     Hits the WK api with user information in order to synchronize user metadata such as level and gravatar information.
@@ -213,7 +215,7 @@ def sync_user_profile_with_wk(user):
     return True
 
 
-@celery_app.task()
+@shared_task
 def sync_with_wk(user, full_sync=False):
     '''
     Takes a user. Checks the vocab list from WK for all levels. If anything new has been unlocked on the WK side,
@@ -440,7 +442,7 @@ def sync_unlocked_vocab_with_wk(user):
         return 0, 0
 
 
-@celery_app.task()
+@shared_task
 def sync_all_users_to_wk():
     '''
     calls sync_with_wk for all users, causing all users to have their newly unlocked vocabulary synchronized to KW.
@@ -460,7 +462,7 @@ def sync_all_users_to_wk():
     return affected_count
 
 
-@celery_app.task()
+@shared_task
 def repopulate():
     '''
     A task that uses my personal API key in order to re-sync the database. Koichi often decides to switch things around

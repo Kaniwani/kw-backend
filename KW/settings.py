@@ -123,26 +123,28 @@ LOGGING = {
 #CELERY SETTINGS
 #CELERY_RESULT_BACKEND = 'amqp'
 CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 #BROKER_URL = broker = 'amqp://guest@localhost//'
-BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
 #CELERY_ACCEPT_CONTENT = ['json']
 #CELERY_TASK_SERIALIZER = 'json'
 #CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
 CELERYBEAT_SCHEDULE = {
-    'all_user_srs_every_hour': {
-        'task': 'kw_webapp.tasks.all_srs',
-        'schedule': timedelta(minutes=15)
-    },
+    #'all_user_srs_every_hour': {
+    #    'task': 'kw_webapp.tasks.all_srs',
+    #    'schedule': timedelta(minutes=15)
+    #},
+
     'update_users_unlocked_vocab': {
         'task': 'kw_webapp.tasks.sync_all_users_to_wk',
-        'schedule': timedelta(hours=12)
+        'schedule': timedelta(minutes=1)
     },
-    'sync_vocab_db_with_wk': {
-        'task': 'kw_webapp.tasks.repopulate',
-        'schedule': timedelta(hours=3)
-
-    }
+    #'sync_vocab_db_with_wk': {
+    #    'task': 'kw_webapp.tasks.repopulate',
+    #    'schedule': timedelta(hours=3)
+#
+  #  }
 }
 
 #RAVEN DSN SETTINGS
@@ -180,6 +182,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
     'crispy_forms',
     'rest_framework',
     'lineage',
