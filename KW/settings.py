@@ -127,7 +127,7 @@ CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 #BROKER_URL = broker = 'amqp://guest@localhost//'
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
 CELERYBEAT_SCHEDULE = {
@@ -135,7 +135,6 @@ CELERYBEAT_SCHEDULE = {
         'task': 'kw_webapp.tasks.all_srs',
         'schedule': timedelta(minutes=15)
     },
-
     'update_users_unlocked_vocab': {
         'task': 'kw_webapp.tasks.sync_all_users_to_wk',
         'schedule': timedelta(hours=12),
@@ -143,7 +142,6 @@ CELERYBEAT_SCHEDULE = {
     'sync_vocab_db_with_wk': {
         'task': 'kw_webapp.tasks.repopulate',
         'schedule': timedelta(hours=3)
-
     }
 }
 
@@ -193,6 +191,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'async_messages.middleware.AsyncMiddleware',
+    'kw_webapp.middleware.SetLastVisitMiddleware'
 )
 
 REST_FRAMEWORK = {
