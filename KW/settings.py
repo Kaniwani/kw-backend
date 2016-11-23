@@ -18,7 +18,7 @@ try:
     import KW.secrets as secrets
 except ImportError:
     print("Couldn't find a secrets file. Defaulting")
-    secrets = namedtuple('secrets', ['DEPLOY', 'RAVEN_DSN', 'SECRET_KEY', 'DB_TYPE'])
+    secrets = namedtuple('secrets', ['DEPLOY', 'SECRET_KEY', 'DB_TYPE'])
     secrets.DB_TYPE = "sqlite"
     secrets.DEPLOY = False
     secrets.SECRET_KEY = "samplekey"
@@ -126,31 +126,26 @@ CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 #BROKER_URL = broker = 'amqp://guest@localhost//'
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
-#CELERY_ACCEPT_CONTENT = ['json']
-#CELERY_TASK_SERIALIZER = 'json'
-#CELERY_RESULTS_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
 CELERYBEAT_SCHEDULE = {
-    #'all_user_srs_every_hour': {
-    #    'task': 'kw_webapp.tasks.all_srs',
-    #    'schedule': timedelta(minutes=15)
-    #},
+    'all_user_srs_every_hour': {
+        'task': 'kw_webapp.tasks.all_srs',
+        'schedule': timedelta(minutes=15)
+    },
 
     'update_users_unlocked_vocab': {
         'task': 'kw_webapp.tasks.sync_all_users_to_wk',
-        'schedule': timedelta(minutes=1)
+        'schedule': timedelta(hours=12),
     },
-    #'sync_vocab_db_with_wk': {
-    #    'task': 'kw_webapp.tasks.repopulate',
-    #    'schedule': timedelta(hours=3)
-#
-  #  }
-}
+    'sync_vocab_db_with_wk': {
+        'task': 'kw_webapp.tasks.repopulate',
+        'schedule': timedelta(hours=3)
 
-#RAVEN DSN SETTINGS
-#RAVEN_CONFIG = {
-#    'dsn': secrets.RAVEN_DSN,
-#}
+    }
+}
 
 
 # Quick-start development settings - unsuitable for production
@@ -295,7 +290,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
             ],
-            "debug": True
+            "debug": DEBUG
         }
     }
 ]
