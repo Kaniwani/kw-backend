@@ -10,7 +10,7 @@ class SetLastVisitMiddleware:
     buffer_hours = 1
 
     def process_response(self, request, response):
-        if request.user is not None and request.user.is_authenticated() and self.should_update(request.user):
+        if hasattr(request, 'user') and request.user.is_authenticated() and self.should_update(request.user):
             Profile.objects.filter(pk=request.user.profile.pk).update(last_visit=now())
         return response
 
