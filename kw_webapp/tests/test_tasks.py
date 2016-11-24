@@ -18,7 +18,6 @@ from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user
 
 class TestTasks(TestCase):
     def setUp(self):
-        pass
         self.user = create_user("Tadgh")
         create_profile(self.user, "any_key", 5)
         self.vocabulary = create_vocab("radioactive bat")
