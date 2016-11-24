@@ -124,13 +124,13 @@ LOGGING = {
 #CELERY_RESULT_BACKEND = 'amqp'
 CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-#BROKER_URL = broker = 'amqp://guest@localhost//'
+#CELERY_BROKER_URL = broker = 'amqp://guest@localhost//'
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
-CELERYBEAT_SCHEDULE = {
+CELERY_BEAT_SCHEDULE = {
     'all_user_srs_every_hour': {
         'task': 'kw_webapp.tasks.all_srs',
         'schedule': timedelta(minutes=15)
