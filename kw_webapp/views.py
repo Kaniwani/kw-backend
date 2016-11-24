@@ -200,7 +200,7 @@ class SyncRequested(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         logger.debug("Entering SyncRequrested for user {}".format(self.request.user))
         should_full_sync = simplejson.loads(request.GET.get("full_sync", "false"))
-        profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(self.request.user, should_full_sync)
+        profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(self.request.user.id, should_full_sync)
         logger.debug("Exiting SyncRequested for user {}".format(self.request.user))
         return JsonResponse({"profile_sync_succeeded": profile_sync_succeeded,
                              "new_review_count": new_review_count,
@@ -438,7 +438,7 @@ class Register(FormView):
         Profile.objects.create(
                 user=user, api_key=form.cleaned_data['api_key'], level=1)
 
-        sync_with_wk(user)
+        sync_with_wk(user.id)
         user = authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password1'])
         login(self.request, user)
         return HttpResponseRedirect(reverse_lazy("kw:home"))

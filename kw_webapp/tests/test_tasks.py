@@ -183,12 +183,14 @@ class TestTasks(TestCase):
 
     def test_update_all_users_only_gets_active_users(self):
         user2 = create_user("sup")
-        user2.last_login = past_time(24 * 8)
-        self.user.last_login = past_time(24 * 6)
-        user2.save()
         create_profile(user2, "any_key", 5)
-        self.user.save()
-        sync_all_users_to_wk()
+        user2.profile.last_visit = past_time(24 * 6)
+        self.user.profile.last_visit = past_time(24 * 8)
+        user2.profile.save()
+        self.user.profile.save()
+
+        affected_count = sync_all_users_to_wk()
+        self.assertEqual(affected_count, 1)
 
 
     @responses.activate
