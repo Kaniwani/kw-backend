@@ -1,10 +1,11 @@
 from __future__ import absolute_import
 import logging
+
+from celery import shared_task
 from django.contrib.auth.models import User
 from django.db.models import Min
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
-from KW.celery import app as celery_app
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
 from datetime import timedelta, datetime
@@ -25,8 +26,7 @@ def past_time(hours_ago):
     now = timezone.now()
     return now - srs_level_hours
 
-
-@celery_app.task()
+@shared_task
 def all_srs(user=None):
     '''
     Task that performs an SRS update for users. Checks user current streak and last_reviewed_date in order to determine
@@ -143,7 +143,7 @@ def unlock_all_possible_levels_for_user(user):
     return level_list, unlocked, locked
 
 
-@celery_app.task()
+@shared_task
 def unlock_eligible_vocab_from_levels(user, levels):
     """
     I don't like duplicating code like this, but its for the purpose of reducing API call load on WaniKani. It's a hassle if the user caps out.
@@ -175,7 +175,7 @@ def get_wanikani_level_by_api_key(api_key):
     return level
 
 
-@celery_app.task()
+@shared_task
 def sync_user_profile_with_wk(user):
     '''
     Hits the WK api with user information in order to synchronize user metadata such as level and gravatar information.
@@ -213,18 +213,19 @@ def sync_user_profile_with_wk(user):
     return True
 
 
-@celery_app.task()
-def sync_with_wk(user, full_sync=False):
+@shared_task
+def sync_with_wk(user_id, full_sync=False):
     '''
     Takes a user. Checks the vocab list from WK for all levels. If anything new has been unlocked on the WK side,
     it also unlocks it here on Kaniwani and creates a new review for the user.
 
+    :param user_id: id of the user to sync
     :param full_sync:
-    :param user: The user to check for new unlocks
     :return: None
     '''
     # We split this into two seperate API calls as we do not necessarily know the current level until
     # For the love of god don't delete this next line
+    user = User.objects.get(pk=user_id)
     logger.info("About to begin sync for user {}.".format(user.username))
     profile_sync_succeeded = sync_user_profile_with_wk(user)
     if user.profile.api_valid:
@@ -440,7 +441,7 @@ def sync_unlocked_vocab_with_wk(user):
         return 0, 0
 
 
-@celery_app.task()
+@shared_task
 def sync_all_users_to_wk():
     '''
     calls sync_with_wk for all users, causing all users to have their newly unlocked vocabulary synchronized to KW.
@@ -451,16 +452,17 @@ def sync_all_users_to_wk():
     logger.info("Beginning Bi-daily Sync for all user!")
     users = User.objects.all().exclude(profile__isnull=True)
     logger.info("Original sync would have occurred for {} users.".format(users.count()))
-    users = User.objects.filter(last_login__gte=one_week_ago)
+    users = User.objects.filter(profile__last_visit__gte=one_week_ago)
     logger.info("Sync will occur for {} users.".format(users.count()))
     affected_count = 0
     for user in users:
-        sync_with_wk.delay(user, full_sync=True)
+        print(user.username + " --- " + str(user.profile.last_visit) + " --- " + str(one_week_ago))
+        sync_with_wk.delay(user.id, full_sync=True)
         affected_count += 1
     return affected_count
 
 
-@celery_app.task()
+@shared_task
 def repopulate():
     '''
     A task that uses my personal API key in order to re-sync the database. Koichi often decides to switch things around
