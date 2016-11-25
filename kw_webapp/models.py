@@ -128,7 +128,7 @@ class Vocabulary(models.Model):
 
 # A model for partials, alternatively called radicals. This information will be pulled from Jisho.
 class Partial(models.Model):
-    character = models.CharField(max_length=255)
+    character = models.CharField(max_length=255, unique=True)
     meaning = models.CharField(max_length=255)
     kana = models.CharField(max_length=255)
 
