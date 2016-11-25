@@ -1,15 +1,17 @@
 from __future__ import absolute_import
 import logging
+
+from celery import shared_task
 from django.contrib.auth.models import User
 from django.db.models import Min
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
-from KW.celery import app as celery_app
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
 from datetime import timedelta, datetime
 from django.utils import timezone
 from async_messages import messages
+
 logger = logging.getLogger('kw.tasks')
 
 
@@ -24,8 +26,7 @@ def past_time(hours_ago):
     now = timezone.now()
     return now - srs_level_hours
 
-
-@celery_app.task()
+@shared_task
 def all_srs(user=None):
     '''
     Task that performs an SRS update for users. Checks user current streak and last_reviewed_date in order to determine
@@ -142,7 +143,7 @@ def unlock_all_possible_levels_for_user(user):
     return level_list, unlocked, locked
 
 
-@celery_app.task()
+@shared_task
 def unlock_eligible_vocab_from_levels(user, levels):
     """
     I don't like duplicating code like this, but its for the purpose of reducing API call load on WaniKani. It's a hassle if the user caps out.
@@ -174,7 +175,7 @@ def get_wanikani_level_by_api_key(api_key):
     return level
 
 
-@celery_app.task()
+@shared_task
 def sync_user_profile_with_wk(user):
     '''
     Hits the WK api with user information in order to synchronize user metadata such as level and gravatar information.
@@ -212,19 +213,20 @@ def sync_user_profile_with_wk(user):
     return True
 
 
-
-@celery_app.task()
-def sync_with_wk(user, full_sync=False):
+@shared_task
+def sync_with_wk(user_id, full_sync=False):
     '''
     Takes a user. Checks the vocab list from WK for all levels. If anything new has been unlocked on the WK side,
     it also unlocks it here on Kaniwani and creates a new review for the user.
 
+    :param user_id: id of the user to sync
     :param full_sync:
-    :param user: The user to check for new unlocks
     :return: None
     '''
     # We split this into two seperate API calls as we do not necessarily know the current level until
     # For the love of god don't delete this next line
+    user = User.objects.get(pk=user_id)
+    logger.info("About to begin sync for user {}.".format(user.username))
     profile_sync_succeeded = sync_user_profile_with_wk(user)
     if user.profile.api_valid:
         if not full_sync:
@@ -232,11 +234,12 @@ def sync_with_wk(user, full_sync=False):
         else:
             new_review_count, new_synonym_count = sync_unlocked_vocab_with_wk(user)
 
-        #Async messaging system.
+        # Async messaging system.
         if new_review_count or new_synonym_count:
             logger.info("Sending message to front-end for user {}".format(user.username))
-            messages.success(user, "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(new_review_count, new_synonym_count))
-
+            messages.success(user,
+                             "Your Wanikani Profile has been synced. You have {} new reviews, and {} new synonyms".format(
+                                 new_review_count, new_synonym_count))
 
         return profile_sync_succeeded, new_review_count, new_synonym_count
     else:
@@ -430,6 +433,7 @@ def sync_recent_unlocked_vocab_with_wk(user):
 def sync_unlocked_vocab_with_wk(user):
     if user.profile.unlocked_levels_list():
         request_string = build_API_sync_string_for_user(user)
+        logger.info("Creating sync string for user {}: {}".format(user.username, user.profile.api_key))
         response = make_api_call(request_string)
         new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, response)
         return new_review_count, new_synonym_count
@@ -437,23 +441,28 @@ def sync_unlocked_vocab_with_wk(user):
         return 0, 0
 
 
-@celery_app.task()
+@shared_task
 def sync_all_users_to_wk():
     '''
     calls sync_with_wk for all users, causing all users to have their newly unlocked vocabulary synchronized to KW.
 
     :return: the number of users successfully synced to WK.
     '''
+    one_week_ago = past_time(24 * 7)
     logger.info("Beginning Bi-daily Sync for all user!")
     users = User.objects.all().exclude(profile__isnull=True)
+    logger.info("Original sync would have occurred for {} users.".format(users.count()))
+    users = User.objects.filter(profile__last_visit__gte=one_week_ago)
+    logger.info("Sync will occur for {} users.".format(users.count()))
     affected_count = 0
     for user in users:
-        sync_with_wk.delay(user, full_sync=True)
+        print(user.username + " --- " + str(user.profile.last_visit) + " --- " + str(one_week_ago))
+        sync_with_wk.delay(user.id, full_sync=True)
         affected_count += 1
     return affected_count
 
 
-@celery_app.task()
+@shared_task
 def repopulate():
     '''
     A task that uses my personal API key in order to re-sync the database. Koichi often decides to switch things around
@@ -477,6 +486,7 @@ def sync_single_vocabulary_item_by_json(vocabulary_json):
     associate_readings_to_vocab(new_vocab, vocabulary_json)
     if created:
         logger.info("Found new Vocabulary item from WaniKani:{}".format(new_vocab.meaning))
+
 
 def pull_user_synonyms_by_level(user, level):
     '''
@@ -543,7 +553,7 @@ def user_returns_from_vacation(user):
         elapsed_vacation_time = timezone.now() - vacation_date
         logger.info("User {} has been gone for timedelta: {}".format(user.username, str(elapsed_vacation_time)))
 
-        #TODO This is an ultra temporary hack until I figure out F() expressions in 1.9
+        # TODO This is an ultra temporary hack until I figure out F() expressions in 1.9
         for rev in users_reviews:
             lst = rev.last_studied
             nsd = rev.next_review_date
@@ -551,13 +561,11 @@ def user_returns_from_vacation(user):
             rev.next_review_date = nsd + elapsed_vacation_time
             rev.save()
 
-        #updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
-        #users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
-        #logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
+            # updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
+            # users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
+            # logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
 
     user.profile.vacation_date = None
     user.profile.on_vacation = False
     user.profile.save()
     all_srs(user)
-
-

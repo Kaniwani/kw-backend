@@ -47,6 +47,7 @@ class Profile(models.Model):
     title = models.CharField(max_length=255, default="Turtles", null=True)
     join_date = models.DateField(auto_now_add=True, null=True)
     last_wanikani_sync_date = models.DateTimeField(auto_now_add=True, null=True)
+    last_visit = models.DateTimeField(null=True, auto_now_add=True)
     level = models.PositiveIntegerField(null=True, validators=[
         MinValueValidator(constants.LEVEL_MIN),
         MaxValueValidator(constants.LEVEL_MAX),
@@ -73,7 +74,8 @@ class Profile(models.Model):
         elif TWITTER_USERNAME_REGEX.match(twitter_account):
             self.twitter = "@{}".format(twitter_account)
         else:
-            logger.warning("WK returned a funky twitter account name: {},  for user:{} ".format(twitter_account, self.user.username))
+            logger.warning("WK returned a funky twitter account name: {},  for user:{} ".format(twitter_account,
+                                                                                                self.user.username))
 
         self.save()
 
@@ -94,7 +96,7 @@ class Profile(models.Model):
         self.level = new_level
         self.save()
 
-        #The case of a user resetting their WK profile.
+        # The case of a user resetting their WK profile.
         if new_level < original_level:
             expired_levels = self.unlocked_levels.filter(level__gt=new_level)
             expired_levels.delete()
@@ -125,6 +127,20 @@ class Vocabulary(models.Model):
         return self.meaning
 
 
+
+class Tag(models.Model):
+    """
+    A model meant to handle tagging readings.
+    """
+    name = models.CharField(max_length=255, unique=True)
+
+    def get_all_vocabulary(self):
+        return Vocabulary.objects.filter(reading__tags__id=self.id).distinct()
+
+    def __str__(self):
+        return self.name
+
+
 class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
     character = models.CharField(max_length=255)
@@ -133,6 +149,13 @@ class Reading(models.Model):
         MinValueValidator(constants.LEVEL_MIN),
         MaxValueValidator(constants.LEVEL_MAX),
     ])
+
+    # JISHO information
+    sentence_en = models.CharField(max_length=1000, null=True)
+    sentence_ja = models.CharField(max_length=1000, null=True)
+    common = models.NullBooleanField()
+    jlpt = models.CharField(max_length=20, null=True)
+    tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return "{} - {} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character, self.level)
@@ -153,6 +176,7 @@ class UserSpecific(models.Model):
     wanikani_srs = models.CharField(max_length=255, default="unknown")
     wanikani_srs_numeric = models.IntegerField(default=0)
     wanikani_burned = models.BooleanField(default=False)
+    notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
 
     def get_all_readings(self):
         return list(chain(self.vocabulary.readings.all(), self.answersynonym_set.all()))

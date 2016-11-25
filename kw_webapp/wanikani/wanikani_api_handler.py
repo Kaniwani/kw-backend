@@ -1,8 +1,8 @@
 import requests
-
+import logging
 from . import constants
 from . import exceptions
-
+logger = logging.getLogger('kw.tasks')
 
 def _has_no_errors(response):
     return response and "error" not in response.json() and response.status_code == 200
@@ -29,8 +29,12 @@ def _get_error(response):
 
 def make_api_call(api_url):
     response = requests.get(api_url)
-    print(response.content)
-    if _has_no_errors(response):
-        return response.json()
-    elif _has_invalid_key_error(response):
-        raise _get_error(response)
+    try:
+        if _has_no_errors(response):
+            return response.json()
+        elif _has_invalid_key_error(response):
+            raise _get_error(response)
+    except Exception:
+        logger.error("Error while attempting to make api call at {}".format(api_url), exc_info=1)
+
+

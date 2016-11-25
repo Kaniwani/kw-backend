@@ -21,6 +21,10 @@
       padding: .7rem 1rem .6rem;
     }
   }
+
+  @include media('>' + $bp-nav) {
+    display: none;
+  }
 }
 
 .js-mobilemenu-open .mobile-menu {

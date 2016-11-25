@@ -18,7 +18,7 @@ try:
     import KW.secrets as secrets
 except ImportError:
     print("Couldn't find a secrets file. Defaulting")
-    secrets = namedtuple('secrets', ['DEPLOY', 'RAVEN_DSN', 'SECRET_KEY', 'DB_TYPE'])
+    secrets = namedtuple('secrets', ['DEPLOY', 'SECRET_KEY', 'DB_TYPE'])
     secrets.DB_TYPE = "sqlite"
     secrets.DEPLOY = False
     secrets.SECRET_KEY = "samplekey"
@@ -134,32 +134,27 @@ LOGGING = {
 #CELERY SETTINGS
 #CELERY_RESULT_BACKEND = 'amqp'
 CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
-#BROKER_URL = broker = 'amqp://guest@localhost//'
-BROKER_URL = 'redis://localhost:6379/0'
-#CELERY_ACCEPT_CONTENT = ['json']
-#CELERY_TASK_SERIALIZER = 'json'
-#CELERY_RESULTS_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+#CELERY_BROKER_URL = broker = 'amqp://guest@localhost//'
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
-CELERYBEAT_SCHEDULE = {
+CELERY_BEAT_SCHEDULE = {
     'all_user_srs_every_hour': {
         'task': 'kw_webapp.tasks.all_srs',
         'schedule': timedelta(minutes=15)
     },
     'update_users_unlocked_vocab': {
         'task': 'kw_webapp.tasks.sync_all_users_to_wk',
-        'schedule': timedelta(hours=12)
+        'schedule': timedelta(hours=12),
     },
     'sync_vocab_db_with_wk': {
         'task': 'kw_webapp.tasks.repopulate',
         'schedule': timedelta(hours=3)
-
     }
 }
-
-#RAVEN DSN SETTINGS
-#RAVEN_CONFIG = {
-#    'dsn': secrets.RAVEN_DSN,
-#}
 
 
 # Quick-start development settings - unsuitable for production
@@ -191,10 +186,11 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_celery_beat',
     'crispy_forms',
     'rest_framework',
     'lineage',
-    'kw_webapp', #Make sure this is the top entry in order to correctly override template folders.
+    'kw_webapp.apps.KaniwaniConfig', #Make sure this is the top entry in order to correctly override template folders.
     'rest_framework_docs',
     'debug_toolbar'
 )
@@ -208,10 +204,14 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'async_messages.middleware.AsyncMiddleware',
-    'KW.LoggingMiddleware.ExceptionLoggingMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
-
+    'kw_webapp.middleware.SetLastVisitMiddleware'
 )
+
+if DEBUG:
+    MIDDLEWARE_CLASSES += (
+        'KW.LoggingMiddleware.ExceptionLoggingMiddleware'
+    )
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -221,8 +221,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
 }
+
 REST_FRAMEWORK_DOCS = {
-    'HIDE_DICS': False
+    'HIDE_DOCS': not DEBUG
 }
 
 CACHES = {
@@ -314,7 +315,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
             ],
-            "debug": True
+            "debug": DEBUG
         }
     }
 ]
