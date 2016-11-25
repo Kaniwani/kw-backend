@@ -2,7 +2,7 @@ import requests
 from django.utils import timezone
 
 from kw_webapp import constants
-from kw_webapp.models import UserSpecific, Profile
+from kw_webapp.models import UserSpecific, Profile, Reading, Partial, Tag
 from kw_webapp.tasks import unlock_eligible_vocab_from_levels
 
 
@@ -53,3 +53,63 @@ def correct_next_review_dates():
     for u in us:
         u.set_next_review_time_based_on_last_studied()
         print(i, u)
+
+
+def one_time_import_jisho(json_file_path):
+    import json
+    with open(json_file_path) as file:
+        parsed_json = json.load(file)
+
+        for vocabulary_json in parsed_json:
+            try:
+                related_reading = Reading.objects.get(character=vocabulary_json["ja"]["characters"])
+                doTheThing(related_reading, vocabulary_json)
+            except Reading.DoesNotExist:
+                pass
+            except Reading.MultipleObjectsReturned:
+                readings = Reading.objects.filter(character=vocabulary_json["ja"]["characters"])
+                print("FOUND MULTIPLE READINGS")
+                for reading in readings:
+                    print(reading.vocabulary.meaning, reading.character, reading.kana, reading.level)
+                    doTheThing(reading, vocabulary_json)
+
+
+def doTheThing(related_reading, vocabulary_json):
+    try:
+        print("Workin on related reading... {}".format(related_reading.id))
+        partials_json = vocabulary_json["partials"]
+        [associate_partials(related_reading, partial_json) for partial_json in partials_json]
+
+        tags_json = vocabulary_json['tags']
+        [associate_tags(related_reading, tag_json) for tag_json in tags_json]
+
+        related_reading.common = vocabulary_json["common"]
+        related_reading.jlpt = vocabulary_json["jlpt"]
+        related_reading.sentence_en = vocabulary_json["sentence"]["en"]
+        related_reading.sentence_ja = vocabulary_json["sentence"]["ja"]
+
+        related_reading.save()
+        print(
+            "Finished with reading [{}]! Tags:{}, Partials:{}".format(related_reading.id, related_reading.tags.count(),
+                                                                      related_reading.partials.count()))
+    except KeyError:
+        print(vocabulary_json)
+
+
+def associate_tags(reading, tag):
+    print("associating [{}] to reading {}".format(tag, reading.vocabulary.meaning))
+    tag_obj, created = Tag.objects.get_or_create(name=tag)
+    reading.tags.add(tag_obj)
+
+
+def associate_partials(reading, partial_json):
+    print("associating Partial [{}] to reading {}".format(partial_json['character'], reading.vocabulary.meaning))
+    partial, created = Partial.objects.get_or_create(character=partial_json['character'])
+    if created:
+        partial.kana = partial_json["reading"]
+        partial.meaning = partial_json["meaning"]
+        partial.save()
+
+    reading.partials.add(partial)
+
+
