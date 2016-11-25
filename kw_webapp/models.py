@@ -126,17 +126,6 @@ class Vocabulary(models.Model):
     def __str__(self):
         return self.meaning
 
-# A model for partials, alternatively called radicals. This information will be pulled from Jisho.
-class Partial(models.Model):
-    character = models.CharField(max_length=255, unique=True)
-    meaning = models.CharField(max_length=255)
-    kana = models.CharField(max_length=255)
-
-    def get_all_vocabulary(self):
-        return Vocabulary.objects.filter(reading__partials__id=self.id)
-
-    def __str__(self):
-        return "{} - {} - {} - ".format(self.character, self.meaning, self.kana)
 
 
 class Tag(models.Model):
@@ -164,14 +153,12 @@ class Reading(models.Model):
     # JISHO information
     sentence_en = models.CharField(max_length=1000, null=True)
     sentence_ja = models.CharField(max_length=1000, null=True)
-    partials = models.ManyToManyField(Partial)
     common = models.NullBooleanField()
     jlpt = models.CharField(max_length=20, null=True)
     tags = models.ManyToManyField(Tag)
 
     def __str__(self):
         return "{} - {} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character, self.level)
-
 
 
 class UserSpecific(models.Model):

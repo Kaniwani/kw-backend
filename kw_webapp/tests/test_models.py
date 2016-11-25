@@ -8,7 +8,7 @@ from django.test import Client, TestCase
 from django.utils import timezone
 
 from kw_webapp import constants
-from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag, Partial
+from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag
 from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
 
@@ -300,34 +300,6 @@ class TestModels(TestCase):
 
         self.assertTrue(self.review.notes is not None)
 
-    def test_partial_association_works(self):
-        partial1 = Partial.objects.create(character="入", meaning="Enter", kana="にゅう")
-        partial2 = Partial.objects.create(character="院", meaning="Institution", kana="いん")
-        vocab = create_vocab("hospitalization")
-        reading = create_reading(vocab, "にゅういん", "入院", 5)
-
-        reading.partials.add(partial1)
-        reading.partials.add(partial2)
-
-        reading.save()
-
-        self.assertEqual(reading.partials.count(), 2)
-
-    def test_retrieving_all_vocab_that_use_a_partial(self):
-        partial1 = Partial.objects.create(character="入", meaning="Enter", kana="にゅう")
-        vocab = create_vocab("spicy cat")
-        reading = create_reading(vocab, "un chat epice", "?", 3)
-        another_reading = create_reading(self.vocabulary, "un chat mouille", "?", 5)
-        reading.partials.add(partial1)
-        another_reading.partials.add(partial1)
-        another_reading.save()
-        reading.save()
-
-        vocabulary_using_partial = partial1.get_all_vocabulary()
-
-        self.assertEqual(vocabulary_using_partial.count(), 2)
-
     def test_tag_names_are_unique(self):
         original_tag = Tag.objects.create(name='S P I C Y')
-
         self.assertRaises(IntegrityError, Tag.objects.create, name='S P I C Y')
