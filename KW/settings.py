@@ -210,7 +210,7 @@ MIDDLEWARE_CLASSES = (
 
 if DEBUG:
     MIDDLEWARE_CLASSES += (
-        'KW.LoggingMiddleware.ExceptionLoggingMiddleware'
+        'KW.LoggingMiddleware.ExceptionLoggingMiddleware',
     )
 
 REST_FRAMEWORK = {
