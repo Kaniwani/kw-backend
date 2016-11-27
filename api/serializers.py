@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level
+from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag
 
 
 class LevelSerializer(serializers.ModelSerializer):
@@ -33,10 +33,18 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'profile', 'reviews')
 
 
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('name',)
+
 class ReadingSerializer(serializers.ModelSerializer):
+    tags = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = Reading
-        fields = ('character', 'kana', 'level')
+        fields = ('character', 'kana', 'level', 'tags', 'sentence_en', 'sentence_ja',
+                  'jlpt', 'common')
 
 
 
