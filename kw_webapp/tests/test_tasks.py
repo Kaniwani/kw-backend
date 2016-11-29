@@ -1,10 +1,8 @@
 from copy import deepcopy
-from datetime import timedelta
 
 import responses
 from django.test import TestCase
 from django.utils import timezone
-
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
@@ -135,31 +133,57 @@ class TestTasks(TestCase):
         self.user.profile.on_vacation = True
 
         now = timezone.now()
-        an_hour_ago = now - timedelta(hours=1)
-        two_hours_ago = now - timedelta(hours=2)
-        self.user.profile.vacation_date = an_hour_ago
+        an_hour_ago = now - timezone.timedelta(hours=1)
+        two_hours_ago = now - timezone.timedelta(hours=2)
+        two_hours_from_now = now + timezone.timedelta(hours=2)
+        four_hours_from_now = now + timezone.timedelta(hours = 4)
+        self.user.profile.vacation_date = two_hours_ago
         self.user.profile.save()
         self.review.last_studied = two_hours_ago
-        previously_studied = self.review.last_studied
+        self.review.next_review_date = two_hours_from_now
+
         self.review.save()
+        previously_studied = self.review.last_studied
 
         user_returns_from_vacation(self.user)
 
         self.review.refresh_from_db()
         self.assertNotEqual(self.review.last_studied, previously_studied)
-        self.assertAlmostEqual(self.review.last_studied, an_hour_ago, delta=timedelta(seconds=1))
+
+        self.assertAlmostEqual(self.review.next_review_date, four_hours_from_now, delta=timezone.timedelta(seconds=1))
+        self.assertAlmostEqual(self.review.last_studied, now, delta=timezone.timedelta(seconds=1))
+
+    def test_users_who_are_on_vacation_are_ignored_by_all_srs_algorithm(self):
+        self.review.last_studied = past_time(10)
+        self.review.streak = 1
+        self.review.needs_review = False
+        self.review.save()
+
+        reviews_affected = all_srs()
+        self.assertEqual(reviews_affected, 1)
+
+        self.review.last_studied = past_time(10)
+        self.review.streak = 1
+        self.review.needs_review = False
+        self.review.save()
+
+        self.user.profile.on_vacation = True
+        self.user.profile.save()
+
+        reviews_affected = all_srs()
+        self.assertEqual(reviews_affected, 0)
 
     def test_returning_review_count_that_is_time_delimited_functions_correctly(self):
         new_review = create_userspecific(create_vocab("arbitrary word"), self.user)
         new_review.needs_review = False
-        more_than_24_hours_from_now = timezone.now() + timedelta(hours=25)
+        more_than_24_hours_from_now = timezone.now() + timezone.timedelta(hours=25)
         new_review.next_review_date = more_than_24_hours_from_now
         new_review.save()
         self.review.next_review_date = timezone.now()
         self.review.needs_review = False
         self.review.save()
 
-        future_reviews = get_users_future_reviews(self.user, time_limit=timedelta(hours=24))
+        future_reviews = get_users_future_reviews(self.user, time_limit=timezone.timedelta(hours=24))
 
         self.assertEqual(future_reviews.count(), 1)
 
@@ -168,7 +192,7 @@ class TestTasks(TestCase):
         self.review.needs_review = False
         self.review.save()
 
-        future_reviews = get_users_future_reviews(self.user, time_limit=timedelta(hours=-1))
+        future_reviews = get_users_future_reviews(self.user, time_limit=timezone.timedelta(hours=-1))
 
         self.assertEqual(future_reviews.count(), 0)
 

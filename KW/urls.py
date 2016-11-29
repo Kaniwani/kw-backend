@@ -1,5 +1,5 @@
 from contact_form.views import ContactFormView
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
 from django.contrib import admin
 from django.views.generic import TemplateView
@@ -18,8 +18,7 @@ router.register(r'review', kw_webapp.views.ReviewViewSet)
 router.register(r'profile', kw_webapp.views.ProfileViewSet)
 
 urlpatterns = (
-    url(r'^$', 'kw_webapp.views.home', name='home'),
-
+    url(r'^$', "kw_webapp.views.home", name='home'),
 
     ##All Auth Stuff
     url(r'^auth/login/$', 'django.contrib.auth.views.login',
