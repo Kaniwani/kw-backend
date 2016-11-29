@@ -3,6 +3,7 @@ import logging
 
 from celery import shared_task
 from django.contrib.auth.models import User
+from django.db.models import F
 from django.db.models import Min
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
@@ -26,6 +27,7 @@ def past_time(hours_ago):
     now = timezone.now()
     return now - srs_level_hours
 
+
 @shared_task
 def all_srs(user=None):
     '''
@@ -36,8 +38,8 @@ def all_srs(user=None):
     :return: None
     '''
     logger.info("Beginning SRS run for {}.".format(user or "all users"))
+    affected_count = 0
     for streak, srs_timing in constants.SRS_TIMES.items():
-
         study_threshold = past_time(srs_timing)
         if user and not user.profile.on_vacation:
             review_set = UserSpecific.objects.filter(user=user,
@@ -52,10 +54,12 @@ def all_srs(user=None):
         if review_set.count() > 0:
             logger.info(
                 "{} has {} reviews for SRS level {}".format((user or "all users"), review_set.count(), streak))
+            affected_count += review_set.update(needs_review=True)
         else:
             logger.info("{} has no reviews for SRS level {}".format((user or "all users"), streak))
-        review_set.update(needs_review=True)
+
     logger.info("Finished SRS run for {}.".format(user or "all users"))
+    return affected_count
 
 
 def get_vocab_by_meaning(meaning):
@@ -560,10 +564,18 @@ def user_returns_from_vacation(user):
             rev.last_studied = lst + elapsed_vacation_time
             rev.next_review_date = nsd + elapsed_vacation_time
             rev.save()
-
-            # updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
-            # users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
-            # logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
+            if user.username == "Subversity" or user.username == "Tadgh":
+                logger.info(timezone.timedelta(constants.SRS_TIMES[rev.streak]))
+                logger.info("LS: {} --> {},"
+                            "streak: {},"
+                            "delay: {},"
+                            "calc NR :{}".format(lst, rev.last_studied, rev.streak,
+                                                                constants.SRS_TIMES[rev.streak],
+                                                                lst + elapsed_vacation_time + timezone.timedelta(
+                                                                    hours=constants.SRS_TIMES[rev.streak])))
+                # updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
+                # users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
+                # logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
 
     user.profile.vacation_date = None
     user.profile.on_vacation = False

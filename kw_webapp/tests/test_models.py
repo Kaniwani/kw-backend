@@ -2,12 +2,13 @@ from itertools import chain
 
 from datetime import timedelta
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.http import HttpResponseForbidden
 from django.test import Client, TestCase
 from django.utils import timezone
 
 from kw_webapp import constants
-from kw_webapp.models import MeaningSynonym, UserSpecific, Profile
+from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag
 from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
 
@@ -191,7 +192,8 @@ class TestModels(TestCase):
         self.review.refresh_from_db()
 
         self.assertEqual(self.review.next_review_date.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0)
-        self.assertEqual(self.review.next_review_date.hour % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)), 0)
+        self.assertEqual(
+            self.review.next_review_date.hour % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)), 0)
         self.assertEqual(self.review.next_review_date.second % constants.REVIEW_ROUNDING_TIME.total_seconds(), 0)
 
     def test_default_review_times_are_not_rounded(self):
@@ -199,7 +201,6 @@ class TestModels(TestCase):
         new_vocab = create_userspecific(create_vocab("fresh"), self.user)
 
         self.assertNotEqual(rounded_time, new_vocab.next_review_date)
-
 
     def test_handle_wanikani_level_up_correctly_levels_up(self):
         old_level = self.user.profile.level
@@ -209,13 +210,12 @@ class TestModels(TestCase):
 
         self.assertEqual(self.user.profile.level, old_level + 1)
 
-
     def test_handle_wanikani_level_down_correctly_deletes_invalid_reviews(self):
         self.user.profile.level = 5
         self.user.profile.save()
         self.user.profile.unlocked_levels.get_or_create(level=5)
 
-        #Create a review at current levelwait,
+        # Create a review at current levelwait,
         vocab = create_vocab("ANY WORD")
         create_reading(vocab, "some reading", "some char", self.user.profile.level)
         create_userspecific(vocab, self.user)
@@ -225,7 +225,6 @@ class TestModels(TestCase):
         reviews = UserSpecific.objects.filter(user=self.user)
 
         self.assertTrue(reviews.count() == 1)
-
 
     def test_handle_wanikani_level_down_correctly_removes_invalid_levels(self):
         self.user.profile.level = 5
@@ -253,3 +252,54 @@ class TestModels(TestCase):
         self.review.refresh_from_db()
 
         self.assertTrue(self.review.next_review_date - future_time < timedelta(minutes=15))
+
+    def test_tag_search_works(self):
+        vocab = create_vocab("spicy meatball")
+        vocab2 = create_vocab("spicy pizza")
+
+        reading = create_reading(vocab, "SOME_READING", "SOME_CHARACTER", 5)
+        reading2 = create_reading(vocab2, "SOME_OTHER_READING", "SOME_OTHER_CHARACTER", 5)
+
+        spicy_tag = Tag.objects.create(name='spicy')
+
+        reading.tags.add(spicy_tag)
+        reading2.tags.add(spicy_tag)
+
+        reading.save()
+        reading2.save()
+
+        spicy_tag.refresh_from_db()
+        spicy_vocab = spicy_tag.get_all_vocabulary()
+
+        self.assertTrue(spicy_vocab.count() == 2)
+
+    def test_vocabulary_that_has_multiple_readings_with_same_tag_appears_only_once(self):
+        vocab = create_vocab("spicy meatball")
+
+        reading = create_reading(vocab, "SOME_READING", "SOME_CHARACTER", 5)
+        reading2 = create_reading(vocab, "SOME_OTHER_READING", "SOME_OTHER_CHARACTER", 5)
+
+        spicy_tag = Tag.objects.create(name='spicy')
+
+        reading.tags.add(spicy_tag)
+        reading2.tags.add(spicy_tag)
+
+        reading.save()
+        reading2.save()
+
+        spicy_tag.refresh_from_db()
+        spicy_vocab = spicy_tag.get_all_vocabulary()
+
+        self.assertEqual(spicy_vocab.count(), 1)
+
+    def test_adding_notes_to_reviews_works(self):
+        self.assertTrue(self.review.notes is None)
+
+        self.review.notes = "This is a note for my review!"
+        self.review.save()
+
+        self.assertTrue(self.review.notes is not None)
+
+    def test_tag_names_are_unique(self):
+        original_tag = Tag.objects.create(name='S P I C Y')
+        self.assertRaises(IntegrityError, Tag.objects.create, name='S P I C Y')
