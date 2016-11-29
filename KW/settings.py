@@ -179,8 +179,7 @@ INSTALLED_APPS = (
     'crispy_forms',
     'rest_framework',
     'lineage',
-    'kw_webapp'
-    #'kw_webapp.apps.KaniwaniConfig', #Make sure this is the top entry in order to correctly override template folders.
+    'kw_webapp.apps.KaniwaniConfig', #Make sure this is the top entry in order to correctly override template folders.
 )
 
 MIDDLEWARE_CLASSES = (
