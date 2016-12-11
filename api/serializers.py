@@ -1,13 +1,14 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag
+from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym
 
 
 class LevelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Level
         fields = ('level',)
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='user.username')
@@ -38,6 +39,7 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ('name',)
 
+
 class ReadingSerializer(serializers.ModelSerializer):
     tags = serializers.StringRelatedField(many=True)
 
@@ -45,7 +47,6 @@ class ReadingSerializer(serializers.ModelSerializer):
         model = Reading
         fields = ('character', 'kana', 'level', 'tags', 'sentence_en', 'sentence_ja',
                   'jlpt', 'common')
-
 
 
 class VocabularySerializer(serializers.ModelSerializer):
@@ -56,15 +57,21 @@ class VocabularySerializer(serializers.ModelSerializer):
         fields = ('meaning', 'readings')
 
 
+class SynonymSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AnswerSynonym
+        fields = '__all__'
+
+
 class ReviewSerializer(serializers.ModelSerializer):
     vocabulary = VocabularySerializer(many=False, read_only=True)
+    answer_synonyms = SynonymSerializer(many=True, read_only=True)
 
     class Meta:
         model = UserSpecific
-        fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak', 'last_studied', 'needs_review', 'unlock_date',
-                  'next_review_date', 'burned', 'hidden', 'wanikani_srs', 'wanikani_srs_numeric', 'wanikani_burned')
+        fields = '__all__'
 
 
-
-
-
+class StubbedReviewSerializer(ReviewSerializer):
+    class Meta(ReviewSerializer.Meta):
+        fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak', 'notes', 'answer_synonyms')

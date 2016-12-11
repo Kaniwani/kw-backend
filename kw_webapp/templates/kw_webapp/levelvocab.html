@@ -22,7 +22,7 @@
                 {% ifchanged %}<dt lang="ja" class="kana">{{ reading.kana }}</dt>{% endifchanged %}
                 {% ifchanged %}<dt lang="ja" class="kanji">{{ reading.character }}</dt>{% endifchanged %}
               {% endfor %}
-              {% for synonym in review.answersynonym_set.all %}
+              {% for synonym in review.answer_synonyms.all %}
                 <dt lang="ja" class="kana">{{ synonym.kana }}</dt>
                 <dt lang="ja" class="kanji">{{ synonym.character }}
                   <span class="icon i-cancel removeSynonym" title="Remove Synonym" data-synonym-id="{{ synonym.id }}"></span>

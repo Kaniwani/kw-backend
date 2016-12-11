@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer
+from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer
 from api.filters import VocabularyFilter
 from kw_webapp.models import Profile, Vocabulary, UserSpecific
 
@@ -10,7 +10,7 @@ from kw_webapp.tasks import get_users_current_reviews
 
 class ReviewList(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = ReviewSerializer
+    serializer_class = StubbedReviewSerializer
 
     def get_queryset(self):
         return get_users_current_reviews(self.request.user)

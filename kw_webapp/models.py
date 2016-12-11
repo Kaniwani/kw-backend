@@ -135,7 +135,7 @@ class Tag(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     def get_all_vocabulary(self):
-        return Vocabulary.objects.filter(reading__tags__id=self.id).distinct()
+        return Vocabulary.objects.filter(readings__tags__id=self.id).distinct()
 
     def __str__(self):
         return self.name
@@ -179,7 +179,7 @@ class UserSpecific(models.Model):
     notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
 
     def get_all_readings(self):
-        return list(chain(self.vocabulary.readings.all(), self.answersynonym_set.all()))
+        return list(chain(self.vocabulary.readings.all(), self.answer_synonyms.all()))
 
     def can_be_managed_by(self, user):
         return self.user == user or user.is_superuser
@@ -193,11 +193,11 @@ class UserSpecific(models.Model):
     def remove_synonym(self, text):
         self.meaningsynonym_set.remove(MeaningSynonym.objects.get(text=text))
 
-    def answer_synonyms(self):
-        return [synonym.kana for synonym in self.answersynonym_set.all()]
+    def answer_synonyms_list(self):
+        return [synonym.kana for synonym in self.answer_synonyms.all()]
 
     def add_answer_synonym(self, kana, character):
-        synonym, created = self.answersynonym_set.get_or_create(kana=kana, character=character)
+        synonym, created = self.answer_synonyms.get_or_create(kana=kana, character=character)
         return synonym, created
 
     def set_next_review_time(self):
@@ -250,7 +250,7 @@ class UserSpecific(models.Model):
 class AnswerSynonym(models.Model):
     character = models.CharField(max_length=255, null=True)
     kana = models.CharField(max_length=255, null=False)
-    review = models.ForeignKey(UserSpecific, null=True)
+    review = models.ForeignKey(UserSpecific, related_name="answer_synonyms", null=True)
 
     def __str__(self):
         return "{} - {} - {} - SYNONYM".format(self.review.vocabulary.meaning, self.kana, self.character)

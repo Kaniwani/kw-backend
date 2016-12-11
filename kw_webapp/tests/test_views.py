@@ -209,9 +209,9 @@ class TestViews(TestCase):
                                                           "kanji": synonym_kanji})
 
         self.review.refresh_from_db()
-        found_synonym = self.review.answersynonym_set.first()
+        found_synonym = self.review.answer_synonyms.first()
 
-        self.assertTrue(synonym_kana in self.review.answer_synonyms())
+        self.assertTrue(synonym_kana in self.review.answer_synonyms_list())
         self.assertEqual(found_synonym.kana, synonym_kana)
         self.assertEqual(found_synonym.character, synonym_kanji)
 
@@ -224,7 +224,7 @@ class TestViews(TestCase):
 
         self.review.refresh_from_db()
 
-        self.assertListEqual(self.review.answer_synonyms(), [])
+        self.assertListEqual(self.review.answer_synonyms_list(), [])
 
 
     def test_review_submission_correctly_rounds_time_up_to_next_interval(self):
