@@ -1,5 +1,7 @@
 import requests
+from django.contrib.auth.models import User
 from django.utils import timezone
+from rest_framework.authtoken.models import Token
 
 from kw_webapp.models import UserSpecific, Profile, Reading, Tag
 from kw_webapp.tasks import unlock_eligible_vocab_from_levels
@@ -106,4 +108,6 @@ def associate_tags(reading, tag):
     reading.tags.add(tag_obj)
 
 
-
+def create_tokens_for_all_users():
+    for user in User.objects.all():
+        Token.objects.get_or_create(user=user)

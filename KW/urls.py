@@ -18,6 +18,7 @@ urlpatterns = (
 
     ##API
     url(r'^api/', include('api.urls', namespace='api')),
+
     ##DOCS
     url(r'^docs/', include('rest_framework_docs.urls')),
 
