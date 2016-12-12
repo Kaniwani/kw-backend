@@ -66,10 +66,12 @@ class SynonymSerializer(serializers.ModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     vocabulary = VocabularySerializer(many=False, read_only=True)
     answer_synonyms = SynonymSerializer(many=True, read_only=True)
-
     class Meta:
         model = UserSpecific
         fields = '__all__'
+
+        read_only_fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak'
+                            'user', 'needs_review', '')
 
 
 class StubbedReviewSerializer(ReviewSerializer):

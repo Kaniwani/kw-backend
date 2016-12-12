@@ -17,7 +17,7 @@ urlpatterns = (
     url(r'^$', 'kw_webapp.views.home', name='home'),
 
     ##API
-    url(r'^api/', include('api.urls', namespace='api')),
+    url(r'^api/v1/', include('api.urls', namespace='api')),
 
     ##DOCS
     url(r'^docs/', include('rest_framework_docs.urls')),
