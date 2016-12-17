@@ -137,6 +137,7 @@ class Tag(models.Model):
     def get_all_vocabulary(self):
         return Vocabulary.objects.filter(readings__tags__id=self.id).distinct()
 
+
     def __str__(self):
         return self.name
 

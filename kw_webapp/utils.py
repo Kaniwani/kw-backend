@@ -4,6 +4,7 @@ from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
 from kw_webapp.models import UserSpecific, Profile, Reading, Tag
+from kw_webapp import constants
 from kw_webapp.tasks import unlock_eligible_vocab_from_levels
 
 
@@ -102,6 +103,7 @@ def doTheThing(related_reading, vocabulary_json):
     return retval
 
 
+
 def associate_tags(reading, tag):
     print("associating [{}] to reading {}".format(tag, reading.vocabulary.meaning))
     tag_obj, created = Tag.objects.get_or_create(name=tag)
@@ -111,3 +113,4 @@ def associate_tags(reading, tag):
 def create_tokens_for_all_users():
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
+
