@@ -1,5 +1,5 @@
 from contact_form.views import ContactFormView
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
 from django.contrib import admin
 from django.views.generic import TemplateView
@@ -21,7 +21,7 @@ urlpatterns = (
 
     ##DOCS
     url(r'^docs/', include('rest_framework_docs.urls')),
-
+   
     ##All Auth Stuff
     url(r'^auth/login/$', 'django.contrib.auth.views.login',
         {'template_name': 'registration/login.html',

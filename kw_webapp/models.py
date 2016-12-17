@@ -204,14 +204,8 @@ class UserSpecific(models.Model):
         if self.streak not in constants.SRS_TIMES.keys():
             self.next_review_date = None
         else:
-
             self.next_review_date = timezone.now() + timedelta(hours=constants.SRS_TIMES[self.streak])
             self._round_review_time_up()
-        self.save()
-
-    def set_next_review_time_based_on_last_studied(self):
-        self.next_review_date = self.last_studied + timedelta(hours=constants.SRS_TIMES[self.streak])
-        self._round_review_time_up()
         self.save()
 
     def set_next_review_time_based_on_last_studied(self):
