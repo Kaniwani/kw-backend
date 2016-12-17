@@ -18,9 +18,9 @@
         {% for review in incorrect %}
           <li class="vocab-card">
             <div class="vocab-base">
-              <a href="{% url "kw:vocab" %}{{ review.vocabulary.reading_set.all.0.level }}#vocab{{ review.vocabulary.id }}" class="readingset">
+              <a href="{% url "kw:vocab" %}{{ review.vocabulary.readings.all.0.level }}#vocab{{ review.vocabulary.id }}" class="readingset">
                 <div class="ja">
-                  {% for reading in review.vocabulary.reading_set.all %}
+                  {% for reading in review.vocabulary.readings.all %}
                     {% ifchanged %}<span lang="ja" class="kana">{{ reading.kana }}</span> {% endifchanged %}
                     {% ifchanged %}<span lang="ja" class="kanji">{{ reading.character }}</span> {% endifchanged %}
                   {% endfor %}
@@ -41,7 +41,7 @@
 
       <ul class="lattice-list -correct">
         {% for review in correct %}
-        {% with review.vocabulary.reading_set.first as reading %}
+        {% with review.vocabulary.readings.first as reading %}
           <li class="item">
             <a lang="ja" class="link hint--bottom hint--rounded -multiline" data-hint="{{ reading.kana }} ・ {{ review.vocabulary.meaning }}" href="{% url "kw:vocab" %}{{ reading.level }}#vocab{{ review.vocabulary.id }}">{{ reading.character }}</a>
           </li>

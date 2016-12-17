@@ -46,7 +46,18 @@ LOGGING = {
             'format': '%(asctime)s---%(message)s'
         }
     },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
     'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
         'views': {
             'level': 'DEBUG',
             'class': 'logging.handlers.TimedRotatingFileHandler',
@@ -92,27 +103,27 @@ LOGGING = {
     },
     'loggers': {
         'kw.views': {
-            'handlers': ['views', 'errors'],
+            'handlers': ['views', 'errors', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.models': {
-            'handlers': ['models', 'errors'],
+            'handlers': ['models', 'errors', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.tasks': {
-            'handlers': ['tasks', 'errors'],
+            'handlers': ['tasks', 'errors', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.db_repopulator': {
-            'handlers': ['sporadic_tasks', 'errors'],
+            'handlers': ['sporadic_tasks', 'errors', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'kw.review_data': {
-            'handlers':['review_data'],
+            'handlers':['review_data', 'console'],
             'level': 'DEBUG',
             'propagate': True,
         },
@@ -180,6 +191,9 @@ INSTALLED_APPS = (
     'rest_framework',
     'lineage',
     'kw_webapp.apps.KaniwaniConfig', #Make sure this is the top entry in order to correctly override template folders.
+    'rest_framework_docs',
+    'debug_toolbar',
+    'rest_framework.authtoken'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -191,14 +205,32 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'async_messages.middleware.AsyncMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'kw_webapp.middleware.SetLastVisitMiddleware'
 )
+
+if DEBUG:
+    MIDDLEWARE_CLASSES += (
+        'KW.LoggingMiddleware.ExceptionLoggingMiddleware',
+    )
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated'
     ],
-    'PAGE_SIZE': 10
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'
+
+
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
+}
+
+REST_FRAMEWORK_DOCS = {
+    'HIDE_DOCS': not DEBUG
 }
 
 CACHES = {
@@ -269,6 +301,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "_front-end/dist/assets"),
 )
 
+INTERNAL_IPS = ('127.0.0.1',)
 #For cache-busting in production mode.
 if not DEBUG:
     STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"

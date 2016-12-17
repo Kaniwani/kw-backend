@@ -6,3 +6,4 @@ class KaniwaniConfig(AppConfig):
 
     def ready(self):
         import kw_webapp.signals
+        import api.signals
