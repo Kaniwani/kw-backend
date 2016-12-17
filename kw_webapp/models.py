@@ -35,7 +35,7 @@ class Level(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
     api_key = models.CharField(max_length=255)
     api_valid = models.BooleanField(default=True)
     gravatar = models.CharField(max_length=255)
@@ -105,7 +105,7 @@ class Profile(models.Model):
             expired_reviews.delete()
 
     def get_overleveled_reviews(self):
-        return UserSpecific.objects.filter(user=self.user, vocabulary__reading__level__gt=self.user.profile.level)
+        return UserSpecific.objects.filter(user=self.user, vocabulary__readings__level__gt=self.user.profile.level)
 
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
@@ -115,13 +115,13 @@ class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
 
     def reading_count(self):
-        return self.reading_set.all().count()
+        return self.readings.all().count()
 
     def available_readings(self, level):
-        return self.reading_set.filter(level__lte=level)
+        return self.readings.filter(level__lte=level)
 
     def get_absolute_url(self):
-        return "https://www.wanikani.com/vocabulary/{}/".format(self.reading_set.all()[0])
+        return "https://www.wanikani.com/vocabulary/{}/".format(self.readings.all()[0])
 
     def __str__(self):
         return self.meaning
@@ -135,14 +135,14 @@ class Tag(models.Model):
     name = models.CharField(max_length=255, unique=True)
 
     def get_all_vocabulary(self):
-        return Vocabulary.objects.filter(reading__tags__id=self.id).distinct()
+        return Vocabulary.objects.filter(readings__tags__id=self.id).distinct()
 
     def __str__(self):
         return self.name
 
 
 class Reading(models.Model):
-    vocabulary = models.ForeignKey(Vocabulary)
+    vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
     character = models.CharField(max_length=255)
     kana = models.CharField(max_length=255)
     level = models.PositiveIntegerField(null=True, validators=[
@@ -163,7 +163,7 @@ class Reading(models.Model):
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name='reviews', on_delete=models.CASCADE)
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)
     streak = models.PositiveIntegerField(default=0)
@@ -179,7 +179,7 @@ class UserSpecific(models.Model):
     notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
 
     def get_all_readings(self):
-        return list(chain(self.vocabulary.reading_set.all(), self.answersynonym_set.all()))
+        return list(chain(self.vocabulary.readings.all(), self.answer_synonyms.all()))
 
     def can_be_managed_by(self, user):
         return self.user == user or user.is_superuser
@@ -193,11 +193,11 @@ class UserSpecific(models.Model):
     def remove_synonym(self, text):
         self.meaningsynonym_set.remove(MeaningSynonym.objects.get(text=text))
 
-    def answer_synonyms(self):
-        return [synonym.kana for synonym in self.answersynonym_set.all()]
+    def answer_synonyms_list(self):
+        return [synonym.kana for synonym in self.answer_synonyms.all()]
 
     def add_answer_synonym(self, kana, character):
-        synonym, created = self.answersynonym_set.get_or_create(kana=kana, character=character)
+        synonym, created = self.answer_synonyms.get_or_create(kana=kana, character=character)
         return synonym, created
 
     def set_next_review_time(self):
@@ -244,7 +244,7 @@ class UserSpecific(models.Model):
 class AnswerSynonym(models.Model):
     character = models.CharField(max_length=255, null=True)
     kana = models.CharField(max_length=255, null=False)
-    review = models.ForeignKey(UserSpecific, null=True)
+    review = models.ForeignKey(UserSpecific, related_name="answer_synonyms", null=True)
 
     def __str__(self):
         return "{} - {} - {} - SYNONYM".format(self.review.vocabulary.meaning, self.kana, self.character)

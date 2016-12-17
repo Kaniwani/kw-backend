@@ -128,7 +128,7 @@ def build_API_sync_string_for_user_for_levels(user, levels):
 
 
 def lock_level_for_user(requested_level, user):
-    reviews = UserSpecific.objects.filter(user=user, vocabulary__reading__level=requested_level).distinct()
+    reviews = UserSpecific.objects.filter(user=user, vocabulary__readings__level=requested_level).distinct()
     count = reviews.count()
     reviews.delete()
     level = Level.objects.get(profile=user.profile, level=requested_level)
@@ -272,7 +272,7 @@ def associate_readings_to_vocab(vocab, vocabulary_json):
     character = vocabulary_json["character"]
     level = vocabulary_json["level"]
     for reading in kana_list:
-        new_reading, created = vocab.reading_set.get_or_create(kana=reading, character=character)
+        new_reading, created = vocab.readings.get_or_create(kana=reading, character=character)
         new_reading.level = level
         new_reading.save()
         if created:
