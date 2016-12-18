@@ -302,9 +302,6 @@ STATICFILES_DIRS = (
 )
 
 INTERNAL_IPS = ('127.0.0.1',)
-#For cache-busting in production mode.
-if not DEBUG:
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 TEMPLATES = [
     {
