@@ -9,9 +9,10 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from collections import namedtuple
 from datetime import timedelta
+
 import os
+from collections import namedtuple
 from django.core.urlresolvers import reverse_lazy
 
 try:
