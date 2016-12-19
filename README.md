@@ -1,4 +1,4 @@
-![<img src="https://rauchg-slackin-iurjmkotad.now.sh/badge.svg">](https://rauchg-slackin-iurjmkotad.now.sh)![](https://travis-ci.org/tadgh/KW.svg)
+[<img src="https://rauchg-slackin-iurjmkotad.now.sh/badge.svg">](https://rauchg-slackin-iurjmkotad.now.sh) ![](https://travis-ci.org/tadgh/KW.svg)
 [![Deployment status from DeployBot](https://kaniwani.deploybot.com/badge/66802254069768/57929.svg)](http://deploybot.com)
 
 # KW
