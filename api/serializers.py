@@ -57,6 +57,12 @@ class VocabularySerializer(serializers.ModelSerializer):
         fields = ('meaning', 'readings')
 
 
+class HyperlinkedVocabularySerializer(VocabularySerializer):
+    readings = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='vocabulary-detail')
+
+    class Meta(VocabularySerializer.Meta):
+        pass
+
 class SynonymSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnswerSynonym

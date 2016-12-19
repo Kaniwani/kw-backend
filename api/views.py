@@ -21,6 +21,27 @@ class ReviewList(generics.ListAPIView):
     def get_queryset(self):
         return get_users_current_reviews(self.request.user)
 
+class VocabularyList(generics.ListCreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    queryset = Vocabulary.objects.all()
+    serializer_class = VocabularySerializer
+    filter_class = VocabularyFilter
+
+
+class VocabularyDetail(generics.RetrieveUpdateAPIView):
+    queryset = Vocabulary.objects.all()
+    serializer_class = VocabularySerializer
+
+class VocabularyViewSet(viewsets.ModelViewSet):
+    filter_class = VocabularyFilter
+
+    def list(self, request, *args, **kwargs):
+
+    def get_serializer_class(self):
+        if self.request.query_params.get('hyperlink', 'false') == 'true':
+            return HyperlinkedVocabularySerializer
+        else:
+            return VocabularySerializer
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
@@ -99,13 +120,4 @@ class ProfileDetail(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
 
 
-class VocabularyList(generics.ListCreateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    queryset = Vocabulary.objects.all()
-    serializer_class = VocabularySerializer
-    filter_class = VocabularyFilter
 
-
-class VocabularyDetail(generics.RetrieveUpdateAPIView):
-    queryset = Vocabulary.objects.all()
-    serializer_class = VocabularySerializer
