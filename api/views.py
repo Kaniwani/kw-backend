@@ -6,7 +6,8 @@ from rest_framework.decorators import list_route, detail_route
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer
+from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
+    HyperlinkedVocabularySerializer
 from api.filters import VocabularyFilter
 from kw_webapp.models import Profile, Vocabulary, UserSpecific
 
@@ -21,6 +22,7 @@ class ReviewList(generics.ListAPIView):
     def get_queryset(self):
         return get_users_current_reviews(self.request.user)
 
+
 class VocabularyList(generics.ListCreateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Vocabulary.objects.all()
@@ -32,16 +34,17 @@ class VocabularyDetail(generics.RetrieveUpdateAPIView):
     queryset = Vocabulary.objects.all()
     serializer_class = VocabularySerializer
 
+
 class VocabularyViewSet(viewsets.ModelViewSet):
     filter_class = VocabularyFilter
-
-    def list(self, request, *args, **kwargs):
+    queryset = Vocabulary.objects.all()
 
     def get_serializer_class(self):
         if self.request.query_params.get('hyperlink', 'false') == 'true':
             return HyperlinkedVocabularySerializer
         else:
             return VocabularySerializer
+
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
@@ -93,10 +96,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
         review.save()
         return Response({"status": "incorrect"})
 
-
     def get_queryset(self):
         return UserSpecific.objects.filter(user=self.request.user)
-
 
 
 class ReviewDetail(generics.RetrieveUpdateAPIView):
@@ -118,6 +119,3 @@ class ProfileDetail(generics.RetrieveUpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-
-
-

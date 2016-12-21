@@ -58,7 +58,7 @@ class VocabularySerializer(serializers.ModelSerializer):
 
 
 class HyperlinkedVocabularySerializer(VocabularySerializer):
-    readings = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='vocabulary-detail')
+    readings = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='api:reading-detail')
 
     class Meta(VocabularySerializer.Meta):
         pass
