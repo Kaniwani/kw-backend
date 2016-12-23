@@ -3,11 +3,12 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views as authviews
 
 from api import views
-from api.views import ReviewViewSet, VocabularyViewSet
+from api.views import ReviewViewSet, VocabularyViewSet, ReadingViewSet
 
 router = DefaultRouter()
-router.register(r'reviews', ReviewViewSet, base_name="review")
+router.register(r'review', ReviewViewSet, base_name="review")
 router.register(r'vocabulary', VocabularyViewSet, base_name="vocabulary")
+router.register(r'reading', ReadingViewSet, base_name="reading")
 urlpatterns = router.urls + [
 
     url(r'^profiles/$', views.ProfileList.as_view()),

@@ -7,9 +7,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
 from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
-    HyperlinkedVocabularySerializer
-from api.filters import VocabularyFilter
-from kw_webapp.models import Profile, Vocabulary, UserSpecific
+    HyperlinkedVocabularySerializer, ReadingSerializer
+from api.filters import VocabularyFilter, ReviewFilter
+from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading
 
 from rest_framework import generics
 from kw_webapp.tasks import get_users_current_reviews
@@ -23,19 +23,12 @@ class ReviewList(generics.ListAPIView):
         return get_users_current_reviews(self.request.user)
 
 
-class VocabularyList(generics.ListCreateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    queryset = Vocabulary.objects.all()
-    serializer_class = VocabularySerializer
-    filter_class = VocabularyFilter
+class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Reading.objects.all()
+    serializer_class = ReadingSerializer
 
 
-class VocabularyDetail(generics.RetrieveUpdateAPIView):
-    queryset = Vocabulary.objects.all()
-    serializer_class = VocabularySerializer
-
-
-class VocabularyViewSet(viewsets.ModelViewSet):
+class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
     filter_class = VocabularyFilter
     queryset = Vocabulary.objects.all()
 
@@ -48,6 +41,7 @@ class VocabularyViewSet(viewsets.ModelViewSet):
 
 class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
+    filter_class = ReviewFilter
 
     @list_route(methods=['GET'])
     def current(self, request):
