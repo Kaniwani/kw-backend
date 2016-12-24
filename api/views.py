@@ -1,6 +1,8 @@
 from django.http import HttpResponseForbidden
 from django.utils import timezone
+from rest_framework import mixins
 from rest_framework import permissions
+from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.generics import get_object_or_404
@@ -15,13 +17,15 @@ from rest_framework import generics
 from kw_webapp.tasks import get_users_current_reviews
 
 
-class ReviewList(generics.ListAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = StubbedReviewSerializer
-
-    def get_queryset(self):
-        return get_users_current_reviews(self.request.user)
-
+class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
+                                mixins.UpdateModelMixin,
+                                mixins.RetrieveModelMixin,
+                                viewsets.GenericViewSet):
+    """
+    A viewset that provides `List`, `Update`, and `Retrieve` actions.
+    Must override: .queryset, .serializer_class
+    """
+    pass
 
 class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Reading.objects.all()
@@ -58,37 +62,38 @@ class ReviewViewSet(viewsets.ModelViewSet):
     @detail_route(methods=['POST'])
     def correct(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
-        if not review.can_be_managed_by(self.request.user) or not review.needs_review:
+        if not review.can_be_managed_by(request.user) or not review.needs_review:
             return HttpResponseForbidden("You can't modify that object at this time!")
 
-        previously_wrong = True if request.data['wrong_before'] == 'true' else False
-        if not previously_wrong:
-            review.correct += 1
-            review.streak += 1
-            if review.streak >= 9:
-                review.burned = True
-
-        review.needs_review = False
-        review.last_studied = timezone.now()
-        review.save()
-        review.set_next_review_time()
-        return Response({"status": "correct"})
+        was_correct_on_first_try = False if request.data['wrong_before'] == 'true' else True
+        review.answered_correctly(was_correct_on_first_try)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @detail_route(methods=['POST'])
     def incorrect(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
-        if not review.can_be_managed_by(self.request.user) or not review.needs_review:
+        if not review.can_be_managed_by(request.user) or not review.needs_review:
             return HttpResponseForbidden("You can't modify that object at this time!")
+        review.answered_incorrectly()
 
-        review.incorrect += 1
-        if review.streak == 7:
-            review.streak -= 2
-        else:
-            review.streak -= 1
-        if review.streak < 0:
-            review.streak = 0
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @detail_route(methods=['POST'])
+    def hide(self, request, pk=None):
+        return self._set_hidden(request, True, pk)
+
+    @detail_route(methods=['POST'])
+    def unhide(self, request, pk=None):
+        return self._set_hidden(request, False, pk)
+
+    def _set_hidden(self, request, should_hide, pk=None):
+        review = get_object_or_404(UserSpecific, pk=pk)
+        if not review.can_be_managed_by(request.user):
+            return HttpResponseForbidden("You can't modify that object!")
+
+        review.hidden = should_hide
         review.save()
-        return Response({"status": "incorrect"})
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_queryset(self):
         return UserSpecific.objects.filter(user=self.request.user)

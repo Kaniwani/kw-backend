@@ -3,6 +3,7 @@ from itertools import chain
 
 from datetime import timedelta
 
+import math
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
@@ -178,6 +179,33 @@ class UserSpecific(models.Model):
     wanikani_srs_numeric = models.IntegerField(default=0)
     wanikani_burned = models.BooleanField(default=False)
     notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
+
+    def answered_correctly(self, first_try=True):
+        if first_try:
+            self.correct += 1
+            self.streak += 1
+            if self.streak >= constants.KANIWANI_SRS_LEVELS["burned"][0]:
+                self.burned = True
+
+        self.needs_review = False
+        self.last_studied = timezone.now()
+        self.save()
+        self.set_next_review_time()
+
+    def answered_incorrectly(self):
+        """
+        Helper function to correctly decrement streak value and increase count of incorrect.
+        If user is nearing burned status, they get doubly-decremented.
+        :return:
+        """
+        self.incorrect += 1
+        if self.streak == 7:
+            self.streak -= 2
+        else:
+            self.streak -= 1
+
+        self.streak = max(0, self.streak)
+        self.save()
 
     def get_all_readings(self):
         return list(chain(self.vocabulary.readings.all(), self.answer_synonyms.all()))

@@ -20,7 +20,7 @@ urlpatterns = (
     url(r'^api/v1/', include('api.urls', namespace='api')),
     ##DOCS
     url(r'^docs/', include('rest_framework_docs.urls')),
-   
+
 
     ##All Auth Stuff
     url(r'^auth/login/$', 'django.contrib.auth.views.login',
