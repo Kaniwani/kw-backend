@@ -20,9 +20,11 @@ def filter_srs_level(queryset, name, value):
         return queryset.filter()
 
 def filter_reading_contains(queryset, name, value):
+    '''
+    Filter function return any vocab wherein the reading kana or kanji contain the requested characters
+    '''
     if value:
         return queryset.filter(Q(readings__kana__contains=value) | Q(readings__character__contains=value))
-        #TODO TEST THIS IN AM
 
     
 class VocabularyFilter(filters.FilterSet):
