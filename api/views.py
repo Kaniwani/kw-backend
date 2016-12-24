@@ -8,9 +8,10 @@ from rest_framework.decorators import list_route, detail_route
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
-from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer
-from api.filters import VocabularyFilter
-from kw_webapp.models import Profile, Vocabulary, UserSpecific
+from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
+    HyperlinkedVocabularySerializer, ReadingSerializer
+from api.filters import VocabularyFilter, ReviewFilter
+from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading
 
 from rest_framework import generics
 from kw_webapp.tasks import get_users_current_reviews
@@ -26,9 +27,25 @@ class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
     """
     pass
 
+class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Reading.objects.all()
+    serializer_class = ReadingSerializer
 
-class ReviewViewSet(ListRetrieveUpdateViewSet):
+
+class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
+    filter_class = VocabularyFilter
+    queryset = Vocabulary.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.query_params.get('hyperlink', 'false') == 'true':
+            return HyperlinkedVocabularySerializer
+        else:
+            return VocabularySerializer
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
+    filter_class = ReviewFilter
 
     @list_route(methods=['GET'])
     def current(self, request):
@@ -76,7 +93,6 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
 
         review.hidden = should_hide
         review.save()
-
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_queryset(self):
@@ -102,15 +118,3 @@ class ProfileDetail(generics.RetrieveUpdateAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-
-
-class VocabularyList(generics.ListCreateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    queryset = Vocabulary.objects.all()
-    serializer_class = VocabularySerializer
-    filter_class = VocabularyFilter
-
-
-class VocabularyDetail(generics.RetrieveUpdateAPIView):
-    queryset = Vocabulary.objects.all()
-    serializer_class = VocabularySerializer
