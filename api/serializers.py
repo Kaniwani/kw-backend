@@ -63,6 +63,7 @@ class HyperlinkedVocabularySerializer(VocabularySerializer):
     class Meta(VocabularySerializer.Meta):
         pass
 
+
 class SynonymSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnswerSynonym
@@ -78,10 +79,22 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
         read_only_fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak'
-                            'user', 'needs_review', 'last_studied', 'unlock_date', 'wanikani_srs',
+                            'user', 'needs_review', 'last_studied',
+                            'unlock_date', 'wanikani_srs',
                             'wanikani_srs_numeric', 'wanikani_burned', 'burned')
 
 
 class StubbedReviewSerializer(ReviewSerializer):
     class Meta(ReviewSerializer.Meta):
         fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak', 'notes', 'answer_synonyms')
+
+
+class LevelSerializer(serializers.Serializer):
+    level = serializers.IntegerField(read_only=True)
+    unlocked = serializers.BooleanField(read_only=True)
+    vocabulary_count = serializers.IntegerField(read_only=True)
+    lock_url = serializers.CharField(read_only=True)
+    unlock_url = serializers.CharField(read_only=True)
+
+
+

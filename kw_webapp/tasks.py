@@ -146,6 +146,8 @@ def unlock_all_possible_levels_for_user(user):
     unlocked, locked = unlock_eligible_vocab_from_levels(user, level_list)
     return level_list, unlocked, locked
 
+@shared_task()
+def unlock_eligible_vocab_from_levels(user, levels):
 
 @shared_task
 def unlock_eligible_vocab_from_levels(user, levels):
