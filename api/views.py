@@ -17,7 +17,7 @@ from kw_webapp import constants
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level
 
 from rest_framework import generics
-from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels
+from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user
 
 
 class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
@@ -62,28 +62,41 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     @detail_route(methods=['POST'])
     def unlock(self, request, pk=None):
         user = self.request.user
-        requested_level = Level.objects.get_or_create()
-
+        requested_level = pk
         if int(requested_level) > user.profile.level:
-            return HttpResponseForbidden()
-        count = request.query_params['count']
-        if not count:
-            ul_count, l_count = unlock_eligible_vocab_from_levels(user, requested_level)
-        else:
-            ul_count, l_count = unlock_eligible_vocab_from_levels(user, requested_level, count)
-        user.profile.unlocked_levels.get_or_create(level=requested_level)
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
-      #  if l_count == 0:
-        #    return HttpResponse("{} vocabulary unlocked".format(ul_count))
-       # else:
-         #   return HttpResponse(
-          #      "{} vocabulary unlocked.<br/>You still have {} upcoming vocabulary to unlock on WaniKani for your current level.".format(
-                    #ul_count,
-       #             l_count))
+        limit = None
+        if 'count' in request.query_params:
+            limit = int(request.query_params['count'])
+
+        unlocked_this_request, total_unlocked, locked = unlock_eligible_vocab_from_levels(user, requested_level, limit)
+        level, created = user.profile.unlocked_levels.get_or_create(level=requested_level)
+        fully_unlocked = True if limit is None else False
+
+        # If user has repeatedly done partial unlocks, eventually they will fully unlock the level.
+        if limit and unlocked_this_request == limit:
+            level.partial = True
+            level.save()
+        elif limit and unlocked_this_request < limit:
+            level.partial = False
+            fully_unlocked = True
+            level.save()
+
+        return Response(dict(unlocked_now=unlocked_this_request,
+                             total_unlocked=total_unlocked,
+                             locked=locked,
+                             fully_unlocked=fully_unlocked))
 
     @detail_route(methods=['POST'])
     def lock(self, request, pk=None):
-        pass
+        requested_level = pk
+        if request.user.profile.level == int(requested_level):
+            request.user.profile.follow_me = False
+            request.user.profile.save()
+        removed_count = lock_level_for_user(requested_level, request.user)
+
+        return Response({"locked": removed_count})
 
 
 class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
