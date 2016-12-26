@@ -110,10 +110,10 @@ class TestTasks(TestCase):
                       status=200,
                       content_type='application/json')
 
-        checked_levels, unlocked_count, locked_count = unlock_all_possible_levels_for_user(self.user)
+        checked_levels, unlocked_now_count, total_unlocked_count,  locked_count = unlock_all_possible_levels_for_user(self.user)
 
         self.assertListEqual(level_list, checked_levels)
-        self.assertEqual(unlocked_count, 1)
+        self.assertEqual(total_unlocked_count, 1)
 
     @responses.activate
     def test_syncing_vocabulary_pulls_srs_level_successfully(self):

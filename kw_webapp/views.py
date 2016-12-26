@@ -134,8 +134,8 @@ class UnlockAll(LoginRequiredMixin, ValidApiRequiredMixin, View):
                 user.profile.unlocked_levels.get_or_create(level=level)
 
         if should_sync:
-            level_list, unlocked_count, locked_count = unlock_all_possible_levels_for_user(user)
-            return HttpResponse("Unlocked {} levels, containing {} vocabulary.".format(len(level_list), unlocked_count))
+            level_list, unlocked_now, unlocked_total, locked_count = unlock_all_possible_levels_for_user(user)
+            return HttpResponse("Unlocked {} levels, containing {} vocabulary.".format(len(level_list), unlocked_now))
         else:
             return HttpResponse("Everything has already been unlocked!")
 

@@ -7,14 +7,17 @@ from rest_framework import viewsets
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
+from rest_framework.reverse import reverse, reverse_lazy
+from rest_framework.views import APIView
 
 from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
-    HyperlinkedVocabularySerializer, ReadingSerializer
+    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer
 from api.filters import VocabularyFilter, ReviewFilter
-from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading
+from kw_webapp import constants
+from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level
 
 from rest_framework import generics
-from kw_webapp.tasks import get_users_current_reviews
+from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user
 
 
 class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
@@ -27,9 +30,73 @@ class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
     """
     pass
 
+
 class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Reading.objects.all()
     serializer_class = ReadingSerializer
+
+
+class LevelViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Level.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        level_dicts = []
+        for level in range(constants.LEVEL_MIN, constants.LEVEL_MAX + 1):
+            pre_serialized_dict = {'level': level,
+                                   'unlocked': True if level in request.user.profile.unlocked_levels_list() else False,
+                                   'vocabulary_count': Vocabulary.objects.filter(readings__level=level).count()}
+            if level <= request.user.profile.level:
+                pre_serialized_dict['lock_url'] = self._build_lock_url(level)
+                pre_serialized_dict['unlock_url'] = self._build_unlock_url(level)
+            level_dicts.append(pre_serialized_dict)
+
+        serializer = LevelSerializer(level_dicts, many=True)
+        return Response(serializer.data)
+
+    def _build_lock_url(self, level):
+        return reverse_lazy('api:level-lock', args=(level,))
+
+    def _build_unlock_url(self, level):
+        return reverse_lazy('api:level-unlock', args=(level,))
+
+    @detail_route(methods=['POST'])
+    def unlock(self, request, pk=None):
+        user = self.request.user
+        requested_level = pk
+        if int(requested_level) > user.profile.level:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+        limit = None
+        if 'count' in request.query_params:
+            limit = int(request.query_params['count'])
+
+        unlocked_this_request, total_unlocked, locked = unlock_eligible_vocab_from_levels(user, requested_level, limit)
+        level, created = user.profile.unlocked_levels.get_or_create(level=requested_level)
+        fully_unlocked = True if limit is None else False
+
+        # If user has repeatedly done partial unlocks, eventually they will fully unlock the level.
+        if limit and unlocked_this_request == limit:
+            level.partial = True
+            level.save()
+        elif limit and unlocked_this_request < limit:
+            level.partial = False
+            fully_unlocked = True
+            level.save()
+
+        return Response(dict(unlocked_now=unlocked_this_request,
+                             total_unlocked=total_unlocked,
+                             locked=locked,
+                             fully_unlocked=fully_unlocked))
+
+    @detail_route(methods=['POST'])
+    def lock(self, request, pk=None):
+        requested_level = pk
+        if request.user.profile.level == int(requested_level):
+            request.user.profile.follow_me = False
+            request.user.profile.save()
+        removed_count = lock_level_for_user(requested_level, request.user)
+
+        return Response({"locked": removed_count})
 
 
 class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):

@@ -26,9 +26,10 @@ class Announcement(models.Model):
 
 
 class Level(models.Model):
+    partial = models.BooleanField(default=False)
     level = models.PositiveIntegerField(validators=[
-        MinValueValidator(1),
-        MaxValueValidator(60),
+        MinValueValidator(constants.LEVEL_MIN),
+        MaxValueValidator(constants.LEVEL_MAX),
     ])
 
     def __str__(self):
