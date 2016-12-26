@@ -144,8 +144,8 @@ def unlock_all_possible_levels_for_user(user):
     :return: The list of levels unlocked, how many vocab were unlocked, how many vocab remain locked (as they are locked in WK)
     """
     level_list = [level for level in range(1, user.profile.level + 1)]
-    unlocked, locked = unlock_eligible_vocab_from_levels(user, level_list)
-    return level_list, unlocked, locked
+    unlocked_now, unlocked_total, locked = unlock_eligible_vocab_from_levels(user, level_list)
+    return level_list, unlocked_now, unlocked_total, locked
 
 @shared_task
 def unlock_eligible_vocab_from_levels(user, levels, count=None):
