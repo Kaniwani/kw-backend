@@ -152,7 +152,7 @@ class UnlockRequested(LoginRequiredMixin, ValidApiRequiredMixin, View):
         if int(requested_level) > user.profile.level:
             return HttpResponseForbidden()
 
-        ul_count, l_count = unlock_eligible_vocab_from_levels(user, requested_level)
+        ul_count,total_unlocked, l_count = unlock_eligible_vocab_from_levels(user, requested_level)
         user.profile.unlocked_levels.get_or_create(level=requested_level)
 
         if l_count == 0:

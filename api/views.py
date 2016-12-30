@@ -173,15 +173,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return UserSpecific.objects.filter(user=self.request.user)
 
 
-class ReviewDetail(generics.RetrieveUpdateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    queryset = UserSpecific.objects.all()
-    serializer_class = ReviewSerializer
-
-    def get_queryset(self):
-        return UserSpecific.objects.filter(user=self.request.user)
-
-
 class ProfileList(generics.ListAPIView):
     permission_classes = (permissions.AllowAny,)
     queryset = Profile.objects.all()

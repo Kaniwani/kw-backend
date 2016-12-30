@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym
 
@@ -68,6 +69,16 @@ class SynonymSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnswerSynonym
         fields = '__all__'
+
+    def validate_review(self, value):
+        """
+        Check that the user creating the synonym owns the related review.
+        """
+        review = value
+        if review.user != self.context['request'].user:
+            raise serializers.ValidationError("Can not make a synonym for a review that is not yours!")
+        return value
+
 
 
 class ReviewSerializer(serializers.ModelSerializer):
