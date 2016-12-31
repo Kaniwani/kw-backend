@@ -11,10 +11,10 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.views import APIView
 
 from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
-    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer
+    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer
 from api.filters import VocabularyFilter, ReviewFilter
 from kw_webapp import constants
-from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level
+from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, AnswerSynonym
 
 from rest_framework import generics
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user
@@ -34,6 +34,13 @@ class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
 class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Reading.objects.all()
     serializer_class = ReadingSerializer
+
+
+class SynonymViewSet(viewsets.ModelViewSet):
+    serializer_class = SynonymSerializer
+
+    def get_queryset(self):
+        return AnswerSynonym.objects.filter(review__user=self.request.user)
 
 
 class LevelViewSet(viewsets.ReadOnlyModelViewSet):
@@ -161,15 +168,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         review.hidden = should_hide
         review.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-    def get_queryset(self):
-        return UserSpecific.objects.filter(user=self.request.user)
-
-
-class ReviewDetail(generics.RetrieveUpdateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    queryset = UserSpecific.objects.all()
-    serializer_class = ReviewSerializer
 
     def get_queryset(self):
         return UserSpecific.objects.filter(user=self.request.user)
