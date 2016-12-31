@@ -131,7 +131,7 @@ class TestViews(TestCase):
         self.user = User.objects.get(username='user1')
         self.assertFalse(self.user.profile.follow_me)
 
-    @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y: [1, 0])
+    @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y: [1, 0, 0])
     def test_unlocking_a_level_unlocks_all_vocab(self, unlock_call):
         self.user.profile.api_valid = True
         self.user.profile.save()
