@@ -160,7 +160,7 @@ class UnlockRequested(LoginRequiredMixin, ValidApiRequiredMixin, View):
         else:
             return HttpResponse(
                 "{} vocabulary unlocked.<br/>You still have {} upcoming vocabulary to unlock on WaniKani for your current level.".format(
-                    ul_count,
+                    total_unlocked,
                     l_count))
 
 
