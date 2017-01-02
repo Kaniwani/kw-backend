@@ -2,7 +2,8 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym
+from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
+    FrequentlyAskedQuestion
 
 
 class LevelSerializer(serializers.ModelSerializer):
@@ -80,7 +81,6 @@ class SynonymSerializer(serializers.ModelSerializer):
         return value
 
 
-
 class ReviewSerializer(serializers.ModelSerializer):
     vocabulary = VocabularySerializer(many=False, read_only=True)
     answer_synonyms = SynonymSerializer(many=True, read_only=True)
@@ -89,7 +89,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = UserSpecific
         fields = '__all__'
 
-        read_only_fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak'
+        read_only_fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak',
                             'user', 'needs_review', 'last_studied',
                             'unlock_date', 'wanikani_srs',
                             'wanikani_srs_numeric', 'wanikani_burned', 'burned')
@@ -108,4 +108,7 @@ class LevelSerializer(serializers.Serializer):
     unlock_url = serializers.CharField(read_only=True)
 
 
-
+class FrequentlyAskedQuestionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FrequentlyAskedQuestion
+        fields = '__all__'
