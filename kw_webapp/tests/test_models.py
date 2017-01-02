@@ -303,3 +303,43 @@ class TestModels(TestCase):
     def test_tag_names_are_unique(self):
         original_tag = Tag.objects.create(name='S P I C Y')
         self.assertRaises(IntegrityError, Tag.objects.create, name='S P I C Y')
+
+    def test_setting_criticality_of_review(self):
+        self.review.correct = 1
+        self.review.incorrect = 2
+        self.review.save()
+        self.review.refresh_from_db()
+
+        self.assertFalse(self.review.critical)
+
+        self.review.answered_incorrectly()
+
+        self.assertTrue(self.review.critical)
+
+    def test_critical_not_set_when_below_attempt_threshold(self):
+        self.review.correct = 0
+        self.review.incorrect = 1
+        self.review.save()
+        self.review.refresh_from_db()
+
+        self.assertFalse(self.review.critical)
+
+        #Brings total attempt count to 2
+        self.review.answered_incorrectly()
+
+        self.assertFalse(self.review.critical)
+
+    def test_review_correctly_comes_out_of_critical_once_guru(self):
+        self.review.correct = 4
+        self.review.incorrect = 20
+        self.review.critical = True
+        self.review.streak = constants.KANIWANI_SRS_LEVELS['guru'][0]
+        self.review.save()
+        self.review.refresh_from_db()
+
+        self.assertTrue(self.review.critical)
+
+        #Brings total attempt count to the guru threshold
+        self.review.answered_correctly()
+
+        self.assertFalse(self.review.critical)

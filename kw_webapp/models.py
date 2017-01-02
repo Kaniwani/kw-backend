@@ -196,6 +196,7 @@ class UserSpecific(models.Model):
         self.last_studied = timezone.now()
         self.save()
         self.set_next_review_time()
+        self.set_criticality()
 
     def answered_incorrectly(self):
         """
@@ -211,6 +212,19 @@ class UserSpecific(models.Model):
 
         self.streak = max(0, self.streak)
         self.save()
+        self.set_criticality()
+
+    def set_criticality(self):
+        if self.is_critical():
+            self.critical = True
+        else:
+            self.critical = False
+
+    def is_critical(self):
+        if self.streak < constants.KANIWANI_SRS_LEVELS['guru'][0] and \
+           self.correct + self.incorrect >= constants.MINIMUM_ATTEMPT_COUNT_FOR_CRITICALITY and \
+           float(self.incorrect) / float(self.correct + self.incorrect) >= constants.CRITICALITY_THRESHOLD:
+            return True
 
     def get_all_readings(self):
         return list(chain(self.vocabulary.readings.all(), self.answer_synonyms.all()))
