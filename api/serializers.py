@@ -92,7 +92,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         read_only_fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak',
                             'user', 'needs_review', 'last_studied',
                             'unlock_date', 'wanikani_srs',
-                            'wanikani_srs_numeric', 'wanikani_burned', 'burned')
+                            'wanikani_srs_numeric', 'wanikani_burned', 'burned', 'critical')
 
 
 class StubbedReviewSerializer(ReviewSerializer):

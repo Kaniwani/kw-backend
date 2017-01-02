@@ -183,6 +183,7 @@ class UserSpecific(models.Model):
     wanikani_srs_numeric = models.IntegerField(default=0)
     wanikani_burned = models.BooleanField(default=False)
     notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
+    critical = models.BooleanField(default=False)
 
     def answered_correctly(self, first_try=True):
         if first_try:
