@@ -20,7 +20,8 @@ from kw_webapp import constants
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion
 
 from rest_framework import generics
-from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user
+from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
+    get_users_critical_reviews
 
 
 class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
@@ -135,6 +136,20 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
         serializer = StubbedReviewSerializer(reviews, many=True)
         return Response(serializer.data)
+
+    @list_route(methods=['GET'])
+    def critical(self, request):
+        critical_reviews = get_users_critical_reviews(request.user)
+        page = self.paginate_queryset(critical_reviews)
+
+        if page is not None:
+            serializer = ReviewSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = ReviewSerializer(critical_reviews, many=True)
+        return Response(serializer.data)
+
+
 
     @detail_route(methods=['POST'])
     def correct(self, request, pk=None):
