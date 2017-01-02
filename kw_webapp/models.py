@@ -24,6 +24,9 @@ class Announcement(models.Model):
     def __str__(self):
         return self.title
 
+class FrequentlyAskedQuestion(models.Model):
+    question = models.CharField(max_length=10000)
+    answer = models.CharField(max_length=10000)
 
 class Level(models.Model):
     partial = models.BooleanField(default=False)

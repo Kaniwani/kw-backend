@@ -10,11 +10,13 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.views import APIView
 
+from api.permissions import IsAdminOrReadOnly
 from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
-    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer
+    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
+    FrequentlyAskedQuestionSerializer
 from api.filters import VocabularyFilter, ReviewFilter
 from kw_webapp import constants
-from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, AnswerSynonym
+from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion
 
 from rest_framework import generics
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user
@@ -171,6 +173,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return UserSpecific.objects.filter(user=self.request.user)
+
+
+class FrequentlyAskedQuestionViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAdminOrReadOnly,)
+    serializer_class = FrequentlyAskedQuestionSerializer
+    queryset = FrequentlyAskedQuestion.objects.all()
 
 
 class ProfileList(generics.ListAPIView):
