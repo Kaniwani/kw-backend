@@ -171,6 +171,15 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 
 # Application definition
 
+# CORS Settings
+CORS_ORIGIN_WHITELIST = (
+    'localhost:3000',
+    'http://localhost:3000/',
+    'http://127.0.0.1:3000',
+    '127.0.0.1:3000'
+)
+
+CORS_ALLOW_CREDENTIALS = True
 
 LOGIN_URL = reverse_lazy("login")
 LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
@@ -191,13 +200,15 @@ INSTALLED_APPS = (
     'crispy_forms',
     'rest_framework',
     'lineage',
-    'kw_webapp.apps.KaniwaniConfig', #Make sure this is the top entry in order to correctly override template folders.
+    'kw_webapp.apps.KaniwaniConfig',
     'rest_framework_docs',
     'debug_toolbar',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'corsheaders'
 )
 
 MIDDLEWARE_CLASSES = (
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
