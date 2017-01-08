@@ -1,28 +1,24 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
-from django.utils import timezone
+from rest_framework import generics
 from rest_framework import mixins
-from rest_framework import permissions
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.reverse import reverse, reverse_lazy
-from rest_framework.views import APIView
+from rest_framework.reverse import reverse_lazy
 
-from api.permissions import IsAdminOrReadOnly
-from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
-    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
-    FrequentlyAskedQuestionSerializer, AnnouncementSerializer
 from api.filters import VocabularyFilter, ReviewFilter
+from api.permissions import IsAdminOrReadOnly, IsMeOrAdmin
+from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
+    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
+    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer
 from kw_webapp import constants
-from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
+from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
     Announcement
-
-from rest_framework import generics
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    get_users_critical_reviews
+    get_users_critical_reviews, sync_with_wk, all_srs
 
 
 class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
@@ -201,14 +197,25 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
     serializer_class = AnnouncementSerializer
     queryset = Announcement.objects.all()
 
-
-class ProfileList(generics.ListAPIView):
-    permission_classes = (permissions.AllowAny,)
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
 
 
-class ProfileDetail(generics.RetrieveUpdateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+class UserViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
+    permission_classes = (IsMeOrAdmin,)
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    @detail_route(methods=['POST'])
+    def sync(self, request, pk=None):
+        should_full_sync = request.query_params.get('full_sync', False)
+        profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(request.user.id, should_full_sync)
+        return Response({"profile_sync_succeeded": profile_sync_succeeded,
+                         "new_review_count": new_review_count,
+                         "new_synonym_count": new_synonym_count})
+
+    @detail_route(methods=['POST'])
+    def srs(self, request, pk=None):
+        all_srs(request.user)
+        new_review_count = get_users_current_reviews(request.user).count()
+        return Response({'review_count': new_review_count})

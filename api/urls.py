@@ -4,7 +4,7 @@ from rest_framework.authtoken import views as authviews
 
 from api import views
 from api.views import ReviewViewSet, VocabularyViewSet, ReadingViewSet, LevelViewSet, SynonymViewSet, \
-    FrequentlyAskedQuestionViewSet, AnnouncementViewSet
+    FrequentlyAskedQuestionViewSet, AnnouncementViewSet, UserViewSet
 
 router = DefaultRouter()
 router.register(r'review', ReviewViewSet, base_name="review")
@@ -14,13 +14,9 @@ router.register(r'level', LevelViewSet, base_name="level")
 router.register(r'synonym', SynonymViewSet, base_name="synonym")
 router.register(r'faq', FrequentlyAskedQuestionViewSet, base_name='faq')
 router.register(r'announcement', AnnouncementViewSet, base_name='announcement')
+router.register(r'user', UserViewSet, base_name='user')
 
 urlpatterns = router.urls + [
-
-    url(r'^profiles/$', views.ProfileList.as_view()),
-    url(r'^profiles/(?P<pk>[0-9]+)$', views.ProfileDetail.as_view()),
-
-
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^token-auth/', authviews.obtain_auth_token)
 ]
