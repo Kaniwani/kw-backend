@@ -9,9 +9,10 @@ class IsAdminOrReadOnly(IsAdminUser):
         return is_admin or request.method in SAFE_METHODS
 
 
-class IsMe(permissions.BasePermission):
+class IsMeOrAdmin(IsAdminUser):
     """
     Object-level permission to ensure the requesting user only has access to their own profile.
     """
     def has_object_permission(self, request, view, obj):
-        return request.user == obj
+        is_admin = super(IsMeOrAdmin, self).has_object_permission(request, view, obj)
+        return request.user == obj or is_admin
