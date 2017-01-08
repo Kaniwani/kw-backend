@@ -14,10 +14,11 @@ from rest_framework.views import APIView
 from api.permissions import IsAdminOrReadOnly
 from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
-    FrequentlyAskedQuestionSerializer
+    FrequentlyAskedQuestionSerializer, AnnouncementSerializer
 from api.filters import VocabularyFilter, ReviewFilter
 from kw_webapp import constants
-from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion
+from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
+    Announcement
 
 from rest_framework import generics
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
@@ -149,8 +150,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer = ReviewSerializer(critical_reviews, many=True)
         return Response(serializer.data)
 
-
-
     @detail_route(methods=['POST'])
     def correct(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
@@ -195,6 +194,12 @@ class FrequentlyAskedQuestionViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = FrequentlyAskedQuestionSerializer
     queryset = FrequentlyAskedQuestion.objects.all()
+
+
+class AnnouncementViewSet(viewsets.ModelViewSet):
+    permission_classes = (IsAdminOrReadOnly,)
+    serializer_class = AnnouncementSerializer
+    queryset = Announcement.objects.all()
 
 
 class ProfileList(generics.ListAPIView):
