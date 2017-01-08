@@ -1,4 +1,5 @@
-from django.http import HttpResponseForbidden
+from django.contrib.auth.models import User
+from django.http import HttpResponseForbidden, Http404
 from django.utils import timezone
 from rest_framework import mixins
 from rest_framework import permissions
@@ -6,15 +7,15 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.views import APIView
 
-from api.permissions import IsAdminOrReadOnly
+from api.permissions import IsAdminOrReadOnly, IsMe
 from api.serializers import ProfileSerializer, ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
-    FrequentlyAskedQuestionSerializer, AnnouncementSerializer
+    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer
 from api.filters import VocabularyFilter, ReviewFilter
 from kw_webapp import constants
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
@@ -201,14 +202,24 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
     serializer_class = AnnouncementSerializer
     queryset = Announcement.objects.all()
 
-
-class ProfileList(generics.ListAPIView):
-    permission_classes = (permissions.AllowAny,)
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
 
 
-class ProfileDetail(generics.RetrieveUpdateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+class UserViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
+    permission_classes = (IsMe,)
+    serializer_class = UserSerializer
+    queryset = User.objects.all()
+
+    @detail_route(methods=['POST'])
+    def sync(self, request, pk=None):
+
+
+    @detail_route(methods=['POST'])
+    def srs(self, request, pk=None):
+        
+
+
+
+
+

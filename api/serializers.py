@@ -28,12 +28,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    reviews = serializers.PrimaryKeyRelatedField(many=True, queryset=UserSpecific.objects.all())
-    profile = serializers.PrimaryKeyRelatedField(many=False, queryset=Profile.objects.all())
+    profile = ProfileSerializer(many=False)
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'profile', 'reviews')
+        fields = ('id', 'username', 'profile')
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -116,6 +115,8 @@ class FrequentlyAskedQuestionSerializer(serializers.ModelSerializer):
 
 class AnnouncementSerializer(serializers.ModelSerializer):
     creator = serializers.ReadOnlyField(source='creator.username')
+
     class Meta:
         model = Announcement
         fields = ('title', 'body', 'pub_date', 'creator')
+
