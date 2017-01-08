@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
-    FrequentlyAskedQuestion
+    FrequentlyAskedQuestion, Announcement
 
 
 class LevelSerializer(serializers.ModelSerializer):
@@ -112,3 +112,10 @@ class FrequentlyAskedQuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = FrequentlyAskedQuestion
         fields = '__all__'
+
+
+class AnnouncementSerializer(serializers.ModelSerializer):
+    creator = serializers.ReadOnlyField(source='creator.username')
+    class Meta:
+        model = Announcement
+        fields = ('title', 'body', 'pub_date', 'creator')
