@@ -203,9 +203,15 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
         serializer.save(creator=self.request.user)
 
 
-class UserViewSet(viewsets.GenericViewSet):
+class UserViewSet(viewsets.GenericViewSet, generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return User.objects.all()
+
+        return User.objects.filter(pk=self.request.user.id)
 
     @list_route(methods=["GET"])
     def me(self, request):
