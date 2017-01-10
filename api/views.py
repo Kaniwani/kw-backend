@@ -1,5 +1,6 @@
+from contact_form.forms import ContactForm
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import status
@@ -9,13 +10,15 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
+from rest_framework.views import APIView
 
 from api.filters import VocabularyFilter, ReviewFilter
 from api.permissions import IsAdminOrReadOnly, IsMeOrAdmin
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
-    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer
+    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer
 from kw_webapp import constants
+from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
     Announcement
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
@@ -232,3 +235,24 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListAPIView):
         all_srs(request.user)
         new_review_count = get_users_current_reviews(request.user).count()
         return Response({'review_count': new_review_count})
+
+
+class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ContactSerializer
+
+    def create(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        form = UserContactCustomForm(data=serializer.data, request=self.request)
+
+        if not form.is_valid():
+            return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
+        form.save()
+
+        return Response(status=status.HTTP_202_ACCEPTED)
+
+
+
+
+

@@ -41,6 +41,7 @@ urlpatterns = (
         'django.contrib.auth.views.password_reset_confirm', name='password_reset_confirm'),
     url(r'^auth/password_reset/complete/$', 'django.contrib.auth.views.password_reset_complete',
         name="password_reset_complete"),
+
     url(r'^admin/', include(admin.site.urls)),
 
     ##Contact-related views.
