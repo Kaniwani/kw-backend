@@ -32,7 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'profile')
+        fields = ('id', 'username', 'profile', 'last_login', 'email', 'is_active', 'date_joined')
 
 
 class TagSerializer(serializers.ModelSerializer):

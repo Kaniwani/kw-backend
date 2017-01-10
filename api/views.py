@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
 
@@ -118,9 +119,10 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
             return VocabularySerializer
 
 
-class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewViewSet(ListRetrieveUpdateViewSet):
     serializer_class = ReviewSerializer
     filter_class = ReviewFilter
+    permission_classes = (IsAuthenticated,)
 
     @list_route(methods=['GET'])
     def current(self, request):
@@ -201,21 +203,26 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
         serializer.save(creator=self.request.user)
 
 
-class UserViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
-    permission_classes = (IsMeOrAdmin,)
+class UserViewSet(viewsets.GenericViewSet):
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserSerializer
-    queryset = User.objects.all()
 
-    @detail_route(methods=['POST'])
-    def sync(self, request, pk=None):
+    @list_route(methods=["GET"])
+    def me(self, request):
+        user = request.user
+        serializer = self.get_serializer(user, many=False)
+        return Response(serializer.data)
+
+    @list_route(methods=['POST'])
+    def sync(self, request):
         should_full_sync = request.query_params.get('full_sync', False)
         profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(request.user.id, should_full_sync)
         return Response({"profile_sync_succeeded": profile_sync_succeeded,
                          "new_review_count": new_review_count,
                          "new_synonym_count": new_synonym_count})
 
-    @detail_route(methods=['POST'])
-    def srs(self, request, pk=None):
+    @list_route(methods=['POST'])
+    def srs(self, request):
         all_srs(request.user)
         new_review_count = get_users_current_reviews(request.user).count()
         return Response({'review_count': new_review_count})
