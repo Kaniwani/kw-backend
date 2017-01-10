@@ -120,3 +120,13 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         model = Announcement
         fields = ('title', 'body', 'pub_date', 'creator')
 
+class ContactSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=100)
+    email = serializers.CharField(max_length=200)
+    body = serializers.CharField(max_length=100)
+
+
+
+
+
+
