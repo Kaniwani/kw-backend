@@ -2,14 +2,9 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
+from api import serializer_fields
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement
-
-
-class LevelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Level
-        fields = ('level',)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -103,6 +98,7 @@ class LevelSerializer(serializers.Serializer):
     level = serializers.IntegerField(read_only=True)
     unlocked = serializers.BooleanField(read_only=True)
     vocabulary_count = serializers.IntegerField(read_only=True)
+    vocabulary_url = serializer_fields.VocabularyByLevelHyperlinkedField(read_only=True)
     lock_url = serializers.CharField(read_only=True)
     unlock_url = serializers.CharField(read_only=True)
 
