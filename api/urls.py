@@ -19,5 +19,6 @@ router.register(r'contact', ContactViewSet, base_name='contact')
 
 urlpatterns = router.urls + [
     url(r'^user/login/', authviews.obtain_auth_token),
+    url(r'^auth/', include('djoser.urls.authtoken'))
 ]
 
