@@ -50,17 +50,26 @@ class SynonymViewSet(viewsets.ModelViewSet):
 
 class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Level.objects.all()
+    serializer_class = LevelSerializer
+
+    def get_object(self):
+        level = int(self.kwargs['pk'])
+        return self._serialize_level(level, self.request)
+
+    def _serialize_level(self, level, request):
+        pre_serialized_dict = {'level': level,
+                               'unlocked': True if level in request.user.profile.unlocked_levels_list() else False,
+                               'vocabulary_count': Vocabulary.objects.filter(readings__level=level).count()}
+        if level <= request.user.profile.level:
+            pre_serialized_dict['lock_url'] = self._build_lock_url(level)
+            pre_serialized_dict['unlock_url'] = self._build_unlock_url(level)
+
+        return pre_serialized_dict
 
     def list(self, request, *args, **kwargs):
         level_dicts = []
         for level in range(constants.LEVEL_MIN, constants.LEVEL_MAX + 1):
-            pre_serialized_dict = {'level': level,
-                                   'unlocked': True if level in request.user.profile.unlocked_levels_list() else False,
-                                   'vocabulary_count': Vocabulary.objects.filter(readings__level=level).count()}
-            if level <= request.user.profile.level:
-                pre_serialized_dict['lock_url'] = self._build_lock_url(level)
-                pre_serialized_dict['unlock_url'] = self._build_unlock_url(level)
-            level_dicts.append(pre_serialized_dict)
+            level_dicts.append(self._serialize_level(level, request))
 
         serializer = LevelSerializer(level_dicts, many=True)
         return Response(serializer.data)
