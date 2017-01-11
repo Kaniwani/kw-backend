@@ -13,7 +13,7 @@ from rest_framework.reverse import reverse_lazy
 from rest_framework.views import APIView
 
 from api.filters import VocabularyFilter, ReviewFilter
-from api.permissions import IsAdminOrReadOnly, IsMeOrAdmin
+from api.permissions import IsAdminOrReadOnly, IsMeOrAdmin, IsAuthenticatedOrCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer
@@ -206,8 +206,8 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
         serializer.save(creator=self.request.user)
 
 
-class UserViewSet(viewsets.GenericViewSet, generics.ListAPIView):
-    permission_classes = (IsAuthenticated,)
+class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticatedOrCreating,)
     serializer_class = UserSerializer
 
     def get_queryset(self):
