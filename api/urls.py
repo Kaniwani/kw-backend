@@ -18,7 +18,7 @@ router.register(r'user', UserViewSet, base_name='user')
 router.register(r'contact', ContactViewSet, base_name='contact')
 
 urlpatterns = router.urls + [
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^token-auth/', authviews.obtain_auth_token),
+    url(r'^user/login/', authviews.obtain_auth_token),
+    url(r'^auth/', include('djoser.urls.authtoken'))
 ]
 

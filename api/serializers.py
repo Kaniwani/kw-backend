@@ -1,6 +1,7 @@
+import requests
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
 
 from api import serializer_fields
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
@@ -22,12 +23,115 @@ class ProfileSerializer(serializers.ModelSerializer):
                             'unlocked_levels', 'vacation_date')
 
 
-class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(many=False)
+class RegistrationSerializer(serializers.ModelSerializer):
+    api_key = serializers.CharField(write_only=True, max_length=32)
+    password = serializers.CharField(write_only=True,
+                                     style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'profile', 'last_login', 'email', 'is_active', 'date_joined')
+        fields = ('api_key', 'password', 'username', 'email')
+
+    def validate_password(self, value):
+        if len(value) < 4:
+            raise serializers.ValidationError("Password is not long enough!")
+        return value
+
+    def validate_api_key(self, value):
+        r = requests.get("https://www.wanikani.com/api/user/{}/user-information".format(value))
+        if r.status_code == 200:
+            json_data = r.json()
+            if "error" in json_data.keys():
+                raise serializers.ValidationError("API Key not associated with a WaniKani User!")
+        else:
+            raise serializers.ValidationError("Invalid!")
+        return value
+
+    def validate_email(self, value):
+        try:
+            User.objects.get(email=value)
+        except User.DoesNotExist:
+            return value
+        else:
+            raise serializers.ValidationError("Email is already in use!")
+
+    def validate_username(self, value):
+        try:
+            User.objects.get(username=value)
+        except User.DoesNotExist:
+            return value
+        else:
+            raise serializers.ValidationError("Username is already in use!")
+
+    def create(self, validated_data):
+        preexisting_users = User.objects.filter(Q(username=validated_data.get('username')) |
+                                                Q(email=validated_data.get('email')))
+
+        if preexisting_users.count() > 0:
+            raise serializers.ValidationError("Username or email already in use!")
+
+        api_key = validated_data.pop('api_key', None)
+
+        user = User.objects.create(**validated_data)
+        user.set_password(validated_data.get('password'))
+        user.save()
+        Profile.objects.create(user=user, api_key=api_key, level=1)
+        return user
+
+
+class UserSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(many=False, read_only=True)
+    api_key = serializers.CharField(write_only=True, max_length=32)
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ('api_key', 'password', 'username', 'email', 'profile')
+        read_only_fields = ('id', 'last_login', 'is_active', 'date_joined', 'is_staff', 'is_superuser', 'profile')
+
+    def validate_password(self, value):
+        if len(value) < 4:
+            raise serializers.ValidationError("Password is not long enough!")
+        return value
+
+    def validate_api_key(self, value):
+        r = requests.get("https://www.wanikani.com/api/user/{}/user-information".format(value))
+        if r.status_code == 200:
+            json_data = r.json()
+            if "error" in json_data.keys():
+                raise serializers.ValidationError("API Key not associated with a WaniKani User!")
+        else:
+            raise serializers.ValidationError("Invalid!")
+        return value
+
+    def validate_email(self, value):
+        try:
+            User.objects.get(email=value)
+        except User.DoesNotExist:
+            return value
+        else:
+            raise serializers.ValidationError("Email is already in use!")
+
+    def validate_username(self, value):
+        try:
+            User.objects.get(username=value)
+        except User.DoesNotExist:
+            return value
+        else:
+            raise serializers.ValidationError("Username is already in use!")
+
+    def create(self, validated_data):
+        preexisting_users = User.objects.filter(Q(username=validated_data.get('username')) |
+                                                Q(email=validated_data.get('email')))
+
+        if preexisting_users.count() > 0:
+            raise serializers.ValidationError("Username or email already in use!")
+
+        api_key = validated_data.pop('api_key', None)
+
+        user = User.objects.create(**validated_data)
+        user.set_password(validated_data.get('password'))
+        Profile.objects.create(user=user, api_key=api_key, level=1)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -116,13 +220,8 @@ class AnnouncementSerializer(serializers.ModelSerializer):
         model = Announcement
         fields = ('title', 'body', 'pub_date', 'creator')
 
+
 class ContactSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
     email = serializers.CharField(max_length=200)
     body = serializers.CharField(max_length=100)
-
-
-
-
-
-

@@ -19,6 +19,7 @@ django-guardian==1.4.6
 django-lineage==0.2.0
 django-redis-cache==1.7.1
 djangorestframework==3.5.3
+djoser==0.5.2
 drfdocs==0.0.11
 flower==0.9.1
 gunicorn==19.6.0

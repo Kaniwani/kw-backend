@@ -204,7 +204,8 @@ INSTALLED_APPS = (
     'rest_framework_docs',
     'debug_toolbar',
     'rest_framework.authtoken',
-    'corsheaders'
+    'corsheaders',
+    'djoser'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -341,3 +342,9 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend'
 ]
 
+
+DJOSER = {
+    'SERIALIZERS': {
+        "user_registration": 'api.serializers.RegistrationSerializer'
+    }
+}
