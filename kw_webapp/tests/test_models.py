@@ -196,6 +196,14 @@ class TestModels(TestCase):
             self.review.next_review_date.hour % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)), 0)
         self.assertEqual(self.review.next_review_date.second % constants.REVIEW_ROUNDING_TIME.total_seconds(), 0)
 
+    def test_rounding_up_a_review_rounds_up_last_studied_date(self):
+        self.review.last_studied = timezone.now()
+        self.review.last_studied = self.review.last_studied.replace(minute=17)
+        self.review._round_review_time_up()
+
+        self.assertEqual(self.review.last_studied.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0 )
+
+
     def test_default_review_times_are_not_rounded(self):
         rounded_time = self.review.next_review_date
         new_vocab = create_userspecific(create_vocab("fresh"), self.user)
