@@ -41,7 +41,7 @@ class ReadingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reading
-        fields = ('character', 'kana', 'level', 'tags', 'sentence_en', 'sentence_ja',
+        fields = ('id', 'character', 'kana', 'level', 'tags', 'sentence_en', 'sentence_ja',
                   'jlpt', 'common')
 
 
@@ -50,7 +50,7 @@ class VocabularySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vocabulary
-        fields = ('meaning', 'readings')
+        fields = ('id', 'meaning', 'readings')
 
 
 class HyperlinkedVocabularySerializer(VocabularySerializer):
