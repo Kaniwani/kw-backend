@@ -208,7 +208,7 @@ INSTALLED_APPS = (
     'djoser'
 )
 
-MIDDLEWARE = (
+MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -217,15 +217,14 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
-    'async_messages.middleware.AsyncMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'kw_webapp.middleware.SetLastVisitMiddleware'
-)
+]
 
 if DEBUG:
-    MIDDLEWARE += (
+    MIDDLEWARE += [
         'KW.LoggingMiddleware.ExceptionLoggingMiddleware',
-    )
+    ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
