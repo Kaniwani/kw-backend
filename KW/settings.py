@@ -208,7 +208,7 @@ INSTALLED_APPS = (
     'djoser'
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -223,7 +223,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += (
+    MIDDLEWARE += (
         'KW.LoggingMiddleware.ExceptionLoggingMiddleware',
     )
 
