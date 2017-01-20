@@ -6,11 +6,12 @@ from rest_framework import serializers
 from api import serializer_fields
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement
+from kw_webapp.tasks import get_users_current_reviews
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='user.username')
-    reviews_count = serializers.ReadOnlyField(source='user.reviews.count')
+    reviews_count = serializers.SerializerMethodField()
     unlocked_levels = serializers.StringRelatedField(many=True)
 
     class Meta:
@@ -22,6 +23,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ('api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
                             'unlocked_levels', 'vacation_date')
 
+    def get_reviews_count(self, obj):
+        return get_users_current_reviews(obj.user).count()
 
 class RegistrationSerializer(serializers.ModelSerializer):
     api_key = serializers.CharField(write_only=True, max_length=32)
