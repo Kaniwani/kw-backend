@@ -334,6 +334,10 @@ TEMPLATES = [
     }
 ]
 
+JWT_AUTH = {
+        'JWT_VERIFY_EXPIRATION': False
+}
+
 AUTHENTICATION_BACKENDS = [
     'kw_webapp.backends.EmailOrUsernameAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend'
