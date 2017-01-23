@@ -22,7 +22,7 @@ single_vocab_response = {
             "srs_numeric": 3,
             "unlocked_date": 1448398437,
             "available_date": 1448586000,
-            "burned": "false",
+            "burned": False,
             "burned_date": 0,
             "meaning_correct": 0,
             "meaning_incorrect": 0,

@@ -1,9 +1,10 @@
 from django.utils.timezone import now
+from django.utils import deprecation
 from kw_webapp.models import Profile
 from kw_webapp.tasks import past_time
 
 
-class SetLastVisitMiddleware:
+class SetLastVisitMiddleware(deprecation.MiddlewareMixin):
     """
     A middleware class which will update a last_visit field in the profile once an hour.
     """

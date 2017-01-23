@@ -1,6 +1,5 @@
-from contact_form.forms import ContactForm
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponseForbidden
 from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import status
@@ -10,10 +9,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
-from rest_framework.views import APIView
 
 from api.filters import VocabularyFilter, ReviewFilter
-from api.permissions import IsAdminOrReadOnly, IsMeOrAdmin, IsAuthenticatedOrCreating
+from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer
@@ -59,7 +57,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     def _serialize_level(self, level, request):
         pre_serialized_dict = {'level': level,
                                'unlocked': True if level in request.user.profile.unlocked_levels_list() else False,
-                               'vocabulary_count': Vocabulary.objects.filter(readings__level=level).count(),
+                               'vocabulary_count': Vocabulary.objects.filter(readings__level=level).distinct().count(),
                                'vocabulary_url': level}
         if level <= request.user.profile.level:
             pre_serialized_dict['lock_url'] = self._build_lock_url(level)
