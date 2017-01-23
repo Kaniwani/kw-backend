@@ -87,8 +87,8 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         limit = None
-        if 'count' in request.query_params:
-            limit = int(request.query_params['count'])
+        if 'count' in request.data:
+            limit = int(request.data['count'])
 
         unlocked_this_request, total_unlocked, locked = unlock_eligible_vocab_from_levels(user, requested_level, limit)
         level, created = user.profile.unlocked_levels.get_or_create(level=requested_level)
@@ -232,7 +232,10 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
 
     @list_route(methods=['POST'])
     def sync(self, request):
-        should_full_sync = request.query_params.get('full_sync', False)
+        should_full_sync = False
+        if 'full_sync' in request.data:
+            should_full_sync = request.data['full_sync'] == 'true'
+
         profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(request.user.id, should_full_sync)
         return Response({"profile_sync_succeeded": profile_sync_succeeded,
                          "new_review_count": new_review_count,
