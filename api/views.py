@@ -59,7 +59,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     def _serialize_level(self, level, request):
         pre_serialized_dict = {'level': level,
                                'unlocked': True if level in request.user.profile.unlocked_levels_list() else False,
-                               'vocabulary_count': Vocabulary.objects.filter(readings__level=level).count(),
+                               'vocabulary_count': Vocabulary.objects.filter(readings__level=level).distinct().count(),
                                'vocabulary_url': level}
         if level <= request.user.profile.level:
             pre_serialized_dict['lock_url'] = self._build_lock_url(level)
