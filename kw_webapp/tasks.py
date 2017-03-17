@@ -286,7 +286,7 @@ def get_or_create_vocab_by_json(vocab_json):
     return vocab
 
 
-def add_synonyms_from_api_call_to_review(review, user_specific_json):
+def reconcile_synonyms_from_api_call_to_review(review, user_specific_json):
     new_synonym_count = 0
     if user_specific_json["user_synonyms"] is None:
         return review, new_synonym_count
@@ -295,6 +295,12 @@ def add_synonyms_from_api_call_to_review(review, user_specific_json):
         _, created = review.meaningsynonym_set.get_or_create(text=synonym)
         if created:
             new_synonym_count += 1
+
+    #Wipe out any old synonyms
+    for synonym in review.meaningsynonym_set.all():
+        if synonym.text not in user_specific_json["user_synonyms"]:
+            synonym.delete()
+
     return review, new_synonym_count
 
 
@@ -304,7 +310,7 @@ def associate_synonyms_to_vocab(user, vocab, user_specific):
 
     try:
         review = UserSpecific.objects.get(user=user, vocabulary=vocab)
-        _, new_synonym_count = add_synonyms_from_api_call_to_review(review, user_specific)
+        _, new_synonym_count = reconcile_synonyms_from_api_call_to_review(review, user_specific)
     except UserSpecific.DoesNotExist:
         pass
 
@@ -387,7 +393,7 @@ def process_vocabulary_response_for_unlock(user, json_data, limit=None):
         if created:
             unlocked_this_request += 1
 
-        new_review, synonyms_added_count = add_synonyms_from_api_call_to_review(new_review, user_specific)
+        new_review, synonyms_added_count = reconcile_synonyms_from_api_call_to_review(new_review, user_specific)
         new_review.wanikani_srs = user_specific["srs"]
         new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
         new_review.wanikani_burned = user_specific["burned"]
@@ -420,7 +426,7 @@ def process_vocabulary_response_for_user(user, json_data):
             new_review, created = associate_vocab_to_user(vocab, user)
             if created:
                 new_review_count += 1
-            new_review, synonyms_added_count = add_synonyms_from_api_call_to_review(new_review, user_specific)
+            new_review, synonyms_added_count = reconcile_synonyms_from_api_call_to_review(new_review, user_specific)
             new_synonym_count += synonyms_added_count
         else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
             new_review, synonyms_added_count = associate_synonyms_to_vocab(user, vocab, user_specific)

@@ -90,6 +90,21 @@ class TestTasks(TestCase):
         sync_unlocked_vocab_with_wk(self.user)
         self.assertListEqual(self.review.synonyms_list(), ["kitten", "large rat"])
 
+    @responses.activate
+    def test_deleting_old_meaning_synonyms_on_sync(self):
+        resp_body = deepcopy(sample_api_responses.single_vocab_response)
+        self.review.meaningsynonym_set.get_or_create(text="expired_synonym")
+        self.review.save()
+        self.assertEqual(self.review.synonyms_list(), ["expired_synonym"])
+        resp_body["requested_information"][0]["user_specific"]["user_synonyms"] = ["kitten", "large rat"]
+        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+                      json=resp_body,
+                      status=200,
+                      content_type='application/json')
+
+        sync_unlocked_vocab_with_wk(self.user)
+        self.assertListEqual(self.review.synonyms_list(), ["kitten", "large rat"])
+
     def test_building_unlock_all_string_works(self):
         sample_level = constants.LEVEL_MAX
         api_string = build_API_sync_string_for_user_for_levels(self.user,
@@ -110,7 +125,8 @@ class TestTasks(TestCase):
                       status=200,
                       content_type='application/json')
 
-        checked_levels, unlocked_now_count, total_unlocked_count,  locked_count = unlock_all_possible_levels_for_user(self.user)
+        checked_levels, unlocked_now_count, total_unlocked_count, locked_count = unlock_all_possible_levels_for_user(
+            self.user)
 
         self.assertListEqual(level_list, checked_levels)
         self.assertEqual(total_unlocked_count, 1)
@@ -136,7 +152,7 @@ class TestTasks(TestCase):
         an_hour_ago = now - timezone.timedelta(hours=1)
         two_hours_ago = now - timezone.timedelta(hours=2)
         two_hours_from_now = now + timezone.timedelta(hours=2)
-        four_hours_from_now = now + timezone.timedelta(hours = 4)
+        four_hours_from_now = now + timezone.timedelta(hours=4)
         self.user.profile.vacation_date = two_hours_ago
         self.user.profile.save()
         self.review.last_studied = two_hours_ago
@@ -216,18 +232,15 @@ class TestTasks(TestCase):
         affected_count = sync_all_users_to_wk()
         self.assertEqual(affected_count, 1)
 
-
     @responses.activate
     def test_when_reading_level_changes_on_wanikani_we_catch_that_change_and_comply(self):
         resp_body = sample_api_responses.single_vocab_response
 
-
-        #Mock response so that the level changes on our default vocab.
+        # Mock response so that the level changes on our default vocab.
         responses.add(responses.GET, build_API_sync_string_for_user(self.user),
                       json=sample_api_responses.single_vocab_response,
                       status=200,
                       content_type='application/json')
-
 
         sync_unlocked_vocab_with_wk(self.user)
 
