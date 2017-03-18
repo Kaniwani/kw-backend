@@ -1,3 +1,4 @@
+import json
 from datetime import timedelta
 
 from django.utils import timezone
@@ -37,6 +38,7 @@ class TestPreprocessors(APITestCase):
         self.assertEqual(response.data["profile"]['reviews_within_day_count'], 2)
         self.assertEqual(response.data["profile"]['reviews_within_hour_count'], 1)
         self.assertEqual(response.data["profile"]['reviews_count'], 1)
+        print(json.dumps(response.data, indent=2))
 
     def test_future_review_counts_preprocessor_does_not_include_currently_active_reviews(self):
         within_day_review = create_review_for_specific_time(self.user, "some word",
@@ -60,3 +62,13 @@ class TestPreprocessors(APITestCase):
         self.assertEqual(response.data["profile"]['reviews_within_day_count'], 0)
         self.assertEqual(response.data["profile"]['reviews_within_hour_count'], 0)
         self.assertEqual(response.data["profile"]['reviews_count'], 0)
+
+    def test_preprocessor_srs_counts_are_correct(self):
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse("api:user-me"))
+
+        self.assertEqual(response.data['profile']['srs_counts']['apprentice'], 1)
+        self.assertEqual(response.data['profile']['srs_counts']['guru'], 0)
+        self.assertEqual(response.data['profile']['srs_counts']['master'], 0)
+        self.assertEqual(response.data['profile']['srs_counts']['enlightened'], 0)
+        self.assertEqual(response.data['profile']['srs_counts']['burned'], 0)
