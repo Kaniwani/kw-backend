@@ -11,6 +11,7 @@ from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, 
 from kw_webapp.tasks import get_users_current_reviews, get_users_future_reviews
 
 
+# noinspection PyMethodMayBeStatic
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='user.username')
     reviews_count = serializers.SerializerMethodField()
@@ -26,7 +27,8 @@ class ProfileSerializer(serializers.ModelSerializer):
                   'only_review_burned', 'on_vacation', 'vacation_date', 'reviews_within_day_count',
                   'reviews_within_hour_count')
         read_only_fields = ('api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
-                            'unlocked_levels', 'vacation_date')
+                            'unlocked_levels', 'vacation_date', 'reviews_within_day_count',
+                            'reviews_within_hour_count', 'reviews_count')
 
     def get_reviews_count(self, obj):
         return get_users_current_reviews(obj.user).count()
@@ -39,6 +41,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         return get_users_future_reviews(obj.user, time_limit=datetime.timedelta(hours=24)).count()
 
 
+# noinspection PyMethodMayBeStatic
 class RegistrationSerializer(serializers.ModelSerializer):
     api_key = serializers.CharField(write_only=True, max_length=32)
     password = serializers.CharField(write_only=True,
