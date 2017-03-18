@@ -1,3 +1,5 @@
+import datetime
+
 import requests
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -6,25 +8,36 @@ from rest_framework import serializers
 from api import serializer_fields
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement
-from kw_webapp.tasks import get_users_current_reviews
+from kw_webapp.tasks import get_users_current_reviews, get_users_future_reviews
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='user.username')
     reviews_count = serializers.SerializerMethodField()
     unlocked_levels = serializers.StringRelatedField(many=True)
+    reviews_within_hour_count = serializers.SerializerMethodField()
+    reviews_within_day_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
         fields = ('name', 'reviews_count', 'api_key', 'api_valid', 'join_date', 'last_wanikani_sync_date',
                   'level', 'unlocked_levels', 'follow_me', 'auto_advance_on_success',
                   'auto_expand_answer_on_success', 'auto_expand_answer_on_failure',
-                  'only_review_burned', 'on_vacation', 'vacation_date')
+                  'only_review_burned', 'on_vacation', 'vacation_date', 'reviews_within_day_count',
+                  'reviews_within_hour_count')
         read_only_fields = ('api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
                             'unlocked_levels', 'vacation_date')
 
     def get_reviews_count(self, obj):
         return get_users_current_reviews(obj.user).count()
+
+    def get_reviews_within_hour_count(self, obj):
+        return get_users_future_reviews(obj.user,
+                                        time_limit=datetime.timedelta(hours=1)).count()
+
+    def get_reviews_within_day_count(self, obj):
+        return get_users_future_reviews(obj.user, time_limit=datetime.timedelta(hours=24)).count()
+
 
 class RegistrationSerializer(serializers.ModelSerializer):
     api_key = serializers.CharField(write_only=True, max_length=32)
