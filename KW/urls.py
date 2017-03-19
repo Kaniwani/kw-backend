@@ -3,7 +3,6 @@ from django.conf.urls import include, url
 
 from django.contrib import admin
 from django.views.generic import TemplateView
-from rest_framework import routers
 from django.contrib.auth import views as auth_views
 import kw_webapp
 from KW import settings
@@ -16,13 +15,12 @@ admin.autodiscover()
 urlpatterns = (
     url(r'^$', kw_webapp.views.home, name='home'),
 
-    ##API
+    # API
     url(r'^api/v1/', include('api.urls', namespace='api')),
-    ##DOCS
+    # DOCS
     url(r'^docs/', include('rest_framework_docs.urls')),
 
-
-    ##All Auth Stuff
+    # All Auth Stuff
     url(r'^auth/login/$', auth_views.login,
         {'template_name': 'registration/login.html',
          'authentication_form': UserLoginForm},
@@ -44,17 +42,18 @@ urlpatterns = (
 
     url(r'^admin/', include(admin.site.urls)),
 
-    ##Contact-related views.
+    # Contact-related views.
     url(r'^contact/$', ContactFormView.as_view(form_class=UserContactCustomForm), name="contact_form"),
     url(r'^contact/sent/$', TemplateView.as_view(template_name="contact_form/contact_form_sent.html"),
         name='contact_form_sent'),
 
-    ##KW SRS Stuff.
+    # KW SRS Stuff.
     url(r'^kw/', include('kw_webapp.urls', namespace='kw'))
 )
 
 if settings.DEBUG:
     import debug_toolbar
+
     urlpatterns += (
         url(r'^__debug__/', include(debug_toolbar.urls)),
     )
