@@ -32,21 +32,4 @@ def review_count_preprocessor(request):
     return context_dict
 
 
-def srs_level_count_preprocessor(request):
-    """
-    Preprocessor to provide the user's specific SRS level information, indicating how many vocab exist at each SRS level.
-    """
-    context_dict = {}
-    if hasattr(request, 'user'):
-        if hasattr(request.user, 'profile'):
-            all_reviews = get_users_reviews(request.user)
-            if all_reviews:
-                context_dict['srs_apprentice_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['apprentice']).count()
-                context_dict['srs_guru_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['guru']).count()
-                context_dict['srs_master_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['master']).count()
-                context_dict['srs_enlightened_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['enlightened']).count()
-                context_dict['srs_burned_count'] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS['burned']).count()
-                context_dict['srs_level_names'] = constants.KANIWANI_SRS_LEVELS.keys()
-    return context_dict
-
 

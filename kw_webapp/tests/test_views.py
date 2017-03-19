@@ -9,7 +9,7 @@ from django.http import HttpResponseForbidden
 from django.test import TestCase, Client
 from django.utils import timezone
 
-from kw_webapp.constants import SRS_TIMES
+from kw_webapp.constants import SRS_TIMES, SrsLevel, KANIWANI_SRS_LEVELS
 from kw_webapp.models import UserSpecific
 from kw_webapp.tasks import build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
@@ -58,10 +58,10 @@ class TestViews(TestCase):
 
     def test_review_page_shows_only_burnt_items_when_setting_is_enabled(self):
         word = create_vocab("phlange")
-        self.user.profile.only_review_burned = True
+        self.user.profile.only_review_above_wk_srs = SrsLevel.BURNED.name
         self.user.profile.save()
         another_review = create_userspecific(word, self.user)
-        another_review.wanikani_burned = True
+        another_review.wanikani_srs_numeric = KANIWANI_SRS_LEVELS[SrsLevel.BURNED.name][0]
         another_review.save()
 
         response = self.client.get(reverse("kw:review"))

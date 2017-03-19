@@ -5,6 +5,8 @@ from celery import shared_task
 from django.contrib.auth.models import User
 from django.db.models import F
 from django.db.models import Min
+
+from kw_webapp.constants import KANIWANI_SRS_LEVELS
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
 from kw_webapp import constants
@@ -146,6 +148,7 @@ def unlock_all_possible_levels_for_user(user):
     unlocked_now, unlocked_total, locked = unlock_eligible_vocab_from_levels(user, level_list)
     return level_list, unlocked_now, unlocked_total, locked
 
+
 @shared_task
 def unlock_eligible_vocab_from_levels(user, levels, count=None):
     """
@@ -160,7 +163,7 @@ def unlock_eligible_vocab_from_levels(user, levels, count=None):
     try:
         response = make_api_call(api_call_string)
         unlocked_this_request, total_unlocked, locked = process_vocabulary_response_for_unlock(user, response, count)
-        return unlocked_this_request, total_unlocked,  locked
+        return unlocked_this_request, total_unlocked, locked
     except exceptions.InvalidWaniKaniKey:
         logger.error("Invalid key found for user {}".format(user.username))
         user.profile.api_valid = False
@@ -312,51 +315,39 @@ def associate_synonyms_to_vocab(user, vocab, user_specific):
 
 
 def get_users_reviews(user):
-    if user.profile.only_review_burned:
-        return UserSpecific.objects.filter(user=user, wanikani_burned=True, hidden=False)
-    else:
-        return UserSpecific.objects.filter(user=user, hidden=False)
+    minimum_wk_srs = user.profile.only_review_above_wk_srs
+    minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
+    return UserSpecific.objects.filter(user=user, wanikani_srs_numeric__gte=minimum_streak, hidden=False)
 
 
 def get_users_critical_reviews(user):
-    if user.profile.only_review_burned:
-        return UserSpecific.objects.filter(user=user,
-                                           wanikani_burned=True,
-                                           hidden=False,
-                                           critical=True)
-    else:
-        return UserSpecific.objects.filter(user=user,
-                                           hidden=False,
-                                           critical=True)
+    minimum_wk_srs = user.profile.only_review_above_wk_srs
+    minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
+    return UserSpecific.objects.filter(user=user,
+                                       wanikani_srs_numeric__gte=minimum_streak,
+                                       hidden=False,
+                                       critical=True)
+
 
 def get_users_current_reviews(user):
-    if user.profile.only_review_burned:
-        return UserSpecific.objects.filter(user=user,
-                                           needs_review=True,
-                                           wanikani_burned=True,
-                                           hidden=False,
-                                           burned=False)
-    else:
-        return UserSpecific.objects.filter(user=user,
-                                           needs_review=True,
-                                           hidden=False,
-                                           burned=False)
+    minimum_wk_srs = user.profile.only_review_above_wk_srs
+    minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
+
+    return UserSpecific.objects.filter(user=user,
+                                       needs_review=True,
+                                       wanikani_srs_numeric__gte=minimum_streak,
+                                       hidden=False,
+                                       burned=False)
 
 
 def get_users_future_reviews(user, time_limit=None):
-    if user.profile.only_review_burned:
-        queryset = UserSpecific.objects.filter(user=user,
-                                               needs_review=False,
-                                               wanikani_burned=True,
-                                               hidden=False,
-                                               burned=False).annotate(Min('next_review_date')).order_by(
-            'next_review_date')
-    else:
-        queryset = UserSpecific.objects.filter(user=user,
-                                               needs_review=False,
-                                               hidden=False,
-                                               burned=False).annotate(Min('next_review_date')).order_by(
-            'next_review_date')
+    minimum_wk_srs = user.profile.only_review_above_wk_srs
+    minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
+    queryset = UserSpecific.objects.filter(user=user,
+                                           needs_review=False,
+                                           wanikani_srs_numeric__gte=minimum_streak,
+                                           hidden=False,
+                                           burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
 
     if isinstance(time_limit, timedelta):
         queryset = queryset.filter(next_review_date__lte=timezone.now() + time_limit)
@@ -582,9 +573,9 @@ def user_returns_from_vacation(user):
                             "streak: {},"
                             "delay: {},"
                             "calc NR :{}".format(lst, rev.last_studied, rev.streak,
-                                                                constants.SRS_TIMES[rev.streak],
-                                                                lst + elapsed_vacation_time + timezone.timedelta(
-                                                                    hours=constants.SRS_TIMES[rev.streak])))
+                                                 constants.SRS_TIMES[rev.streak],
+                                                 lst + elapsed_vacation_time + timezone.timedelta(
+                                                     hours=constants.SRS_TIMES[rev.streak])))
                 # updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
                 # users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
                 # logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))

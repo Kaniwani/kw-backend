@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from kw_webapp import constants
-from kw_webapp.constants import TWITTER_USERNAME_REGEX, HTTP_S_REGEX
+from kw_webapp.constants import TWITTER_USERNAME_REGEX, HTTP_S_REGEX, SrsLevel
 
 logger = logging.getLogger("kw.models")
 
@@ -24,9 +24,11 @@ class Announcement(models.Model):
     def __str__(self):
         return self.title
 
+
 class FrequentlyAskedQuestion(models.Model):
     question = models.CharField(max_length=10000)
     answer = models.CharField(max_length=10000)
+
 
 class Level(models.Model):
     partial = models.BooleanField(default=False)
@@ -64,7 +66,8 @@ class Profile(models.Model):
     auto_advance_on_success = models.BooleanField(default=False)
     auto_expand_answer_on_success = models.BooleanField(default=False)
     auto_expand_answer_on_failure = models.BooleanField(default=False)
-    only_review_burned = models.BooleanField(default=False)
+    only_review_above_wk_srs = models.CharField(max_length=20, choices=SrsLevel.choices(),
+                                                default=SrsLevel.APPRENTICE.name)
 
     # Vacation Settings
     on_vacation = models.BooleanField(default=False)
@@ -132,7 +135,6 @@ class Vocabulary(models.Model):
         return self.meaning
 
 
-
 class Tag(models.Model):
     """
     A model meant to handle tagging readings.
@@ -141,7 +143,6 @@ class Tag(models.Model):
 
     def get_all_vocabulary(self):
         return Vocabulary.objects.filter(readings__tags__id=self.id).distinct()
-
 
     def __str__(self):
         return self.name
@@ -222,8 +223,9 @@ class UserSpecific(models.Model):
 
     def is_critical(self):
         if self.streak < constants.KANIWANI_SRS_LEVELS['guru'][0] and \
-           self.correct + self.incorrect >= constants.MINIMUM_ATTEMPT_COUNT_FOR_CRITICALITY and \
-           float(self.incorrect) / float(self.correct + self.incorrect) >= constants.CRITICALITY_THRESHOLD:
+                                self.correct + self.incorrect >= constants.MINIMUM_ATTEMPT_COUNT_FOR_CRITICALITY and \
+                                float(self.incorrect) / float(
+                                    self.correct + self.incorrect) >= constants.CRITICALITY_THRESHOLD:
             return True
 
     def get_all_readings(self):
@@ -263,7 +265,8 @@ class UserSpecific(models.Model):
 
     def _round_next_review_date(self):
         round_to = constants.REVIEW_ROUNDING_TIME.total_seconds()
-        seconds = (self.next_review_date - self.next_review_date.min.replace(tzinfo=self.next_review_date.tzinfo)).seconds
+        seconds = (
+        self.next_review_date - self.next_review_date.min.replace(tzinfo=self.next_review_date.tzinfo)).seconds
         rounding = (seconds + round_to) // round_to * round_to
         self.next_review_date = self.next_review_date + timedelta(0, rounding - seconds, 0)
         self.save()
