@@ -17,9 +17,10 @@ class SRSCountSerializer(serializers.BaseSerializer):
     Serializer for simply showing SRS counts, e.g., how many apprentice items a user has,
     how many guru, etc.
     """
+
     def to_representation(self, user):
         all_reviews = get_users_reviews(user)
-        return {level: all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level]).count() for level in
+        return {level.value: all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count() for level in
                 SrsLevel}
 
 
@@ -36,8 +37,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ('name', 'reviews_count', 'api_key', 'api_valid', 'join_date', 'last_wanikani_sync_date',
                   'level', 'unlocked_levels', 'follow_me', 'auto_advance_on_success',
                   'auto_expand_answer_on_success', 'auto_expand_answer_on_failure',
-                  'only_review_burned', 'on_vacation', 'vacation_date', 'reviews_within_day_count',
-                  'reviews_within_hour_count', "srs_counts")
+                  'on_vacation', 'vacation_date', 'reviews_within_day_count',
+                  'reviews_within_hour_count', "srs_counts", "minimum_wk_srs_level_to_review")
 
         read_only_fields = ('api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
                             'unlocked_levels', 'vacation_date', 'reviews_within_day_count',

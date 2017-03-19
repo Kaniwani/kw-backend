@@ -58,7 +58,7 @@ class TestViews(TestCase):
 
     def test_review_page_shows_only_burnt_items_when_setting_is_enabled(self):
         word = create_vocab("phlange")
-        self.user.profile.only_review_above_wk_srs = SrsLevel.BURNED.name
+        self.user.profile.minimum_wk_srs_level_to_review = SrsLevel.BURNED.name
         self.user.profile.save()
         another_review = create_userspecific(word, self.user)
         another_review.wanikani_srs_numeric = KANIWANI_SRS_LEVELS[SrsLevel.BURNED.name][0]

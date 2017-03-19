@@ -66,8 +66,8 @@ class Profile(models.Model):
     auto_advance_on_success = models.BooleanField(default=False)
     auto_expand_answer_on_success = models.BooleanField(default=False)
     auto_expand_answer_on_failure = models.BooleanField(default=False)
-    only_review_above_wk_srs = models.CharField(max_length=20, choices=SrsLevel.choices(),
-                                                default=SrsLevel.APPRENTICE.name)
+    minimum_wk_srs_level_to_review = models.CharField(max_length=20, choices=SrsLevel.choices(),
+                                                      default=SrsLevel.APPRENTICE.name)
 
     # Vacation Settings
     on_vacation = models.BooleanField(default=False)
@@ -190,7 +190,7 @@ class UserSpecific(models.Model):
         if first_try:
             self.correct += 1
             self.streak += 1
-            if self.streak >= constants.KANIWANI_SRS_LEVELS["burned"][0]:
+            if self.streak >= constants.KANIWANI_SRS_LEVELS[SrsLevel.BURNED.name][0]:
                 self.burned = True
 
         self.needs_review = False
@@ -222,7 +222,7 @@ class UserSpecific(models.Model):
             self.critical = False
 
     def is_critical(self):
-        if self.streak < constants.KANIWANI_SRS_LEVELS['guru'][0] and \
+        if self.streak < constants.KANIWANI_SRS_LEVELS[SrsLevel.GURU.name][0] and \
                                 self.correct + self.incorrect >= constants.MINIMUM_ATTEMPT_COUNT_FOR_CRITICALITY and \
                                 float(self.incorrect) / float(
                                     self.correct + self.incorrect) >= constants.CRITICALITY_THRESHOLD:

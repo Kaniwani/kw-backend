@@ -315,13 +315,13 @@ def associate_synonyms_to_vocab(user, vocab, user_specific):
 
 
 def get_users_reviews(user):
-    minimum_wk_srs = user.profile.only_review_above_wk_srs
+    minimum_wk_srs = user.profile.minimum_wk_srs_level_to_review
     minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
     return UserSpecific.objects.filter(user=user, wanikani_srs_numeric__gte=minimum_streak, hidden=False)
 
 
 def get_users_critical_reviews(user):
-    minimum_wk_srs = user.profile.only_review_above_wk_srs
+    minimum_wk_srs = user.profile.minimum_wk_srs_level_to_review
     minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
     return UserSpecific.objects.filter(user=user,
                                        wanikani_srs_numeric__gte=minimum_streak,
@@ -330,7 +330,7 @@ def get_users_critical_reviews(user):
 
 
 def get_users_current_reviews(user):
-    minimum_wk_srs = user.profile.only_review_above_wk_srs
+    minimum_wk_srs = user.profile.minimum_wk_srs_level_to_review
     minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
 
     return UserSpecific.objects.filter(user=user,
@@ -341,7 +341,7 @@ def get_users_current_reviews(user):
 
 
 def get_users_future_reviews(user, time_limit=None):
-    minimum_wk_srs = user.profile.only_review_above_wk_srs
+    minimum_wk_srs = user.profile.minimum_wk_srs_level_to_review
     minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
     queryset = UserSpecific.objects.filter(user=user,
                                            needs_review=False,
