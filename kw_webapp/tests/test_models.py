@@ -8,6 +8,7 @@ from django.test import Client, TestCase
 from django.utils import timezone
 
 from kw_webapp import constants
+from kw_webapp.constants import SrsLevel
 from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag
 from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
@@ -341,7 +342,7 @@ class TestModels(TestCase):
         self.review.correct = 4
         self.review.incorrect = 20
         self.review.critical = True
-        self.review.streak = constants.KANIWANI_SRS_LEVELS['guru'][0]
+        self.review.streak = constants.KANIWANI_SRS_LEVELS[SrsLevel.GURU.name][0]
         self.review.save()
         self.review.refresh_from_db()
 

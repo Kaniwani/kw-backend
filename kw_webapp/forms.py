@@ -95,14 +95,14 @@ class UserCreateForm(UserCreationForm):
 class SettingsForm(ModelForm):
     class Meta:
         model = Profile
-        fields = ['api_key', 'level',  'follow_me', 'auto_advance_on_success', 'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'only_review_burned', 'on_vacation']
+        fields = ['api_key', 'level',  'follow_me', 'auto_advance_on_success', 'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'minimum_wk_srs_level_to_review', 'on_vacation']
         help_texts = {
             "follow_me": ("If you disable this, KaniWani will no longer automatically unlock things as you unlock them in WaniKani."),
             "on_vacation": ("Enabling this setting will prevent your reviews from accumulating.")
         }
         labels = {
             "follow_me": "Follow WaniKani Progress",
-            "only_review_burned": "Review only items that you have burned in WaniKani.",
+            "minimum_wk_srs_level_to_review": "Review only items that you have burned in WaniKani.",
             "auto_advance_on_success": "Automatically advance to next item in review if answer was correct.",
             "auto_expand_answer_on_success": "Automatically show kanji and kana if you answer correctly.",
             "auto_expand_answer_on_failure": "Automatically show kanji and kana if you answer incorrectly.",
