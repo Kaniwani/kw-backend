@@ -1,3 +1,5 @@
+from enum import Enum
+
 import re
 
 from collections import OrderedDict
@@ -17,16 +19,25 @@ SRS_TIMES = {
     8: 2880,  # Enlightened -> Burned (4 months)
 }
 
-KW_SRS_LEVEL_NAMES = ['apprentice', "guru", "master", "enlightened", "burned"]
+
+class SrsLevel(Enum):
+    APPRENTICE = "Apprentice"
+    GURU = "Guru"
+    MASTER = "Master"
+    ENLIGHTENED = "Enlightened"
+    BURNED = "Burned"
+
+    @classmethod
+    def choices(cls):
+        return ((level.name, level.value) for level in SrsLevel)
 
 # The level arrangement I believe to be exposed by WK API.
 KANIWANI_SRS_LEVELS = OrderedDict()
-KANIWANI_SRS_LEVELS[KW_SRS_LEVEL_NAMES[0]] = [0, 1, 2, 3, 4]
-KANIWANI_SRS_LEVELS[KW_SRS_LEVEL_NAMES[1]] = [5, 6]
-KANIWANI_SRS_LEVELS[KW_SRS_LEVEL_NAMES[2]] = [7]
-KANIWANI_SRS_LEVELS[KW_SRS_LEVEL_NAMES[3]] = [8]
-KANIWANI_SRS_LEVELS[KW_SRS_LEVEL_NAMES[4]] = [9]
-
+KANIWANI_SRS_LEVELS[SrsLevel.APPRENTICE.name] = [0, 1, 2, 3, 4]
+KANIWANI_SRS_LEVELS[SrsLevel.GURU.name] = [5, 6]
+KANIWANI_SRS_LEVELS[SrsLevel.MASTER.name] = [7]
+KANIWANI_SRS_LEVELS[SrsLevel.ENLIGHTENED.name] = [8]
+KANIWANI_SRS_LEVELS[SrsLevel.BURNED.name] = [9]
 
 REVIEW_ROUNDING_TIME = timedelta(minutes=15)
 
@@ -41,4 +52,3 @@ CRITICALITY_THRESHOLD = 0.75
 # Can safely remove these, associated tests, and model data for twitter/webpage
 TWITTER_USERNAME_REGEX = re.compile("[a-zA-Z0-9_]+")
 HTTP_S_REGEX = re.compile("https?://")
-

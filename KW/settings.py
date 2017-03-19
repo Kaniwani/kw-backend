@@ -325,7 +325,6 @@ TEMPLATES = [
             "context_processors": [
                 'django.contrib.auth.context_processors.auth',
                 "KW.preprocessors.review_count_preprocessor",
-                "KW.preprocessors.srs_level_count_preprocessor",
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
             ],
@@ -342,7 +341,6 @@ AUTHENTICATION_BACKENDS = [
     'kw_webapp.backends.EmailOrUsernameAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend'
 ]
-
 
 DJOSER = {
     'SERIALIZERS': {
