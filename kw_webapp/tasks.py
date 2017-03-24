@@ -99,6 +99,12 @@ def associate_vocab_to_user(vocab, user):
             logger.error(
                 "during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(user.username,
                                                                                                      u))
+        return None, None
+
+
+def get_level_pages(levels):
+    page_size = 5
+    return [levels[i:i+page_size] for i in range(0, len(levels), page_size)]
 
 
 def build_API_sync_string_for_user(user):
@@ -110,8 +116,9 @@ def build_API_sync_string_for_user(user):
     '''
     api_call = "https://www.wanikani.com/api/user/{}/vocabulary/".format(user.profile.api_key)
     # if the user has unlocked recent levels, check for new vocab on them as well.
-    for level in user.profile.unlocked_levels_list():
-        api_call += str(level) + ","
+    levels = user.profile.unlocked_levels_list()
+    level_string = ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
+    api_call += level_string
     return api_call
 
 
@@ -124,6 +131,7 @@ def build_API_sync_string_for_user_for_levels(user, levels):
     '''
     level_string = ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
     api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(user.profile.api_key, level_string)
+    api_call += ','
     return api_call
 
 
@@ -436,10 +444,15 @@ def sync_recent_unlocked_vocab_with_wk(user):
 
 def sync_unlocked_vocab_with_wk(user):
     if user.profile.unlocked_levels_list():
-        request_string = build_API_sync_string_for_user(user)
-        logger.info("Creating sync string for user {}: {}".format(user.username, user.profile.api_key))
-        response = make_api_call(request_string)
-        new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, response)
+        pages = get_level_pages(user.profile.unlocked_levels_list())
+        new_review_count = new_synonym_count = 0
+        for page in pages:
+            request_string = build_API_sync_string_for_user_for_levels(user, page)
+            logger.info("Creating sync string for user {}: {}".format(user.username, user.profile.api_key))
+            response = make_api_call(request_string)
+            current_page_review_count, current_page_synonym_count = process_vocabulary_response_for_user(user, response)
+            new_review_count += current_page_review_count
+            new_synonym_count += current_page_synonym_count
         return new_review_count, new_synonym_count
     else:
         return 0, 0
@@ -570,9 +583,9 @@ def user_returns_from_vacation(user):
                             "streak: {},"
                             "delay: {},"
                             "calc NR :{}".format(lst, rev.last_studied, rev.streak,
-                                                                constants.SRS_TIMES[rev.streak],
-                                                                lst + elapsed_vacation_time + timezone.timedelta(
-                                                                    hours=constants.SRS_TIMES[rev.streak])))
+                                                 constants.SRS_TIMES[rev.streak],
+                                                 lst + elapsed_vacation_time + timezone.timedelta(
+                                                     hours=constants.SRS_TIMES[rev.streak])))
                 # updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
                 # users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
                 # logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))

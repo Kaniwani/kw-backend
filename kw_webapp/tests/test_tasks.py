@@ -1,3 +1,4 @@
+import re
 from copy import deepcopy
 
 import responses
@@ -8,19 +9,29 @@ from kw_webapp.models import Vocabulary, UserSpecific
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
-    user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user, sync_all_users_to_wk
+    user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user, sync_all_users_to_wk, \
+    get_level_pages
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading
 
 
 class TestTasks(TestCase):
+
     def setUp(self):
         self.user = create_user("Tadgh")
         create_profile(self.user, "any_key", 5)
         self.vocabulary = create_vocab("radioactive bat")
         self.reading = create_reading(self.vocabulary, "ねこ", "猫", 2)
         self.review = create_userspecific(self.vocabulary, self.user)
+        self._vocab_api_regex = re.compile("https://www\.wanikani\.com/api/user/.*")
+
+    def testLevelPageCreator(self):
+        flat_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        pages = get_level_pages(flat_list)
+        self.assertEqual(len(pages), 2)
+        self.assertListEqual(pages[0], [1, 2, 3, 4, 5])
+        self.assertListEqual(pages[1], [6, 7, 8, 9, 10])
 
     def test_userspecifics_needing_review_are_flagged(self):
         self.review.needs_review = False
@@ -53,7 +64,7 @@ class TestTasks(TestCase):
         self.user.profile.save()
 
         api_call = build_API_sync_string_for_user(self.user)
-        correct_string = "https://www.wanikani.com/api/user/any_key/vocabulary/5,3,1,"
+        correct_string = "https://www.wanikani.com/api/user/any_key/vocabulary/5,3,1"
 
         self.assertEqual(correct_string, api_call)
 
@@ -82,7 +93,8 @@ class TestTasks(TestCase):
     def test_creating_new_synonyms_on_sync(self):
         resp_body = deepcopy(sample_api_responses.single_vocab_response)
         resp_body["requested_information"][0]["user_specific"]["user_synonyms"] = ["kitten", "large rat"]
-        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+
+        responses.add(responses.GET, self._vocab_api_regex,
                       json=resp_body,
                       status=200,
                       content_type='application/json')
@@ -105,7 +117,7 @@ class TestTasks(TestCase):
         self.user.profile.save()
         resp_body = sample_api_responses.single_vocab_response
         level_list = [level for level in range(1, self.user.profile.level + 1)]
-        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, level_list),
+        responses.add(responses.GET, self._vocab_api_regex,
                       json=resp_body,
                       status=200,
                       content_type='application/json')
@@ -118,7 +130,7 @@ class TestTasks(TestCase):
     @responses.activate
     def test_syncing_vocabulary_pulls_srs_level_successfully(self):
         resp_body = sample_api_responses.single_vocab_response
-        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+        responses.add(responses.GET, self._vocab_api_regex,
                       json=resp_body,
                       status=200,
                       content_type='application/json')
@@ -136,7 +148,7 @@ class TestTasks(TestCase):
         an_hour_ago = now - timezone.timedelta(hours=1)
         two_hours_ago = now - timezone.timedelta(hours=2)
         two_hours_from_now = now + timezone.timedelta(hours=2)
-        four_hours_from_now = now + timezone.timedelta(hours = 4)
+        four_hours_from_now = now + timezone.timedelta(hours=4)
         self.user.profile.vacation_date = two_hours_ago
         self.user.profile.save()
         self.review.last_studied = two_hours_ago
@@ -216,18 +228,15 @@ class TestTasks(TestCase):
         affected_count = sync_all_users_to_wk()
         self.assertEqual(affected_count, 1)
 
-
     @responses.activate
     def test_when_reading_level_changes_on_wanikani_we_catch_that_change_and_comply(self):
         resp_body = sample_api_responses.single_vocab_response
 
-
-        #Mock response so that the level changes on our default vocab.
-        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+        # Mock response so that the level changes on our default vocab.
+        responses.add(responses.GET, self._vocab_api_regex,
                       json=sample_api_responses.single_vocab_response,
                       status=200,
                       content_type='application/json')
-
 
         sync_unlocked_vocab_with_wk(self.user)
 
