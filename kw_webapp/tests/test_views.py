@@ -2,6 +2,7 @@ from datetime import timedelta
 from unittest import mock
 from unittest.mock import MagicMock
 
+import re
 import responses
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -32,6 +33,8 @@ class TestViews(TestCase):
 
         self.client = Client()
         self.client.login(username="user1", password="password")
+
+        self._vocab_api_regex = re.compile("https://www\.wanikani\.com/api/user/.*")
 
     def test_review_requires_login(self):
         self.client.logout()
@@ -169,7 +172,7 @@ class TestViews(TestCase):
                       status=200,
                       content_type="application/json")
 
-        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, [5, 17]) + ",",
+        responses.add(responses.GET, self._vocab_api_regex,
                       json=sample_api_responses.single_vocab_response,
                       status=200,
                       content_type='application/json')
