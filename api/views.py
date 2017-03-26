@@ -14,13 +14,13 @@ from api.filters import VocabularyFilter, ReviewFilter
 from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
-    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer
+    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
-    Announcement
+    Announcement, Profile
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    get_users_critical_reviews, sync_with_wk, all_srs
+    get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation
 
 
 class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
@@ -70,7 +70,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
         for level in range(constants.LEVEL_MIN, constants.LEVEL_MAX + 1):
             level_dicts.append(self._serialize_level(level, request))
 
-        serializer = LevelSerializer(level_dicts, many=True, context={'request':request})
+        serializer = LevelSerializer(level_dicts, many=True, context={'request': request})
         return Response(serializer.data)
 
     def _build_lock_url(self, level):
@@ -224,11 +224,35 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
 
         return User.objects.filter(pk=self.request.user.id)
 
-    @list_route(methods=["GET"])
+    @list_route(methods=["GET", "PUT"])
     def me(self, request):
         user = request.user
-        serializer = self.get_serializer(user, many=False)
-        return Response(serializer.data)
+        if request.method == "GET":
+            serializer = self.get_serializer(user, many=False)
+            return Response(serializer.data)
+        elif request.method == "PUT":
+            was_following = user.profile.follow_me
+            was_on_vacation = user.profile.on_vacation
+            serializer = ProfileSerializer(data=request.data['profile'])
+            serializer.is_valid(raise_exception=False)
+            serializer.update(instance=user.profile, validated_data=serializer.validated_data)
+            user.refresh_from_db()
+            current_profile = user.profile
+
+            if not was_following and current_profile.follow_me:
+                sync_user_profile_with_wk(user)
+
+            if was_on_vacation and not current_profile.on_vacation:
+                user_returns_from_vacation(user)
+
+
+
+
+
+            serializer = self.get_serializer(user, many=False)
+            return Response(serializer.data)
+
+
 
     @list_route(methods=['POST'])
     def sync(self, request):
@@ -248,6 +272,21 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         return Response({'review_count': new_review_count})
 
 
+class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
+
+
 class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = ContactSerializer
@@ -262,8 +301,3 @@ class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
         form.save()
 
         return Response(status=status.HTTP_202_ACCEPTED)
-
-
-
-
-

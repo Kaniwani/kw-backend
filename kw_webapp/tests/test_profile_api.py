@@ -72,3 +72,20 @@ class TestPreprocessors(APITestCase):
         self.assertEqual(response.data['profile']['srs_counts']['Master'], 0)
         self.assertEqual(response.data['profile']['srs_counts']['Enlightened'], 0)
         self.assertEqual(response.data['profile']['srs_counts']['Burned'], 0)
+
+    def test_updating_profile_triggers_srs_correctly(self):
+        self.client.force_login(user=self.user)
+        #response = self.client.get(reverse("api:profile-detail", (self.user.profile.id,)))
+        response = self.client.get(reverse("api:user-me"))
+
+        self.assertEqual(response.data['profile']['srs_counts']['Apprentice'], 1)
+        self.assertEqual(response.data['profile']['srs_counts']['Guru'], 0)
+        self.assertEqual(response.data['profile']['srs_counts']['Master'], 0)
+        self.assertEqual(response.data['profile']['srs_counts']['Enlightened'], 0)
+        self.assertEqual(response.data['profile']['srs_counts']['Burned'], 0)
+        user_dict = dict(response.data)
+        user_dict['profile']['on_vacation'] = True
+        user_dict['profile']['follow_me'] = True
+        #self.client.put(reverse("api:profile-detail", (self.user.profile.id,)), user_dict, format='json')
+        response = self.client.put(reverse("api:user-me"), user_dict, format='json')
+        print("test")

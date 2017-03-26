@@ -27,22 +27,22 @@ class SRSCountSerializer(serializers.BaseSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='user.username')
     reviews_count = serializers.SerializerMethodField()
-    unlocked_levels = serializers.StringRelatedField(many=True)
+    unlocked_levels = serializers.StringRelatedField(many=True, read_only=True)
     reviews_within_hour_count = serializers.SerializerMethodField()
     reviews_within_day_count = serializers.SerializerMethodField()
     srs_counts = SRSCountSerializer(source='user', many=False, read_only=True)
 
     class Meta:
         model = Profile
-        fields = ('name', 'reviews_count', 'api_key', 'api_valid', 'join_date', 'last_wanikani_sync_date',
-                  'level', 'unlocked_levels', 'follow_me', 'auto_advance_on_success',
-                  'auto_expand_answer_on_success', 'auto_expand_answer_on_failure',
+        fields = ('id', 'name', 'reviews_count', 'api_key', 'api_valid', 'join_date', 'last_wanikani_sync_date',
+                  'level',  'follow_me', 'auto_advance_on_success',
+                  'unlocked_levels', 'auto_expand_answer_on_success', 'auto_expand_answer_on_failure',
                   'on_vacation', 'vacation_date', 'reviews_within_day_count',
                   'reviews_within_hour_count', "srs_counts", "minimum_wk_srs_level_to_review")
 
-        read_only_fields = ('api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
+        read_only_fields = ('id', 'name', 'api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
                             'unlocked_levels', 'vacation_date', 'reviews_within_day_count',
-                            'reviews_within_hour_count', 'reviews_count')
+                            'reviews_within_hour_count', 'reviews_count', "srs_counts")
 
     def get_reviews_count(self, obj):
         return get_users_current_reviews(obj.user).count()
@@ -164,6 +164,13 @@ class UserSerializer(serializers.ModelSerializer):
         user = User.objects.create(**validated_data)
         user.set_password(validated_data.get('password'))
         Profile.objects.create(user=user, api_key=api_key, level=1)
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop("profile")
+        profile_serializer = ProfileSerializer(data=profile_data)
+        profile_serializer.save()
+        instance.save()
+
 
 
 class TagSerializer(serializers.ModelSerializer):
