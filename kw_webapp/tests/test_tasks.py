@@ -52,7 +52,7 @@ class TestTasks(TestCase):
         self.user.profile.unlocked_levels.get_or_create(level=1)
         self.user.profile.save()
 
-        api_call = build_API_sync_string_for_ut_er(self.user)
+        api_call = build_API_sync_string_for_user(self.user)
         correct_string = "https://www.wanikani.com/api/user/any_key/vocabulary/5,3,1,"
 
         self.assertEqual(correct_string, api_call)
@@ -215,7 +215,6 @@ class TestTasks(TestCase):
 
         affected_count = sync_all_users_to_wk()
         self.assertEqual(affected_count, 1)
-
 
     @responses.activate
     def test_when_reading_level_changes_on_wanikani_we_catch_that_change_and_comply(self):
