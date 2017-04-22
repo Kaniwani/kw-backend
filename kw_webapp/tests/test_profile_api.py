@@ -67,8 +67,8 @@ class TestPreprocessors(APITestCase):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse("api:user-me"))
 
-        self.assertEqual(response.data['profile']['srs_counts']['Apprentice'], 1)
-        self.assertEqual(response.data['profile']['srs_counts']['Guru'], 0)
-        self.assertEqual(response.data['profile']['srs_counts']['Master'], 0)
-        self.assertEqual(response.data['profile']['srs_counts']['Enlightened'], 0)
-        self.assertEqual(response.data['profile']['srs_counts']['Burned'], 0)
+        self.assertEqual(response.data['profile']['srs_counts']['apprentice'], 1)
+        self.assertEqual(response.data['profile']['srs_counts']['guru'], 0)
+        self.assertEqual(response.data['profile']['srs_counts']['master'], 0)
+        self.assertEqual(response.data['profile']['srs_counts']['enlightened'], 0)
+        self.assertEqual(response.data['profile']['srs_counts']['burned'], 0)
