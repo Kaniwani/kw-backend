@@ -46,8 +46,9 @@ class ProfileSerializer(serializers.ModelSerializer):
                             'reviews_within_hour_count', 'reviews_count', "srs_counts", "next_review_date")
 
     def get_next_review_date(self, obj):
+        user = obj.user
         if self.get_reviews_count(obj) == 0:
-            reviews = get_users_future_reviews(obj)
+            reviews = get_users_future_reviews(user)
             if reviews:
                 next_review_date = reviews[0].next_review_date
                 return next_review_date
@@ -61,7 +62,6 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_reviews_within_day_count(self, obj):
         return get_users_future_reviews(obj.user, time_limit=datetime.timedelta(hours=24)).count()
-
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
@@ -216,14 +216,17 @@ class SynonymSerializer(serializers.ModelSerializer):
         model = AnswerSynonym
         fields = '__all__'
 
-    def validate_review(self, value):
-        """
-        Check that the user creating the synonym owns the related review.
-        """
-        review = value
+    def validate(self, data):
+        review = data['review']
         if review.user != self.context['request'].user:
             raise serializers.ValidationError("Can not make a synonym for a review that is not yours!")
-        return value
+        return data
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def is_valid(self, raise_exception=False):
+        return super().is_valid(True)
 
 
 class ReviewSerializer(serializers.ModelSerializer):

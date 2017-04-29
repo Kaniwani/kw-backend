@@ -46,6 +46,10 @@ class SynonymViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return AnswerSynonym.objects.filter(review__user=self.request.user)
 
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
 
 class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Level.objects.all()
@@ -88,21 +92,14 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         limit = None
-        if 'count' in request.data:
-            limit = int(request.data['count'])
+        if 'count' in request.query_params:
+            limit = int(request.query_params['count'])
 
         unlocked_this_request, total_unlocked, locked = unlock_eligible_vocab_from_levels(user, requested_level, limit)
         level, created = user.profile.unlocked_levels.get_or_create(level=requested_level)
-        fully_unlocked = True if limit is None else False
 
-        # If user has repeatedly done partial unlocks, eventually they will fully unlock the level.
-        if limit and unlocked_this_request == limit:
-            level.partial = True
-            level.save()
-        elif limit and unlocked_this_request < limit:
-            level.partial = False
-            fully_unlocked = True
-            level.save()
+        level.partial = fully_unlocked = (locked == 0)
+        level.save()
 
         return Response(dict(unlocked_now=unlocked_this_request,
                              total_unlocked=total_unlocked,

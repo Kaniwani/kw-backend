@@ -1,16 +1,12 @@
 from datetime import timedelta
 from unittest import mock
-from unittest.mock import MagicMock
 
 import responses
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden
 from django.test import TestCase, Client
 from django.utils import timezone
 
-from kw_webapp.constants import SRS_TIMES, SrsLevel, KANIWANI_SRS_LEVELS
-from kw_webapp.models import UserSpecific
 from kw_webapp.tasks import build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import create_user, create_userspecific, create_profile, create_reading
@@ -32,36 +28,6 @@ class TestViews(TestCase):
 
         self.client = Client()
         self.client.login(username="user1", password="password")
-
-    @mock.patch("kw_webapp.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y: [1, 0, 0])
-    def test_unlocking_a_level_unlocks_all_vocab(self, unlock_call):
-        self.user.profile.api_valid = True
-        self.user.profile.save()
-        response = self.client.post("/kw/levelunlock/", data={"level": 5})
-        self.assertContains(response, "1 vocabulary unlocked")
-
-    def test_user_unlocking_too_high_level_fails(self):
-        self.user.profile.level = 5
-        self.user.save()
-        level_too_high = 20
-
-        response = self.client.post("/kw/levelunlock/", data={"level": level_too_high})
-
-        self.assertIsInstance(response, HttpResponseForbidden)
-
-    @responses.activate
-    def test_unlocking_all_levels_unlocks_all_levels(self):
-        resp_body = sample_api_responses.single_vocab_response
-        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, [1, 2, 3, 4, 5]),
-                      json=resp_body,
-                      status=200,
-                      content_type='application/json')
-
-        self.user.profile.api_valid = True
-        self.user.profile.save()
-        self.client.post(reverse("kw:unlock_all"))
-
-        self.assertListEqual(sorted(self.user.profile.unlocked_levels_list()), [1, 2, 3, 4, 5])
 
     @responses.activate
     def test_sync_now_endpoint_returns_correct_json(self):
@@ -86,36 +52,6 @@ class TestViews(TestCase):
 
         self.assertJSONEqual(str(response.content, encoding='utf8'), correct_response)
 
-    def test_burnt_items_arent_included_when_getting_next_review_date(self):
-        current_time = timezone.now()
-        self.review.next_review_date = current_time
-        self.review.needs_review = False
-        self.review.save()
-        older_burnt_review = create_userspecific(create_vocab("test"), self.user)
-        older_burnt_review.burned = True
-        older_burnt_review.needs_review = False
-        an_hour_ago = current_time - timedelta(hours=1)
-        older_burnt_review.next_review_date = an_hour_ago
-        older_burnt_review.save()
-
-        response = self.client.get("/kw/")
-
-        self.assertEqual(response.context['next_review_date'], current_time)
-
-    def test_adding_synonym_adds_synonym(self):
-        synonym_kana = "いぬ"
-        synonym_kanji = "犬"
-
-        self.client.post(reverse("kw:add_synonym"), data={"user_specific_id": self.review.id,
-                                                          "kana": synonym_kana,
-                                                          "kanji": synonym_kanji})
-
-        self.review.refresh_from_db()
-        found_synonym = self.review.answer_synonyms.first()
-
-        self.assertTrue(synonym_kana in self.review.answer_synonyms_list())
-        self.assertEqual(found_synonym.kana, synonym_kana)
-        self.assertEqual(found_synonym.character, synonym_kanji)
 
     def test_removing_synonym_removes_synonym(self):
         dummy_kana = "whatever"

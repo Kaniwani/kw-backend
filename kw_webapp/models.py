@@ -306,7 +306,7 @@ class AnswerSynonym(models.Model):
             "id": self.id,
             "kana": self.kana,
             "character": self.character,
-            "user_specific_id": self.review.id
+            "review_id": self.review.id
         }
 
 
