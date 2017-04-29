@@ -66,7 +66,7 @@ def one_time_import_jisho(json_file_path):
             for vocabulary_json in parsed_json:
                 try:
                     related_reading = Reading.objects.get(character=vocabulary_json["ja"]["characters"])
-                    outfile.write(doTheThing(related_reading, vocabulary_json))
+                    outfile.write(merge_with_model(related_reading, vocabulary_json))
                 except Reading.DoesNotExist:
                     pass
                 except Reading.MultipleObjectsReturned:
@@ -74,10 +74,10 @@ def one_time_import_jisho(json_file_path):
                     print("FOUND MULTIPLE READINGS")
                     for reading in readings:
                         print(reading.vocabulary.meaning, reading.character, reading.kana, reading.level)
-                        doTheThing(reading, vocabulary_json)
+                        merge_with_model(reading, vocabulary_json)
 
 
-def doTheThing(related_reading, vocabulary_json):
+def merge_with_model(related_reading, vocabulary_json):
     retval = "******\nWorkin on related reading...{},{}".format(related_reading.character, related_reading.id)
     retval += str(vocabulary_json)
 

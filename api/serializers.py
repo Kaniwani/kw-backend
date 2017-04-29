@@ -20,7 +20,7 @@ class SRSCountSerializer(serializers.BaseSerializer):
 
     def to_representation(self, user):
         all_reviews = get_users_reviews(user)
-        return {level.value: all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count() for level in
+        return {level.value.lower(): all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count() for level in
                 SrsLevel}
 
 
