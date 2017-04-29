@@ -254,6 +254,7 @@ class LevelSerializer(serializers.Serializer):
     vocabulary_count = serializers.IntegerField(read_only=True)
     vocabulary_url = serializer_fields.VocabularyByLevelHyperlinkedField(read_only=True)
     lock_url = serializers.CharField(read_only=True)
+    fully_unlocked = serializers.BooleanField(read_only=True)
     unlock_url = serializers.CharField(read_only=True)
 
 

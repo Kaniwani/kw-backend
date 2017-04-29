@@ -50,7 +50,6 @@ class SynonymViewSet(viewsets.ModelViewSet):
         return super().create(request, *args, **kwargs)
 
 
-
 class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
@@ -60,9 +59,13 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
         return self._serialize_level(level, self.request)
 
     def _serialize_level(self, level, request):
+        unlocked = True if level in request.user.profile.unlocked_levels_list() else False
+        level_obj = request.user.profile.unlocked_levels.get(level=level) if unlocked else None
+
         pre_serialized_dict = {'level': level,
-                               'unlocked': True if level in request.user.profile.unlocked_levels_list() else False,
+                               'unlocked': unlocked,
                                'vocabulary_count': Vocabulary.objects.filter(readings__level=level).distinct().count(),
+                               'fully_unlocked': False if level_obj is None else not level_obj.partial,
                                'vocabulary_url': level}
         if level <= request.user.profile.level:
             pre_serialized_dict['lock_url'] = self._build_lock_url(level)
@@ -98,7 +101,8 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
         unlocked_this_request, total_unlocked, locked = unlock_eligible_vocab_from_levels(user, requested_level, limit)
         level, created = user.profile.unlocked_levels.get_or_create(level=requested_level)
 
-        level.partial = fully_unlocked = (locked == 0)
+        fully_unlocked = (locked == 0)
+        level.partial = not fully_unlocked
         level.save()
 
         return Response(dict(unlocked_now=unlocked_this_request,

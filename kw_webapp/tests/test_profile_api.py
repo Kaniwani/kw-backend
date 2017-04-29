@@ -226,3 +226,12 @@ class TestProfileApi(APITestCase):
         self.assertTrue(synonym_kana in self.review.answer_synonyms_list())
         self.assertEqual(found_synonym.kana, synonym_kana)
         self.assertEqual(found_synonym.character, synonym_kanji)
+
+    def test_level_get_request_shows_if_level_is_fully_unlocked(self):
+        self.client.force_login(user=self.user)
+        self.user.profile.follow_me = True
+        self.user.profile.level = 5
+        self.user.save()
+
+        response = self.client.get(reverse("api:level-list"))
+        self.assertEqual(response.data[4]['fully_unlocked'], True)
