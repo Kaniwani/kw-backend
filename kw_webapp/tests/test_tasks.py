@@ -216,7 +216,6 @@ class TestTasks(TestCase):
         affected_count = sync_all_users_to_wk()
         self.assertEqual(affected_count, 1)
 
-
     @responses.activate
     def test_when_reading_level_changes_on_wanikani_we_catch_that_change_and_comply(self):
         resp_body = sample_api_responses.single_vocab_response

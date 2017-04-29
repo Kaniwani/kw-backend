@@ -27,22 +27,31 @@ class SRSCountSerializer(serializers.BaseSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='user.username')
     reviews_count = serializers.SerializerMethodField()
-    unlocked_levels = serializers.StringRelatedField(many=True)
+    next_review_date = serializers.SerializerMethodField()
+    unlocked_levels = serializers.StringRelatedField(many=True, read_only=True)
     reviews_within_hour_count = serializers.SerializerMethodField()
     reviews_within_day_count = serializers.SerializerMethodField()
     srs_counts = SRSCountSerializer(source='user', many=False, read_only=True)
 
     class Meta:
         model = Profile
-        fields = ('name', 'reviews_count', 'api_key', 'api_valid', 'join_date', 'last_wanikani_sync_date',
-                  'level', 'unlocked_levels', 'follow_me', 'auto_advance_on_success',
-                  'auto_expand_answer_on_success', 'auto_expand_answer_on_failure',
+        fields = ('id', 'name', 'reviews_count', 'api_key', 'api_valid', 'join_date', 'last_wanikani_sync_date',
+                  'level', 'follow_me', 'auto_advance_on_success',
+                  'unlocked_levels', 'auto_expand_answer_on_success', 'auto_expand_answer_on_failure',
                   'on_vacation', 'vacation_date', 'reviews_within_day_count',
-                  'reviews_within_hour_count', 'srs_counts', 'minimum_wk_srs_level_to_review')
+                  'reviews_within_hour_count', "srs_counts", "minimum_wk_srs_level_to_review", "next_review_date")
 
-        read_only_fields = ('api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
+        read_only_fields = ('id', 'name', 'api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
                             'unlocked_levels', 'vacation_date', 'reviews_within_day_count',
-                            'reviews_within_hour_count', 'reviews_count')
+                            'reviews_within_hour_count', 'reviews_count', "srs_counts", "next_review_date")
+
+    def get_next_review_date(self, obj):
+        user = obj.user
+        if self.get_reviews_count(obj) == 0:
+            reviews = get_users_future_reviews(user)
+            if reviews:
+                next_review_date = reviews[0].next_review_date
+                return next_review_date
 
     def get_reviews_count(self, obj):
         return get_users_current_reviews(obj.user).count()
@@ -165,6 +174,12 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data.get('password'))
         Profile.objects.create(user=user, api_key=api_key, level=1)
 
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop("profile")
+        profile_serializer = ProfileSerializer(data=profile_data)
+        profile_serializer.save()
+        instance.save()
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -201,14 +216,17 @@ class SynonymSerializer(serializers.ModelSerializer):
         model = AnswerSynonym
         fields = '__all__'
 
-    def validate_review(self, value):
-        """
-        Check that the user creating the synonym owns the related review.
-        """
-        review = value
+    def validate(self, data):
+        review = data['review']
         if review.user != self.context['request'].user:
             raise serializers.ValidationError("Can not make a synonym for a review that is not yours!")
-        return value
+        return data
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def is_valid(self, raise_exception=False):
+        return super().is_valid(True)
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -236,6 +254,7 @@ class LevelSerializer(serializers.Serializer):
     vocabulary_count = serializers.IntegerField(read_only=True)
     vocabulary_url = serializer_fields.VocabularyByLevelHyperlinkedField(read_only=True)
     lock_url = serializers.CharField(read_only=True)
+    fully_unlocked = serializers.BooleanField(read_only=True)
     unlock_url = serializers.CharField(read_only=True)
 
 

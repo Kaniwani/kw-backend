@@ -14,13 +14,14 @@ from api.filters import VocabularyFilter, ReviewFilter
 from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
-    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer
+    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
-    Announcement
+    Announcement, Profile
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    get_users_critical_reviews, sync_with_wk, all_srs
+    get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
+    user_begins_vacation, follow_user
 
 
 class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
@@ -45,6 +46,9 @@ class SynonymViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return AnswerSynonym.objects.filter(review__user=self.request.user)
 
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
 
 class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Level.objects.all()
@@ -55,9 +59,13 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
         return self._serialize_level(level, self.request)
 
     def _serialize_level(self, level, request):
+        unlocked = True if level in request.user.profile.unlocked_levels_list() else False
+        level_obj = request.user.profile.unlocked_levels.get(level=level) if unlocked else None
+
         pre_serialized_dict = {'level': level,
-                               'unlocked': True if level in request.user.profile.unlocked_levels_list() else False,
+                               'unlocked': unlocked,
                                'vocabulary_count': Vocabulary.objects.filter(readings__level=level).distinct().count(),
+                               'fully_unlocked': False if level_obj is None else not level_obj.partial,
                                'vocabulary_url': level}
         if level <= request.user.profile.level:
             pre_serialized_dict['lock_url'] = self._build_lock_url(level)
@@ -70,7 +78,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
         for level in range(constants.LEVEL_MIN, constants.LEVEL_MAX + 1):
             level_dicts.append(self._serialize_level(level, request))
 
-        serializer = LevelSerializer(level_dicts, many=True, context={'request':request})
+        serializer = LevelSerializer(level_dicts, many=True, context={'request': request})
         return Response(serializer.data)
 
     def _build_lock_url(self, level):
@@ -87,21 +95,15 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         limit = None
-        if 'count' in request.data:
-            limit = int(request.data['count'])
+        if 'count' in request.query_params:
+            limit = int(request.query_params['count'])
 
         unlocked_this_request, total_unlocked, locked = unlock_eligible_vocab_from_levels(user, requested_level, limit)
         level, created = user.profile.unlocked_levels.get_or_create(level=requested_level)
-        fully_unlocked = True if limit is None else False
 
-        # If user has repeatedly done partial unlocks, eventually they will fully unlock the level.
-        if limit and unlocked_this_request == limit:
-            level.partial = True
-            level.save()
-        elif limit and unlocked_this_request < limit:
-            level.partial = False
-            fully_unlocked = True
-            level.save()
+        fully_unlocked = (locked == 0)
+        level.partial = not fully_unlocked
+        level.save()
 
         return Response(dict(unlocked_now=unlocked_this_request,
                              total_unlocked=total_unlocked,
@@ -224,11 +226,35 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
 
         return User.objects.filter(pk=self.request.user.id)
 
-    @list_route(methods=["GET"])
+    @list_route(methods=["GET", "PUT"])
     def me(self, request):
         user = request.user
-        serializer = self.get_serializer(user, many=False)
-        return Response(serializer.data)
+        if request.method == "GET":
+            serializer = self.get_serializer(user, many=False)
+            return Response(serializer.data)
+        elif request.method == "PUT":
+            was_following = user.profile.follow_me
+            was_on_vacation = user.profile.on_vacation
+            serializer = ProfileSerializer(data=request.data['profile'])
+            serializer.is_valid(raise_exception=False)
+            serializer.update(instance=user.profile, validated_data=serializer.validated_data)
+            user.refresh_from_db()
+            current_profile = user.profile
+
+            if not was_following and current_profile.follow_me:
+                sync_user_profile_with_wk(user)
+
+            if was_on_vacation and not current_profile.on_vacation:
+                user_returns_from_vacation(user)
+
+            if not was_on_vacation and current_profile.on_vacation:
+                user_begins_vacation(user)
+
+            if not was_following and current_profile.follow_me:
+                follow_user(user)
+
+            serializer = self.get_serializer(user, many=False)
+            return Response(serializer.data)
 
     @list_route(methods=['POST'])
     def sync(self, request):
@@ -248,6 +274,21 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         return Response({'review_count': new_review_count})
 
 
+class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ProfileSerializer
+    queryset = Profile.objects.all()
+
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
+
+
 class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = ContactSerializer
@@ -262,8 +303,3 @@ class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
         form.save()
 
         return Response(status=status.HTTP_202_ACCEPTED)
-
-
-
-
-

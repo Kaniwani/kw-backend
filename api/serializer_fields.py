@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 
+
 class VocabularyByLevelHyperlinkedField(serializers.HyperlinkedRelatedField):
     view_name = 'api:vocabulary-list'
 
@@ -10,5 +11,3 @@ class VocabularyByLevelHyperlinkedField(serializers.HyperlinkedRelatedField):
             obj
         )
         return result
-
-
