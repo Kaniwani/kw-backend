@@ -94,21 +94,12 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
         if int(requested_level) > user.profile.level:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        limit = None
-        if 'count' in request.query_params:
-            limit = int(request.query_params['count'])
-
-        unlocked_this_request, total_unlocked, locked = unlock_eligible_vocab_from_levels(user, requested_level, limit)
-        level, created = user.profile.unlocked_levels.get_or_create(level=requested_level)
-
-        fully_unlocked = (locked == 0)
-        level.partial = not fully_unlocked
-        level.save()
+        unlocked_this_request, total_unlocked, locked = unlock_eligible_vocab_from_levels(user, requested_level)
+        user.profile.unlocked_levels.get_or_create(level=requested_level)
 
         return Response(dict(unlocked_now=unlocked_this_request,
                              total_unlocked=total_unlocked,
-                             locked=locked,
-                             fully_unlocked=fully_unlocked))
+                             locked=locked))
 
     @detail_route(methods=['POST'])
     def lock(self, request, pk=None):

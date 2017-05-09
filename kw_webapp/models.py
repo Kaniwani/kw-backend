@@ -31,7 +31,6 @@ class FrequentlyAskedQuestion(models.Model):
 
 
 class Level(models.Model):
-    partial = models.BooleanField(default=False)
     level = models.PositiveIntegerField(validators=[
         MinValueValidator(constants.LEVEL_MIN),
         MaxValueValidator(constants.LEVEL_MAX),
