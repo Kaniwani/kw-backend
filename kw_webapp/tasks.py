@@ -142,8 +142,8 @@ def lock_level_for_user(requested_level, user):
 def unlock_all_possible_levels_for_user(user):
     """
 
-    :param user: User to fully unlock.
-    :return: The list of levels unlocked, how many vocab were unlocked, how many vocab remain locked (as they are locked in WK)
+    :param user: User to fully unlock. :return: The list of levels unlocked, how many vocab were unlocked,
+    how many vocab remain locked (as they are locked in WK)
     """
     level_list = [level for level in range(1, user.profile.level + 1)]
     unlocked_now, unlocked_total, locked = unlock_eligible_vocab_from_levels(user, level_list)
@@ -151,19 +151,19 @@ def unlock_all_possible_levels_for_user(user):
 
 
 @shared_task
-def unlock_eligible_vocab_from_levels(user, levels, count=None):
+def unlock_eligible_vocab_from_levels(user, levels):
     """
-    I don't like duplicating code like this, but its for the purpose of reducing API call load on WaniKani. It's a hassle if the user caps out.
-    :param user: user to add vocab to.
-    :param levels: requested level unlock. This can also be a list.
-    :return: unlocked count, locked count
+    I don't like duplicating code like this, but its for the purpose of reducing API call load on WaniKani. It's a
+    hassle if the user caps out.
+    :param user: user to add vocab to. :param levels: requested level unlock. This can
+    also be a list. :return: unlocked count, locked count
     """
 
     api_call_string = build_API_sync_string_for_user_for_levels(user, levels)
 
     try:
         response = make_api_call(api_call_string)
-        unlocked_this_request, total_unlocked, locked = process_vocabulary_response_for_unlock(user, response, count)
+        unlocked_this_request, total_unlocked, locked = process_vocabulary_response_for_unlock(user, response)
         return unlocked_this_request, total_unlocked, locked
     except exceptions.InvalidWaniKaniKey:
         logger.error("Invalid key found for user {}".format(user.username))
@@ -194,7 +194,7 @@ def sync_user_profile_with_wk(user):
     try:
         json_data = make_api_call(api_string)
     except exceptions.InvalidWaniKaniKey:
-        user.profile.api_valid = False;
+        user.profile.api_valid = False
         user.profile.save()
         return False
 
@@ -279,9 +279,11 @@ def associate_readings_to_vocab(vocab, vocabulary_json):
 
 def get_or_create_vocab_by_json(vocab_json):
     """
-    if lookup by meaning fails, create a new vocab object and return it. See JSON Example here https://www.wanikani.com/api
-    :param: vocab_json: a dictionary holding the information needed to create new vocabulary.
-    :return:
+    if lookup by meaning fails, create a new vocab object and return it. See JSON Example here
+    https://www.wanikani.com/api
+    :param: vocab_json: a dictionary holding the information needed to create new
+    vocabulary.
+    :return: vocabulary object.
     """
     try:
         vocab = get_vocab_by_meaning(vocab_json['meaning'])
@@ -356,7 +358,7 @@ def get_users_future_reviews(user, time_limit=None):
     return queryset
 
 
-def process_vocabulary_response_for_unlock(user, json_data, limit=None):
+def process_vocabulary_response_for_unlock(user, json_data):
     """
     Given a JSON Object from WK, iterate over the list of vocabulary, and synchronize the user.
     :param user:
@@ -384,8 +386,6 @@ def process_vocabulary_response_for_unlock(user, json_data, limit=None):
         new_review.wanikani_srs_numeric = user_specific["srs_numeric"]
         new_review.wanikani_burned = user_specific["burned"]
         new_review.save()
-        if limit and unlocked_this_request >= limit:
-            break
 
     logger.info("Unlocking level for {}".format(user.username))
     remaining_locked = original_length - total_unlocked_count

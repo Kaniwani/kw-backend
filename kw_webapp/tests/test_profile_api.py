@@ -175,7 +175,7 @@ class TestProfileApi(APITestCase):
         response = self.client.post(reverse("api:level-unlock", args=(level_too_high,)))
         self.assertEqual(response.status_code, 403)
 
-    @mock.patch("api.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y, z: [1, 0, 0])
+    @mock.patch("api.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y: [1, 0, 0])
     def test_unlocking_a_level_unlocks_all_vocab(self, garbage):
         self.client.force_login(user=self.user)
         self.user.profile.api_valid = True
@@ -183,13 +183,6 @@ class TestProfileApi(APITestCase):
         s1 = reverse("api:level-unlock", args=(5,))
         response = self.client.post(s1)
         self.assertEqual(response.data['unlocked_now'], 1)
-
-    @mock.patch("api.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y, z: [6, 4, 0])
-    def test_unlock_count_of_zero_indicates_fully_unlocked(self, garbage):
-        self.client.force_login(user=self.user)
-        s1 = reverse("api:level-unlock", args=(4,)) + "?count=5"
-        response = self.client.post(s1)
-        self.assertEqual(response.data['fully_unlocked'], True)
 
     def test_burnt_items_arent_included_when_getting_next_review_date(self):
         self.client.force_login(user=self.user)
@@ -226,12 +219,3 @@ class TestProfileApi(APITestCase):
         self.assertTrue(synonym_kana in self.review.answer_synonyms_list())
         self.assertEqual(found_synonym.kana, synonym_kana)
         self.assertEqual(found_synonym.character, synonym_kanji)
-
-    def test_level_get_request_shows_if_level_is_fully_unlocked(self):
-        self.client.force_login(user=self.user)
-        self.user.profile.follow_me = True
-        self.user.profile.level = 5
-        self.user.save()
-
-        response = self.client.get(reverse("api:level-list"))
-        self.assertEqual(response.data[4]['fully_unlocked'], True)
