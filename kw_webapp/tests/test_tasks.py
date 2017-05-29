@@ -290,7 +290,7 @@ class TestTasks(TestCase):
         assert(new_review.notes == original_review.notes)
         assert(new_review.last_studied == original_review.last_studied)
         assert(new_review.needs_review == original_review.needs_review)
-        assert(new_review.critial == original_review.critial)
+        assert(new_review.critical == original_review.critical)
         assert(new_review.hidden == original_review.hidden)
 
         # Any WK information is not duplicated, and is instead read from the API response.
