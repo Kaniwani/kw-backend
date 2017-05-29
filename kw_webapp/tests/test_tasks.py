@@ -304,7 +304,48 @@ class TestTasks(TestCase):
 
 
     def test_if_vocab_meaning_changes_and_it_now_matches_another_vocab_it_is_aglomerated(self):
-        pass
+        assert(len(self.user.reviews.all()) == 1)
+        unique_vocabulary = create_vocab("radioactive bat, doggo.")
+        create_reading(unique_vocabulary, "いぬ", "犬", 2)
+        unique_review = create_userspecific(unique_vocabulary, self.user)
+        # Lets set some higher SRS values here, so we can show that hte merger pick the higher of the two.
+        higher_streak = unique_review.streak = 3
+        higher_correct = unique_review.correct = 4
+        higher_incorrect = unique_review.incorrect = 1
+        unique_review.save()
+
+        #Ensure that the user currently has two reviews.
+        assert(len(self.user.reviews.all()) == 2)
+
+        # Now for kanji 犬, remove doggo from meanings, leaving only radioactive bat, which should cause a merger.
+        # What was originally
+        # radioactive bat -> 猫
+        # radioactive bat, doggo -> 犬
+
+        # will become:
+
+        # radioactive bat -> 犬, 猫
+
+        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+                      json=sample_api_responses.single_vocab_changed_meaning_and_should_now_merge,
+                      status=200,
+                      content_type='application/json')
+
+        sync_unlocked_vocab_with_wk(self.user)
+        unique_vocabulary.refresh_from_db()
+        found_vocab = get_vocab_by_meaning("radioactive bat")
+        assert(len(found_vocab.readings.all()) == 2)
+
+        #Ensure that the user currently has one review, reflecting the merger. Essentially, make all the same checks
+        # that we make in the one time script.
+        assert(len(self.user.reviews.all()) == 1)
+        only_review = self.user.reviews.first()
+        assert(only_review.correct == higher_correct)
+        assert(only_review.streak == higher_streak)
+        assert(only_review.incorrect == higher_incorrect)
+        assert(only_review.vocabulary.id == found_vocab.id)
+
+
 
     def test_one_time_script_for_vocabulary_merging_works(self):
         # Merger should:
