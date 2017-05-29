@@ -1,4 +1,5 @@
 from django.conf.urls import url, include
+from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import DefaultRouter
 from rest_framework_jwt import views as jwtviews
 from api.views import ReviewViewSet, VocabularyViewSet, ReadingViewSet, LevelViewSet, SynonymViewSet, \

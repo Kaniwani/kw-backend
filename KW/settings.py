@@ -201,7 +201,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'lineage',
     'kw_webapp.apps.KaniwaniConfig',
-    'rest_framework_docs',
     'debug_toolbar',
     'rest_framework.authtoken',
     'corsheaders',
@@ -228,7 +227,9 @@ if DEBUG:
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated'
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        #TODO fix this, since obviously it doesnt work.
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
@@ -237,10 +238,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100,
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
-}
-
-REST_FRAMEWORK_DOCS = {
-    'HIDE_DOCS': not DEBUG
 }
 
 CACHES = {

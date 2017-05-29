@@ -36,6 +36,9 @@ class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
 
 
 class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Do a thing.
+    """
     queryset = Reading.objects.all()
     serializer_class = ReadingSerializer
 
@@ -51,6 +54,9 @@ class SynonymViewSet(viewsets.ModelViewSet):
 
 
 class LevelViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Return a list of all the existing users.
+    """
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
 
