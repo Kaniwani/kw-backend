@@ -18,7 +18,7 @@ urlpatterns = (
     url(r'^$', kw_webapp.views.home, name='home'),
 
     # API
-    url(r'^docs/', include_docs_urls(title='Kaniwani Docs', public=True)),
+    url(r'^docs/', include_docs_urls(title='Kaniwani Docs')),
     url(r'^api/v1/', include('api.urls', namespace='api')),
 
     # All Auth Stuff

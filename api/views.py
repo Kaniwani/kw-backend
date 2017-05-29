@@ -37,7 +37,7 @@ class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
 
 class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Do a thing.
+    For internal use fetching readings specifically.
     """
     queryset = Reading.objects.all()
     serializer_class = ReadingSerializer
@@ -55,7 +55,13 @@ class SynonymViewSet(viewsets.ModelViewSet):
 
 class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    Return a list of all the existing users.
+    Return a list of all levels and related information.
+
+    unlock:
+    Unlock the given level for a particular user. This will add all the vocabulary of that level to their review queue immediately
+
+    lock:
+    Lock the given level for a particular user. This will wipe away ALL related SRS information for these vocabulary as well.
     """
     queryset = Level.objects.all()
     serializer_class = LevelSerializer
@@ -118,6 +124,10 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Endpoint for fetching specific vocabulary. You can pass parameter `hyperlink=true` to receive the vocabulary with
+    hyperlinked readings (for increased performance), or else they will be inline
+    """
     filter_class = VocabularyFilter
     queryset = Vocabulary.objects.all()
 
@@ -129,6 +139,25 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ReviewViewSet(ListRetrieveUpdateViewSet):
+    """
+    current:
+    Get all of user's reviews which currently need to be done.
+
+    critical:
+    Return a list of *critical* items, which the user has often gotten incorrect.
+
+    correct:
+    POSTing here will indicate that the user has successfully answered the review.
+
+    incorrect:
+    POSTing here will indicate that the user has incorrectly answered the review.
+
+    hide:
+    No longer include this item in the SRS algorithm and review queue.
+
+    unhide:
+    include this item in the SRS algorithm and review queue.
+    """
     serializer_class = ReviewSerializer
     filter_class = ReviewFilter
     permission_classes = (IsAuthenticated,)
@@ -198,12 +227,18 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
 
 
 class FrequentlyAskedQuestionViewSet(viewsets.ModelViewSet):
+    """
+    Frequently Asked Questions that uses will have read access to.
+    """
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = FrequentlyAskedQuestionSerializer
     queryset = FrequentlyAskedQuestion.objects.all()
 
 
 class AnnouncementViewSet(viewsets.ModelViewSet):
+    """
+    Announcements that users will see upon entering the website.
+    """
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = AnnouncementSerializer
     queryset = Announcement.objects.all()
@@ -213,6 +248,19 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
+    """
+    Endpoint for user and internally nested profiles. Used primarily for updating user profiles, and creation of users.
+
+    me:
+    Standard endpoint to retrieve current user based on their authentication provided in the request. This is also where
+    we PUT changes to the nested profile.
+
+    sync:
+    Force a sync to the Wanikani server.
+
+    srs:
+    Force an SRS run (typically runs every 15 minutes anyhow).
+    """
     permission_classes = (IsAuthenticatedOrCreating,)
     serializer_class = UserSerializer
 
@@ -271,6 +319,9 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
 
 
 class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
+    """
+    Profile model view set, for INTERNAL USE ONLY.
+    """
     permission_classes = (IsAuthenticated,)
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
@@ -286,6 +337,9 @@ class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
 
 
 class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
+    """
+    Endpoint for contacting the developers. POSTing to this endpoint will send us an email.
+    """
     permission_classes = (IsAuthenticated,)
     serializer_class = ContactSerializer
 
