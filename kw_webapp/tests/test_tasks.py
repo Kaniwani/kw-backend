@@ -308,7 +308,7 @@ class TestTasks(TestCase):
         unique_vocabulary = create_vocab("radioactive bat, doggo.")
         create_reading(unique_vocabulary, "いぬ", "犬", 2)
         unique_review = create_userspecific(unique_vocabulary, self.user)
-        # Lets set some higher SRS values here, so we can show that hte merger pick the higher of the two.
+        # Lets set some higher SRS values here, so we can show that the merger pick the higher of the two.
         higher_streak = unique_review.streak = 3
         higher_correct = unique_review.correct = 4
         higher_incorrect = unique_review.incorrect = 1
@@ -356,7 +356,7 @@ class TestTasks(TestCase):
         # 3) If multiple vocab that have a reading with that kanji are returned, Create *one* new vocab for that kanji, with current info from API.
         # 3.5) Make sure to copy over the various metadata on the reading we have previously pulled (sentences etc)
         # 4) Find all Reviews that point to any of the previous vocabulary objects.
-        # 5) find maximum of all the reviews. Which has highest SRS, etc. This will be the user's original vocab.
+        # 5) Find maximum of all the reviews. Which has highest SRS, etc. This will be the user's original vocab. Probably best to confirm by checking creation date.
         # 6) Point the review's Vocabulary to the newly created vocabulary object from step 3.
         # 7) Delete all other Vocabulary that are now out of date. This should cascade deletion down to the other reviews.
 
