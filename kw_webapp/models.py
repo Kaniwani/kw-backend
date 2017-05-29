@@ -120,6 +120,7 @@ class Profile(models.Model):
 
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
+    last_updated = models.Date
 
     def reading_count(self):
         return self.readings.all().count()

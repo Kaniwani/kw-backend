@@ -63,6 +63,15 @@ def all_srs(user=None):
     return affected_count
 
 
+def get_vocab_by_kanji(kanji):
+    try:
+        v = Vocabulary.objects.get(readings__character=kanji)
+    except Vocabulary.DoesNotExist:
+        logger.error("While attempting to get vocabulary {} we could not find it!".format(meaning))
+        raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(meaning))
+    else:
+        return v
+
 def get_vocab_by_meaning(meaning):
     """
     Searches for a vocabulary object based on its meaning.
