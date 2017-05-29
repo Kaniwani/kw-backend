@@ -4,6 +4,8 @@ from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView
 from django.contrib.auth import views as auth_views
+from rest_framework.documentation import include_docs_urls
+
 import kw_webapp
 from KW import settings
 from kw_webapp.forms import UserLoginForm, PasswordResetFormCustom, UserContactCustomForm
@@ -16,9 +18,8 @@ urlpatterns = (
     url(r'^$', kw_webapp.views.home, name='home'),
 
     # API
+    url(r'^docs/', include_docs_urls(title='Kaniwani Docs')),
     url(r'^api/v1/', include('api.urls', namespace='api')),
-    # DOCS
-    url(r'^docs/', include('rest_framework_docs.urls')),
 
     # All Auth Stuff
     url(r'^auth/login/$', auth_views.login,
