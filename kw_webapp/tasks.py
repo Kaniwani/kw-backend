@@ -565,18 +565,18 @@ def user_returns_from_vacation(user):
     """
     logger.info("{} has returned from vacation!".format(user.username))
     vacation_date = user.profile.vacation_date
+    print("vac: {}".format(vacation_date))
     if vacation_date:
         users_reviews = UserSpecific.objects.filter(user=user)
         elapsed_vacation_time = timezone.now() - vacation_date
         logger.info("User {} has been gone for timedelta: {}".format(user.username, str(elapsed_vacation_time)))
-
         for rev in users_reviews:
             lst = rev.last_studied
             nsd = rev.next_review_date
             rev.bring_review_out_of_vacation(elapsed_vacation_time)
             if user.username == "Subversity" or user.username == "Tadgh":
                 logger.info(timezone.timedelta(constants.SRS_TIMES[rev.streak]))
-                logger.info("orig LS: {} actu LS: {},"
+                print("orig LS: {} actu LS: {},"
                             "streak: {},"
                             "delay: {}, orig NR: {}"
                             "calc NR :{}, actu NR: {}".format(lst, rev.last_studied, rev.streak,

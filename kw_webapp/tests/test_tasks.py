@@ -162,8 +162,13 @@ class TestTasks(TestCase):
         self.review.refresh_from_db()
         self.assertNotEqual(self.review.last_studied, previously_studied)
 
-        self.assertAlmostEqual(self.review.next_review_date, four_hours_from_now, delta=timezone.timedelta(seconds=1))
-        self.assertAlmostEqual(self.review.last_studied, now, delta=timezone.timedelta(seconds=1))
+        print("NOW: {}".format(now))
+        print("2H: {}".format(two_hours_from_now))
+        print("4H: {}".format(four_hours_from_now))
+        print("LS: {}".format(self.review.last_studied))
+        print("NR: {}".format(self.review.next_review_date))
+        self.assertAlmostEqual(self.review.next_review_date, four_hours_from_now, delta=timezone.timedelta(minutes=15))
+        self.assertAlmostEqual(self.review.last_studied, now, delta=timezone.timedelta(minutes=15))
 
     def test_users_who_are_on_vacation_are_ignored_by_all_srs_algorithm(self):
         self.review.last_studied = past_time(10)

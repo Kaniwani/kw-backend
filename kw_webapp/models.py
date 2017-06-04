@@ -217,7 +217,7 @@ class UserSpecific(models.Model):
     def bring_review_out_of_vacation(self, vacation_duration):
         self.last_studied = self.last_studied + vacation_duration
         if self.streak in constants.SRS_TIMES.keys():
-            self.next_review_date = self.last_studied + vacation_duration + timezone.timedelta(hours=constants.SRS_TIMES[self.streak])
+            self.next_review_date = self.last_studied + timezone.timedelta(hours=constants.SRS_TIMES[self.streak])
             self.round_times()
         else:
             self.next_review_date = None
