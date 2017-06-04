@@ -9,7 +9,7 @@ from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user, sync_all_users_to_wk, \
-    get_vocab_by_kanji
+    get_vocab_by_kanji, has_multiple_kanji
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading
@@ -252,6 +252,7 @@ class TestTasks(TestCase):
         #Will fail if 2 vocab exist with same kanji.
         vocabulary = get_vocab_by_kanji("猫")
 
+    @responses.activate
     def test_if_vocab_meaning_changes_on_aglomerated_vocab_it_is_correctly_split(self):
         original_vocabulary = create_vocab("construction")
         reading1 = create_reading(original_vocabulary, "ねこ", "工事", 2)
@@ -259,6 +260,7 @@ class TestTasks(TestCase):
         reading3 = create_reading(original_vocabulary, "ねこ", "建設", 2)
         original_review = create_userspecific(original_vocabulary, self.user)
         assert(len(original_vocabulary.readings.all()) == 3)
+        original_vocabulary.refresh_from_db()
 
         # Now for kanji 工作, add handicraft to meanings, so that it should be split as meanings no longer identical
         # Construction -> 工事, 建設
@@ -302,7 +304,7 @@ class TestTasks(TestCase):
         # instead we want to check the API responses during Review clone time.
 
 
-
+    @responses.activate
     def test_if_vocab_meaning_changes_and_it_now_matches_another_vocab_it_is_aglomerated(self):
         assert(len(self.user.reviews.all()) == 1)
         unique_vocabulary = create_vocab("radioactive bat, doggo.")
@@ -347,6 +349,7 @@ class TestTasks(TestCase):
 
 
 
+    @responses.activate
     def test_one_time_script_for_vocabulary_merging_works(self):
         # Merger should:
         # 1) Pull entire Wanikani vocabulary set.
@@ -363,5 +366,5 @@ class TestTasks(TestCase):
         # Option B:
         # 3) If only one vocab is found for a particular kanji, we have successfully *not* created duplicates, meaning the WK vocab has never changed meaning.
         # 4) We do not have to do anything here. Woohoo!
-
+        pass
 

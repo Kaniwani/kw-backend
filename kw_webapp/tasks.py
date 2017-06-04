@@ -67,8 +67,8 @@ def get_vocab_by_kanji(kanji):
     try:
         v = Vocabulary.objects.get(readings__character=kanji)
     except Vocabulary.DoesNotExist:
-        logger.error("While attempting to get vocabulary {} we could not find it!".format(meaning))
-        raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(meaning))
+        logger.error("While attempting to get vocabulary {} we could not find it!".format(kanji))
+        raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(kanji))
     else:
         return v
 
@@ -294,11 +294,56 @@ def get_or_create_vocab_by_json(vocab_json):
     vocabulary.
     :return: vocabulary object.
     """
+
     try:
-        vocab = get_vocab_by_meaning(vocab_json['meaning'])
+        vocab = get_vocab_by_kanji(vocab_json['character'])
+        handle_merger_issues(vocab, vocab_json)
+        created = False
     except Vocabulary.DoesNotExist as e:
         vocab = create_new_vocabulary(vocab_json)
-    return vocab
+        created = True
+    return vocab, created
+
+
+def handle_merger_issues(vocab, vocab_json):
+    current_meaning = vocab_json['meaning']
+    if current_meaning != vocab.meaning:
+        # We have detected a divergence of meanings from a current vocab, to this new one we just pulled.
+        # Do we 1) update? 2) Split vocab.
+        # Options: 1) there is another vocab with this new meaning: combine with it.
+        #          2) there is the only vocab with this meaning.
+
+        #Vocabulary is not part of a conglomerate, edit it in place.
+        if vocab.reading_count() == 1 or not has_multiple_kanji(vocab):
+            vocab.meaning = current_meaning
+
+        #Vocabulary IS part of a conglomerate
+        else:
+            #first up, strip the relevant readings from this vocab.
+            related_readings = vocab.readings.filter(character=vocab_json['character'])
+            related_readings.delete()
+            #First try to find another vocab to glue this to (another conglomerate).
+
+            try:
+                new_vocab = get_vocab_by_meaning(current_meaning)
+                associate_readings_to_vocab(new_conglomerate, vocab_json)
+            #Welp, no identical meaning vocabulary found, time to create a new one.
+            except Vocabulary.DoesNotExist:
+                create_new_vocabulary(vocab_json)
+
+
+
+
+
+
+            pass
+
+
+def has_multiple_kanji(vocab):
+    kanji = [reading.character for reading in vocab.readings.all()]
+    kanji2 = set(kanji)
+    return len(kanji2) > 1
+
 
 
 def add_synonyms_from_api_call_to_review(review, user_specific_json):
@@ -383,7 +428,7 @@ def process_vocabulary_response_for_unlock(user, json_data):
     unlocked_this_request = 0
     for vocabulary_json in vocab_list:
         user_specific = vocabulary_json['user_specific']
-        vocab = get_or_create_vocab_by_json(vocabulary_json)
+        vocab, is_new = get_or_create_vocab_by_json(vocabulary_json)
         vocab = associate_readings_to_vocab(vocab, vocabulary_json)
         new_review, created = associate_vocab_to_user(vocab, user)
         total_unlocked_count += 1
@@ -415,7 +460,7 @@ def process_vocabulary_response_for_user(user, json_data):
                   vocab_json['user_specific'] is not None]  # filters out locked items.
     for vocabulary_json in vocab_list:
         user_specific = vocabulary_json['user_specific']
-        vocab = get_or_create_vocab_by_json(vocabulary_json)
+        vocab, is_new = get_or_create_vocab_by_json(vocabulary_json)
         vocab = associate_readings_to_vocab(vocab, vocabulary_json)
         if user.profile.follow_me:
             new_review, created = associate_vocab_to_user(vocab, user)
