@@ -359,7 +359,7 @@ class TestTasks(TestCase):
         # 3) If multiple vocab that have a reading with that kanji are returned, Create *one* new vocab for that kanji, with current info from API.
         # 3.5) Make sure to copy over the various metadata on the reading we have previously pulled (sentences etc)
         # 4) Find all Reviews that point to any of the previous vocabulary objects.
-        # 5) Find maximum of all the reviews. Which has highest SRS, etc. This will be the user's original vocab. Probably best to confirm by checking creation date.
+        # 5) Find maximum of all the reviews when grouped by user. Which has highest SRS, etc. This will be the user's original vocab. Probably best to confirm by checking creation date.
         # 6) Point the review's Vocabulary to the newly created vocabulary object from step 3.
         # 7) Delete all other Vocabulary that are now out of date. This should cascade deletion down to the other reviews.
 
