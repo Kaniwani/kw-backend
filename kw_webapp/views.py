@@ -316,6 +316,7 @@ class RecordAnswer(LoginRequiredMixin, View):
             review.last_studied = timezone.now()
             review.save()
             review.set_next_review_time()
+            review.round_times()
             return HttpResponse("Correct!")
         elif not user_correct:
             review.incorrect += 1
