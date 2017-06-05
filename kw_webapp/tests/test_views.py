@@ -237,6 +237,7 @@ class TestViews(TestCase):
         self.review.streak += 1
         self.review.save()
         self.review.set_next_review_time()
+        self.review.round_times()
         self.review.refresh_from_db()
         correct_time = self.review.next_review_date
         self.review.next_review_date = original_time

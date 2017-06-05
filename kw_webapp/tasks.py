@@ -574,15 +574,20 @@ def user_returns_from_vacation(user):
             lst = rev.last_studied
             nsd = rev.next_review_date
             rev.bring_review_out_of_vacation(elapsed_vacation_time)
+            if rev.streak in constants.SRS_TIMES.keys():
+                calc_time = lst + elapsed_vacation_time + timezone.timedelta(hours=constants.SRS_TIMES[rev.streak])
+                delay = constants.SRS_TIMES[rev.streak]
+            else:
+                calc_time = "None!"
+                delay = "None!"
+
             if user.username == "Subversity" or user.username == "Tadgh":
                 logger.info(timezone.timedelta(constants.SRS_TIMES[rev.streak]))
                 print("orig LS: {} actu LS: {},"
                             "streak: {},"
                             "delay: {}, orig NR: {}"
                             "calc NR :{}, actu NR: {}".format(lst, rev.last_studied, rev.streak,
-                                                 constants.SRS_TIMES[rev.streak], nsd,
-                                                 lst + elapsed_vacation_time + timezone.timedelta(
-                                                     hours=constants.SRS_TIMES[rev.streak]), rev.next_review_date))
+                                                 delay, nsd, calc_time, rev.next_review_date))
                 # updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
                 # users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
                 # logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
