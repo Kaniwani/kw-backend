@@ -142,13 +142,17 @@ class TestTasks(TestCase):
         self.assertEqual(newly_synced_review.wanikani_srs_numeric, 3)
 
     def test_user_returns_from_vacation_correctly_increments_review_timestamps(self):
-        self.user.profile.on_vacation = True
-
         now = timezone.now()
         an_hour_ago = now - timezone.timedelta(hours=1)
         two_hours_ago = now - timezone.timedelta(hours=2)
         two_hours_from_now = now + timezone.timedelta(hours=2)
         four_hours_from_now = now + timezone.timedelta(hours=4)
+        self.user.profile.on_vacation = True
+        review = create_userspecific(self.vocabulary, self.user)
+        review.burned = True
+        review.next_review_date = None
+        review.last_studied = two_hours_ago
+        review.save()
         self.user.profile.vacation_date = two_hours_ago
         self.user.profile.save()
         self.review.last_studied = two_hours_ago
@@ -162,13 +166,10 @@ class TestTasks(TestCase):
         self.review.refresh_from_db()
         self.assertNotEqual(self.review.last_studied, previously_studied)
 
-        print("NOW: {}".format(now))
-        print("2H: {}".format(two_hours_from_now))
-        print("4H: {}".format(four_hours_from_now))
-        print("LS: {}".format(self.review.last_studied))
-        print("NR: {}".format(self.review.next_review_date))
         self.assertAlmostEqual(self.review.next_review_date, four_hours_from_now, delta=timezone.timedelta(minutes=15))
         self.assertAlmostEqual(self.review.last_studied, now, delta=timezone.timedelta(minutes=15))
+        self.assertAlmostEqual(review.last_studied, two_hours_ago, delta=timezone.timedelta(minutes=15))
+        self.assertAlmostEqual(review.next_review_date, None)
 
     def test_users_who_are_on_vacation_are_ignored_by_all_srs_algorithm(self):
         self.review.last_studied = past_time(10)

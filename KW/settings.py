@@ -191,7 +191,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'lineage',
     'kw_webapp.apps.KaniwaniConfig', #Make sure this is the top entry in order to correctly override template folders.
-    'rest_framework_docs',
     'debug_toolbar',
     'rest_framework.authtoken'
 )
