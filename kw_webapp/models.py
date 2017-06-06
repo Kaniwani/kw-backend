@@ -212,8 +212,9 @@ class UserSpecific(models.Model):
         self.save()
 
     def round_times(self):
-        self._round_review_time_up()
-        self._round_last_studied_up()
+        if self.streak in constants.SRS_TIMES.keys():
+            self._round_review_time_up()
+            self._round_last_studied_up()
 
     def _round_last_studied_up(self):
         original_date = self.last_studied
