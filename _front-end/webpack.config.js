@@ -2,9 +2,6 @@ var path = require('path');
 var webpack = require('webpack');
 
 module.exports = function(fabricatorConfig) {
-
-  "use strict";
-
   var config = {
     entry: {
       'fabricator/scripts/f': fabricatorConfig.src.scripts.fabricator,
@@ -15,12 +12,13 @@ module.exports = function(fabricatorConfig) {
       filename: '[name].js'
     },
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.js$/,
           exclude: /(node_modules|prism\.js)/,
-          loaders: ['babel'],
-          presets: ['es2015', 'stage-2']
+          use: [{
+            loader: 'babel-loader'
+          }],
         }
       ]
     },
@@ -36,6 +34,7 @@ module.exports = function(fabricatorConfig) {
 
   if (fabricatorConfig.prod != null) {
     config.plugins.push(
+      new webpack.optimize.DedupePlugin(),
       new webpack.optimize.UglifyJsPlugin()
     );
 

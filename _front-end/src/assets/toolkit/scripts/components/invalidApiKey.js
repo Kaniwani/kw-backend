@@ -2,8 +2,11 @@ function init() {
   let $api = $('#invalidApiKey');
 
   if ($api.length) {
-    let message = $api.html();
-    notie.alert(3, message, 15);
+    notie.alert({
+      type: 3,
+      text: $api.html(),
+      stay: true,
+    });
   }
 }
 

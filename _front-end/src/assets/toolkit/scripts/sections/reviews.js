@@ -52,7 +52,7 @@ function onlyKanji(str) {
 }
 
 /* Temp fix for dodgy \" quoted synonyms "\"with space\"" provided by WK API */
-const stripQuotes = (list) => list.map(x => x.replace(/\"/gi, ''));
+const stripQuotes = (list) => list.map(x => x.replace(/"|\\"|&quot;/gi, ''));
 const uniqueArray = (list) => Array.from(new Set(list));
 
 function filterQuotedMeanings(meaning) {

@@ -1,32 +1,32 @@
 'use strict';
 
 // modules
-var assemble = require('fabricator-assemble'),
-    nano = require('gulp-cssnano'),
-    del = require('del'),
-    gulp = require('gulp'),
-    gutil = require('gulp-util'),
-    gulpif = require('gulp-if'),
-    imagemin = require('gulp-imagemin'),
-    rename = require('gulp-rename'),
-    runSequence = require('run-sequence'),
-    sass = require('gulp-sass'),
-    sassGlob = require('gulp-sass-glob'),
-    sourcemaps = require('gulp-sourcemaps'),
-    webpack = require('webpack'),
-    changed = require('gulp-changed'),
-    postcss = require('gulp-postcss'),
-    responsiveType = require('postcss-responsive-type'),
-    lost = require('lost'),
-    autoprefixer = require('autoprefixer'),
-    browserSync = require('browser-sync'),
-    reload = browserSync.reload;
-
+var assemble = require('fabricator-assemble');
+var nano = require('gulp-cssnano');
+var del = require('del');
+var gulp = require('gulp');
+var gutil = require('gulp-util');
+var gulpif = require('gulp-if');
+var imagemin = require('gulp-imagemin');
+var rename = require('gulp-rename');
+var runSequence = require('run-sequence');
+var sass = require('gulp-sass');
+var sassGlob = require('gulp-sass-glob');
+var sourcemaps = require('gulp-sourcemaps');
+var changed = require('gulp-changed');
+var postcss = require('gulp-postcss');
+var responsiveType = require('postcss-responsive-type');
+var lost = require('lost');
+var autoprefixer = require('autoprefixer');
+var browserSync = require('browser-sync');
+var reload = browserSync.reload;
+var webpack = require('webpack');
 
 // configuration
 var config = {
   dev: gutil.env.dev,
   prod: gutil.env.prod,
+  debug: true,
   src: {
     scripts: {
       fabricator: './src/assets/fabricator/scripts/fabricator.js',
@@ -47,7 +47,6 @@ var config = {
 // webpack
 var webpackConfig = require('./webpack.config')(config);
 var webpackCompiler = webpack(webpackConfig);
-
 
 // clean
 gulp.task('clean', function () {
@@ -124,9 +123,8 @@ gulp.task('images', function () {
 // assemble
 gulp.task('assemble', function (done) {
   if (!config.prod) {
-    assemble({
-      logErrors: config.prod
-    });
+    console.log('assembling')
+    assemble({ logErrors: config.prod});
   }
   done();
 });

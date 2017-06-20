@@ -2,8 +2,7 @@ import config from '../config';
 import im from '../vendor/include-media';
 import toastr from '../vendor/toastr';
 import kwlog from '../util/kwlog';
-import Jump from 'jump.js';
-
+import jump from 'jump.js';
 
 let CSRF;
 
@@ -28,10 +27,9 @@ function init() {
 }
 
 function smoothScrollDeepLink(target) {
-  const Jumper = new Jump();
   const el = document.querySelector(target);
   if (el != null) {
-    Jumper.jump(el, { duration: 1000, offset: -50 });
+    setTimeout(() => jump(el, { duration: 2000, offset: -50 }), 1000);
     el.classList.add('-standout');
   }
 }
