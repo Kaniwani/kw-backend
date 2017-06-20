@@ -6,16 +6,19 @@ python:
   - 3.4
 env:
   - TRAVIS_NODE_VERSION="7"
-  - TRAVIS_NODE_VERSION="node"
+  - TRAVIS_NODE_VERSION="latest"
 install:
   - pip install -r requirements.txt
-  - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+  - npm i -g n
 cache:
   directories:
     - node_modules
 script:
   - python manage.py test
   - cd _front-end
+  - sudo n $TRAVIS_NODE_VERSION
+  - n which
+  - npm --version
   - npm install
 notifications:
   slack:
