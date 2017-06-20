@@ -51,6 +51,18 @@ function onlyKanji(str) {
   return [...str].every(char => char.charCodeAt(0) >= 19968 && char.charCodeAt(0) < 40879);
 }
 
+/* Temp fix for dodgy \" quoted synonyms "\"with space\"" provided by WK API */
+const stripQuotes = (list) => list.map(x => x.replace(/\"/gi, ''));
+const uniqueArray = (list) => Array.from(new Set(list));
+
+function filterQuotedMeanings(meaning) {
+  const split = meaning.split(', ');
+  kwlog('Pre-adjusted meanings: ', split);
+  return uniqueArray(stripQuotes(split)).join(', ');
+}
+
+/* /End fix */
+
 // Grab CSRF token off of dummy form.
 const CSRF = $('#csrf').val();
 
@@ -81,7 +93,7 @@ function init() {
   $synonymForm.submit(handleSynonymForm);
 
   // ask a question
-  $meaning.html(currentVocab.meaning);
+  $meaning.html(filterQuotedMeanings(currentVocab.meaning));
   $userAnswer.focus();
 
   $('.revealToggle').click(function revealButtonClick() {
@@ -491,14 +503,14 @@ function rotateVocab({ correct = false } = {}) {
 
   kwlog(`
     remainingVocab.length: ${remainingVocab.length},
-    currentVocab: ${currentVocab.meaning},
+    currentVocab.meaning: ${currentVocab.meaning},
     correctTotal: ${correctTotal},
     answeredTotal: ${answeredTotal},
     percentCorrect: ${percentCorrect}`
   );
 
   $reviewsCorrect.html(percentCorrect);
-  $meaning.html(currentVocab.meaning);
+  $meaning.html(filterQuotedMeanings(currentVocab.meaning));
 
   resetQuizUI();
 }
