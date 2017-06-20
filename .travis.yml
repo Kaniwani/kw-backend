@@ -6,18 +6,17 @@ python:
   - 3.4
 env:
   - TRAVIS_NODE_VERSION="7"
-  - TRAVIS_NODE_VERSION="node" # latest
-
+  - TRAVIS_NODE_VERSION="node"
 install:
   - pip install -r requirements.txt
   - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
-  - cd _front-end && npm install
 cache:
   directories:
-    - _front-end/node_modules
+    - node_modules
 script:
-  - echo pwd
   - python manage.py test
+  - cd _front-end
+  - npm install
 notifications:
   slack:
     secure: Z0cFsVLbBOczW8aLXfJvnV1kJ1cZFO4sIrpeJyiqdnwFKmf5DM9I765smFgDNY2I1Z9mksue3ULBTLJyl6wpp9rFIUwW2V4pb1VUL68RXIltsE8L5QUYHN0JPP5k6Y51gTCDqrdKIvRgBXji77OsFN9ZOS7VOrUmEWKuSU+Wm+15nLgJBduC6S0ZCX8lOWJYzvkbGiybsJn8Vua19C+M57zNZekVOeNUH0JeLfeFE9jL7p6qhoOUL4SvWA+8xo/IKU27o/5DElt9yVNSZZb/XQ0x7TCa/0uKoDlrEWTjcmIltBNnfnPLRdah2CCQEYpnc0um2NJdqDuWgVfbVXzd73wZMgmxqaRCfOlgG9uhILypI0e/heF6S6hUQxoVh3VovFl9rsFAq57hS3+VhQUx9lGa2HulMHaVVUUbf/AeMA8dlNDUJIQnwb9cL0sp10SGmDLAfH93sGhiMuMb7dVJF18lI+2VX115ts6f+Zn7Jt960H0a0BJtVjoA5x+pE9VY2wA4WpoLcnWi0f4CAKiJbXL9lPxJbS9/zELEMGCZ1D1EvgPi/tOXs47ooGj3ri5VJVMJ/dhC2JVT1FHYMupCIIRMI+9niwWpKz08Mb/Ibj0g4HxpG/snkvHpYClF1zYAPWdmWe7L7yomMpyRWMuMoUD4NW8H35ylXIk22INtKJI=
