@@ -26,8 +26,8 @@
     "url": "https://github.com/tadgh/KW.git"
   },
   "engines": {
-    "node": "~8",
-    "npm": "~5"
+    "node": "~8.0.0",
+    "npm": "~5.0.0"
   },
   "devDependencies": {
     "autoprefixer": "7.1.1",
