@@ -205,14 +205,6 @@ function addTerminalN(str) {
   if (endsWith(str, 'n')) answer = `${str.slice(0, -1)}ん`;
 }
 
-// Add tilde to ime input
-function addStartingTilde(str) {
-  const tildeJA = '〜';
-  const tildeEN = '~';
-  if (startsWith(str, tildeEN)) answer = tildeJA + str.slice(1);
-  if (!startsWith(str, tildeJA)) answer = tildeJA + str;
-}
-
 function isEmptyString(str) {
   return str === '';
 }
@@ -230,7 +222,9 @@ function compareAnswer() {
 
   if (onlyJapaneseChars(answer)) {
     // user used japanese IME, proceed
-    if (currentVocab.characters[0].startsWith('〜') && onlyKanji(answer)) addStartingTilde(answer);
+    const stripTildes = (str) => str.replace('〜', '');
+    // Attempt to match disregarding tilde, otherwise keep answer as is
+    answer = currentVocab.characters.filter(chars => stripTildes(chars) === stripTildes(answer))[0] || answer;
   } else if (!wanakana.isHiragana(answer)) {
     // user used english that couldn't convert to full hiragana - don't proceed
     nonHiraganaAnswer();
@@ -247,7 +241,11 @@ function compareAnswer() {
     markRight();
 
     // Fills the correct kanji into the input field based on the user's answers
-    if (wanakana.isHiragana(answer)) $userAnswer.val(getMatchedReading(answer));
+    if (wanakana.isHiragana(answer)) {
+      $userAnswer.val(getMatchedReading(answer));
+    } else {
+      $userAnswer.val(answer);
+    }
 
     if (KW.settings.showCorrectOnSuccess) {
       revealAnswers();
