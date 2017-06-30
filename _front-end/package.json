@@ -29,7 +29,7 @@
     "node": "~8.0.0",
     "npm": "~5.0.0"
   },
-  "devDependencies": {
+  "dependencies": {
     "autoprefixer": "7.1.1",
     "babel-core": "6.25.0",
     "babel-preset-env": "1.5.2",
@@ -56,9 +56,7 @@
     "postcss-responsive-type": "0.5.1",
     "run-sequence": "1.2.2",
     "script-loader": "0.7.0",
-    "webpack": "3.0.0"
-  },
-  "dependencies": {
+    "webpack": "3.0.0",
     "jquery": "3.2.1",
     "notie": "4.3.1",
     "simplestorage.js": "0.2.1"
