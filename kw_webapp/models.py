@@ -99,20 +99,8 @@ class Profile(models.Model):
         return x
 
     def handle_wanikani_level_change(self, new_level):
-        original_level = self.level
         self.level = new_level
         self.save()
-
-        # The case of a user resetting their WK profile.
-        if new_level < original_level:
-            expired_levels = self.unlocked_levels.filter(level__gt=new_level)
-            expired_levels.delete()
-
-            expired_reviews = self.get_overleveled_reviews()
-            expired_reviews.delete()
-
-    def get_overleveled_reviews(self):
-        return UserSpecific.objects.filter(user=self.user, vocabulary__readings__level__gt=self.user.profile.level)
 
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
