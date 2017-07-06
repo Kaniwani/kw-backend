@@ -19,8 +19,7 @@ module.exports = function(fabricatorConfig) {
         {
           test: /\.js$/,
           exclude: /(node_modules|prism\.js)/,
-          loaders: ['babel'],
-          presets: ['es2015', 'stage-2']
+          loaders: ['babel-loader']
         }
       ]
     },
