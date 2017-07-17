@@ -21,7 +21,7 @@ from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSyn
     Announcement, Profile
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
     get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
-    user_begins_vacation, follow_user
+    user_begins_vacation, follow_user, reset_user
 
 
 class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
@@ -316,6 +316,11 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         all_srs(request.user)
         new_review_count = get_users_current_reviews(request.user).count()
         return Response({'review_count': new_review_count})
+
+    @list_route(methods=['POST'])
+    def reset(self, request):
+        reset_user(request.user)
+        return ({"message": "Your account has been reset"})
 
 
 class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
