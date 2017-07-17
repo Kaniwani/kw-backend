@@ -9,7 +9,7 @@ from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user, sync_all_users_to_wk, \
-    reset_user, get_users_current_reviews
+    reset_user, get_users_current_reviews, reset_levels
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading
@@ -243,7 +243,7 @@ class TestTasks(TestCase):
         self.user.profile.unlocked_levels.get_or_create(level=4)
         self.user.refresh_from_db()
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [5, 1, 2, 3, 4])
-        reset_user(self.user)
+        reset_levels(self.user)
         self.user.refresh_from_db()
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [5])
 
