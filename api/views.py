@@ -320,7 +320,7 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
     @list_route(methods=['POST'])
     def reset(self, request):
         reset_user(request.user)
-        return ({"message": "Your account has been reset"})
+        return Response({"message": "Your account has been reset"})
 
 
 class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
