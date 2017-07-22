@@ -32,9 +32,9 @@
   "dependencies": {
     "autoprefixer": "7.1.1",
     "babel-core": "6.25.0",
-    "babel-preset-env": "1.5.2",
     "babel-loader": "7.1.0",
     "babel-polyfill": "6.23.0",
+    "babel-preset-env": "1.5.2",
     "browser-sync": "2.18.12",
     "del": "3.0.0",
     "fabricator-assemble": "1.2.0",
@@ -51,14 +51,14 @@
     "gulp-sourcemaps": "2.6.0",
     "gulp-util": "3.0.8",
     "imports-loader": "0.7.1",
+    "jquery": "3.2.1",
     "jump.js": "1.0.2",
     "lost": "8.0.0",
+    "notie": "4.3.1",
     "postcss-responsive-type": "0.5.1",
     "run-sequence": "1.2.2",
     "script-loader": "0.7.0",
-    "webpack": "3.0.0",
-    "jquery": "3.2.1",
-    "notie": "4.3.1",
-    "simplestorage.js": "0.2.1"
+    "simplestorage.js": "0.2.1",
+    "webpack": "3.0.0"
   }
 }
