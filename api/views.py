@@ -260,6 +260,9 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
 
     srs:
     Force an SRS run (typically runs every 15 minutes anyhow).
+
+    reset:
+    Reset a user's account. Removes all reviews, re-locks all levels. Immediately runs unlock on current level afterwards.
     """
     permission_classes = (IsAuthenticatedOrCreating,)
     serializer_class = UserSerializer
@@ -325,7 +328,7 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
 
 class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
     """
-    Profile model view set, for INTERNAL USE ONLY.
+    Profile model view set, for INTERNAL TESTING USE ONLY.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = ProfileSerializer
