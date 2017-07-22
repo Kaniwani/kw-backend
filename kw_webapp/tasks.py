@@ -586,3 +586,19 @@ def follow_user(user):
     except exceptions.InvalidWaniKaniKey:
         user.profile.api_valid = False
         user.profile.save()
+
+def reset_user(user):
+    reset_levels(user)
+    reset_reviews(user)
+    unlock_eligible_vocab_from_levels(user, user.profile.level)
+
+def reset_levels(user):
+    user.profile.unlocked_levels.clear()
+    user.profile.unlocked_levels.get_or_create(level=user.profile.level)
+    user.profile.save()
+
+def reset_reviews(user):
+    all_reviews = UserSpecific.objects.filter(user=user)
+    all_reviews.delete()
+
+
