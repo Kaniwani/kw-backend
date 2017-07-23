@@ -86,7 +86,8 @@ class TestProfileApi(APITestCase):
         user_dict = dict(response.data)
         user_dict['profile']['on_vacation'] = True
         user_dict['profile']['follow_me'] = True
-        # self.client.put(reverse("api:profile-detail", (self.user.profile.id,)), user_dict, format='json')
+
+    # self.client.put(reverse("api:profile-detail", (self.user.profile.id,)), user_dict, format='json')
 
     def test_locking_current_level_disables_following_setting(self):
         self.client.force_login(user=self.user)
@@ -148,7 +149,7 @@ class TestProfileApi(APITestCase):
         self.review.refresh_from_db()
 
         self.assertTrue(self.review.correct == 1)
-        self.assertTrue(self.review.streak == 1)
+        self.assertTrue(self.review.streak == 2)
         self.assertFalse(self.review.needs_review)
 
     def test_wrong_answer_records_failure(self):
@@ -159,7 +160,7 @@ class TestProfileApi(APITestCase):
 
         self.assertTrue(self.review.incorrect == 1)
         self.assertTrue(self.review.correct == 0)
-        self.assertTrue(self.review.streak == 0)
+        self.assertTrue(self.review.streak == 1)
         self.assertTrue(self.review.needs_review)
 
     def test_review_requires_login(self):
@@ -219,3 +220,54 @@ class TestProfileApi(APITestCase):
         self.assertTrue(synonym_kana in self.review.answer_synonyms_list())
         self.assertEqual(found_synonym.kana, synonym_kana)
         self.assertEqual(found_synonym.character, synonym_kanji)
+
+    def test_lesson_route_returns_srs_0_reviews(self):
+        self.client.force_login(user=self.user)
+
+        # Create a lesson
+        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review.streak = 0
+        new_review.save()
+
+        response = self.client.get(reverse("api:review-lesson"))
+        self.assertEqual(response.data["count"], 1)
+
+    def test_reviews_endpoint_omits_lessons(self):
+        self.client.force_login(user=self.user)
+
+        # Create a lesson
+        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review.streak = 0
+        new_review.save()
+
+        response = self.client.get(reverse("api:review-current"))
+        self.assertEqual(response.data["count"], 1)
+
+    def test_user_getting_answer_wrong_cannot_drop_below_1_in_reviews(self):
+        self.client.force_login(user=self.user)
+        self.review.streak = 1
+        self.review.save()
+
+        self.client.post(reverse("api:review-incorrect", args=(self.review.id,)))
+        self.review.refresh_from_db()
+        self.assertEqual(self.review.streak, 1)
+
+    def test_once_user_answers_lesson_once_it_becomes_review(self):
+        self.client.force_login(user=self.user)
+
+        # Create a lesson
+        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review.streak = 0
+        new_review.save()
+
+        response = self.client.get(reverse("api:review-lesson"))
+        self.assertEqual(response.data["count"], 1)
+
+        self.client.post(reverse("api:review-correct", args=(new_review.id,)))
+        self.review.refresh_from_db()
+
+        response = self.client.get(reverse("api:review-lesson"))
+        self.assertEqual(response.data["count"], 0)
+
+
+

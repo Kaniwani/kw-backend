@@ -12,6 +12,7 @@ def create_user(username):
 
 def create_userspecific(vocabulary, user):
     u = UserSpecific.objects.create(vocabulary=vocabulary, user=user)
+    u.streak = 1
     u.save()
     return u
 

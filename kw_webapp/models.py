@@ -190,12 +190,13 @@ class UserSpecific(models.Model):
         """
         Helper function to correctly decrement streak value and increase count of incorrect.
         If user is nearing burned status, they get doubly-decremented.
-        :return:
         """
         self.incorrect += 1
+        # If user is about to burn, drop them two levels.
         if self.streak == 7:
             self.streak -= 2
-        else:
+        # streak of 0 indicates "Lesson" and we don't want users dropping down to lesson.
+        elif self.streak > 1:
             self.streak -= 1
 
         self.streak = max(0, self.streak)

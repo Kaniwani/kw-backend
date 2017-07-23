@@ -332,6 +332,17 @@ def get_users_critical_reviews(user):
                                        critical=True)
 
 
+def get_users_lessons(user):
+    minimum_wk_srs = user.profile.minimum_wk_srs_level_to_review
+    minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
+
+    return UserSpecific.objects.filter(user=user,
+                                       needs_review=True,
+                                       wanikani_srs_numeric__gte=minimum_streak,
+                                       hidden=False,
+                                       streak=0)
+
+
 def get_users_current_reviews(user):
     minimum_wk_srs = user.profile.minimum_wk_srs_level_to_review
     minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
@@ -340,7 +351,8 @@ def get_users_current_reviews(user):
                                        needs_review=True,
                                        wanikani_srs_numeric__gte=minimum_streak,
                                        hidden=False,
-                                       burned=False)
+                                       burned=False,
+                                       streak__gte=1)
 
 
 def get_users_future_reviews(user, time_limit=None):
@@ -350,7 +362,8 @@ def get_users_future_reviews(user, time_limit=None):
                                            needs_review=False,
                                            wanikani_srs_numeric__gte=minimum_streak,
                                            hidden=False,
-                                           burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
+                                           burned=False,
+                                           streak__gte=1).annotate(Min('next_review_date')).order_by('next_review_date')
 
     if isinstance(time_limit, timedelta):
         queryset = queryset.filter(next_review_date__lte=timezone.now() + time_limit)
