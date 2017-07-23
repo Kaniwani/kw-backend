@@ -149,7 +149,7 @@ class TestProfileApi(APITestCase):
         self.review.refresh_from_db()
 
         self.assertTrue(self.review.correct == 1)
-        self.assertTrue(self.review.streak == 1)
+        self.assertTrue(self.review.streak == 2)
         self.assertFalse(self.review.needs_review)
 
     def test_wrong_answer_records_failure(self):
@@ -160,7 +160,7 @@ class TestProfileApi(APITestCase):
 
         self.assertTrue(self.review.incorrect == 1)
         self.assertTrue(self.review.correct == 0)
-        self.assertTrue(self.review.streak == 0)
+        self.assertTrue(self.review.streak == 1)
         self.assertTrue(self.review.needs_review)
 
     def test_review_requires_login(self):
@@ -223,22 +223,22 @@ class TestProfileApi(APITestCase):
 
     def test_lesson_route_returns_srs_0_reviews(self):
         self.client.force_login(user=self.user)
-        create_userspecific(create_vocab("sample"), self.user)
 
-        # Make it so the original review doesnt show up as a lesson
-        self.review.streak = 1
-        self.review.save()
+        # Create a lesson
+        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review.streak = 0
+        new_review.save()
 
         response = self.client.get(reverse("api:review-lesson"))
         self.assertEqual(response.data["count"], 1)
 
     def test_reviews_endpoint_omits_lessons(self):
         self.client.force_login(user=self.user)
-        create_userspecific(create_vocab("sample"), self.user)
 
-        # Make it so the original review doesnt show up as a lesson
-        self.review.streak = 1
-        self.review.save()
+        # Create a lesson
+        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review.streak = 0
+        new_review.save()
 
         response = self.client.get(reverse("api:review-current"))
         self.assertEqual(response.data["count"], 1)
