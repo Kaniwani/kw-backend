@@ -253,4 +253,21 @@ class TestProfileApi(APITestCase):
         self.assertEqual(self.review.streak, 1)
 
     def test_once_user_answers_lesson_once_it_becomes_review(self):
-        pass
+        self.client.force_login(user=self.user)
+
+        # Create a lesson
+        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review.streak = 0
+        new_review.save()
+
+        response = self.client.get(reverse("api:review-lesson"))
+        self.assertEqual(response.data["count"], 1)
+
+        self.client.post(reverse("api:review-correct", args=(new_review.id,)))
+        self.review.refresh_from_db()
+
+        response = self.client.get(reverse("api:review-lesson"))
+        self.assertEqual(response.data["count"], 0)
+
+
+
