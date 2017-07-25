@@ -201,10 +201,14 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
         return Response(serializer.data)
 
     def _correct_on_first_try(self, request):
-        if "wrong_before" not in request.data or request.data["wrong_before"] == 'false':
+        if "wrong_before" not in request.data:
             return True
-        else:
-            return False
+        if request.data["wrong_before"] is False:
+            return True
+        if request.data["wrong_before"] == "false":
+            return True
+
+        return False
 
     @detail_route(methods=['POST'])
     def correct(self, request, pk=None):

@@ -182,9 +182,9 @@ class UserSpecific(models.Model):
 
         self.needs_review = False
         self.last_studied = timezone.now()
-        self.save()
         self.set_next_review_time()
         self.set_criticality()
+        self.save()
 
     def answered_incorrectly(self):
         """
@@ -209,12 +209,17 @@ class UserSpecific(models.Model):
         else:
             self.critical = False
 
+    def _can_be_critical(self):
+        return self.correct + self.incorrect >= constants.MINIMUM_ATTEMPT_COUNT_FOR_CRITICALITY
+
+    def _breaks_threshold(self):
+        return float(self.incorrect) / float(self.correct + self.incorrect) >= constants.CRITICALITY_THRESHOLD
+
     def is_critical(self):
-        if self.streak < constants.KANIWANI_SRS_LEVELS[SrsLevel.GURU.name][0] and \
-                                self.correct + self.incorrect >= constants.MINIMUM_ATTEMPT_COUNT_FOR_CRITICALITY and \
-                                float(self.incorrect) / float(
-                                    self.correct + self.incorrect) >= constants.CRITICALITY_THRESHOLD:
+        if self._can_be_critical() and self._breaks_threshold():
             return True
+        else:
+            return False
 
     def get_all_readings(self):
         return list(chain(self.vocabulary.readings.all(), self.answer_synonyms.all()))
@@ -254,7 +259,7 @@ class UserSpecific(models.Model):
     def _round_next_review_date(self):
         round_to = constants.REVIEW_ROUNDING_TIME.total_seconds()
         seconds = (
-        self.next_review_date - self.next_review_date.min.replace(tzinfo=self.next_review_date.tzinfo)).seconds
+            self.next_review_date - self.next_review_date.min.replace(tzinfo=self.next_review_date.tzinfo)).seconds
         rounding = (seconds + round_to) // round_to * round_to
         self.next_review_date = self.next_review_date + timedelta(0, rounding - seconds, 0)
         self.save()

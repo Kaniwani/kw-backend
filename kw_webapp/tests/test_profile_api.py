@@ -148,7 +148,7 @@ class TestProfileApi(APITestCase):
         self.client.post(reverse("api:review-correct", args=(self.review.id,)), data={"wrong_before": "false"})
         self.review.refresh_from_db()
 
-        self.assertTrue(self.review.correct == 1)
+        self.assertEqual(self.review.correct, 1)
         self.assertTrue(self.review.streak == 2)
         self.assertFalse(self.review.needs_review)
 

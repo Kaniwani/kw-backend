@@ -45,7 +45,7 @@ LEVEL_MIN = 1
 LEVEL_MAX = 60
 API_KEY = "0158f285fa5e1254b84355ce92ccfa99"
 
-MINIMUM_ATTEMPT_COUNT_FOR_CRITICALITY = 3
+MINIMUM_ATTEMPT_COUNT_FOR_CRITICALITY = 4
 CRITICALITY_THRESHOLD = 0.75
 # NOTE: we no longer display user's WK twitter/webpage bio info
 # No plans to do so in the future

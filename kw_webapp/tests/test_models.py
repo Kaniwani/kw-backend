@@ -202,8 +202,7 @@ class TestModels(TestCase):
         self.review.last_studied = self.review.last_studied.replace(minute=17)
         self.review._round_review_time_up()
 
-        self.assertEqual(self.review.last_studied.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0 )
-
+        self.assertEqual(self.review.last_studied.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0)
 
     def test_default_review_times_are_not_rounded(self):
         rounded_time = self.review.next_review_date
@@ -305,22 +304,21 @@ class TestModels(TestCase):
 
         self.assertFalse(self.review.critical)
 
-        #Brings total attempt count to 2
+        # Brings total attempt count to 2
         self.review.answered_incorrectly()
 
         self.assertFalse(self.review.critical)
 
     def test_review_correctly_comes_out_of_critical_once_guru(self):
-        self.review.correct = 4
-        self.review.incorrect = 20
+        self.review.correct = 1
+        self.review.incorrect = 3
         self.review.critical = True
-        self.review.streak = constants.KANIWANI_SRS_LEVELS[SrsLevel.GURU.name][0]
         self.review.save()
         self.review.refresh_from_db()
 
         self.assertTrue(self.review.critical)
 
-        #Brings total attempt count to the guru threshold
         self.review.answered_correctly()
 
+        self.review.refresh_from_db()
         self.assertFalse(self.review.critical)
