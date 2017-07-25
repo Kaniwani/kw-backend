@@ -20,7 +20,8 @@ SRS_TIMES = {
 }
 
 
-class SrsLevel(Enum):
+class KwSrsLevel(Enum):
+    LESSON = "Lesson"
     APPRENTICE = "Apprentice"
     GURU = "Guru"
     MASTER = "Master"
@@ -29,15 +30,36 @@ class SrsLevel(Enum):
 
     @classmethod
     def choices(cls):
-        return ((level.name, level.value) for level in SrsLevel)
+        return ((level.name, level.value) for level in WkSrsLevel)
+
+
+class WkSrsLevel(Enum):
+    APPRENTICE = "Apprentice"
+    GURU = "Guru"
+    MASTER = "Master"
+    ENLIGHTENED = "Enlightened"
+    BURNED = "Burned"
+
+    @classmethod
+    def choices(cls):
+        return ((level.name, level.value) for level in WkSrsLevel)
+
+# Internal SRS levels. Level 0 for us is lesson, whereas WK does not expose lessons at all.
+KANIWANI_SRS_LEVELS = OrderedDict()
+KANIWANI_SRS_LEVELS[KwSrsLevel.LESSON.name] = [0]
+KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name] = [1, 2, 3, 4]
+KANIWANI_SRS_LEVELS[KwSrsLevel.GURU.name] = [5, 6]
+KANIWANI_SRS_LEVELS[KwSrsLevel.MASTER.name] = [7]
+KANIWANI_SRS_LEVELS[KwSrsLevel.ENLIGHTENED.name] = [8]
+KANIWANI_SRS_LEVELS[KwSrsLevel.BURNED.name] = [9]
 
 # The level arrangement I believe to be exposed by WK API.
-KANIWANI_SRS_LEVELS = OrderedDict()
-KANIWANI_SRS_LEVELS[SrsLevel.APPRENTICE.name] = [0, 1, 2, 3, 4]
-KANIWANI_SRS_LEVELS[SrsLevel.GURU.name] = [5, 6]
-KANIWANI_SRS_LEVELS[SrsLevel.MASTER.name] = [7]
-KANIWANI_SRS_LEVELS[SrsLevel.ENLIGHTENED.name] = [8]
-KANIWANI_SRS_LEVELS[SrsLevel.BURNED.name] = [9]
+WANIKANI_SRS_LEVELS = OrderedDict()
+WANIKANI_SRS_LEVELS[WkSrsLevel.APPRENTICE.name] = [0, 1, 2, 3, 4]
+WANIKANI_SRS_LEVELS[WkSrsLevel.GURU.name] = [5, 6]
+WANIKANI_SRS_LEVELS[WkSrsLevel.MASTER.name] = [7]
+WANIKANI_SRS_LEVELS[WkSrsLevel.ENLIGHTENED.name] = [8]
+WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name] = [9]
 
 REVIEW_ROUNDING_TIME = timedelta(minutes=15)
 

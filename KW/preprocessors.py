@@ -2,7 +2,7 @@ import time
 import datetime
 
 from kw_webapp import constants
-from kw_webapp.constants import KANIWANI_SRS_LEVELS
+from kw_webapp.constants import WANIKANI_SRS_LEVELS
 from kw_webapp.tasks import get_users_future_reviews, get_users_current_reviews, get_users_reviews
 
 
