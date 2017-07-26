@@ -30,7 +30,7 @@ class KwSrsLevel(Enum):
 
     @classmethod
     def choices(cls):
-        return ((level.name, level.value) for level in WkSrsLevel)
+        return ((level.name, level.value) for level in KwSrsLevel)
 
 
 class WkSrsLevel(Enum):
