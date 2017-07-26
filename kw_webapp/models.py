@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from kw_webapp import constants
-from kw_webapp.constants import TWITTER_USERNAME_REGEX, HTTP_S_REGEX, SrsLevel
+from kw_webapp.constants import TWITTER_USERNAME_REGEX, HTTP_S_REGEX, WkSrsLevel, WANIKANI_SRS_LEVELS
 
 logger = logging.getLogger("kw.models")
 
@@ -65,12 +65,17 @@ class Profile(models.Model):
     auto_advance_on_success = models.BooleanField(default=False)
     auto_expand_answer_on_success = models.BooleanField(default=False)
     auto_expand_answer_on_failure = models.BooleanField(default=False)
-    minimum_wk_srs_level_to_review = models.CharField(max_length=20, choices=SrsLevel.choices(),
-                                                      default=SrsLevel.APPRENTICE.name)
+    minimum_wk_srs_level_to_review = models.CharField(max_length=20, choices=WkSrsLevel.choices(),
+                                                      default=WkSrsLevel.APPRENTICE.name)
 
     # Vacation Settings
     on_vacation = models.BooleanField(default=False)
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
+
+    def get_minimum_wk_srs_threshold_for_review(self):
+        minimum_wk_srs = self.minimum_wk_srs_level_to_review
+        minimum_streak = WANIKANI_SRS_LEVELS[minimum_wk_srs][0]
+        return minimum_streak
 
     def set_twitter_account(self, twitter_account):
         if not twitter_account:
@@ -177,7 +182,7 @@ class UserSpecific(models.Model):
         if first_try:
             self.correct += 1
             self.streak += 1
-            if self.streak >= constants.KANIWANI_SRS_LEVELS[SrsLevel.BURNED.name][0]:
+            if self.streak >= constants.WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name][0]:
                 self.burned = True
 
         self.needs_review = False

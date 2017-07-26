@@ -6,7 +6,7 @@ from django.db.models import Q
 from rest_framework import serializers
 
 from api import serializer_fields
-from kw_webapp.constants import KANIWANI_SRS_LEVELS, SrsLevel
+from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
@@ -21,7 +21,7 @@ class SRSCountSerializer(serializers.BaseSerializer):
     def to_representation(self, user):
         all_reviews = get_users_reviews(user)
         return {level.value.lower(): all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count() for level in
-                SrsLevel}
+                KwSrsLevel}
 
 
 class ProfileSerializer(serializers.ModelSerializer):

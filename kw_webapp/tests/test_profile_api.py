@@ -6,7 +6,7 @@ from django.utils import timezone
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
-from kw_webapp.constants import SrsLevel, KANIWANI_SRS_LEVELS
+from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time
 
@@ -39,7 +39,6 @@ class TestProfileApi(APITestCase):
         self.assertEqual(response.data["profile"]['reviews_within_day_count'], 2)
         self.assertEqual(response.data["profile"]['reviews_within_hour_count'], 1)
         self.assertEqual(response.data["profile"]['reviews_count'], 1)
-        print(json.dumps(response.data, indent=2))
 
     def test_future_review_counts_preprocessor_does_not_include_currently_active_reviews(self):
         within_day_review = create_review_for_specific_time(self.user, "some word",
@@ -117,10 +116,10 @@ class TestProfileApi(APITestCase):
     def test_filtering_on_wk_srs_levels_works(self):
         self.client.force_login(user=self.user)
         word = create_vocab("phlange")
-        self.user.profile.minimum_wk_srs_level_to_review = SrsLevel.BURNED.name
+        self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.BURNED.name
         self.user.profile.save()
         another_review = create_userspecific(word, self.user)
-        another_review.wanikani_srs_numeric = KANIWANI_SRS_LEVELS[SrsLevel.BURNED.name][0]
+        another_review.wanikani_srs_numeric = WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name][0]
         another_review.save()
 
         response = self.client.get(reverse("api:review-current"))
@@ -131,7 +130,7 @@ class TestProfileApi(APITestCase):
     def test_review_page_shows_all_items_when_burnt_setting_is_disabled(self):
         self.client.force_login(user=self.user)
         word = create_vocab("phlange")
-        self.user.profile.minimum_wk_srs_level_to_review = SrsLevel.APPRENTICE.name
+        self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.APPRENTICE.name
         self.user.profile.save()
         another_review = create_userspecific(word, self.user)
         another_review.wanikani_srs_numeric = 5
@@ -191,6 +190,7 @@ class TestProfileApi(APITestCase):
         self.review.next_review_date = current_time
         self.review.needs_review = False
         self.review.save()
+
         older_burnt_review = create_userspecific(create_vocab("test"), self.user)
         older_burnt_review.burned = True
         older_burnt_review.needs_review = False
