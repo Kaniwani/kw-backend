@@ -202,11 +202,27 @@ class ReadingSerializer(serializers.ModelSerializer):
 
 
 class VocabularySerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super(VocabularySerializer, self).__init__(*args, **kwargs)
+        # If this is part of the review response, simply omit the review field, reducing DB calls.
+        if 'nested_in_review' in self.context:
+            self.fields.pop('review')
+
     readings = ReadingSerializer(many=True, read_only=True)
+    review = serializers.SerializerMethodField()
 
     class Meta:
         model = Vocabulary
-        fields = ('id', 'meaning', 'readings')
+        fields = ('id', 'meaning', 'readings', 'review')
+
+    # Grab the ID of the related review for this particular user.
+    def get_review(self, obj):
+        if 'request' in self.context:
+            try:
+                return UserSpecific.objects.get(user=self.context['request'].user, vocabulary=obj).id
+            except UserSpecific.DoesNotExist:
+                return None
+        return None
 
 
 class HyperlinkedVocabularySerializer(VocabularySerializer):
@@ -235,7 +251,7 @@ class SynonymSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    vocabulary = VocabularySerializer(many=False, read_only=True)
+    vocabulary = VocabularySerializer(many=False, read_only=True, context={'nested_in_review': True})
     answer_synonyms = SynonymSerializer(many=True, read_only=True)
 
     class Meta:

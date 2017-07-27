@@ -269,5 +269,18 @@ class TestProfileApi(APITestCase):
         response = self.client.get(reverse("api:review-lesson"))
         self.assertEqual(response.data["count"], 0)
 
+    def test_vocabulary_view_returns_related_review_id_if_present(self):
+        self.client.force_login(user=self.user)
+
+        response = self.client.get(reverse("api:vocabulary-detail", args=(self.review.vocabulary.id,)))
+
+        self.assertEqual(response.data['review'], self.review.id)
+
+    def test_review_views_nested_vocabulary_omits_review_field(self):
+        self.client.force_login(user=self.user)
+
+        response = self.client.get(reverse("api:review-detail", args=(self.review.id,)))
+
+        self.assertTrue('review' not in response.data['vocabulary'])
 
 
