@@ -321,6 +321,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 'django.contrib.auth.context_processors.auth',
+                #TODO remove these.
                 "KW.preprocessors.review_count_preprocessor",
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
@@ -342,5 +343,6 @@ AUTHENTICATION_BACKENDS = [
 DJOSER = {
     'SERIALIZERS': {
         "user_registration": 'api.serializers.RegistrationSerializer'
-    }
+    },
+    'PASSWORD_RESET_CONFIRM_URL': "/api/v1/auth/password-reset/{uid}/{token}",
 }
