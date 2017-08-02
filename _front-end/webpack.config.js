@@ -1,11 +1,8 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
 
 module.exports = function(fabricatorConfig) {
-
-  "use strict";
-
-  var config = {
+  let config = {
     entry: {
       'fabricator/scripts/f': fabricatorConfig.src.scripts.fabricator,
       'scripts/global': fabricatorConfig.src.scripts.toolkit
@@ -28,6 +25,7 @@ module.exports = function(fabricatorConfig) {
         $: 'jquery',
         notie: 'notie',
         simpleStorage: 'simplestorage.js',
+        wanakana: 'wanakana',
       })
     ],
     cache: {}
@@ -35,7 +33,8 @@ module.exports = function(fabricatorConfig) {
 
   if (fabricatorConfig.prod != null) {
     config.plugins.push(
-      new webpack.optimize.UglifyJsPlugin()
+      new webpack.optimize.ModuleConcatenationPlugin(),
+      new webpack.optimize.UglifyJsPlugin(),
     );
 
     config.entry = {

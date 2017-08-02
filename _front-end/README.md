@@ -11,26 +11,17 @@ HTML partials in `src/materials` and full example pages in `src/views`
 
 ## Quick Start
 
-Ensure you have *node.js* and *npm* installed. Node >=5.4.0 and NPM >=3.3.12 are known to work fine.
+Ensure you have *node.js* and *npm* installed. Node >=8.0.0 and NPM >=5.0.0
 
+To install dependencies and start the dev server watching for file changes run:
 ```shell
-$ npm start
+$ npm i && npm start
 ```
 
-This will install dependencies into /node_modules. 
-
-Once completed successfully. Run gulp as a build tool which will run a local server & watch for any changes to files in /src (compiling changes into /dist)
-
+To compile assets for use in production:
 ```shell
-$ gulp 
+npm run build
 ```
-
-However, *to compile assets for use in the webapp* ensure you run 
-```shell
-gulp --prod
-``` 
-after finished with development!!
-
 
 ## Documentation
 

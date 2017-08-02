@@ -7,7 +7,6 @@ var del = require('del');
 var gulp = require('gulp');
 var gutil = require('gulp-util');
 var gulpif = require('gulp-if');
-var imagemin = require('gulp-imagemin');
 var rename = require('gulp-rename');
 var runSequence = require('run-sequence');
 var sass = require('gulp-sass');
@@ -116,7 +115,6 @@ gulp.task('fonts', function () {
 gulp.task('images', function () {
   return gulp.src(config.src.images)
     .pipe(changed(config.dest + '/assets/images'))
-    .pipe(gulpif(config.prod, imagemin()))
     .pipe(gulp.dest(config.dest + '/assets/images'));
 });
 

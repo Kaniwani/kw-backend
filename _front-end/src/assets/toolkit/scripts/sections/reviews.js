@@ -1,4 +1,3 @@
-import wanakana from '../vendor/wanakana.min';
 import kwlog from '../util/kwlog';
 import '../util/serializeObject';
 import modals from '../vendor/modals';

@@ -4,12 +4,10 @@
   "description": "Reverse study Wanikani",
   "license": "MIT",
   "homepage": "http://www.kaniwani.com",
-  "main": "README.md",
   "scripts": {
-    "gulp": "node_modules/.bin/gulp",
-    "prestart": "npm install",
-    "build": "npm install && node_modules/.bin/gulp --prod",
-    "start": "node_modules/.bin/gulp --sync"
+    "start": "gulp --sync",
+    "build": "gulp --prod",
+    "gulp": "node_modules/.bin/gulp"
   },
   "keywords": [
     "japanese",
@@ -43,7 +41,6 @@
     "gulp-changed": "3.1.0",
     "gulp-cssnano": "2.1.2",
     "gulp-if": "2.0.2",
-    "gulp-imagemin": "3.3.0",
     "gulp-postcss": "7.0.0",
     "gulp-rename": "1.2.2",
     "gulp-sass": "3.1.0",
@@ -59,6 +56,7 @@
     "run-sequence": "1.2.2",
     "script-loader": "0.7.0",
     "simplestorage.js": "0.2.1",
-    "webpack": "3.0.0"
+    "wanakana": "2.2.2",
+    "webpack": "3.4.1"
   }
 }
