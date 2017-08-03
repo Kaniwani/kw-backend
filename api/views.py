@@ -247,8 +247,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_queryset(self):
-        return UserSpecific.objects.filter(user=self.request.user)
-
+      return UserSpecific.objects.filter(user=self.request.user, wanikani_srs_numeric__gte=self.request.user.profile.get_minimum_wk_srs_threshold_for_review())
 
 class FrequentlyAskedQuestionViewSet(viewsets.ModelViewSet):
     """
