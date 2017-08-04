@@ -345,7 +345,8 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
 
     @list_route(methods=['POST'])
     def reset(self, request):
-        reset_user(request.user)
+        reset_to_level = int(request.data['level']) if 'level' in request.data else None
+        reset_user(request.user, reset_to_level)
         return Response({"message": "Your account has been reset"})
 
 
