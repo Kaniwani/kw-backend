@@ -283,4 +283,25 @@ class TestProfileApi(APITestCase):
 
         self.assertTrue('review' not in response.data['vocabulary'])
 
+    def test_adding_a_level_to_reset_command_only_resets_levels_above_given(self):
+        self.client.force_login(user=self.user)
+        v = create_vocab("test")
+        create_reading(v, "test", "test", 3)
+        create_userspecific(v, self.user)
+        self.user.profile.unlocked_levels.get_or_create(level=3)
+        response = self.client.get((reverse("api:review-current")))
+        self.assertEqual(response.data['count'], 2)
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [5,3])
+        self.client.post(reverse("api:user-reset"), data={'level': 3})
+
+        response = self.client.get((reverse("api:review-current")))
+        self.assertEqual(response.data['count'], 1)
+        self.user.profile.refresh_from_db()
+        self.assertEqual(self.user.profile.level, 3)
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [3])
+
+
+
+
+
 
