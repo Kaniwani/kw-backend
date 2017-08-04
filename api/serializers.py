@@ -2,7 +2,8 @@ import datetime
 
 import requests
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, timezone, Count
+from django.db.models.functions import TruncHour, TruncDate
 from rest_framework import serializers
 
 from api import serializer_fields
@@ -17,11 +18,28 @@ class SRSCountSerializer(serializers.BaseSerializer):
     Serializer for simply showing SRS counts, e.g., how many apprentice items a user has,
     how many guru, etc.
     """
-
     def to_representation(self, user):
         all_reviews = get_users_reviews(user)
         return {level.value.lower(): all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count() for level in
                 KwSrsLevel}
+
+
+class UpcomingReviewCountSerializer(serializers.BaseSerializer):
+    """
+    Serializer for counting reviews on an hourly basis for the next 24 hours
+    """
+
+    def to_representation(self, user):
+        now = timezone.now()
+        one_day_from_now = now + datetime.timedelta(hours=24)
+
+        reviews = get_users_reviews(user).filter(next_review_date__range=(now, tfh))\
+            .annotate(hour=TruncHour('next_review_date')) \
+            .annotate(date=TruncDate('next_review_date'))\
+            .values("date", "hour")\
+            .annotate(c=Count('id')).order_by("date", "hour")
+        for review in reviews:
+            print(review)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -33,6 +51,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     reviews_within_hour_count = serializers.SerializerMethodField()
     reviews_within_day_count = serializers.SerializerMethodField()
     srs_counts = SRSCountSerializer(source='user', many=False, read_only=True)
+    upcoming_reviews = UpcomingReviewCountSerializer(source='user', many=False, read_only=True)
 
     class Meta:
         model = Profile
