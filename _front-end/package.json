@@ -56,7 +56,7 @@
     "run-sequence": "1.2.2",
     "script-loader": "0.7.0",
     "simplestorage.js": "0.2.1",
-    "wanakana": "2.2.2",
+    "wanakana": "2.2.3",
     "webpack": "3.4.1"
   }
 }
