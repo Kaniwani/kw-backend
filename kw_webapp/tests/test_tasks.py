@@ -12,7 +12,9 @@ from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab
     get_vocab_by_kanji, has_multiple_kanji
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
-from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading
+from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading, \
+    build_test_api_string_for_merging
+from kw_webapp.utils import one_time_merger
 
 
 class TestTasks(TestCase):
@@ -329,7 +331,7 @@ class TestTasks(TestCase):
         # radioactive bat -> 犬, 猫
 
         responses.add(responses.GET, build_API_sync_string_for_user(self.user),
-                      json=sample_api_responses.single_vocab_changed_meaning_and_should_now_merge,
+                      json=sample_api_responses.single_vocab_new_meaning_and_should_now_merge,
                       status=200,
                       content_type='application/json')
 
@@ -358,6 +360,7 @@ class TestTasks(TestCase):
         # Option A:
         # 3) If multiple vocab that have a reading with that kanji are returned, Create *one* new vocab for that kanji, with current info from API.
         # 3.5) Make sure to copy over the various metadata on the reading we have previously pulled (sentences etc)
+
         # 4) Find all Reviews that point to any of the previous vocabulary objects.
         # 5) Find maximum of all the reviews when grouped by user. Which has highest SRS, etc. This will be the user's original vocab. Probably best to confirm by checking creation date.
         # 6) Point the review's Vocabulary to the newly created vocabulary object from step 3.
@@ -366,5 +369,63 @@ class TestTasks(TestCase):
         # Option B:
         # 3) If only one vocab is found for a particular kanji, we have successfully *not* created duplicates, meaning the WK vocab has never changed meaning.
         # 4) We do not have to do anything here. Woohoo!
+
+        #TODO
+        # Create two vocab, identical kanji, different meanings.
+        v1 = create_vocab("dog") #< -- vestigial vocab.
+        v2 = create_vocab("dog, woofer, pupper") #< -- real, current vocab.
+        create_reading(v1, "doggo1", "犬", 5)
+        create_reading(v2, "doggo2", "犬", 5)
+
+        #Make it so that review 1 has overall better SRS score for the user.
+        review_1 = create_userspecific(v1, self.user)
+        review_1.streak = 4
+        review_1.correct = 4
+        review_1.incorrect = 2
+        review_1.save()
+
+        review_2 = create_userspecific(v2, self.user)
+        review_2.streak = 2
+        review_2.correct = 4
+        review_2.incorrect = 3
+        review_2.save()
+
+        #User now has two different vocab, each with their own meaning, however kanji are identical.
+
+        # Pull fake "current" vocab. this response, wherein we fetch the data from WK, and it turns out we already
+        # have a local vocabulary with an identical meaning (i.e., we have already stored the correct and currently active
+        # vocabulary.
+        responses.add(responses.GET, build_test_api_string_for_merging(),
+                      json=sample_api_responses.single_vocab_existing_meaning_and_should_now_merge,
+                      status=200,
+                      content_type='application/json')
+
+        old_vocab = Vocabulary.objects.filter(readings__character="犬")
+        self.assertEqual(old_vocab.count(), 2)
+        one_time_merger()
+        new_vocab = Vocabulary.objects.filter(readings__character="犬")
+        self.assertEqual(new_vocab.count(), 1)
+
+        new_review = UserSpecific.objects.filter(user=self.user, vocabulary__readings__character="犬")
+        self.assertEqual(new_review.count(), 1)
+
+        new_review = new_review[0]
+        self.assertEqual(new_review.streak, review_1.streak)
+        self.assertEqual(new_review.correct, review_1.correct)
+        self.assertEqual(new_review.incorrect, review_1.incorrect)
+        self.assertEqual(new_review.next_review_date, review_1.next_review_date)
+        self.assertEqual(new_review.last_studied, review_1.last_studied)
+
+
+
+
+
+        # Pull from DB based on kanji + meaning. This is the true current kanji.
+        # Find
         pass
 
+
+
+@responses.activate
+def test_one_time_script_for_vocabulary_merging_works(self):
+    pass

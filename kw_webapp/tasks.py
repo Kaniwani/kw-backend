@@ -125,6 +125,7 @@ def build_API_sync_string_for_user(user):
     return api_call
 
 
+
 def build_API_sync_string_for_user_for_levels(user, levels):
     '''
     Given a user, build a vocabulary request string based on their api key, for a particular level.
@@ -297,7 +298,8 @@ def get_or_create_vocab_by_json(vocab_json):
 
     try:
         vocab = get_vocab_by_kanji(vocab_json['character'])
-        handle_merger_issues(vocab, vocab_json)
+        #TODO note this will not work as there may already be *multiple* vocab on the server with a given kanji
+        #handle_merger_issues(vocab, vocab_json)
         created = False
     except Vocabulary.DoesNotExist as e:
         vocab = create_new_vocabulary(vocab_json)
