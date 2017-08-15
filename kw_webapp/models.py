@@ -166,7 +166,7 @@ class UserSpecific(models.Model):
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)
     streak = models.PositiveIntegerField(default=0)
-    last_studied = models.DateTimeField(auto_now_add=True, blank=True)
+    last_studied = models.DateTimeField(blank=True, null=True)
     needs_review = models.BooleanField(default=True)
     unlock_date = models.DateTimeField(default=timezone.now, blank=True)
     next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)

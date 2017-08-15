@@ -189,6 +189,7 @@ class TestModels(TestCase):
 
     def test_rounding_a_review_time_only_goes_up(self):
         self.review.next_review_date = self.review.next_review_date.replace(minute=17)
+        self.review.last_studied = self.review.next_review_date.replace(minute=17)
         self.review._round_review_time_up()
         self.review.refresh_from_db()
 
@@ -322,3 +323,7 @@ class TestModels(TestCase):
 
         self.review.refresh_from_db()
         self.assertFalse(self.review.critical)
+
+    def test_newly_created_user_specific_has_null_last_studied_date(self):
+        review = create_userspecific(create_vocab("test"), self.user)
+        self.assertIsNone(review.last_studied)
