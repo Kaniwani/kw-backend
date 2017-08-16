@@ -21,7 +21,7 @@ SRS_TIMES = {
 
 
 class KwSrsLevel(Enum):
-    LESSON = "Lesson"
+    UNTRAINED = "Untrained"
     APPRENTICE = "Apprentice"
     GURU = "Guru"
     MASTER = "Master"
@@ -46,7 +46,7 @@ class WkSrsLevel(Enum):
 
 # Internal SRS levels. Level 0 for us is lesson, whereas WK does not expose lessons at all.
 KANIWANI_SRS_LEVELS = OrderedDict()
-KANIWANI_SRS_LEVELS[KwSrsLevel.LESSON.name] = [0]
+KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name] = [0]
 KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name] = [1, 2, 3, 4]
 KANIWANI_SRS_LEVELS[KwSrsLevel.GURU.name] = [5, 6]
 KANIWANI_SRS_LEVELS[KwSrsLevel.MASTER.name] = [7]
