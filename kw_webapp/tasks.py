@@ -335,7 +335,7 @@ def get_users_lessons(user):
                                        needs_review=True,
                                        wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
                                        hidden=False,
-                                       streak=KANIWANI_SRS_LEVELS[KwSrsLevel.LESSON.name][0])
+                                       streak=KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name][0])
 
 
 def get_users_current_reviews(user):

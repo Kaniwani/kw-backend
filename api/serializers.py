@@ -1,4 +1,5 @@
 import datetime
+from collections import OrderedDict
 
 import requests
 from django.contrib.auth.models import User
@@ -20,8 +21,10 @@ class SRSCountSerializer(serializers.BaseSerializer):
 
     def to_representation(self, user):
         all_reviews = get_users_reviews(user)
-        return {level.value.lower(): all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count() for level in
-                KwSrsLevel}
+        ordered_srs_counts = OrderedDict.fromkeys([level.name.lower() for level in KwSrsLevel])
+        for level in KwSrsLevel:
+            ordered_srs_counts[level.name.lower()] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count()
+        return ordered_srs_counts
 
 
 class ProfileSerializer(serializers.ModelSerializer):
