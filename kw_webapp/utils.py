@@ -1,3 +1,5 @@
+import random
+
 import requests
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -6,6 +8,7 @@ from rest_framework.authtoken.models import Token
 from kw_webapp.models import UserSpecific, Profile, Reading, Tag
 from kw_webapp import constants
 from kw_webapp.tasks import unlock_eligible_vocab_from_levels
+from kw_webapp.tests.utils import create_userspecific, create_review_for_specific_time
 
 
 def wipe_all_reviews_for_user(user):
@@ -103,7 +106,6 @@ def merge_with_model(related_reading, vocabulary_json):
     return retval
 
 
-
 def associate_tags(reading, tag):
     print("associating [{}] to reading {}".format(tag, reading.vocabulary.meaning))
     tag_obj, created = Tag.objects.get_or_create(name=tag)
@@ -114,3 +116,14 @@ def create_tokens_for_all_users():
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
 
+
+def create_various_future_reviews_for_user(user):
+    now = timezone.now()
+    for i in range(0,24):
+        for j in range(0,20):
+            review = create_review_for_specific_time(user, str(i) + "-" + str(j), now+timezone.timedelta(hours=i))
+
+            review.streak = random.randint(1,8)
+            review.save()
+            review.refresh_from_db()
+            print(review)
