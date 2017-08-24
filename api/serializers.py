@@ -45,8 +45,11 @@ class UpcomingReviewCountSerializer(serializers.BaseSerializer):
         expected_hour = now.hour
         hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
 
-        retval = OrderedDict.fromkeys(hours), OrderedDict.fromkeys([level.name for level in KwSrsLevel], 0))
-        print(retval)
+        retval = OrderedDict.fromkeys(hours)
+
+        for key in retval.keys():
+            retval[key] = OrderedDict.fromkeys([level.name for level in KwSrsLevel], 0)
+
         for review in reviews:
             found_hour = review['hour'].hour
             while found_hour != expected_hour:
@@ -58,8 +61,10 @@ class UpcomingReviewCountSerializer(serializers.BaseSerializer):
 
         for key, value in retval.items():
             print("{}: {}".format(key, value))
+        real_retval = [[count for srs_level, count in hourly_count.items()]for hour, hourly_count in retval.items()]
         print("RETVAL",retval)
-        return retval
+        print(real_retval)
+        return real_retval
 
 
 class ProfileSerializer(serializers.ModelSerializer):
