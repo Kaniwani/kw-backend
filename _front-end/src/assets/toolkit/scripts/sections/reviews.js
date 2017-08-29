@@ -38,14 +38,6 @@ let autoAdvancing = false;
 let ignored = false;
 const answerCorrectness = [];
 
-// http://www.rikai.com/library/kanjitables/kanji_codes.unicode.shtml
-// not including *half-width katakana / roman letters* since they should be considered typos
-const japRegex = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\u4e00-\u9faf\u3400-\u4dbf]/;
-
-function onlyJapaneseChars(str) {
-  return [...str].every(char => japRegex.test(char));
-}
-
 function onlyKanji(str) {
   return [...str].every(char => char.charCodeAt(0) >= 19968 && char.charCodeAt(0) < 40879);
 }
@@ -219,7 +211,7 @@ function compareAnswer() {
 
   addTerminalN(answer);
 
-  if (onlyJapaneseChars(answer)) {
+  if (wanakana.isJapanese(answer)) {
     // user used japanese IME, proceed
     const stripTildes = (str) => str.replace('〜', '');
     // Attempt to match disregarding tilde, otherwise keep answer as is
@@ -298,7 +290,7 @@ function handleSynonymForm(ev) {
   const $validation = $this.find('.validation');
   const data = $this.serializeObject();
 
-  if (Object.keys(data).every(key => data[key] !== '' && onlyJapaneseChars(data[key]))) {
+  if (Object.keys(data).every(key => data[key] !== '' && wanakana.isJapanese(data[key]))) {
     $validation.addClass('-hidden');
     addSynonym(vocabID, data);
     $submitButton.html('<span class="icon -loading"></span>');
