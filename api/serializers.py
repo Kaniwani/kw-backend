@@ -299,4 +299,4 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 class ContactSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
     email = serializers.CharField(max_length=200)
-    body = serializers.CharField(max_length=100)
+    body = serializers.CharField(max_length=1000)
