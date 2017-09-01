@@ -13,9 +13,9 @@ from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS, STREAK_TO_SRS_L
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
-import pytz
 
-class SRSCountSerializer(serializers.BaseSerializer):
+
+class SrsCountSerializer(serializers.BaseSerializer):
     """
     Serializer for simply showing SRS counts, e.g., how many apprentice items a user has,
     how many guru, etc.
@@ -25,8 +25,46 @@ class SRSCountSerializer(serializers.BaseSerializer):
         return {level.value.lower(): all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count() for level in
                 KwSrsLevel}
 
+class SimpleUpcomingReviewSerializer(serializers.BaseSerializer):
+    """
+    Serializer containing information about upcoming reviews, without any relevant srs information.
+    """
 
-class UpcomingReviewCountSerializer(serializers.BaseSerializer):
+    def to_representation(self, user):
+        now = timezone.now()
+        one_day_from_now = now + datetime.timedelta(hours=24)
+        reviews = get_users_reviews(user).filter(next_review_date__range=(now, one_day_from_now))\
+            .annotate(hour=TruncHour('next_review_date', tzinfo=timezone.utc)) \
+            .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc))\
+            .values("date", "hour")\
+            .annotate(review_count=Count('id')).order_by("date", "hour")
+
+        for review in reviews:
+            print(review)
+
+        expected_hour = now.hour
+        hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
+        retval = OrderedDict.fromkeys(hours, 0)
+        for review in reviews:
+            print(review['hour'], review['review_count'], )
+            found_hour = review['hour'].hour
+            while found_hour != expected_hour:
+                print("found hour:{}, expected_hour:{}".format(found_hour, expected_hour))
+                expected_hour = (expected_hour + 1) % 24
+            retval[expected_hour] = review["review_count"]
+
+        for key, value in retval.items():
+            print("{}: {}".format(key, value))
+        real_retval = [value for key, value in retval.items()]
+        print("RETVAL",retval)
+        print(real_retval)
+        return real_retval
+
+
+
+        return reviews
+
+class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
     """
     Serializer for counting reviews on an hourly basis for the next 24 hours
     """
@@ -76,8 +114,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     unlocked_levels = serializers.StringRelatedField(many=True, read_only=True)
     reviews_within_hour_count = serializers.SerializerMethodField()
     reviews_within_day_count = serializers.SerializerMethodField()
-    srs_counts = SRSCountSerializer(source='user', many=False, read_only=True)
-    upcoming_reviews = UpcomingReviewCountSerializer(source='user', many=False, read_only=True)
+    srs_counts = SrsCountSerializer(source='user', many=False, read_only=True)
+    #upcoming_reviews = DetailedUpcomingReviewCountSerializer(source='user', many=False, read_only=True)
+    upcoming_reviews = SimpleUpcomingReviewSerializer(source='user', many=False, read_only=True)
 
     class Meta:
         model = Profile

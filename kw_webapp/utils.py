@@ -119,7 +119,8 @@ def create_tokens_for_all_users():
 
 def create_various_future_reviews_for_user(user):
     now = timezone.now()
-    for i in range(0,24):
+    now = now.replace(minute=59)
+    for i in range(0, 24):
         for j in range(0,20):
             review = create_review_for_specific_time(user, str(i) + "-" + str(j), now+timezone.timedelta(hours=i))
 
