@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 import requests
 from django.contrib.auth.models import User
-from django.db.models import Q, Count
+from django.db.models import Q, Count, TimeField
 from django.utils import timezone
 from django.db.models.functions import TruncHour, TruncDate
 from rest_framework import serializers
@@ -13,7 +13,7 @@ from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS, STREAK_TO_SRS_L
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
-
+import pytz
 
 class SRSCountSerializer(serializers.BaseSerializer):
     """
@@ -35,9 +35,9 @@ class UpcomingReviewCountSerializer(serializers.BaseSerializer):
         now = timezone.now()
         one_day_from_now = now + datetime.timedelta(hours=24)
 
-        reviews = get_users_reviews(user).filter(next_review_date__range=(now, one_day_from_now))
-        reviews = reviews.annotate(hour=TruncHour('next_review_date')) \
-            .annotate(date=TruncDate('next_review_date'))\
+        reviews = get_users_reviews(user).filter(next_review_date__range=(now, one_day_from_now))\
+            .annotate(hour=TruncHour('next_review_date', tzinfo=timezone.utc)) \
+            .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc))\
             .values("streak", "date", "hour")\
             .annotate(review_count=Count('id')).order_by("date", "hour")
         for review in reviews:
@@ -51,6 +51,7 @@ class UpcomingReviewCountSerializer(serializers.BaseSerializer):
             retval[key] = OrderedDict.fromkeys([level.name for level in KwSrsLevel], 0)
 
         for review in reviews:
+            print(review['hour'], review['streak'], )
             found_hour = review['hour'].hour
             while found_hour != expected_hour:
                 print("found hour:{}, expected_hour:{}".format(found_hour, expected_hour))

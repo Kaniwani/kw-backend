@@ -281,13 +281,14 @@ class UserSpecific(models.Model):
         self._round_last_studied_date()
 
     def __str__(self):
-        return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
+        return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - nrd:{} - uld:{}".format(self.vocabulary.meaning,
                                                                               self.user.username,
                                                                               self.correct,
                                                                               self.incorrect,
                                                                               self.streak,
                                                                               self.last_studied,
                                                                               self.needs_review,
+                                                                              self.next_review_date,
                                                                               self.unlock_date)
 
 
