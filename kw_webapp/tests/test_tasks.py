@@ -254,6 +254,7 @@ class TestTasks(TestCase):
 
     @responses.activate
     def test_if_vocab_meaning_changes_on_aglomerated_vocab_it_is_correctly_split(self):
+        #TODO START HERE THIS TEST IS FAILIN
         original_vocabulary = create_vocab("construction")
         reading1 = create_reading(original_vocabulary, "ねこ", "工事", 2)
         reading2 = create_reading(original_vocabulary, "ねこ", "工作", 2)

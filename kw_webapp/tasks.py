@@ -72,6 +72,7 @@ def get_vocab_by_kanji(kanji):
     else:
         return v
 
+
 def get_vocab_by_meaning(meaning):
     """
     Searches for a vocabulary object based on its meaning.
@@ -318,10 +319,9 @@ def handle_merger_issues(vocab, vocab_json):
         #Vocabulary is not part of a conglomerate, edit it in place or make it into a conglomerate if a meaning matches.
         if vocab.reading_count() == 1 or not has_multiple_kanji(vocab):
             # Any vocab with this given meaning? If so, conglomerate. If not, just edit in place.
-            identical_meaning_vocab = Vocabulary.objects.get(meaning=current_meaning)
-
+            try:
+                identical_meaning_vocab =  Vocabulary.objects.get(meaning=current_meaning)
             # We found an identical meaning, thus we can just conglomerate.
-            if identical_meaning_vocab:
                 print("Found extant vocab with identical meaning, id [{}]".format(identical_meaning_vocab.id))
                 merge_changed_vocabulary_into_existing(identical_meaning_vocab, vocab)
                 print("About to delete vocab with id [{}]".format(vocab.id))
@@ -329,7 +329,7 @@ def handle_merger_issues(vocab, vocab_json):
                 return identical_meaning_vocab
 
             # Edit in place, they just changed the meaning.
-            else:
+            except Vocabulary.DoesNotExist:
                 vocab.meaning = current_meaning
                 vocab.save()
                 return vocab
@@ -348,19 +348,14 @@ def handle_merger_issues(vocab, vocab_json):
             # Welp, no identical meaning vocabulary found, time to create a new one.
             except Vocabulary.DoesNotExist:
                 create_new_vocabulary(vocab_json)
-
-
-
-
-
-            pass
+    else:
+        return vocab
 
 
 def has_multiple_kanji(vocab):
     kanji = [reading.character for reading in vocab.readings.all()]
     kanji2 = set(kanji)
     return len(kanji2) > 1
-
 
 
 def add_synonyms_from_api_call_to_review(review, user_specific_json):
