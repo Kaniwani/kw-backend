@@ -73,9 +73,11 @@ def one_time_merger():
         if found_vocabulary.count() == 1 and found_vocabulary[0].meaning == vocabulary_json['meaning']:
             print("No conflict found. Precisely 1 vocab on server, and meaning matches.")
         elif found_vocabulary.count() > 1:
+            conglomerate_count += 1
             print("Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(found_vocabulary.count(), vocabulary_json['meaning']))
             handle_merger(vocabulary_json, found_vocabulary)
 
+    print ("Conglomerates: " + str(conglomerate_count))
 
 
 def merge_existing_into_current_vocabulary(canonical_vocabulary, remaining_vocabulary):
@@ -135,6 +137,28 @@ def copy_review_data(new_review, old_review):
     new_review.critical = old_review.critical
     new_review.unlock_date = old_review.unlock_date
 
+
+def generate_user_stats(user):
+    reviews = UserSpecific.objects.filter(user=user)
+    kanji_review_map = {}
+    for review in reviews:
+        for reading in review.vocabulary.readings.all():
+            if reading.character in kanji_review_map.keys():
+                kanji_review_map[reading.character].append(review)
+            else:
+                kanji_review_map[reading.character] = []
+                kanji_review_map[reading.character].append(review)
+
+    print("Printing all duplicates for user.")
+    for kanji, reviews in kanji_review_map.items():
+        if len(reviews) > 1:
+            print("***" + kanji + "***")
+            for review in reviews:
+                print(review)
+    print("Finished printing duplicates")
+
+
+
 def handle_merger(vocabulary_json, found_vocabulary):
     ids_to_delete = found_vocabulary.values_list('id', flat=True)
     tbd = []
@@ -145,13 +169,6 @@ def handle_merger(vocabulary_json, found_vocabulary):
     vocabulary = create_new_vocabulary(vocabulary_json)
     create_new_vocabulary_and_merge_existing(vocabulary, found_vocabulary)
     Vocabulary.objects.filter(pk__in=ids_to_delete).exclude(id=vocabulary.id).delete()
-
-
-
-
-
-
-
 
 def one_time_import_jisho(json_file_path):
     import json
@@ -199,7 +216,6 @@ def merge_with_model(related_reading, vocabulary_json):
     return retval
 
 
-
 def associate_tags(reading, tag):
     print("associating [{}] to reading {}".format(tag, reading.vocabulary.meaning))
     tag_obj, created = Tag.objects.get_or_create(name=tag)
@@ -212,7 +228,7 @@ def create_tokens_for_all_users():
 
 
 def survey_conglomerated_vocabulary():
-    count =0
+    count = 0
     for vocab in Vocabulary.objects.all():
         if has_multiple_kanji(vocab):
             print("Found item with multiple Kanji:[{}]".format(vocab.meaning))
@@ -221,3 +237,22 @@ def survey_conglomerated_vocabulary():
 
     print("total count:{}".format(count))
 
+
+def find_all_duplicates():
+    all_vocab = Vocabulary.objects.all()
+    kanji_review_map = {}
+    for vocab in all_vocab:
+        for reading in vocab.readings.all():
+            if reading.character in kanji_review_map.keys():
+                kanji_review_map[reading.character].append(vocab)
+            else:
+                kanji_review_map[reading.character] = []
+                kanji_review_map[reading.character].append(vocab)
+
+    print("Printing all duplicates for all vocab.")
+    for kanji, vocabs in kanji_review_map.items():
+        if len(vocabs) > 1:
+            print("***" + kanji + "***")
+            for vocab in vocabs:
+                print(vocab)
+    print("Finished printing duplicates")

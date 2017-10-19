@@ -265,7 +265,7 @@ class UserSpecific(models.Model):
     def _round_next_review_date(self):
         round_to = constants.REVIEW_ROUNDING_TIME.total_seconds()
         seconds = (
-        self.next_review_date - self.next_review_date.min.replace(tzinfo=self.next_review_date.tzinfo)).seconds
+            self.next_review_date - self.next_review_date.min.replace(tzinfo=self.next_review_date.tzinfo)).seconds
         rounding = (seconds + round_to) // round_to * round_to
         self.next_review_date = self.next_review_date + timedelta(0, rounding - seconds, 0)
         self.save()
@@ -282,14 +282,15 @@ class UserSpecific(models.Model):
         self._round_last_studied_date()
 
     def __str__(self):
-        return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.vocabulary.meaning,
-                                                                              self.user.username,
-                                                                              self.correct,
-                                                                              self.incorrect,
-                                                                              self.streak,
-                                                                              self.last_studied,
-                                                                              self.needs_review,
-                                                                              self.unlock_date)
+        return "{} - {} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.id,
+                                                                                   self.vocabulary.meaning,
+                                                                                   self.user.username,
+                                                                                   self.correct,
+                                                                                   self.incorrect,
+                                                                                   self.streak,
+                                                                                   self.last_studied,
+                                                                                   self.needs_review,
+                                                                                   self.unlock_date)
 
 
 class AnswerSynonym(models.Model):

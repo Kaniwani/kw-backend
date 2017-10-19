@@ -4,7 +4,7 @@ import responses
 from django.test import TestCase
 from django.utils import timezone
 from kw_webapp import constants
-from kw_webapp.models import Vocabulary, UserSpecific
+from kw_webapp.models import Vocabulary, UserSpecific, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
@@ -14,7 +14,7 @@ from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading, \
     build_test_api_string_for_merging
-from kw_webapp.utils import one_time_merger
+from kw_webapp.utils import one_time_merger, generate_user_stats
 
 
 class TestTasks(TestCase):
@@ -377,6 +377,7 @@ class TestTasks(TestCase):
         create_reading(v1, "doggo1", "犬", 5)
         create_reading(v2, "doggo2", "犬", 5)
 
+
         # Make it so that review 1 has overall better SRS score for the user.
         review_1 = create_userspecific(v1, self.user)
         review_1.streak = 4
@@ -389,6 +390,11 @@ class TestTasks(TestCase):
         review_2.correct = 4
         review_2.incorrect = 3
         review_2.save()
+
+        MeaningSynonym.objects.create(review=review_1, text="flimflammer")
+        MeaningSynonym.objects.create(review=review_2, text="shazwopper")
+        AnswerSynonym.objects.create(review=review_1, character="CHS1", kana="KS1")
+        AnswerSynonym.objects.create(review=review_2, character="CHS2", kana="KS2")
 
         # Assign another user an old version of the vocab.
         user2 = create_user("asdf")
@@ -410,7 +416,11 @@ class TestTasks(TestCase):
 
         old_vocab = Vocabulary.objects.filter(readings__character="犬")
         self.assertEqual(old_vocab.count(), 2)
+
+        generate_user_stats(self.user)
         one_time_merger()
+        generate_user_stats(self.user)
+
         new_vocab = Vocabulary.objects.filter(readings__character="犬")
         self.assertEqual(new_vocab.count(), 1)
 
@@ -424,15 +434,15 @@ class TestTasks(TestCase):
         self.assertEqual(new_review.next_review_date, review_1.next_review_date)
         self.assertEqual(new_review.last_studied, review_1.last_studied)
 
+        # Should have smashed together all the synonyms too.
+        self.assertEqual(len(new_review.synonyms_list()), 2)
+        self.assertEqual(len(new_review.answer_synonyms_list()), 2)
+
         second_users_reviews = UserSpecific.objects.filter(user=user2)
         self.assertEqual(second_users_reviews.count(), 1)
         user_two_review = second_users_reviews[0]
         self.assertEqual(user_two_review.streak, 5)
         self.assertTrue(user_two_review.vocabulary.meaning == "dog, woofer, pupper")
-
-
-
-
 
 
 @responses.activate
