@@ -97,7 +97,7 @@ single_vocab_new_meaning_and_should_now_merge = {
     "requested_information": [{
         "character": "猫",
         "kana": "ねこ",
-        "meaning": "radioactive bat",
+        "meaning": "DOGGO", #was previously radioactive bat. Has now changed, and should be aglomerated with original DOGGO
         "level": 16,
         "user_specific": {
             "srs": "apprentice",

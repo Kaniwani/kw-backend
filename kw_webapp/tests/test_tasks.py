@@ -305,7 +305,7 @@ class TestTasks(TestCase):
     @responses.activate
     def test_if_vocab_meaning_changes_and_it_now_matches_another_vocab_it_is_aglomerated(self):
         assert (len(self.user.reviews.all()) == 1)
-        unique_vocabulary = create_vocab("radioactive bat, doggo.")
+        unique_vocabulary = create_vocab("DOGGO")
         create_reading(unique_vocabulary, "いぬ", "犬", 2)
         unique_review = create_userspecific(unique_vocabulary, self.user)
         # Lets set some higher SRS values here, so we can show that the merger pick the higher of the two.
@@ -333,11 +333,14 @@ class TestTasks(TestCase):
 
         sync_unlocked_vocab_with_wk(self.user)
         unique_vocabulary.refresh_from_db()
-        found_vocab = get_vocab_by_meaning("radioactive bat")
-        assert (len(found_vocab.readings.all()) == 2)
+        found_vocab = get_vocab_by_meaning("DOGGO")
+        self.assertEqual(len(found_vocab.readings.all()), 2)
 
         # Ensure that the user currently has one review, reflecting the merger. Essentially, make all the same checks
         # that we make in the one time script.
+        revs = self.user.reviews.all()
+        for rev in revs:
+            print(rev)
         assert (len(self.user.reviews.all()) == 1)
         only_review = self.user.reviews.first()
         assert (only_review.correct == higher_correct)
@@ -426,7 +429,6 @@ class TestTasks(TestCase):
 
         new_review = UserSpecific.objects.filter(user=self.user, vocabulary__readings__character="犬")
         self.assertEqual(new_review.count(), 1)
-
         new_review = new_review[0]
         self.assertEqual(new_review.streak, review_1.streak)
         self.assertEqual(new_review.correct, review_1.correct)

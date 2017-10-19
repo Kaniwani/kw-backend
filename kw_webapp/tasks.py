@@ -10,7 +10,7 @@ from kw_webapp.constants import KANIWANI_SRS_LEVELS
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
 from kw_webapp import constants
-from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
+from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level, MeaningSynonym, AnswerSynonym
 from datetime import timedelta, datetime
 from django.utils import timezone
 
@@ -299,7 +299,7 @@ def get_or_create_vocab_by_json(vocab_json):
     try:
         vocab = get_vocab_by_kanji(vocab_json['character'])
         #TODO note this will not work as there may already be *multiple* vocab on the server with a given kanji
-        #handle_merger_issues(vocab, vocab_json)
+        vocab = handle_merger_issues(vocab, vocab_json)
         created = False
     except Vocabulary.DoesNotExist as e:
         vocab = create_new_vocabulary(vocab_json)
@@ -315,24 +315,39 @@ def handle_merger_issues(vocab, vocab_json):
         # Options: 1) there is another vocab with this new meaning: combine with it.
         #          2) there is the only vocab with this meaning.
 
-        #Vocabulary is not part of a conglomerate, edit it in place.
+        #Vocabulary is not part of a conglomerate, edit it in place or make it into a conglomerate if a meaning matches.
         if vocab.reading_count() == 1 or not has_multiple_kanji(vocab):
-            vocab.meaning = current_meaning
+            # Any vocab with this given meaning? If so, conglomerate. If not, just edit in place.
+            identical_meaning_vocab = Vocabulary.objects.get(meaning=current_meaning)
+
+            # We found an identical meaning, thus we can just conglomerate.
+            if identical_meaning_vocab:
+                print("Found extant vocab with identical meaning, id [{}]".format(identical_meaning_vocab.id))
+                merge_changed_vocabulary_into_existing(identical_meaning_vocab, vocab)
+                print("About to delete vocab with id [{}]".format(vocab.id))
+                vocab.delete()
+                return identical_meaning_vocab
+
+            # Edit in place, they just changed the meaning.
+            else:
+                vocab.meaning = current_meaning
+                vocab.save()
+                return vocab
 
         #Vocabulary IS part of a conglomerate
         else:
             #first up, strip the relevant readings from this vocab.
             related_readings = vocab.readings.filter(character=vocab_json['character'])
             related_readings.delete()
-            #First try to find another vocab to glue this to (another conglomerate).
 
+            # First try to find another vocab to glue this to (another conglomerate).
             try:
                 new_vocab = get_vocab_by_meaning(current_meaning)
-                associate_readings_to_vocab(new_conglomerate, vocab_json)
-            #Welp, no identical meaning vocabulary found, time to create a new one.
+                associate_readings_to_vocab(new_vocab, vocab_json)
+
+            # Welp, no identical meaning vocabulary found, time to create a new one.
             except Vocabulary.DoesNotExist:
                 create_new_vocabulary(vocab_json)
-
 
 
 
@@ -642,3 +657,61 @@ def follow_user(user):
     except exceptions.InvalidWaniKaniKey:
         user.profile.api_valid = False
         user.profile.save()
+
+
+# Get reviews for both vocab. If either exist, create a new review, and jam all information from both into it. Take
+# only the higher of the two SRS. These two vocabulary now both have the same meaning. Ergo, they should be
+# conglomerated. What this means is that there is only one vocab, which contains the readings for both.
+def merge_changed_vocabulary_into_existing(extant_identical_meaning_vocab, vocab_looked_up_from_json):
+    print("Current vocabulary id is:[{}]".format(extant_identical_meaning_vocab.id))
+    print("Vocab to be merged HAD meaning: [{}], but is nowbeing merged to vocab with meaning [{}], as that is what "
+          "is current".format(vocab_looked_up_from_json.meaning, extant_identical_meaning_vocab.meaning))
+    print("Old vocabulary item had id:[{}] ".format(vocab_looked_up_from_json.id))
+    for user in User.objects.all():
+        old_reviews = UserSpecific.objects.filter(user=user, vocabulary__in=[extant_identical_meaning_vocab.id, vocab_looked_up_from_json.id])
+        if old_reviews.count() > 0:
+            print("User [{}] had [{}] reviews which used one of the now merged vocab.".format(user.username,
+                                                                                              old_reviews.count()))
+            print("Giving them a review for our new vocabulary object...")
+            new_review = UserSpecific.objects.create(vocabulary=extant_identical_meaning_vocab, user=user)
+            # Go over all the reviews which were duplicates, and pick the best one as the new accurate one.
+            for old_review in old_reviews:
+                if old_review.streak > new_review.streak:
+                    print("Old review [{}] with vID [{}] has new highest streak: [{}]".format(old_review.id, old_review.vocabulary.id, old_review.streak))
+
+                    copy_review_data(new_review, old_review)
+                else:
+                    print("Old review [{}] with viD [{}] has lower streak than current maximum.: [{}] < [{}]".format(old_review.id,
+                                                                                                                     old_review.vocabulary.id,
+                                                                                                       old_review.streak,
+                                                                                                       new_review.streak))
+                if new_review.notes is None:
+                    new_review.notes = old_review.notes
+                else:
+                    new_review.notes = new_review.notes + ", " + old_review.notes
+
+                # slap all the synonyms found onto the new review.
+                MeaningSynonym.objects.filter(review=old_review).update(review=new_review)
+                AnswerSynonym.objects.filter(review=old_review).update(review=new_review)
+            # Now we are done with the old reviews, and we've combined them all, we can simply delete the old ones, and
+            # keep the new one
+            old_reviews.exclude(id=new_review.id).delete()
+
+            new_review.save()
+
+
+def copy_review_data(new_review, old_review):
+    print("Copying review data from [{}] -> [{}]".format(old_review.id, new_review.id))
+    new_review.streak = old_review.streak
+    new_review.incorrect = old_review.incorrect
+    new_review.correct = old_review.correct
+    new_review.next_review_date = old_review.next_review_date
+    new_review.last_studied = old_review.last_studied
+    new_review.burned = old_review.burned
+    new_review.needs_review = old_review.needs_review
+    new_review.wanikani_srs = old_review.wanikani_srs
+    new_review.wanikani_srs_numeric = old_review.wanikani_srs_numeric
+    new_review.wanikani_burned = old_review.wanikani_burned
+    new_review.critical = old_review.critical
+    new_review.unlock_date = old_review.unlock_date
+
