@@ -232,7 +232,7 @@ def find_all_duplicates():
             print("***" + kanji + "***")
             for vocab in vocabs:
                 print(vocab)
-    print("Finished printing duplicates")
+    print("Finished printing duplicates: found {}".format(duplicate_count))
 
 
 def copy_review_data(new_review, old_review):
