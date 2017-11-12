@@ -225,8 +225,10 @@ def find_all_duplicates():
                 kanji_review_map[reading.character].append(vocab)
 
     print("Printing all duplicates for all vocab.")
+    duplicate_count = 0
     for kanji, vocabs in kanji_review_map.items():
         if len(vocabs) > 1:
+            duplicate_count += 1
             print("***" + kanji + "***")
             for vocab in vocabs:
                 print(vocab)
