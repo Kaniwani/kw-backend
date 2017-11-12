@@ -21,7 +21,7 @@ class TestViews(TestCase):
         create_profile(self.user, "some_key", 5)
         # create a piece of vocab with one reading.
         self.vocabulary = create_vocab("radioactive bat")
-        self.cat_reading = create_reading(self.vocabulary, "kana", "kanji", 5)
+        self.cat_reading = create_reading(self.vocabulary, "ねこ", "猫", 5)
 
         # setup a review with two synonyms
         self.review = create_userspecific(self.vocabulary, self.user)

@@ -4,7 +4,7 @@ from rest_framework.authtoken.models import Token
 
 from kw_webapp.models import UserSpecific, Profile, Reading, Tag, Vocabulary, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import create_new_vocabulary, \
-    has_multiple_kanji, copy_review_data
+    has_multiple_kanji
 from kw_webapp.tests.utils import build_test_api_string_for_merging
 from kw_webapp.wanikani import make_api_call
 
@@ -231,3 +231,19 @@ def find_all_duplicates():
             for vocab in vocabs:
                 print(vocab)
     print("Finished printing duplicates")
+
+
+def copy_review_data(new_review, old_review):
+    print("Copying review data from [{}] -> [{}]".format(old_review.id, new_review.id))
+    new_review.streak = old_review.streak
+    new_review.incorrect = old_review.incorrect
+    new_review.correct = old_review.correct
+    new_review.next_review_date = old_review.next_review_date
+    new_review.last_studied = old_review.last_studied
+    new_review.burned = old_review.burned
+    new_review.needs_review = old_review.needs_review
+    new_review.wanikani_srs = old_review.wanikani_srs
+    new_review.wanikani_srs_numeric = old_review.wanikani_srs_numeric
+    new_review.wanikani_burned = old_review.wanikani_burned
+    new_review.critical = old_review.critical
+    new_review.unlock_date = old_review.unlock_date
