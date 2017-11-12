@@ -2,10 +2,10 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
+from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Profile, Reading, Tag, Vocabulary, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import create_new_vocabulary, \
     has_multiple_kanji
-from kw_webapp.tests.utils import build_test_api_string_for_merging
 from kw_webapp.wanikani import make_api_call
 
 
@@ -55,27 +55,31 @@ def correct_next_review_dates():
 
 
 def one_time_merger():
-    api_string = build_test_api_string_for_merging()
-    response = make_api_call(api_string)
-    vocab_list = response['requested_information']
-    print("Vocab found:{}".format(len(vocab_list)))
     conglomerate_count = 0
-    for vocabulary_json in vocab_list:
-        print("**************************************************************")
-        print("Analyzing vocab with kanji:[{}]\tCanonical meaning is:[{}]".format(vocabulary_json['character'],
-                                                                                  vocabulary_json['meaning']))
-        found_vocabulary = Vocabulary.objects.filter(readings__character=vocabulary_json['character'])
-        print("found [{}] vocabulary on the server with kanji [{}]".format(found_vocabulary.count(),
-                                                                           vocabulary_json['character']))
-        if found_vocabulary.count() == 1 and found_vocabulary[0].meaning == vocabulary_json['meaning']:
-            print("No conflict found. Precisely 1 vocab on server, and meaning matches.")
-        elif found_vocabulary.count() > 1:
-            conglomerate_count += 1
-            print("Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(found_vocabulary.count(),
-                                                                                            vocabulary_json['meaning']))
-            handle_merger(vocabulary_json, found_vocabulary)
+    total_vocab_count = 0
+    for level in range(1, 61):
+        api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(constants.api_key, level)
+        response = make_api_call(api_call)
+        vocab_list = response['requested_information']
+        total_vocab_count += len(vocab_list)
+        print("Vocab found:{}".format(len(vocab_list)))
 
-    print("Conglomerates: " + str(conglomerate_count))
+        for vocabulary_json in vocab_list:
+            print("**************************************************************")
+            print("Analyzing vocab with kanji:[{}]\tCanonical meaning is:[{}]".format(vocabulary_json['character'],
+                                                                                      vocabulary_json['meaning']))
+            found_vocabulary = Vocabulary.objects.filter(readings__character=vocabulary_json['character'])
+            print("found [{}] vocabulary on the server with kanji [{}]".format(found_vocabulary.count(),
+                                                                               vocabulary_json['character']))
+            if found_vocabulary.count() == 1 and found_vocabulary[0].meaning == vocabulary_json['meaning']:
+                print("No conflict found. Precisely 1 vocab on server, and meaning matches.")
+            elif found_vocabulary.count() > 1:
+                conglomerate_count += 1
+                print("Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(found_vocabulary.count(),
+                                                                                                vocabulary_json['meaning']))
+                handle_merger(vocabulary_json, found_vocabulary)
+    print("total vocabb count: {}".format(total_vocab_count))
+    print("Conglomerates: {}".format(conglomerate_count))
 
 
 def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
