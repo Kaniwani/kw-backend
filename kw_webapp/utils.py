@@ -58,7 +58,7 @@ def one_time_merger():
     conglomerate_count = 0
     total_vocab_count = 0
     for level in range(1, 61):
-        api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(constants.api_key, level)
+        api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(constants.API_KEY, level)
         response = make_api_call(api_call)
         vocab_list = response['requested_information']
         total_vocab_count += len(vocab_list)
