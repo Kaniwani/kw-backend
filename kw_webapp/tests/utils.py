@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 
+from kw_webapp.constants import API_KEY
 from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile
 
 
@@ -40,3 +41,9 @@ def create_review_for_specific_time(user, meaning, time_to_review):
     timed_review.next_review_date = time_to_review
     timed_review.save()
     return timed_review
+
+def build_test_api_string_for_merging():
+    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/TEST".format(API_KEY)
+    return api_call
+
+

@@ -4,15 +4,16 @@ import responses
 from django.test import TestCase
 from django.utils import timezone
 from kw_webapp import constants
-from kw_webapp.models import Vocabulary, UserSpecific
+from kw_webapp.models import Vocabulary, UserSpecific, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
-    user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user, sync_all_users_to_wk, \
-    reset_user, get_users_current_reviews, reset_levels, get_users_lessons
+    user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
+    reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading
+from kw_webapp.utils import generate_user_stats, one_time_merge_level
 
 
 class TestTasks(TestCase):
@@ -111,7 +112,8 @@ class TestTasks(TestCase):
                       status=200,
                       content_type='application/json')
 
-        checked_levels, unlocked_now_count, total_unlocked_count,  locked_count = unlock_all_possible_levels_for_user(self.user)
+        checked_levels, unlocked_now_count, total_unlocked_count, locked_count = unlock_all_possible_levels_for_user(
+            self.user)
 
         self.assertListEqual(level_list, checked_levels)
         self.assertEqual(total_unlocked_count, 1)
@@ -137,7 +139,7 @@ class TestTasks(TestCase):
         an_hour_ago = now - timezone.timedelta(hours=1)
         two_hours_ago = now - timezone.timedelta(hours=2)
         two_hours_from_now = now + timezone.timedelta(hours=2)
-        four_hours_from_now = now + timezone.timedelta(hours = 4)
+        four_hours_from_now = now + timezone.timedelta(hours=4)
         self.user.profile.vacation_date = two_hours_ago
         self.user.profile.save()
         self.review.last_studied = two_hours_ago
@@ -221,19 +223,132 @@ class TestTasks(TestCase):
     def test_when_reading_level_changes_on_wanikani_we_catch_that_change_and_comply(self):
         resp_body = sample_api_responses.single_vocab_response
 
-
-        #Mock response so that the level changes on our default vocab.
+        # Mock response so that the level changes on our default vocab.
         responses.add(responses.GET, build_API_sync_string_for_user(self.user),
                       json=sample_api_responses.single_vocab_response,
                       status=200,
                       content_type='application/json')
-
 
         sync_unlocked_vocab_with_wk(self.user)
 
         vocabulary = get_vocab_by_meaning("radioactive bat")
 
         self.assertEqual(vocabulary.readings.count(), 1)
+
+    @responses.activate
+    def test_when_wanikani_changes_meaning_no_duplicate_is_created(self):
+        resp_body = deepcopy(sample_api_responses.single_vocab_response)
+        resp_body['requested_information'][0]['meaning'] = "NOT radioactive bat"
+
+        # Mock response so that the level changes on our default vocab.
+        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+                      json=resp_body,
+                      status=200,
+                      content_type='application/json')
+
+        sync_unlocked_vocab_with_wk(self.user)
+
+        # Will fail if 2 vocab exist with same kanji.
+        vocabulary = get_vocab_by_kanji("猫")
+
+
+    @responses.activate
+    def test_one_time_script_for_vocabulary_merging_works(self):
+        # Merger should:
+        # 1) Pull entire Wanikani vocabulary set.
+        # 2) For each vocabulary, check kanji.
+
+        # Option A:
+
+        # 3) If multiple vocab that have a reading with that kanji are returned, Create *one* new vocab for that kanji,
+        #  with current info from API.
+
+        # 3.5) Make sure to copy over the various metadata on the reading we have previously pulled (sentences etc)
+
+        # 4) Find all Reviews that point to any of the previous vocabulary objects.
+
+        # 5) Find maximum of all the reviews when grouped by user. Which has highest SRS, etc. This will be the user's
+        # original vocab. Probably best to confirm by checking creation date.
+
+        # 6) Point the review's Vocabulary to the newly created vocabulary object from step 3.
+
+        # 7) Delete all other Vocabulary that are now out of date. This should cascade deletion
+        # down to the other reviews.
+
+        # Option B: 3) If only one vocab is found for a particular kanji, we have successfully *not* created
+        # duplicates, meaning the WK vocab has never changed meaning. 4) We do not have to do anything here. Woohoo!
+
+        # Create two vocab, identical kanji, different meanings.
+        v1 = create_vocab("dog")  # < -- vestigial vocab.
+        v2 = create_vocab("dog, woofer, pupper")  # < -- real, current vocab.
+        create_reading(v1, "doggo1", "犬", 5)
+        create_reading(v2, "doggo2", "犬", 5)
+
+
+        # Make it so that review 1 has overall better SRS score for the user.
+        review_1 = create_userspecific(v1, self.user)
+        review_1.streak = 4
+        review_1.correct = 4
+        review_1.incorrect = 2
+        review_1.save()
+
+        review_2 = create_userspecific(v2, self.user)
+        review_2.streak = 2
+        review_2.correct = 4
+        review_2.incorrect = 3
+        review_2.save()
+
+        MeaningSynonym.objects.create(review=review_1, text="flimflammer")
+        MeaningSynonym.objects.create(review=review_2, text="shazwopper")
+        AnswerSynonym.objects.create(review=review_1, character="CHS1", kana="KS1")
+        AnswerSynonym.objects.create(review=review_2, character="CHS2", kana="KS2")
+
+        # Assign another user an old version of the vocab.
+        user2 = create_user("asdf")
+        review_3 = create_userspecific(v1, user2)
+        review_3.streak = 5
+        review_3.correct = 5
+        review_3.incorrect = 0
+        review_3.save()
+
+        # User now has two different vocab, each with their own meaning, however kanji are identical.
+
+        # Pull fake "current" vocab. this response, wherein we fetch the data from WK, and it turns out we already
+        # have a local vocabulary with an identical meaning (i.e., we have already stored the correct and
+        # currently active vocabulary.
+        responses.add(responses.GET,  "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(constants.API_KEY, self.user.profile.level),
+                      json=sample_api_responses.single_vocab_existing_meaning_and_should_now_merge,
+                      status=200,
+                      content_type='application/json')
+
+        old_vocab = Vocabulary.objects.filter(readings__character="犬")
+        self.assertEqual(old_vocab.count(), 2)
+
+        generate_user_stats(self.user)
+        one_time_merge_level(self.user.profile.level)
+        generate_user_stats(self.user)
+
+        new_vocab = Vocabulary.objects.filter(readings__character="犬")
+        self.assertEqual(new_vocab.count(), 1)
+
+        new_review = UserSpecific.objects.filter(user=self.user, vocabulary__readings__character="犬")
+        self.assertEqual(new_review.count(), 1)
+        new_review = new_review[0]
+        self.assertEqual(new_review.streak, review_1.streak)
+        self.assertEqual(new_review.correct, review_1.correct)
+        self.assertEqual(new_review.incorrect, review_1.incorrect)
+        self.assertEqual(new_review.next_review_date, review_1.next_review_date)
+        self.assertEqual(new_review.last_studied, review_1.last_studied)
+
+        # Should have smashed together all the synonyms too.
+        self.assertEqual(len(new_review.synonyms_list()), 2)
+        self.assertEqual(len(new_review.answer_synonyms_list()), 2)
+
+        second_users_reviews = UserSpecific.objects.filter(user=user2)
+        self.assertEqual(second_users_reviews.count(), 1)
+        user_two_review = second_users_reviews[0]
+        self.assertEqual(user_two_review.streak, 5)
+        self.assertTrue(user_two_review.vocabulary.meaning == "dog, woofer, pupper")
 
 
     def test_when_user_resets_their_account_all_unlocked_levels_are_removed_except_current_wk_level(self):

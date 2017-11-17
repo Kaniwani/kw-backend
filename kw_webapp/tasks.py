@@ -10,7 +10,7 @@ from kw_webapp.constants import WANIKANI_SRS_LEVELS, KANIWANI_SRS_LEVELS, KwSrsL
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
 from kw_webapp import constants
-from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
+from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level, MeaningSynonym, AnswerSynonym
 from datetime import timedelta, datetime
 from django.utils import timezone
 
@@ -61,6 +61,16 @@ def all_srs(user=None):
 
     logger.info("Finished SRS run for {}.".format(user or "all users"))
     return affected_count
+
+
+def get_vocab_by_kanji(kanji):
+    try:
+        v = Vocabulary.objects.get(readings__character=kanji)
+    except Vocabulary.DoesNotExist:
+        logger.error("While attempting to get vocabulary {} we could not find it!".format(kanji))
+        raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(kanji))
+    else:
+        return v
 
 
 def get_vocab_by_meaning(meaning):
@@ -114,6 +124,7 @@ def build_API_sync_string_for_user(user):
     for level in user.profile.unlocked_levels_list():
         api_call += str(level) + ","
     return api_call
+
 
 
 def build_API_sync_string_for_user_for_levels(user, levels):
@@ -285,11 +296,20 @@ def get_or_create_vocab_by_json(vocab_json):
     vocabulary.
     :return: vocabulary object.
     """
+
     try:
-        vocab = get_vocab_by_meaning(vocab_json['meaning'])
+        vocab = get_vocab_by_kanji(vocab_json['character'])
+        created = False
     except Vocabulary.DoesNotExist as e:
         vocab = create_new_vocabulary(vocab_json)
-    return vocab
+        created = True
+    return vocab, created
+
+
+def has_multiple_kanji(vocab):
+    kanji = [reading.character for reading in vocab.readings.all()]
+    kanji2 = set(kanji)
+    return len(kanji2) > 1
 
 
 def add_synonyms_from_api_call_to_review(review, user_specific_json):
@@ -378,7 +398,7 @@ def process_vocabulary_response_for_unlock(user, json_data):
     unlocked_this_request = 0
     for vocabulary_json in vocab_list:
         user_specific = vocabulary_json['user_specific']
-        vocab = get_or_create_vocab_by_json(vocabulary_json)
+        vocab, is_new = get_or_create_vocab_by_json(vocabulary_json)
         vocab = associate_readings_to_vocab(vocab, vocabulary_json)
         new_review, created = associate_vocab_to_user(vocab, user)
         total_unlocked_count += 1
@@ -410,7 +430,7 @@ def process_vocabulary_response_for_user(user, json_data):
                   vocab_json['user_specific'] is not None]  # filters out locked items.
     for vocabulary_json in vocab_list:
         user_specific = vocabulary_json['user_specific']
-        vocab = get_or_create_vocab_by_json(vocabulary_json)
+        vocab, is_new = get_or_create_vocab_by_json(vocabulary_json)
         vocab = associate_readings_to_vocab(vocab, vocabulary_json)
         if user.profile.follow_me:
             new_review, created = associate_vocab_to_user(vocab, user)
