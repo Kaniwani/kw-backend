@@ -14,7 +14,7 @@ from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading, \
     build_test_api_string_for_merging
-from kw_webapp.utils import one_time_merger, generate_user_stats
+from kw_webapp.utils import one_time_merger, generate_user_stats, one_time_merge_level
 
 
 class TestTasks(TestCase):
@@ -317,7 +317,7 @@ class TestTasks(TestCase):
         # Pull fake "current" vocab. this response, wherein we fetch the data from WK, and it turns out we already
         # have a local vocabulary with an identical meaning (i.e., we have already stored the correct and
         # currently active vocabulary.
-        responses.add(responses.GET, build_test_api_string_for_merging(),
+        responses.add(responses.GET,  "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(constants.API_KEY, self.user.profile.level),
                       json=sample_api_responses.single_vocab_existing_meaning_and_should_now_merge,
                       status=200,
                       content_type='application/json')
@@ -326,7 +326,7 @@ class TestTasks(TestCase):
         self.assertEqual(old_vocab.count(), 2)
 
         generate_user_stats(self.user)
-        one_time_merger()
+        one_time_merge_level(self.user.profile.level)
         generate_user_stats(self.user)
 
         new_vocab = Vocabulary.objects.filter(readings__character="犬")

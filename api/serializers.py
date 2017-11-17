@@ -193,7 +193,7 @@ class ReadingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reading
         fields = ('id', 'character', 'kana', 'level', 'tags', 'sentence_en', 'sentence_ja',
-                  'jlpt', 'common')
+                  'common', "furigana", "pitch", "parts_of_speech")
 
 
 class VocabularySerializer(serializers.ModelSerializer):

@@ -55,33 +55,31 @@ def correct_next_review_dates():
         print(i, u)
 
 
+
+def one_time_merge_level(level):
+    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(constants.API_KEY, level)
+    response = make_api_call(api_call)
+    vocab_list = response['requested_information']
+    print("Vocab found:{}".format(len(vocab_list)))
+
+    for vocabulary_json in vocab_list:
+        print("**************************************************************")
+        print("Analyzing vocab with kanji:[{}]\tCanonical meaning is:[{}]".format(vocabulary_json['character'],
+                                                                                  vocabulary_json['meaning']))
+        found_vocabulary = Vocabulary.objects.filter(readings__character=vocabulary_json['character'])
+        print("found [{}] vocabulary on the server with kanji [{}]".format(found_vocabulary.count(),
+                                                                           vocabulary_json['character']))
+        if found_vocabulary.count() == 1 and found_vocabulary[0].meaning == vocabulary_json['meaning']:
+            print("No conflict found. Precisely 1 vocab on server, and meaning matches.")
+        elif found_vocabulary.count() > 1:
+            print("Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(found_vocabulary.count(),
+                                                                                            vocabulary_json['meaning']))
+            handle_merger(vocabulary_json, found_vocabulary)
+
+
 def one_time_merger():
-    conglomerate_count = 0
-    total_vocab_count = 0
     for level in range(1, 61):
-        api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(constants.API_KEY, level)
-        response = make_api_call(api_call)
-        vocab_list = response['requested_information']
-        total_vocab_count += len(vocab_list)
-        print("Vocab found:{}".format(len(vocab_list)))
-
-        for vocabulary_json in vocab_list:
-            print("**************************************************************")
-            print("Analyzing vocab with kanji:[{}]\tCanonical meaning is:[{}]".format(vocabulary_json['character'],
-                                                                                      vocabulary_json['meaning']))
-            found_vocabulary = Vocabulary.objects.filter(readings__character=vocabulary_json['character'])
-            print("found [{}] vocabulary on the server with kanji [{}]".format(found_vocabulary.count(),
-                                                                               vocabulary_json['character']))
-            if found_vocabulary.count() == 1 and found_vocabulary[0].meaning == vocabulary_json['meaning']:
-                print("No conflict found. Precisely 1 vocab on server, and meaning matches.")
-            elif found_vocabulary.count() > 1:
-                conglomerate_count += 1
-                print("Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(found_vocabulary.count(),
-                                                                                                vocabulary_json['meaning']))
-                handle_merger(vocabulary_json, found_vocabulary)
-    print("total vocabb count: {}".format(total_vocab_count))
-    print("Conglomerates: {}".format(conglomerate_count))
-
+        one_time_merge_level(level)
 
 def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
     print("New vocabulary id is:[{}]".format(vocabulary.id))
