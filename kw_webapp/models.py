@@ -146,6 +146,11 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+class PartOfSpeech(models.Model):
+    part = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.part
 
 class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
@@ -160,8 +165,10 @@ class Reading(models.Model):
     sentence_en = models.CharField(max_length=1000, null=True)
     sentence_ja = models.CharField(max_length=1000, null=True)
     common = models.NullBooleanField()
-    jlpt = models.CharField(max_length=20, null=True)
     tags = models.ManyToManyField(Tag)
+    furigana = models.CharField(max_length=100, null=True)
+    pitch = models.CharField(max_length=100, null=True)
+    parts_of_speech = models.ManyToManyField(PartOfSpeech)
 
     def __str__(self):
         return "{} - {} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character, self.level)

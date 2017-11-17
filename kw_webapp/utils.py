@@ -3,7 +3,8 @@ from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
 from kw_webapp import constants
-from kw_webapp.models import UserSpecific, Profile, Reading, Tag, Vocabulary, MeaningSynonym, AnswerSynonym
+from kw_webapp.models import UserSpecific, Profile, Reading, Tag, Vocabulary, MeaningSynonym, AnswerSynonym, \
+    PartOfSpeech
 from kw_webapp.tasks import create_new_vocabulary, \
     has_multiple_kanji
 from kw_webapp.wanikani import make_api_call
@@ -168,30 +169,67 @@ def one_time_import_jisho(json_file_path):
                         print(reading.vocabulary.meaning, reading.character, reading.kana, reading.level)
                         merge_with_model(reading, vocabulary_json)
 
+def one_time_import_jisho_new_format(json_file_path):
+    import json
+    with open(json_file_path) as file:
+        with open("outfile.txt", 'w') as outfile:
+            parsed_json = json.load(file)
+
+            for vocabulary_json in parsed_json:
+                try:
+                    related_reading = Reading.objects.get(character=vocabulary_json["character"])
+                    outfile.write(merge_with_model(related_reading, vocabulary_json))
+                except Reading.DoesNotExist:
+                    pass
+                except Reading.MultipleObjectsReturned:
+                    readings = Reading.objects.filter(character=vocabulary_json["character"])
+                    print("FOUND MULTIPLE READINGS")
+                    for reading in readings:
+                        if reading.kana == vocabulary_json["reading"]:
+                            print(reading.vocabulary.meaning, reading.character, reading.kana, reading.level)
+                            merge_with_model(reading, vocabulary_json)
+
 
 def merge_with_model(related_reading, vocabulary_json):
+    if related_reading.kana != vocabulary_json['reading']:
+        print("Not the primary reading, skipping: {}".format(related_reading.kana))
+    else:
+        print("Found primary Reading: {}".format(related_reading.kana))
     retval = "******\nWorkin on related reading...{},{}".format(related_reading.character, related_reading.id)
     retval += str(vocabulary_json)
-
-    tags_json = vocabulary_json['tags']
-    [associate_tags(related_reading, tag_json) for tag_json in tags_json]
 
     if "common" in vocabulary_json:
         related_reading.common = vocabulary_json["common"]
     else:
         retval += "NO COMMON?!"
-    if "jlpt" in vocabulary_json:
-        related_reading.jlpt = vocabulary_json["jlpt"]
-    else:
-        retval += "NO JLPT?"
-    if "sentence" in vocabulary_json:
-        related_reading.sentence_en = vocabulary_json["sentence"]["en"]
-        related_reading.sentence_ja = vocabulary_json["sentence"]["ja"]
-    else:
-        retval += "NO SENTENCE!?"
+
+
+    related_reading.isPrimary = True
+
+    if "furi" in vocabulary_json:
+        related_reading.furigana = vocabulary_json["furi"]
+
+    if "pitch" in vocabulary_json:
+        if len(vocabulary_json["pitch"]) > 0:
+            string_pitch = ",".join([str(pitch) for pitch in vocabulary_json["pitch"]])
+            related_reading.pitch = string_pitch
+
+
+    if "partOfSpeech" in vocabulary_json:
+        for pos in vocabulary_json["partOfSpeech"]:
+            part = PartOfSpeech.objects.get_or_create(part=pos)[0]
+            if part not in related_reading.parts_of_speech.all():
+                related_reading.parts_of_speech.add(part)
+
+    if "sentenceEn" in vocabulary_json:
+        related_reading.sentence_en = vocabulary_json["sentenceEn"]
+
+    if "sentenceJa" in vocabulary_json:
+        related_reading.sentence_ja = vocabulary_json["sentenceJa"]
 
     related_reading.save()
     retval += "Finished with reading [{}]! Tags:{},".format(related_reading.id, related_reading.tags.count())
+    print(retval)
     return retval
 
 
@@ -235,6 +273,7 @@ def find_all_duplicates():
             duplicate_count += 1
             print("***" + kanji + "***")
             for vocab in vocabs:
+
                 print(vocab)
     print("Finished printing duplicates: found {}".format(duplicate_count))
 
