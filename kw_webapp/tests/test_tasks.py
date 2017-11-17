@@ -8,13 +8,12 @@ from kw_webapp.models import Vocabulary, UserSpecific, MeaningSynonym, AnswerSyn
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
-    user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user, sync_all_users_to_wk, \
-    reset_user, get_users_current_reviews, reset_levels, get_users_lessons
+    user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
+    reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
-from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading, \
-    build_test_api_string_for_merging
-from kw_webapp.utils import one_time_merger, generate_user_stats, one_time_merge_level
+from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading
+from kw_webapp.utils import generate_user_stats, one_time_merge_level
 
 
 class TestTasks(TestCase):
