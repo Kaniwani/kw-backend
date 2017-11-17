@@ -8,7 +8,7 @@ from django.test import Client, TestCase
 from django.utils import timezone
 
 from kw_webapp import constants
-from kw_webapp.constants import SrsLevel
+from kw_webapp.constants import WkSrsLevel
 from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag
 from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
@@ -189,6 +189,7 @@ class TestModels(TestCase):
 
     def test_rounding_a_review_time_only_goes_up(self):
         self.review.next_review_date = self.review.next_review_date.replace(minute=17)
+        self.review.last_studied = self.review.next_review_date.replace(minute=17)
         self.review._round_review_time_up()
         self.review.refresh_from_db()
 
@@ -202,8 +203,7 @@ class TestModels(TestCase):
         self.review.last_studied = self.review.last_studied.replace(minute=17)
         self.review._round_review_time_up()
 
-        self.assertEqual(self.review.last_studied.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0 )
-
+        self.assertEqual(self.review.last_studied.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0)
 
     def test_default_review_times_are_not_rounded(self):
         rounded_time = self.review.next_review_date
@@ -218,34 +218,6 @@ class TestModels(TestCase):
         self.user.refresh_from_db()
 
         self.assertEqual(self.user.profile.level, old_level + 1)
-
-    def test_handle_wanikani_level_down_correctly_deletes_invalid_reviews(self):
-        self.user.profile.level = 5
-        self.user.profile.save()
-        self.user.profile.unlocked_levels.get_or_create(level=5)
-
-        # Create a review at current levelwait,
-        vocab = create_vocab("ANY WORD")
-        create_reading(vocab, "some reading", "some char", self.user.profile.level)
-        create_userspecific(vocab, self.user)
-
-        self.user.profile.handle_wanikani_level_change(self.user.profile.level - 1)
-
-        reviews = UserSpecific.objects.filter(user=self.user)
-
-        self.assertTrue(reviews.count() == 1)
-
-    def test_handle_wanikani_level_down_correctly_removes_invalid_levels(self):
-        self.user.profile.level = 5
-        self.user.profile.save()
-        self.user.profile.unlocked_levels.get_or_create(level=5)
-        old_level = self.user.profile.level
-        self.user.profile.handle_wanikani_level_change(old_level - 1)
-
-        self.user.refresh_from_db()
-        unlocked_levels = self.user.profile.unlocked_levels_list()
-
-        self.assertTrue(old_level not in unlocked_levels)
 
     def test_updating_next_review_date_based_on_last_studied_works(self):
         current_time = timezone.now()
@@ -333,22 +305,25 @@ class TestModels(TestCase):
 
         self.assertFalse(self.review.critical)
 
-        #Brings total attempt count to 2
+        # Brings total attempt count to 2
         self.review.answered_incorrectly()
 
         self.assertFalse(self.review.critical)
 
     def test_review_correctly_comes_out_of_critical_once_guru(self):
-        self.review.correct = 4
-        self.review.incorrect = 20
+        self.review.correct = 1
+        self.review.incorrect = 3
         self.review.critical = True
-        self.review.streak = constants.KANIWANI_SRS_LEVELS[SrsLevel.GURU.name][0]
         self.review.save()
         self.review.refresh_from_db()
 
         self.assertTrue(self.review.critical)
 
-        #Brings total attempt count to the guru threshold
         self.review.answered_correctly()
 
+        self.review.refresh_from_db()
         self.assertFalse(self.review.critical)
+
+    def test_newly_created_user_specific_has_null_last_studied_date(self):
+        review = create_userspecific(create_vocab("test"), self.user)
+        self.assertIsNone(review.last_studied)

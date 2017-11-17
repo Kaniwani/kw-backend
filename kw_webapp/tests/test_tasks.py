@@ -9,7 +9,7 @@ from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user, sync_all_users_to_wk, \
-    get_vocab_by_kanji, has_multiple_kanji
+    reset_user, get_users_current_reviews, reset_levels, get_users_lessons
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading, \
@@ -350,3 +350,40 @@ class TestTasks(TestCase):
         user_two_review = second_users_reviews[0]
         self.assertEqual(user_two_review.streak, 5)
         self.assertTrue(user_two_review.vocabulary.meaning == "dog, woofer, pupper")
+
+
+    def test_when_user_resets_their_account_all_unlocked_levels_are_removed_except_current_wk_level(self):
+        self.user.profile.unlocked_levels.get_or_create(level=1)
+        self.user.profile.unlocked_levels.get_or_create(level=2)
+        self.user.profile.unlocked_levels.get_or_create(level=3)
+        self.user.profile.unlocked_levels.get_or_create(level=4)
+        self.user.refresh_from_db()
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [5, 1, 2, 3, 4])
+        reset_levels(self.user)
+        self.user.refresh_from_db()
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [5])
+
+    @responses.activate
+    def test_when_user_resets_their_account_we_remove_all_reviews_and_then_unlock_their_current_level(self):
+        self.user.profile.unlocked_levels.get_or_create(level=1)
+        new_review = create_userspecific(create_vocab("arbitrary word"), self.user)
+        new_review.needs_review = True
+        new_review.save()
+        self.assertEqual(get_users_current_reviews(self.user).count(), 2)
+
+        #Mock response so that the level changes on our default vocab.
+        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, self.user.profile.level),
+                      json=sample_api_responses.single_vocab_response,
+                      status=200,
+                      content_type='application/json')
+
+        reset_user(self.user)
+
+        self.user.refresh_from_db()
+        self.assertEqual(get_users_lessons(self.user).count(), 1)
+        self.assertEqual(self.user.profile.unlocked_levels_list()[0], 5)
+
+
+
+
+

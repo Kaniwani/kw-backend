@@ -6,7 +6,7 @@ from django.utils import timezone
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
-from kw_webapp.constants import SrsLevel, KANIWANI_SRS_LEVELS
+from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time
 
@@ -39,7 +39,6 @@ class TestProfileApi(APITestCase):
         self.assertEqual(response.data["profile"]['reviews_within_day_count'], 2)
         self.assertEqual(response.data["profile"]['reviews_within_hour_count'], 1)
         self.assertEqual(response.data["profile"]['reviews_count'], 1)
-        print(json.dumps(response.data, indent=2))
 
     def test_future_review_counts_preprocessor_does_not_include_currently_active_reviews(self):
         within_day_review = create_review_for_specific_time(self.user, "some word",
@@ -86,7 +85,8 @@ class TestProfileApi(APITestCase):
         user_dict = dict(response.data)
         user_dict['profile']['on_vacation'] = True
         user_dict['profile']['follow_me'] = True
-        # self.client.put(reverse("api:profile-detail", (self.user.profile.id,)), user_dict, format='json')
+
+    # self.client.put(reverse("api:profile-detail", (self.user.profile.id,)), user_dict, format='json')
 
     def test_locking_current_level_disables_following_setting(self):
         self.client.force_login(user=self.user)
@@ -116,10 +116,10 @@ class TestProfileApi(APITestCase):
     def test_filtering_on_wk_srs_levels_works(self):
         self.client.force_login(user=self.user)
         word = create_vocab("phlange")
-        self.user.profile.minimum_wk_srs_level_to_review = SrsLevel.BURNED.name
+        self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.BURNED.name
         self.user.profile.save()
         another_review = create_userspecific(word, self.user)
-        another_review.wanikani_srs_numeric = KANIWANI_SRS_LEVELS[SrsLevel.BURNED.name][0]
+        another_review.wanikani_srs_numeric = WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name][0]
         another_review.save()
 
         response = self.client.get(reverse("api:review-current"))
@@ -130,7 +130,7 @@ class TestProfileApi(APITestCase):
     def test_review_page_shows_all_items_when_burnt_setting_is_disabled(self):
         self.client.force_login(user=self.user)
         word = create_vocab("phlange")
-        self.user.profile.minimum_wk_srs_level_to_review = SrsLevel.APPRENTICE.name
+        self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.APPRENTICE.name
         self.user.profile.save()
         another_review = create_userspecific(word, self.user)
         another_review.wanikani_srs_numeric = 5
@@ -147,8 +147,8 @@ class TestProfileApi(APITestCase):
         self.client.post(reverse("api:review-correct", args=(self.review.id,)), data={"wrong_before": "false"})
         self.review.refresh_from_db()
 
-        self.assertTrue(self.review.correct == 1)
-        self.assertTrue(self.review.streak == 1)
+        self.assertEqual(self.review.correct, 1)
+        self.assertTrue(self.review.streak == 2)
         self.assertFalse(self.review.needs_review)
 
     def test_wrong_answer_records_failure(self):
@@ -159,7 +159,7 @@ class TestProfileApi(APITestCase):
 
         self.assertTrue(self.review.incorrect == 1)
         self.assertTrue(self.review.correct == 0)
-        self.assertTrue(self.review.streak == 0)
+        self.assertTrue(self.review.streak == 1)
         self.assertTrue(self.review.needs_review)
 
     def test_review_requires_login(self):
@@ -190,6 +190,7 @@ class TestProfileApi(APITestCase):
         self.review.next_review_date = current_time
         self.review.needs_review = False
         self.review.save()
+
         older_burnt_review = create_userspecific(create_vocab("test"), self.user)
         older_burnt_review.burned = True
         older_burnt_review.needs_review = False
@@ -219,3 +220,88 @@ class TestProfileApi(APITestCase):
         self.assertTrue(synonym_kana in self.review.answer_synonyms_list())
         self.assertEqual(found_synonym.kana, synonym_kana)
         self.assertEqual(found_synonym.character, synonym_kanji)
+
+    def test_lesson_route_returns_srs_0_reviews(self):
+        self.client.force_login(user=self.user)
+
+        # Create a lesson
+        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review.streak = 0
+        new_review.save()
+
+        response = self.client.get(reverse("api:review-lesson"))
+        self.assertEqual(response.data["count"], 1)
+
+    def test_reviews_endpoint_omits_lessons(self):
+        self.client.force_login(user=self.user)
+
+        # Create a lesson
+        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review.streak = 0
+        new_review.save()
+
+        response = self.client.get(reverse("api:review-current"))
+        self.assertEqual(response.data["count"], 1)
+
+    def test_user_getting_answer_wrong_cannot_drop_below_1_in_reviews(self):
+        self.client.force_login(user=self.user)
+        self.review.streak = 1
+        self.review.save()
+
+        self.client.post(reverse("api:review-incorrect", args=(self.review.id,)))
+        self.review.refresh_from_db()
+        self.assertEqual(self.review.streak, 1)
+
+    def test_once_user_answers_lesson_once_it_becomes_review(self):
+        self.client.force_login(user=self.user)
+
+        # Create a lesson
+        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review.streak = 0
+        new_review.save()
+
+        response = self.client.get(reverse("api:review-lesson"))
+        self.assertEqual(response.data["count"], 1)
+
+        self.client.post(reverse("api:review-correct", args=(new_review.id,)))
+        self.review.refresh_from_db()
+
+        response = self.client.get(reverse("api:review-lesson"))
+        self.assertEqual(response.data["count"], 0)
+
+    def test_vocabulary_view_returns_related_review_id_if_present(self):
+        self.client.force_login(user=self.user)
+
+        response = self.client.get(reverse("api:vocabulary-detail", args=(self.review.vocabulary.id,)))
+
+        self.assertEqual(response.data['review'], self.review.id)
+
+    def test_review_views_nested_vocabulary_omits_review_field(self):
+        self.client.force_login(user=self.user)
+
+        response = self.client.get(reverse("api:review-detail", args=(self.review.id,)))
+
+        self.assertTrue('review' not in response.data['vocabulary'])
+
+    def test_adding_a_level_to_reset_command_only_resets_levels_above_given(self):
+        self.client.force_login(user=self.user)
+        v = create_vocab("test")
+        create_reading(v, "test", "test", 3)
+        create_userspecific(v, self.user)
+        self.user.profile.unlocked_levels.get_or_create(level=3)
+        response = self.client.get((reverse("api:review-current")))
+        self.assertEqual(response.data['count'], 2)
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [5,3])
+        self.client.post(reverse("api:user-reset"), data={'level': 3})
+
+        response = self.client.get((reverse("api:review-current")))
+        self.assertEqual(response.data['count'], 1)
+        self.user.profile.refresh_from_db()
+        self.assertEqual(self.user.profile.level, 3)
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [3])
+
+
+
+
+
+

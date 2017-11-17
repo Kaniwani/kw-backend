@@ -204,10 +204,10 @@ class SRSVocab(LoginRequiredMixin, TemplateView):
         context = super(SRSVocab, self).get_context_data()
         requested_srs_level = self.kwargs['srs_level']
 
-        if requested_srs_level not in constants.KANIWANI_SRS_LEVELS:
+        if requested_srs_level not in constants.WANIKANI_SRS_LEVELS:
             raise Http404
 
-        related_levels = constants.KANIWANI_SRS_LEVELS[requested_srs_level]
+        related_levels = constants.WANIKANI_SRS_LEVELS[requested_srs_level]
 
         user = self.request.user
         vocab = UserSpecific.objects.filter(user=user, streak__in=related_levels).distinct().order_by(

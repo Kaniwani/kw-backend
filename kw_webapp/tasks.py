@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.db.models import F
 from django.db.models import Min
 
-from kw_webapp.constants import KANIWANI_SRS_LEVELS
+from kw_webapp.constants import WANIKANI_SRS_LEVELS, KANIWANI_SRS_LEVELS, KwSrsLevel
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
 from kw_webapp import constants
@@ -338,39 +338,43 @@ def associate_synonyms_to_vocab(user, vocab, user_specific):
 
 
 def get_users_reviews(user):
-    minimum_wk_srs = user.profile.minimum_wk_srs_level_to_review
-    minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
-    return UserSpecific.objects.filter(user=user, wanikani_srs_numeric__gte=minimum_streak, hidden=False)
+    return UserSpecific.objects.filter(user=user,
+                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                       hidden=False)
 
 
 def get_users_critical_reviews(user):
-    minimum_wk_srs = user.profile.minimum_wk_srs_level_to_review
-    minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
     return UserSpecific.objects.filter(user=user,
-                                       wanikani_srs_numeric__gte=minimum_streak,
+                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
                                        hidden=False,
                                        critical=True)
 
 
-def get_users_current_reviews(user):
-    minimum_wk_srs = user.profile.minimum_wk_srs_level_to_review
-    minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
-
+def get_users_lessons(user):
     return UserSpecific.objects.filter(user=user,
                                        needs_review=True,
-                                       wanikani_srs_numeric__gte=minimum_streak,
+                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
                                        hidden=False,
-                                       burned=False)
+                                       streak=KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name][0])
+
+
+def get_users_current_reviews(user):
+    return UserSpecific.objects.filter(user=user,
+                                       needs_review=True,
+                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                       hidden=False,
+                                       burned=False,
+                                       streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0])
 
 
 def get_users_future_reviews(user, time_limit=None):
-    minimum_wk_srs = user.profile.minimum_wk_srs_level_to_review
-    minimum_streak = KANIWANI_SRS_LEVELS[minimum_wk_srs][0]
     queryset = UserSpecific.objects.filter(user=user,
                                            needs_review=False,
-                                           wanikani_srs_numeric__gte=minimum_streak,
+                                           wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
                                            hidden=False,
-                                           burned=False).annotate(Min('next_review_date')).order_by('next_review_date')
+                                           burned=False,
+                                           streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0]).annotate(
+        Min('next_review_date')).order_by('next_review_date')
 
     if isinstance(time_limit, timedelta):
         queryset = queryset.filter(next_review_date__lte=timezone.now() + time_limit)
@@ -606,3 +610,33 @@ def follow_user(user):
     except exceptions.InvalidWaniKaniKey:
         user.profile.api_valid = False
         user.profile.save()
+
+
+def reset_user(user, reset_to_level=None):
+    reset_levels(user, reset_to_level)
+    reset_reviews(user, reset_to_level)
+    #In case user provides a level, it is enough to just delete everything above.
+    #Upon not providing a level, we must clear everything away, and then rebuild,
+    #thus we must re-unlock the user's current level.
+    if not reset_to_level:
+        unlock_eligible_vocab_from_levels(user, user.profile.level)
+
+
+def reset_levels(user, reset_to_level=None):
+    if reset_to_level:
+        user.profile.unlocked_levels.filter(level__gt=reset_to_level).delete()
+        user.profile.level = reset_to_level
+    else:
+        user.profile.unlocked_levels.clear()
+        user.profile.unlocked_levels.get_or_create(level=user.profile.level)
+    user.profile.save()
+
+
+def reset_reviews(user, reset_to_level=None):
+    reviews_to_delete = UserSpecific.objects.filter(user=user)
+
+    #If optional level is passed, delete only reviews in which are above given level.
+    if reset_to_level:
+        reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lte=reset_to_level)
+
+    reviews_to_delete.delete()

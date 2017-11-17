@@ -21,7 +21,7 @@ from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSyn
     Announcement, Profile
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
     get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
-    user_begins_vacation, follow_user
+    user_begins_vacation, follow_user, reset_user, get_users_lessons
 
 
 class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
@@ -140,6 +140,9 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ReviewViewSet(ListRetrieveUpdateViewSet):
     """
+    lesson:
+    Get all of user's lessons.
+
     current:
     Get all of user's reviews which currently need to be done.
 
@@ -161,6 +164,17 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
     serializer_class = ReviewSerializer
     filter_class = ReviewFilter
     permission_classes = (IsAuthenticated,)
+
+    @list_route(methods=['GET'])
+    def lesson(self, request):
+        lessons = get_users_lessons(request.user)
+        page = self.paginate_queryset(lessons)
+        if page is not None:
+            serializer = StubbedReviewSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = StubbedReviewSerializer(lessons, many=True)
+        return Response(serializer.data)
 
     @list_route(methods=['GET'])
     def current(self, request):
@@ -186,13 +200,23 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
         serializer = ReviewSerializer(critical_reviews, many=True)
         return Response(serializer.data)
 
+    def _correct_on_first_try(self, request):
+        if "wrong_before" not in request.data:
+            return True
+        if request.data["wrong_before"] is False:
+            return True
+        if request.data["wrong_before"] == "false":
+            return True
+
+        return False
+
     @detail_route(methods=['POST'])
     def correct(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
         if not review.can_be_managed_by(request.user) or not review.needs_review:
             return HttpResponseForbidden("You can't modify that object at this time!")
 
-        was_correct_on_first_try = False if request.data['wrong_before'] == 'true' else True
+        was_correct_on_first_try = self._correct_on_first_try(request)
         review.answered_correctly(was_correct_on_first_try)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -223,8 +247,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_queryset(self):
-        return UserSpecific.objects.filter(user=self.request.user)
-
+      return UserSpecific.objects.filter(user=self.request.user, wanikani_srs_numeric__gte=self.request.user.profile.get_minimum_wk_srs_threshold_for_review())
 
 class FrequentlyAskedQuestionViewSet(viewsets.ModelViewSet):
     """
@@ -260,6 +283,9 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
 
     srs:
     Force an SRS run (typically runs every 15 minutes anyhow).
+
+    reset:
+    Reset a user's account. Removes all reviews, re-locks all levels. Immediately runs unlock on current level afterwards.
     """
     permission_classes = (IsAuthenticatedOrCreating,)
     serializer_class = UserSerializer
@@ -268,7 +294,7 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         if self.request.user.is_staff:
             return User.objects.all()
 
-        return User.objects.filter(pk=self.request.user.id)
+        return User.objects.get(pk=self.request.user.id)
 
     @list_route(methods=["GET", "PUT"])
     def me(self, request):
@@ -317,10 +343,16 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         new_review_count = get_users_current_reviews(request.user).count()
         return Response({'review_count': new_review_count})
 
+    @list_route(methods=['POST'])
+    def reset(self, request):
+        reset_to_level = int(request.data['level']) if 'level' in request.data else None
+        reset_user(request.user, reset_to_level)
+        return Response({"message": "Your account has been reset"})
+
 
 class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
     """
-    Profile model view set, for INTERNAL USE ONLY.
+    Profile model view set, for INTERNAL TESTING USE ONLY.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = ProfileSerializer

@@ -3,14 +3,13 @@ from itertools import chain
 
 from datetime import timedelta
 
-import math
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from django.utils import timezone
 
 from kw_webapp import constants
-from kw_webapp.constants import TWITTER_USERNAME_REGEX, HTTP_S_REGEX, SrsLevel
+from kw_webapp.constants import TWITTER_USERNAME_REGEX, HTTP_S_REGEX, WkSrsLevel, WANIKANI_SRS_LEVELS
 
 logger = logging.getLogger("kw.models")
 
@@ -65,12 +64,17 @@ class Profile(models.Model):
     auto_advance_on_success = models.BooleanField(default=False)
     auto_expand_answer_on_success = models.BooleanField(default=False)
     auto_expand_answer_on_failure = models.BooleanField(default=False)
-    minimum_wk_srs_level_to_review = models.CharField(max_length=20, choices=SrsLevel.choices(),
-                                                      default=SrsLevel.APPRENTICE.name)
+    minimum_wk_srs_level_to_review = models.CharField(max_length=20, choices=WkSrsLevel.choices(),
+                                                      default=WkSrsLevel.APPRENTICE.name)
 
     # Vacation Settings
     on_vacation = models.BooleanField(default=False)
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
+
+    def get_minimum_wk_srs_threshold_for_review(self):
+        minimum_wk_srs = self.minimum_wk_srs_level_to_review
+        minimum_streak = WANIKANI_SRS_LEVELS[minimum_wk_srs][0]
+        return minimum_streak
 
     def set_twitter_account(self, twitter_account):
         if not twitter_account:
@@ -99,20 +103,8 @@ class Profile(models.Model):
         return x
 
     def handle_wanikani_level_change(self, new_level):
-        original_level = self.level
         self.level = new_level
         self.save()
-
-        # The case of a user resetting their WK profile.
-        if new_level < original_level:
-            expired_levels = self.unlocked_levels.filter(level__gt=new_level)
-            expired_levels.delete()
-
-            expired_reviews = self.get_overleveled_reviews()
-            expired_reviews.delete()
-
-    def get_overleveled_reviews(self):
-        return UserSpecific.objects.filter(user=self.user, vocabulary__readings__level__gt=self.user.profile.level)
 
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
@@ -180,7 +172,7 @@ class UserSpecific(models.Model):
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)
     streak = models.PositiveIntegerField(default=0)
-    last_studied = models.DateTimeField(auto_now_add=True, blank=True)
+    last_studied = models.DateTimeField(blank=True, null=True)
     needs_review = models.BooleanField(default=True)
     unlock_date = models.DateTimeField(default=timezone.now, blank=True)
     next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
@@ -196,25 +188,26 @@ class UserSpecific(models.Model):
         if first_try:
             self.correct += 1
             self.streak += 1
-            if self.streak >= constants.KANIWANI_SRS_LEVELS[SrsLevel.BURNED.name][0]:
+            if self.streak >= constants.WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name][0]:
                 self.burned = True
 
         self.needs_review = False
         self.last_studied = timezone.now()
-        self.save()
         self.set_next_review_time()
         self.set_criticality()
+        self.save()
 
     def answered_incorrectly(self):
         """
         Helper function to correctly decrement streak value and increase count of incorrect.
         If user is nearing burned status, they get doubly-decremented.
-        :return:
         """
         self.incorrect += 1
+        # If user is about to burn, drop them two levels.
         if self.streak == 7:
             self.streak -= 2
-        else:
+        # streak of 0 indicates "Lesson" and we don't want users dropping down to lesson.
+        elif self.streak > 1:
             self.streak -= 1
 
         self.streak = max(0, self.streak)
@@ -227,12 +220,17 @@ class UserSpecific(models.Model):
         else:
             self.critical = False
 
+    def _can_be_critical(self):
+        return self.correct + self.incorrect >= constants.MINIMUM_ATTEMPT_COUNT_FOR_CRITICALITY
+
+    def _breaks_threshold(self):
+        return float(self.incorrect) / float(self.correct + self.incorrect) >= constants.CRITICALITY_THRESHOLD
+
     def is_critical(self):
-        if self.streak < constants.KANIWANI_SRS_LEVELS[SrsLevel.GURU.name][0] and \
-                                self.correct + self.incorrect >= constants.MINIMUM_ATTEMPT_COUNT_FOR_CRITICALITY and \
-                                float(self.incorrect) / float(
-                                    self.correct + self.incorrect) >= constants.CRITICALITY_THRESHOLD:
+        if self._can_be_critical() and self._breaks_threshold():
             return True
+        else:
+            return False
 
     def get_all_readings(self):
         return list(chain(self.vocabulary.readings.all(), self.answer_synonyms.all()))

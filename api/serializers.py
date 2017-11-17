@@ -1,4 +1,5 @@
 import datetime
+from collections import OrderedDict
 
 import requests
 from django.contrib.auth.models import User
@@ -6,10 +7,10 @@ from django.db.models import Q
 from rest_framework import serializers
 
 from api import serializer_fields
-from kw_webapp.constants import KANIWANI_SRS_LEVELS, SrsLevel
+from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement
-from kw_webapp.tasks import get_users_current_reviews, get_users_future_reviews, get_users_reviews
+from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
 
 
 class SRSCountSerializer(serializers.BaseSerializer):
@@ -20,13 +21,16 @@ class SRSCountSerializer(serializers.BaseSerializer):
 
     def to_representation(self, user):
         all_reviews = get_users_reviews(user)
-        return {level.value.lower(): all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count() for level in
-                SrsLevel}
+        ordered_srs_counts = OrderedDict.fromkeys([level.name.lower() for level in KwSrsLevel])
+        for level in KwSrsLevel:
+            ordered_srs_counts[level.name.lower()] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count()
+        return ordered_srs_counts
 
 
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='user.username')
     reviews_count = serializers.SerializerMethodField()
+    lessons_count = serializers.SerializerMethodField()
     next_review_date = serializers.SerializerMethodField()
     unlocked_levels = serializers.StringRelatedField(many=True, read_only=True)
     reviews_within_hour_count = serializers.SerializerMethodField()
@@ -35,15 +39,16 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('id', 'name', 'reviews_count', 'api_key', 'api_valid', 'join_date', 'last_wanikani_sync_date',
-                  'level', 'follow_me', 'auto_advance_on_success',
-                  'unlocked_levels', 'auto_expand_answer_on_success', 'auto_expand_answer_on_failure',
-                  'on_vacation', 'vacation_date', 'reviews_within_day_count',
-                  'reviews_within_hour_count', "srs_counts", "minimum_wk_srs_level_to_review", "next_review_date")
+        fields = ('id', 'name', 'reviews_count', 'lessons_count', 'api_key', 'api_valid', 'join_date',
+                  'last_wanikani_sync_date', 'level', 'follow_me', 'auto_advance_on_success', 'unlocked_levels',
+                  'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'on_vacation', 'vacation_date',
+                  'reviews_within_day_count', 'reviews_within_hour_count', 'srs_counts',
+                  'minimum_wk_srs_level_to_review', 'next_review_date')
 
         read_only_fields = ('id', 'name', 'api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
                             'unlocked_levels', 'vacation_date', 'reviews_within_day_count',
-                            'reviews_within_hour_count', 'reviews_count', "srs_counts", "next_review_date")
+                            'reviews_within_hour_count', 'reviews_count', 'lessons_count', 'srs_counts',
+                            'next_review_date')
 
     def get_next_review_date(self, obj):
         user = obj.user
@@ -55,6 +60,9 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_reviews_count(self, obj):
         return get_users_current_reviews(obj.user).count()
+
+    def get_lessons_count(self, obj):
+        return get_users_lessons(obj.user).count()
 
     def get_reviews_within_hour_count(self, obj):
         return get_users_future_reviews(obj.user,
@@ -197,11 +205,27 @@ class ReadingSerializer(serializers.ModelSerializer):
 
 
 class VocabularySerializer(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super(VocabularySerializer, self).__init__(*args, **kwargs)
+        # If this is part of the review response, simply omit the review field, reducing DB calls.
+        if 'nested_in_review' in self.context:
+            self.fields.pop('review')
+
     readings = ReadingSerializer(many=True, read_only=True)
+    review = serializers.SerializerMethodField()
 
     class Meta:
         model = Vocabulary
-        fields = ('id', 'meaning', 'readings')
+        fields = ('id', 'meaning', 'readings', 'review')
+
+    # Grab the ID of the related review for this particular user.
+    def get_review(self, obj):
+        if 'request' in self.context:
+            try:
+                return UserSpecific.objects.get(user=self.context['request'].user, vocabulary=obj).id
+            except UserSpecific.DoesNotExist:
+                return None
+        return None
 
 
 class HyperlinkedVocabularySerializer(VocabularySerializer):
@@ -230,7 +254,7 @@ class SynonymSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    vocabulary = VocabularySerializer(many=False, read_only=True)
+    vocabulary = VocabularySerializer(many=False, read_only=True, context={'nested_in_review': True})
     answer_synonyms = SynonymSerializer(many=True, read_only=True)
 
     class Meta:
@@ -275,4 +299,4 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 class ContactSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
     email = serializers.CharField(max_length=200)
-    body = serializers.CharField(max_length=100)
+    body = serializers.CharField(max_length=1000)
