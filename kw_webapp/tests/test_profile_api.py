@@ -9,6 +9,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
+from kw_webapp.tasks import lock_level_for_user
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time
 
@@ -323,6 +324,20 @@ class TestProfileApi(APITestCase):
 
 
 
+    def test_users_locking_levels_clear_all_reviews(self):
+        # bug/331 apparently users who lock _all_ levels still ahve tons of reviews active. They apparently
+        # Get locked after
+        # successful review.
+        self.client.force_login(user=self.user)
+        v = create_vocab("test")
+        r = create_reading(v, "asd", "asd", 4)
+        r = create_reading(v, "asd", "asd", 3)
+        create_userspecific(v, self.user)
 
+        resp = self.client.post(reverse("api:level-lock", args=(3,)))
+        resp = self.client.post(reverse("api:level-lock", args=(4,)))
+        resp = self.client.post(reverse("api:level-lock", args=(5,)))
 
+        response = self.client.get((reverse("api:review-current")))
+        print(response.content)
 

@@ -143,6 +143,7 @@ def lock_level_for_user(requested_level, user):
     requested_level = int(requested_level)
     reviews = UserSpecific.objects.filter(user=user, vocabulary__readings__level=requested_level).distinct()
     count = reviews.count()
+    print("ABOUT TO DELETE: {}".format(count))
     reviews.delete()
     level = Level.objects.get(profile=user.profile, level=requested_level)
     user.profile.unlocked_levels.remove(level)

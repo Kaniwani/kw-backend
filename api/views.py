@@ -114,8 +114,11 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
 
     @detail_route(methods=['POST'])
     def lock(self, request, pk=None):
-        requested_level = pk
-        if request.user.profile.level == int(requested_level):
+        requested_level = int(pk)
+        if requested_level not in request.user.profile.unlocked_levels_list():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if request.user.profile.level == requested_level:
             request.user.profile.follow_me = False
             request.user.profile.save()
         removed_count = lock_level_for_user(requested_level, request.user)
