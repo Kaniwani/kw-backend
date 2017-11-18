@@ -1,3 +1,6 @@
+import random
+
+import requests
 from django.contrib.auth.models import User
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
@@ -8,6 +11,8 @@ from kw_webapp.models import UserSpecific, Profile, Reading, Tag, Vocabulary, Me
 from kw_webapp.tasks import create_new_vocabulary, \
     has_multiple_kanji
 from kw_webapp.wanikani import make_api_call
+from kw_webapp.tasks import unlock_eligible_vocab_from_levels
+from kw_webapp.tests.utils import create_userspecific, create_review_for_specific_time
 
 
 def wipe_all_reviews_for_user(user):
@@ -241,6 +246,18 @@ def create_tokens_for_all_users():
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
 
+
+def create_various_future_reviews_for_user(user):
+    now = timezone.now()
+    now = now.replace(minute=59)
+    for i in range(0, 24):
+        for j in range(0,20):
+            review = create_review_for_specific_time(user, str(i) + "-" + str(j), now+timezone.timedelta(hours=i))
+
+            review.streak = random.randint(1,8)
+            review.save()
+            review.refresh_from_db()
+            print(review)
 
 def survey_conglomerated_vocabulary():
     count = 0

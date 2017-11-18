@@ -131,7 +131,6 @@ class SettingsForm(ModelForm):
             json_data = r.json()
             if "error" in json_data.keys():
                 raise ValidationError("API Key not associated with a WaniKani User!")
-        print("cleaned api Key...")
         return api_key
 
 

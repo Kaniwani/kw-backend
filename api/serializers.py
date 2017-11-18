@@ -3,28 +3,88 @@ from collections import OrderedDict
 
 import requests
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, Count, TimeField
+from django.utils import timezone
+from django.db.models.functions import TruncHour, TruncDate
 from rest_framework import serializers
 
 from api import serializer_fields
-from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS
+from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS, STREAK_TO_SRS_LEVEL_MAP_KW
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
 
 
-class SRSCountSerializer(serializers.BaseSerializer):
+class SrsCountSerializer(serializers.BaseSerializer):
     """
     Serializer for simply showing SRS counts, e.g., how many apprentice items a user has,
     how many guru, etc.
     """
-
     def to_representation(self, user):
         all_reviews = get_users_reviews(user)
         ordered_srs_counts = OrderedDict.fromkeys([level.name.lower() for level in KwSrsLevel])
         for level in KwSrsLevel:
             ordered_srs_counts[level.name.lower()] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count()
         return ordered_srs_counts
+
+class SimpleUpcomingReviewSerializer(serializers.BaseSerializer):
+    """
+    Serializer containing information about upcoming reviews, without any relevant srs information.
+    """
+
+    def to_representation(self, user):
+        now = timezone.now()
+        one_day_from_now = now + datetime.timedelta(hours=24)
+        reviews = get_users_reviews(user).filter(next_review_date__range=(now, one_day_from_now))\
+            .annotate(hour=TruncHour('next_review_date', tzinfo=timezone.utc)) \
+            .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc))\
+            .values("date", "hour")\
+            .annotate(review_count=Count('id')).order_by("date", "hour")
+
+        expected_hour = now.hour
+        hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
+        retval = OrderedDict.fromkeys(hours, 0)
+        for review in reviews:
+            found_hour = review['hour'].hour
+            while found_hour != expected_hour:
+                expected_hour = (expected_hour + 1) % 24
+            retval[expected_hour] = review["review_count"]
+
+        real_retval = [value for key, value in retval.items()]
+        return real_retval
+
+class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
+    """
+    Serializer for counting reviews on an hourly basis for the next 24 hours
+    """
+
+    def to_representation(self, user):
+        now = timezone.now()
+        one_day_from_now = now + datetime.timedelta(hours=24)
+
+        reviews = get_users_reviews(user).filter(next_review_date__range=(now, one_day_from_now))\
+            .annotate(hour=TruncHour('next_review_date', tzinfo=timezone.utc)) \
+            .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc))\
+            .values("streak", "date", "hour")\
+            .annotate(review_count=Count('id')).order_by("date", "hour")
+        expected_hour = now.hour
+        hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
+
+        retval = OrderedDict.fromkeys(hours)
+
+        for key in retval.keys():
+            retval[key] = OrderedDict.fromkeys([level.name for level in KwSrsLevel], 0)
+
+        for review in reviews:
+            found_hour = review['hour'].hour
+            while found_hour != expected_hour:
+                expected_hour = (expected_hour + 1) % 24
+            streak = review['streak']
+            srs_level = STREAK_TO_SRS_LEVEL_MAP_KW[streak].name
+            retval[expected_hour][srs_level] += review["review_count"]
+
+        real_retval = [[count for srs_level, count in hourly_count.items()]for hour, hourly_count in retval.items()]
+        return real_retval
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -35,7 +95,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     unlocked_levels = serializers.StringRelatedField(many=True, read_only=True)
     reviews_within_hour_count = serializers.SerializerMethodField()
     reviews_within_day_count = serializers.SerializerMethodField()
-    srs_counts = SRSCountSerializer(source='user', many=False, read_only=True)
+    srs_counts = SrsCountSerializer(source='user', many=False, read_only=True)
+    #upcoming_reviews = DetailedUpcomingReviewCountSerializer(source='user', many=False, read_only=True)
+    upcoming_reviews = SimpleUpcomingReviewSerializer(source='user', many=False, read_only=True)
 
     class Meta:
         model = Profile
@@ -43,7 +105,7 @@ class ProfileSerializer(serializers.ModelSerializer):
                   'last_wanikani_sync_date', 'level', 'follow_me', 'auto_advance_on_success', 'unlocked_levels',
                   'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'on_vacation', 'vacation_date',
                   'reviews_within_day_count', 'reviews_within_hour_count', 'srs_counts',
-                  'minimum_wk_srs_level_to_review', 'next_review_date')
+                  'minimum_wk_srs_level_to_review', 'next_review_date', 'upcoming_reviews')
 
         read_only_fields = ('id', 'name', 'api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
                             'unlocked_levels', 'vacation_date', 'reviews_within_day_count',

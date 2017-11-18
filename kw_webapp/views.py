@@ -69,7 +69,6 @@ class Settings(LoginRequiredMixin, UpdateView):
 
     def form_invalid(self, form, **kwargs):
         context = self.get_context_data(**kwargs)
-        print(form.errors)
         context['form'] = form
         return self.render_to_response(context)
 

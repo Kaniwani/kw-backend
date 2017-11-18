@@ -488,7 +488,7 @@ def sync_all_users_to_wk():
     logger.info("Sync will occur for {} users.".format(users.count()))
     affected_count = 0
     for user in users:
-        print(user.username + " --- " + str(user.profile.last_visit) + " --- " + str(one_week_ago))
+        logger.info(user.username + " --- " + str(user.profile.last_visit) + " --- " + str(one_week_ago))
         sync_with_wk.delay(user.id, full_sync=True)
         affected_count += 1
     return affected_count

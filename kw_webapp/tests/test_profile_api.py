@@ -1,8 +1,10 @@
 import json
+import pprint
 from datetime import timedelta
 from unittest import mock
 
 from django.utils import timezone
+from rest_framework.renderers import JSONRenderer
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
@@ -282,6 +284,25 @@ class TestProfileApi(APITestCase):
         response = self.client.get(reverse("api:review-detail", args=(self.review.id,)))
 
         self.assertTrue('review' not in response.data['vocabulary'])
+
+    def test_profile_serializer_gets_correct_srs_counts(self):
+
+        review1 = create_review_for_specific_time(self.user, "guru", timezone.now()+ timedelta(hours=12))
+        review1.streak = 4
+        review1.save()
+        review2 = create_review_for_specific_time(self.user, "appren1", timezone.now()+ timedelta(hours=12))
+        review2.streak = 3
+        review2.save()
+        review3 = create_review_for_specific_time(self.user, "appren2", timezone.now()+ timedelta(hours=12))
+        review3.streak = 3
+        review3.save()
+
+        self.client.force_login(user=self.user)
+        response = self.client.get(reverse("api:user-me"))
+
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(response.data)
+
 
     def test_adding_a_level_to_reset_command_only_resets_levels_above_given(self):
         self.client.force_login(user=self.user)
