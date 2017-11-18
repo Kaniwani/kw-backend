@@ -41,30 +41,17 @@ class SimpleUpcomingReviewSerializer(serializers.BaseSerializer):
             .values("date", "hour")\
             .annotate(review_count=Count('id')).order_by("date", "hour")
 
-        for review in reviews:
-            print(review)
-
         expected_hour = now.hour
         hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
         retval = OrderedDict.fromkeys(hours, 0)
         for review in reviews:
-            print(review['hour'], review['review_count'], )
             found_hour = review['hour'].hour
             while found_hour != expected_hour:
-                print("found hour:{}, expected_hour:{}".format(found_hour, expected_hour))
                 expected_hour = (expected_hour + 1) % 24
             retval[expected_hour] = review["review_count"]
 
-        for key, value in retval.items():
-            print("{}: {}".format(key, value))
         real_retval = [value for key, value in retval.items()]
-        print("RETVAL",retval)
-        print(real_retval)
         return real_retval
-
-
-
-        return reviews
 
 class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
     """
@@ -80,8 +67,6 @@ class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
             .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc))\
             .values("streak", "date", "hour")\
             .annotate(review_count=Count('id')).order_by("date", "hour")
-        for review in reviews:
-            print(review)
         expected_hour = now.hour
         hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
 
@@ -91,20 +76,14 @@ class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
             retval[key] = OrderedDict.fromkeys([level.name for level in KwSrsLevel], 0)
 
         for review in reviews:
-            print(review['hour'], review['streak'], )
             found_hour = review['hour'].hour
             while found_hour != expected_hour:
-                print("found hour:{}, expected_hour:{}".format(found_hour, expected_hour))
                 expected_hour = (expected_hour + 1) % 24
             streak = review['streak']
             srs_level = STREAK_TO_SRS_LEVEL_MAP_KW[streak].name
             retval[expected_hour][srs_level] += review["review_count"]
 
-        for key, value in retval.items():
-            print("{}: {}".format(key, value))
         real_retval = [[count for srs_level, count in hourly_count.items()]for hour, hourly_count in retval.items()]
-        print("RETVAL",retval)
-        print(real_retval)
         return real_retval
 
 
