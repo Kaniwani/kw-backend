@@ -22,8 +22,10 @@ class SrsCountSerializer(serializers.BaseSerializer):
     """
     def to_representation(self, user):
         all_reviews = get_users_reviews(user)
-        return {level.value.lower(): all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count() for level in
-                KwSrsLevel}
+        ordered_srs_counts = OrderedDict.fromkeys([level.name.lower() for level in KwSrsLevel])
+        for level in KwSrsLevel:
+            ordered_srs_counts[level.name.lower()] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count()
+        return ordered_srs_counts
 
 class SimpleUpcomingReviewSerializer(serializers.BaseSerializer):
     """
@@ -282,7 +284,7 @@ class ReadingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reading
         fields = ('id', 'character', 'kana', 'level', 'tags', 'sentence_en', 'sentence_ja',
-                  'jlpt', 'common')
+                  'common', "furigana", "pitch", "parts_of_speech")
 
 
 class VocabularySerializer(serializers.ModelSerializer):
@@ -380,4 +382,4 @@ class AnnouncementSerializer(serializers.ModelSerializer):
 class ContactSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=100)
     email = serializers.CharField(max_length=200)
-    body = serializers.CharField(max_length=100)
+    body = serializers.CharField(max_length=1000)

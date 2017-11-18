@@ -21,7 +21,7 @@ class TestViews(TestCase):
         create_profile(self.user, "some_key", 5)
         # create a piece of vocab with one reading.
         self.vocabulary = create_vocab("radioactive bat")
-        self.cat_reading = create_reading(self.vocabulary, "kana", "kanji", 5)
+        self.cat_reading = create_reading(self.vocabulary, "ねこ", "猫", 5)
 
         # setup a review with two synonyms
         self.review = create_userspecific(self.vocabulary, self.user)
@@ -52,7 +52,6 @@ class TestViews(TestCase):
 
         self.assertJSONEqual(str(response.content, encoding='utf8'), correct_response)
 
-
     def test_removing_synonym_removes_synonym(self):
         dummy_kana = "whatever"
         dummy_characters = "somechar"
@@ -63,26 +62,6 @@ class TestViews(TestCase):
         self.review.refresh_from_db()
 
         self.assertListEqual(self.review.answer_synonyms_list(), [])
-
-
-    def test_review_submission_correctly_rounds_time_up_to_next_interval(self):
-        original_time = self.review.next_review_date
-
-        #prep work to grab the actual correct time
-        self.review.streak += 1
-        self.review.save()
-        self.review.set_next_review_time()
-        self.review.refresh_from_db()
-        correct_time = self.review.next_review_date
-        self.review.next_review_date = original_time
-        self.review.streak -= 1
-        self.review.save()
-
-        self.client.post(reverse("kw:record_answer"), data={'user_correct': "true", 'user_specific_id': self.review.id, 'wrong_before': 'false'})
-
-        self.review.refresh_from_db()
-
-        self.assertAlmostEqual(correct_time, self.review.next_review_date, delta=timedelta(seconds=1))
 
     def test_early_termination_redirects_to_home_when_no_reviews_were_done(self):
 

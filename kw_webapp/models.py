@@ -3,7 +3,6 @@ from itertools import chain
 
 from datetime import timedelta
 
-import math
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
@@ -139,6 +138,11 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+class PartOfSpeech(models.Model):
+    part = models.CharField(max_length=30)
+
+    def __str__(self):
+        return self.part
 
 class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
@@ -153,8 +157,10 @@ class Reading(models.Model):
     sentence_en = models.CharField(max_length=1000, null=True)
     sentence_ja = models.CharField(max_length=1000, null=True)
     common = models.NullBooleanField()
-    jlpt = models.CharField(max_length=20, null=True)
     tags = models.ManyToManyField(Tag)
+    furigana = models.CharField(max_length=100, null=True)
+    pitch = models.CharField(max_length=100, null=True)
+    parts_of_speech = models.ManyToManyField(PartOfSpeech)
 
     def __str__(self):
         return "{} - {} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character, self.level)
@@ -166,7 +172,7 @@ class UserSpecific(models.Model):
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)
     streak = models.PositiveIntegerField(default=0)
-    last_studied = models.DateTimeField(auto_now_add=True, blank=True)
+    last_studied = models.DateTimeField(blank=True, null=True)
     needs_review = models.BooleanField(default=True)
     unlock_date = models.DateTimeField(default=timezone.now, blank=True)
     next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
@@ -281,15 +287,15 @@ class UserSpecific(models.Model):
         self._round_last_studied_date()
 
     def __str__(self):
-        return "{} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - nrd:{} - uld:{}".format(self.vocabulary.meaning,
-                                                                              self.user.username,
-                                                                              self.correct,
-                                                                              self.incorrect,
-                                                                              self.streak,
-                                                                              self.last_studied,
-                                                                              self.needs_review,
-                                                                              self.next_review_date,
-                                                                              self.unlock_date)
+        return "{} - {} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.id,
+                                                                                   self.vocabulary.meaning,
+                                                                                   self.user.username,
+                                                                                   self.correct,
+                                                                                   self.incorrect,
+                                                                                   self.streak,
+                                                                                   self.last_studied,
+                                                                                   self.needs_review,
+                                                                                   self.unlock_date)
 
 
 class AnswerSynonym(models.Model):

@@ -10,7 +10,7 @@ from kw_webapp.constants import WANIKANI_SRS_LEVELS, KANIWANI_SRS_LEVELS, KwSrsL
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
 from kw_webapp import constants
-from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level
+from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level, MeaningSynonym, AnswerSynonym
 from datetime import timedelta, datetime
 from django.utils import timezone
 
@@ -61,6 +61,16 @@ def all_srs(user=None):
 
     logger.info("Finished SRS run for {}.".format(user or "all users"))
     return affected_count
+
+
+def get_vocab_by_kanji(kanji):
+    try:
+        v = Vocabulary.objects.get(readings__character=kanji)
+    except Vocabulary.DoesNotExist:
+        logger.error("While attempting to get vocabulary {} we could not find it!".format(kanji))
+        raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(kanji))
+    else:
+        return v
 
 
 def get_vocab_by_meaning(meaning):
@@ -114,6 +124,7 @@ def build_API_sync_string_for_user(user):
     for level in user.profile.unlocked_levels_list():
         api_call += str(level) + ","
     return api_call
+
 
 
 def build_API_sync_string_for_user_for_levels(user, levels):
@@ -285,11 +296,20 @@ def get_or_create_vocab_by_json(vocab_json):
     vocabulary.
     :return: vocabulary object.
     """
+
     try:
-        vocab = get_vocab_by_meaning(vocab_json['meaning'])
+        vocab = get_vocab_by_kanji(vocab_json['character'])
+        created = False
     except Vocabulary.DoesNotExist as e:
         vocab = create_new_vocabulary(vocab_json)
-    return vocab
+        created = True
+    return vocab, created
+
+
+def has_multiple_kanji(vocab):
+    kanji = [reading.character for reading in vocab.readings.all()]
+    kanji2 = set(kanji)
+    return len(kanji2) > 1
 
 
 def add_synonyms_from_api_call_to_review(review, user_specific_json):
@@ -335,7 +355,7 @@ def get_users_lessons(user):
                                        needs_review=True,
                                        wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
                                        hidden=False,
-                                       streak=KANIWANI_SRS_LEVELS[KwSrsLevel.LESSON.name][0])
+                                       streak=KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name][0])
 
 
 def get_users_current_reviews(user):
@@ -378,7 +398,7 @@ def process_vocabulary_response_for_unlock(user, json_data):
     unlocked_this_request = 0
     for vocabulary_json in vocab_list:
         user_specific = vocabulary_json['user_specific']
-        vocab = get_or_create_vocab_by_json(vocabulary_json)
+        vocab, is_new = get_or_create_vocab_by_json(vocabulary_json)
         vocab = associate_readings_to_vocab(vocab, vocabulary_json)
         new_review, created = associate_vocab_to_user(vocab, user)
         total_unlocked_count += 1
@@ -410,7 +430,7 @@ def process_vocabulary_response_for_user(user, json_data):
                   vocab_json['user_specific'] is not None]  # filters out locked items.
     for vocabulary_json in vocab_list:
         user_specific = vocabulary_json['user_specific']
-        vocab = get_or_create_vocab_by_json(vocabulary_json)
+        vocab, is_new = get_or_create_vocab_by_json(vocabulary_json)
         vocab = associate_readings_to_vocab(vocab, vocabulary_json)
         if user.profile.follow_me:
             new_review, created = associate_vocab_to_user(vocab, user)
@@ -592,18 +612,31 @@ def follow_user(user):
         user.profile.save()
 
 
-def reset_user(user):
-    reset_levels(user)
-    reset_reviews(user)
-    unlock_eligible_vocab_from_levels(user, user.profile.level)
+def reset_user(user, reset_to_level=None):
+    reset_levels(user, reset_to_level)
+    reset_reviews(user, reset_to_level)
+    #In case user provides a level, it is enough to just delete everything above.
+    #Upon not providing a level, we must clear everything away, and then rebuild,
+    #thus we must re-unlock the user's current level.
+    if not reset_to_level:
+        unlock_eligible_vocab_from_levels(user, user.profile.level)
 
 
-def reset_levels(user):
-    user.profile.unlocked_levels.clear()
-    user.profile.unlocked_levels.get_or_create(level=user.profile.level)
+def reset_levels(user, reset_to_level=None):
+    if reset_to_level:
+        user.profile.unlocked_levels.filter(level__gt=reset_to_level).delete()
+        user.profile.level = reset_to_level
+    else:
+        user.profile.unlocked_levels.clear()
+        user.profile.unlocked_levels.get_or_create(level=user.profile.level)
     user.profile.save()
 
 
-def reset_reviews(user):
-    all_reviews = UserSpecific.objects.filter(user=user)
-    all_reviews.delete()
+def reset_reviews(user, reset_to_level=None):
+    reviews_to_delete = UserSpecific.objects.filter(user=user)
+
+    #If optional level is passed, delete only reviews in which are above given level.
+    if reset_to_level:
+        reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lte=reset_to_level)
+
+    reviews_to_delete.delete()
