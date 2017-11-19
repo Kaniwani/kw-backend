@@ -1,6 +1,7 @@
 from copy import deepcopy
 
 import responses
+import time
 from django.test import TestCase
 from django.utils import timezone
 from kw_webapp import constants
@@ -9,10 +10,11 @@ from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
-    reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji
+    reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji, alternative_all_srs
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
-from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading
+from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading, \
+    create_review_for_specific_time
 from kw_webapp.utils import generate_user_stats, one_time_merge_level
 
 
@@ -382,7 +384,30 @@ class TestTasks(TestCase):
         self.assertEqual(get_users_lessons(self.user).count(), 1)
         self.assertEqual(self.user.profile.unlocked_levels_list()[0], 5)
 
+    def test_speedup_with_new_srs_style(self):
+        hour_ago = past_time(1)
+        for i in range(0, 1000):
+            create_review_for_specific_time(self.user, "review_" + str(i), hour_ago)
 
+        start = time.time()
+        all_srs()
+        end = time.time()
+        standard_duration = end - start
+        print("Standard SRS took {}".format(standard_duration))
+
+        # Reset the DB
+        UserSpecific.objects.all().delete()
+        Vocabulary.objects.all().delete()
+        for i in range(0, 1000):
+            create_review_for_specific_time(self.user, "review_" + str(i), hour_ago)
+
+        start = time.time()
+        alternative_all_srs()
+        end = time.time()
+        alt_duration = end - start
+        print("Alternative SRS took {}".format(alt_duration))
+        print("Difference: {}".format(alt_duration))
+        self.assertGreater(standard_duration, alt_duration)
 
 
 

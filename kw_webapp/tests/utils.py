@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib.auth.models import User
 
 from kw_webapp.constants import API_KEY
@@ -38,6 +40,8 @@ def create_reading(vocab, reading, character, level):
 def create_review_for_specific_time(user, meaning, time_to_review):
     timed_review = create_userspecific(create_vocab(meaning), user)
     timed_review.needs_review = False
+    timed_review.streak = 1
+    timed_review.last_studied = time_to_review + timedelta(hours=-6)
     timed_review.next_review_date = time_to_review
     timed_review.save()
     return timed_review
