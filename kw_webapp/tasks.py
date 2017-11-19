@@ -63,6 +63,30 @@ def all_srs(user=None):
     return affected_count
 
 
+def alternative_all_srs(user=None):
+    logger.info("Beginning SRS run for {}.".format(user or "all users"))
+    affected_count = 0
+    now = timezone.now()
+
+    ## Fetches all reviews with next_review_date greater than or equal to NOW, flips them all to needs_review=True
+    if user and not user.profile.on_vacation:
+        review_set = UserSpecific.objects.filter(user=user,
+                                                 next_review_date__lte=now,
+                                                 needs_review=False)
+    else:
+        review_set = UserSpecific.objects.filter(user__profile__on_vacation=False,
+                                                 next_review_date__lte=now,
+                                                 needs_review=False)
+    if review_set.count() > 0:
+        logger.info(
+            "{} has {} reviews for SRS level {}".format((user or "all users"), review_set.count(), streak))
+        affected_count += review_set.update(needs_review=True)
+    else:
+        logger.info("{} has no reviews for SRS level {}".format((user or "all users"), streak))
+
+    logger.info("Finished SRS run for {}.".format(user or "all users"))
+    return affected_count
+
 def get_vocab_by_kanji(kanji):
     try:
         v = Vocabulary.objects.get(readings__character=kanji)
