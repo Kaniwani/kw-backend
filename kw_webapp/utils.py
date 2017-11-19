@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Profile, Reading, Tag, Vocabulary, MeaningSynonym, AnswerSynonym, \
-    PartOfSpeech
+    PartOfSpeech, Level
 from kw_webapp.tasks import create_new_vocabulary, \
     has_multiple_kanji
 from kw_webapp.wanikani import make_api_call
@@ -80,6 +80,11 @@ def one_time_merge_level(level):
             print("Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(found_vocabulary.count(),
                                                                                             vocabulary_json['meaning']))
             handle_merger(vocabulary_json, found_vocabulary)
+        else:
+            print("No conflict, but meaning has changed. Changing meaning!")
+            to_be_edited = found_vocabulary[0]
+            to_be_edited.meaning = vocabulary_json['meaning']
+            to_be_edited.save()
 
 
 def one_time_merger():
@@ -143,11 +148,6 @@ def generate_user_stats(user):
 
 def handle_merger(vocabulary_json, found_vocabulary):
     ids_to_delete = found_vocabulary.values_list('id', flat=True)
-    tbd = []
-    for id in ids_to_delete:
-        tbd.append(id)
-
-    print("Prepping ids to delete: {}".format(tbd))
     vocabulary = create_new_vocabulary(vocabulary_json)
     create_new_review_and_merge_existing(vocabulary, found_vocabulary)
     Vocabulary.objects.filter(pk__in=ids_to_delete).exclude(id=vocabulary.id).delete()
@@ -307,3 +307,8 @@ def copy_review_data(new_review, old_review):
     new_review.wanikani_burned = old_review.wanikani_burned
     new_review.critical = old_review.critical
     new_review.unlock_date = old_review.unlock_date
+
+
+def one_time_orphaned_level_clear():
+        levels = Level.objects.filter(profile=None)
+        levels.delete()

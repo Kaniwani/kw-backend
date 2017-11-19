@@ -9,8 +9,10 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
+from kw_webapp.models import Level
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time
+from kw_webapp.utils import one_time_orphaned_level_clear
 
 
 class TestProfileApi(APITestCase):
@@ -321,8 +323,42 @@ class TestProfileApi(APITestCase):
         self.assertEqual(self.user.profile.level, 3)
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [3])
 
+    def test_locking_a_level_successfully_clears_the_level_object(self):
+        self.client.force_login(user=self.user)
+        level = Level.objects.get(profile=self.user.profile, level=5)
+        self.assertTrue(level is not None)
+
+        self.client.post(reverse("api:level-lock", args=(self.user.profile.level,)))
+
+        levels = Level.objects.filter(profile=self.user.profile, level=5)
+        self.assertEqual(levels.count(), 0)
 
 
+    def test_one_time_orphan_clear_deletes_orphaned_levels(self):
+        l5 = self.user.profile.unlocked_levels.get_or_create(level=5)[0]
+        l6 = self.user.profile.unlocked_levels.get_or_create(level=6)[0]
+        l7 = self.user.profile.unlocked_levels.get_or_create(level=7)[0]
+        l8 = self.user.profile.unlocked_levels.get_or_create(level=8)[0]
+        l9 = self.user.profile.unlocked_levels.get_or_create(level=9)[0]
 
+        level_count = Level.objects.filter(profile=self.user.profile).count()
+        self.assertEqual(level_count, 5)
+
+        self.user.profile.unlocked_levels.remove(l6)
+        self.user.profile.unlocked_levels.remove(l7)
+
+        #Oh no two orphaned levels.
+        level_count = Level.objects.filter(profile=None).count()
+        self.assertEqual(level_count, 2)
+
+        one_time_orphaned_level_clear()
+
+        # Our user has the correct amount of levels associated..
+        level_count = Level.objects.filter(profile=self.user.profile).count()
+        self.assertEqual(len(self.user.profile.unlocked_levels_list()), 3)
+
+        # No more orphaned levels!
+        level_count = Level.objects.filter(profile=None).count()
+        self.assertEqual(level_count, 0)
 
 
