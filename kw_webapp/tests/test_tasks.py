@@ -406,7 +406,7 @@ class TestTasks(TestCase):
         end = time.time()
         alt_duration = end - start
         print("Alternative SRS took {}".format(alt_duration))
-        print("Difference: {}".format(alt_duration))
+        print("Difference: {}".format(standard_duration - alt_duration))
         self.assertGreater(standard_duration, alt_duration)
 
 
