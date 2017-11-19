@@ -141,7 +141,7 @@ class Tag(models.Model):
 class PartOfSpeech(models.Model):
     part = models.CharField(max_length=30)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.part
 
 class Reading(models.Model):

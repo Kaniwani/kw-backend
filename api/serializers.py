@@ -267,11 +267,11 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class ReadingSerializer(serializers.ModelSerializer):
-    tags = serializers.StringRelatedField(many=True)
+    parts_of_speech = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Reading
-        fields = ('id', 'character', 'kana', 'level', 'tags', 'sentence_en', 'sentence_ja',
+        fields = ('id', 'character', 'kana', 'level', 'sentence_en', 'sentence_ja',
                   'common', "furigana", "pitch", "parts_of_speech")
 
 
