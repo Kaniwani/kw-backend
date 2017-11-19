@@ -98,19 +98,28 @@ class ProfileSerializer(serializers.ModelSerializer):
     srs_counts = SrsCountSerializer(source='user', many=False, read_only=True)
     #upcoming_reviews = DetailedUpcomingReviewCountSerializer(source='user', many=False, read_only=True)
     upcoming_reviews = SimpleUpcomingReviewSerializer(source='user', many=False, read_only=True)
+    join_date = serializers.SerializerMethodField()
 
     class Meta:
         model = Profile
-        fields = ('id', 'name', 'reviews_count', 'lessons_count', 'api_key', 'api_valid', 'join_date',
-                  'last_wanikani_sync_date', 'level', 'follow_me', 'auto_advance_on_success', 'unlocked_levels',
+        fields = ('id', 'name', 'reviews_count', 'lessons_count', 'api_key', 'api_valid',
+                  'level', 'follow_me', 'auto_advance_on_success', 'unlocked_levels', 'last_wanikani_sync_date',
                   'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'on_vacation', 'vacation_date',
                   'reviews_within_day_count', 'reviews_within_hour_count', 'srs_counts',
-                  'minimum_wk_srs_level_to_review', 'next_review_date', 'upcoming_reviews')
+                  'minimum_wk_srs_level_to_review', 'upcoming_reviews', 'next_review_date', 'join_date')
 
-        read_only_fields = ('id', 'name', 'api_valid', 'join_date', 'last_wanikani_sync_date', 'level',
+        read_only_fields = ('id', 'name', 'api_valid',  'level',
                             'unlocked_levels', 'vacation_date', 'reviews_within_day_count',
                             'reviews_within_hour_count', 'reviews_count', 'lessons_count', 'srs_counts',
-                            'next_review_date')
+                            'next_review_date', 'last_wanikani_sync_date', 'join_date')
+
+    def get_join_date(self, obj):
+        """
+        So this is a hack. By default the modelserializer expects a datefield, but a fewww users have datetimefields as their join_date, 
+        due to an old version of the model. Eventually we should fix those users but for now this methodfield does the trick.
+        """
+
+        return obj.join_date
 
     def get_next_review_date(self, obj):
         user = obj.user
@@ -258,11 +267,11 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class ReadingSerializer(serializers.ModelSerializer):
-    tags = serializers.StringRelatedField(many=True)
+    parts_of_speech = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Reading
-        fields = ('id', 'character', 'kana', 'level', 'tags', 'sentence_en', 'sentence_ja',
+        fields = ('id', 'character', 'kana', 'level', 'sentence_en', 'sentence_ja',
                   'common', "furigana", "pitch", "parts_of_speech")
 
 
