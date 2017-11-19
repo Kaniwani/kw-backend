@@ -64,7 +64,7 @@ def all_srs(user=None):
 
 
 def alternative_all_srs(user=None):
-    logger.info("Beginning SRS run for {}.".format(user or "all users"))
+    logger.info("Beginning Alternative SRS run for {}.".format(user or "all users"))
     affected_count = 0
     now = timezone.now()
 
