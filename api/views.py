@@ -14,11 +14,12 @@ from api.filters import VocabularyFilter, ReviewFilter
 from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
-    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer
+    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
+    ReportSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
-    Announcement, Profile
+    Announcement, Profile, Report
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
     get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
     user_begins_vacation, follow_user, reset_user, get_users_lessons
@@ -136,6 +137,26 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
             return HyperlinkedVocabularySerializer
         else:
             return VocabularySerializer
+
+    @detail_route(methods=['POST'])
+    def report(self, request, pk=None):
+        vocabulary_id = pk
+        requesting_user = self.request.user
+        try:
+            existing_report = Report.objects.get(vocabulary__id=vocabulary_id, created_by=requesting_user)
+            serializer = ReportSerializer(existing_report, data=request.data.dict(), partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(created_by=self.request.user)
+            return Response(serializer.data)
+        except Report.DoesNotExist:
+            #TODO ask the IRC channel about the best way to do this
+            serializer = ReportSerializer(data=dict({'vocabulary': vocabulary_id}, **request.data.dict()))
+            serializer.is_valid(raise_exception=True)
+            serializer.save(created_by=self.request.user)
+            return Response(serializer.data)
+
+
+# class ReportViewSet(ListRetrieveUpdateViewSet):
 
 
 class ReviewViewSet(ListRetrieveUpdateViewSet):

@@ -9,7 +9,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
-from kw_webapp.models import Level
+from kw_webapp.models import Level, Report
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time
 from kw_webapp.utils import one_time_orphaned_level_clear
@@ -361,4 +361,15 @@ class TestProfileApi(APITestCase):
         level_count = Level.objects.filter(profile=None).count()
         self.assertEqual(level_count, 0)
 
+    def test_reporting_vocab_creates_report(self):
+        self.client.force_login(user=self.user)
 
+        self.client.post(reverse("api:vocabulary-report", args=(self.vocabulary.id,)), data={"reason": "This makes no sense!!!"})
+
+        reports = Report.objects.all()
+
+        self.assertEqual(reports.count(), 1)
+        report = reports[0]
+        self.assertEqual(report.vocabulary, self.vocabulary)
+        self.assertEqual(report.created_by, self.user)
+        self.assertLessEqual(report.created_at, timezone.now())

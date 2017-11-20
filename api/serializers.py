@@ -11,7 +11,7 @@ from rest_framework import serializers
 from api import serializer_fields
 from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS, STREAK_TO_SRS_LEVEL_MAP_KW
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
-    FrequentlyAskedQuestion, Announcement
+    FrequentlyAskedQuestion, Announcement, Report
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
 
 
@@ -260,6 +260,8 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
 
+
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
@@ -297,6 +299,16 @@ class VocabularySerializer(serializers.ModelSerializer):
             except UserSpecific.DoesNotExist:
                 return None
         return None
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
+        fields = '__all__'
+        read_only_fields = ('id', 'created_by', 'created_at')
+
+    def create(self, validated_data):
+        return super().create(validated_data)
 
 
 class HyperlinkedVocabularySerializer(VocabularySerializer):

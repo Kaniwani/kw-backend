@@ -144,6 +144,18 @@ class PartOfSpeech(models.Model):
     def __unicode__(self):
         return self.part
 
+class Report(models.Model):
+    created_by = models.ForeignKey(User)
+    created_at = models.DateTimeField(auto_now_add=True)
+    vocabulary = models.ForeignKey(Vocabulary)
+    reason = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return "Issue with {}, reported by {} at {}. Reason: {}".format(self.vocabulary.meaning,
+                                                                        self.created_by.username,
+                                                                        self.created_at,
+                                                                        self.reason)
+
 class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
     character = models.CharField(max_length=255)
