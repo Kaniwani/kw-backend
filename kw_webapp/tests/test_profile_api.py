@@ -1,6 +1,7 @@
 import json
 import pprint
 from datetime import timedelta
+from time import sleep
 from unittest import mock
 
 from django.utils import timezone
@@ -9,7 +10,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
-from kw_webapp.models import Level, Report
+from kw_webapp.models import Level, Report, Announcement
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time
 from kw_webapp.utils import one_time_orphaned_level_clear
@@ -373,3 +374,20 @@ class TestProfileApi(APITestCase):
         self.assertEqual(report.vocabulary, self.vocabulary)
         self.assertEqual(report.created_by, self.user)
         self.assertLessEqual(report.created_at, timezone.now())
+
+    def test_ordering_on_announcements_works(self):
+
+        Announcement.objects.create(creator=self.user, title="ASD123", body="ASDSAD")
+        sleep(1)
+        Announcement.objects.create(creator=self.user, title="ASD1234", body="ASDSAD")
+        sleep(1)
+        Announcement.objects.create(creator=self.user, title="ASD1345", body="ASDSAD")
+        sleep(1)
+        Announcement.objects.create(creator=self.user, title="ASD123456", body="ASDSAD")
+        sleep(1)
+
+        response = self.client.get(reverse("api:announcement-list"))
+        announcements = response.data['results']
+        self.assertGreater(announcements[0]['pub_date'], announcements[1]['pub_date'])
+        self.assertGreater(announcements[1]['pub_date'], announcements[2]['pub_date'])
+        self.assertGreater(announcements[2]['pub_date'], announcements[3]['pub_date'])

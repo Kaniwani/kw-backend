@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
-from rest_framework import generics
+from rest_framework import generics, filters
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
@@ -156,7 +156,8 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
             return Response(serializer.data)
 
 
-# class ReportViewSet(ListRetrieveUpdateViewSet):
+class ReportViewSet(ListRetrieveUpdateViewSet):
+    filter_fields = ()
 
 
 class ReviewViewSet(ListRetrieveUpdateViewSet):
@@ -285,7 +286,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
     """
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = AnnouncementSerializer
-    queryset = Announcement.objects.all()
+    queryset = Announcement.objects.all().order_by('-pub_date')
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)
