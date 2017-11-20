@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import list_route, detail_route
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
 
@@ -157,7 +157,14 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ReportViewSet(ListRetrieveUpdateViewSet):
-    filter_fields = ()
+    permission_classes = (IsAdminUser,)
+    queryset = Report.objects.all().order_by('vocabulary') # BY default we group all same vocabulary reports together.
+    filter_fields = ('created_by', 'vocabulary')
+
+    @list_route(methods=["GET"])
+    def counts(self, request):
+        serializer = ReportCountSerializer(self.queryset    )
+
 
 
 class ReviewViewSet(ListRetrieveUpdateViewSet):

@@ -15,6 +15,13 @@ from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, 
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
 
 
+class ReportCountSerializer(serializers.BaseSerializer):
+    """
+    Serializer which aggregates report counts by vocabulary.
+    """
+    def to_representation(self, instance):
+        # TODO START HERE.
+
 class SrsCountSerializer(serializers.BaseSerializer):
     """
     Serializer for simply showing SRS counts, e.g., how many apprentice items a user has,

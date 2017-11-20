@@ -387,6 +387,7 @@ class TestProfileApi(APITestCase):
         sleep(1)
 
         response = self.client.get(reverse("api:announcement-list"))
+
         announcements = response.data['results']
         self.assertGreater(announcements[0]['pub_date'], announcements[1]['pub_date'])
         self.assertGreater(announcements[1]['pub_date'], announcements[2]['pub_date'])
