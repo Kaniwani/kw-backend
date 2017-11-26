@@ -164,7 +164,7 @@ def blow_away_duplicate_reviews_for_user(user):
         print("Duplicate reviews found for user: ".format(dupe_revs.count()))
     vocabulary_ids = []
     for dupe_rev in dupe_revs:
-        vocabulary_ids.append(dupe_rev.vocabulary.id)
+        vocabulary_ids.append(dupe_rev['vocabulary_id'])
 
     print("Here are the vocabulary IDs we are gonna check: {}".format(vocabulary_ids))
     for voc_id in vocabulary_ids:
