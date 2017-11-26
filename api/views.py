@@ -4,18 +4,19 @@ from rest_framework import generics, filters
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.decorators import list_route, detail_route
+from rest_framework.decorators import list_route, detail_route, permission_classes
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
+from rest_framework.viewsets import ModelViewSet
 
 from api.filters import VocabularyFilter, ReviewFilter
 from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
-    ReportSerializer
+    ReportSerializer, ReportCountSerializer, ReportListSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
@@ -149,22 +150,46 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
             serializer.save(created_by=self.request.user)
             return Response(serializer.data)
         except Report.DoesNotExist:
-            #TODO ask the IRC channel about the best way to do this
             serializer = ReportSerializer(data=dict({'vocabulary': vocabulary_id}, **request.data.dict()))
             serializer.is_valid(raise_exception=True)
             serializer.save(created_by=self.request.user)
             return Response(serializer.data)
 
 
-class ReportViewSet(ListRetrieveUpdateViewSet):
-    permission_classes = (IsAdminUser,)
-    queryset = Report.objects.all().order_by('vocabulary') # BY default we group all same vocabulary reports together.
+class ReportViewSet(viewsets.ModelViewSet):
     filter_fields = ('created_by', 'vocabulary')
+    serializer_class = ReportSerializer
 
     @list_route(methods=["GET"])
+    @permission_classes((IsAdminUser,))
     def counts(self, request):
-        serializer = ReportCountSerializer(self.queryset    )
+        serializer = ReportCountSerializer(Report.objects.all())
+        return Response(serializer.data)
 
+    def get_queryset(self):
+        return Report.objects.filter(created_by=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new report, or if an identical report already exists, update the existing one.
+        """
+        try:
+            vocabulary_id = request.data["vocabulary"]
+            existing_report = Report.objects.get(vocabulary__id=vocabulary_id, created_by=request.user)
+            serializer = ReportSerializer(existing_report, data=request.data.dict(), partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        except Report.DoesNotExist:
+            serializer = ReportSerializer(data=request.data.dict())
+            serializer.is_valid(raise_exception=True)
+            serializer.save(created_by=self.request.user)
+            return Response(serializer.data)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ReportListSerializer
+        return super().get_serializer_class()
 
 
 class ReviewViewSet(ListRetrieveUpdateViewSet):

@@ -19,9 +19,10 @@ class ReportCountSerializer(serializers.BaseSerializer):
     """
     Serializer which aggregates report counts by vocabulary.
     """
-    def to_representation(self, instance):
-        # TODO START HERE.
-        pass
+    def to_representation(self, obj):
+        return Report.objects.values("vocabulary", "vocabulary__meaning").annotate(report_count=Count("vocabulary")).order_by("-report_count")
+
+
 
 class SrsCountSerializer(serializers.BaseSerializer):
     """
@@ -313,10 +314,11 @@ class ReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Report
         fields = '__all__'
-        read_only_fields = ('id', 'created_by', 'created_at')
+        read_only_fields = ('created_by', 'created_at')
 
-    def create(self, validated_data):
-        return super().create(validated_data)
+
+class ReportListSerializer(ReportSerializer):
+    vocabulary = VocabularySerializer(many=False, read_only=True)
 
 
 class HyperlinkedVocabularySerializer(VocabularySerializer):
