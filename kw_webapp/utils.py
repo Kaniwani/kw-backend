@@ -172,7 +172,7 @@ def blow_away_duplicate_reviews_for_user(user):
 
     print("Here are the vocabulary IDs we are gonna check: {}".format(vocabulary_ids))
     for voc_id in vocabulary_ids:
-        review_id_to_save = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user)[0].values_list("id", flat=True)
+        review_id_to_save = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user).values_list("id", flat=True)[0]
         UserSpecific.objects.filter(vocabulary__id=voc_id, user=user).exclude(pk=int(review_id_to_save)).delete()
         new_reviews = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user)
         print("New review count: {}".format(new_reviews.count()))
