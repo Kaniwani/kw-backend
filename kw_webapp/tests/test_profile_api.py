@@ -365,7 +365,7 @@ class TestProfileApi(APITestCase):
     def test_reporting_vocab_creates_report(self):
         self.client.force_login(user=self.user)
 
-        self.client.post(reverse("api:vocabulary-report", args=(self.vocabulary.id,)), data={"reason": "This makes no sense!!!"})
+        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "This makes no sense!!!"})
 
         reports = Report.objects.all()
 
