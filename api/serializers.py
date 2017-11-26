@@ -21,6 +21,7 @@ class ReportCountSerializer(serializers.BaseSerializer):
     """
     def to_representation(self, instance):
         # TODO START HERE.
+        pass
 
 class SrsCountSerializer(serializers.BaseSerializer):
     """

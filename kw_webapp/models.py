@@ -196,6 +196,9 @@ class UserSpecific(models.Model):
     notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
     critical = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('vocabulary', 'user')
+
     def answered_correctly(self, first_try=True):
         if first_try:
             self.correct += 1
