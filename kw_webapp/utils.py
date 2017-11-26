@@ -153,6 +153,10 @@ def handle_merger(vocabulary_json, found_vocabulary):
     create_new_review_and_merge_existing(vocabulary, found_vocabulary)
     Vocabulary.objects.filter(pk__in=ids_to_delete_list).exclude(id=vocabulary.id).delete()
 
+def blow_away_duplicate_reviews_for_all_users():
+    users = User.objects.filter(profile__isnull=False)
+    for user in users:
+        blow_away_duplicate_reviews_for_user(user)
 
 def blow_away_duplicate_reviews_for_user(user):
     dupe_revs = UserSpecific.objects.filter(user=user)\
@@ -164,16 +168,15 @@ def blow_away_duplicate_reviews_for_user(user):
         print("Duplicate reviews found for user: ".format(dupe_revs.count()))
     vocabulary_ids = []
     for dupe_rev in dupe_revs:
-        vocabulary_ids.append(dupe_rev['vocabulary_id'])
+        vocabulary_ids.append(dupe_rev['vocabulary'])
 
     print("Here are the vocabulary IDs we are gonna check: {}".format(vocabulary_ids))
     for voc_id in vocabulary_ids:
-        review_id_to_save = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user)[-1].values_list("id", flat=True)
-        UserSpecific.objects.filter(vocabulary__id=voc_id, user=user).exclude(pk__in=list(review_id_to_save)).delete()
+        review_id_to_save = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user)[0].values_list("id", flat=True)
+        UserSpecific.objects.filter(vocabulary__id=voc_id, user=user).exclude(pk=int(review_id_to_save)).delete()
         new_reviews = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user)
+        print("New review count: {}".format(new_reviews.count()))
         assert(new_reviews.count() == 1)
-
-
 
 
 def one_time_import_jisho(json_file_path):
