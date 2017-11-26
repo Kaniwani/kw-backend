@@ -139,22 +139,6 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
         else:
             return VocabularySerializer
 
-    @detail_route(methods=['POST'])
-    def report(self, request, pk=None):
-        vocabulary_id = pk
-        requesting_user = self.request.user
-        try:
-            existing_report = Report.objects.get(vocabulary__id=vocabulary_id, created_by=requesting_user)
-            serializer = ReportSerializer(existing_report, data=request.data.dict(), partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(created_by=self.request.user)
-            return Response(serializer.data)
-        except Report.DoesNotExist:
-            serializer = ReportSerializer(data=dict({'vocabulary': vocabulary_id}, **request.data.dict()))
-            serializer.is_valid(raise_exception=True)
-            serializer.save(created_by=self.request.user)
-            return Response(serializer.data)
-
 
 class ReportViewSet(viewsets.ModelViewSet):
     filter_fields = ('created_by', 'vocabulary')
@@ -190,6 +174,10 @@ class ReportViewSet(viewsets.ModelViewSet):
         if self.action == "list":
             return ReportListSerializer
         return super().get_serializer_class()
+
+    @permission_classes(IsAdminUser,)
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
 
 class ReviewViewSet(ListRetrieveUpdateViewSet):
