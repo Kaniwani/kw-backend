@@ -92,20 +92,17 @@ class TestModels(TestCase):
         self.assertTrue(len(v.available_readings(2)) == 1)
 
     def test_synonym_adding(self):
-        review = create_userspecific(self.vocabulary, self.user)
+        self.review.meaningsynonym_set.get_or_create(text="kitty")
 
-        review.meaningsynonym_set.get_or_create(text="kitty")
-
-        self.assertIn("kitty", review.synonyms_string())
+        self.assertIn("kitty", self.review.synonyms_string())
 
     def test_get_all_readings_returns_original_and_added_readings(self):
         self.vocabulary.readings.create(kana="what", character="ars", level=5)
-        review = create_userspecific(self.vocabulary, self.user)
-        review.answer_synonyms.create(kana="shwoop", character="fwoop")
+        self.review.answer_synonyms.create(kana="shwoop", character="fwoop")
 
-        expected = list(chain(self.vocabulary.readings.all(), review.answer_synonyms.all()))
+        expected = list(chain(self.vocabulary.readings.all(), self.review.answer_synonyms.all()))
 
-        self.assertListEqual(expected, review.get_all_readings())
+        self.assertListEqual(expected, self.review.get_all_readings())
 
     def test_setting_twitter_account_correctly_prepends_at_symbol(self):
         non_prepended_account_name = "Tadgh"

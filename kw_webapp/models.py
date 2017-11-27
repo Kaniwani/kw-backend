@@ -144,6 +144,18 @@ class PartOfSpeech(models.Model):
     def __unicode__(self):
         return self.part
 
+class Report(models.Model):
+    created_by = models.ForeignKey(User)
+    created_at = models.DateTimeField(auto_now_add=True)
+    vocabulary = models.ForeignKey(Vocabulary)
+    reason = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return "Issue with {}, reported by {} at {}. Reason: {}".format(self.vocabulary.meaning,
+                                                                        self.created_by.username,
+                                                                        self.created_at,
+                                                                        self.reason)
+
 class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
     character = models.CharField(max_length=255)
@@ -183,6 +195,9 @@ class UserSpecific(models.Model):
     wanikani_burned = models.BooleanField(default=False)
     notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
     critical = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('vocabulary', 'user')
 
     def answered_correctly(self, first_try=True):
         if first_try:

@@ -2,6 +2,7 @@ import random
 
 import requests
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
@@ -61,7 +62,7 @@ def correct_next_review_dates():
 
 
 
-def one_time_merge_level(level):
+def one_time_merge_level(level, user=None):
     api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(constants.API_KEY, level)
     response = make_api_call(api_call)
     vocab_list = response['requested_information']
@@ -87,9 +88,9 @@ def one_time_merge_level(level):
             to_be_edited.save()
 
 
-def one_time_merger():
+def one_time_merger(user=None):
     for level in range(1, 61):
-        one_time_merge_level(level)
+        one_time_merge_level(level, user=None)
 
 def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
     print("New vocabulary id is:[{}]".format(vocabulary.id))
@@ -125,7 +126,6 @@ def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
 
             new_review.save()
 
-
 def generate_user_stats(user):
     reviews = UserSpecific.objects.filter(user=user)
     kanji_review_map = {}
@@ -148,9 +148,35 @@ def generate_user_stats(user):
 
 def handle_merger(vocabulary_json, found_vocabulary):
     ids_to_delete = found_vocabulary.values_list('id', flat=True)
+    ids_to_delete_list = list(ids_to_delete)
     vocabulary = create_new_vocabulary(vocabulary_json)
     create_new_review_and_merge_existing(vocabulary, found_vocabulary)
-    Vocabulary.objects.filter(pk__in=ids_to_delete).exclude(id=vocabulary.id).delete()
+    Vocabulary.objects.filter(pk__in=ids_to_delete_list).exclude(id=vocabulary.id).delete()
+
+def blow_away_duplicate_reviews_for_all_users():
+    users = User.objects.filter(profile__isnull=False)
+    for user in users:
+        blow_away_duplicate_reviews_for_user(user)
+
+def blow_away_duplicate_reviews_for_user(user):
+    dupe_revs = UserSpecific.objects.filter(user=user)\
+        .values("vocabulary")\
+        .annotate(num_reviews=Count("vocabulary")).filter(
+        num_reviews__gt=1)
+
+    if dupe_revs.count() > 0:
+        print("Duplicate reviews found for user: ".format(dupe_revs.count()))
+    vocabulary_ids = []
+    for dupe_rev in dupe_revs:
+        vocabulary_ids.append(dupe_rev['vocabulary'])
+
+    print("Here are the vocabulary IDs we are gonna check: {}".format(vocabulary_ids))
+    for voc_id in vocabulary_ids:
+        review_id_to_save = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user).values_list("id", flat=True)[0]
+        UserSpecific.objects.filter(vocabulary__id=voc_id, user=user).exclude(pk=int(review_id_to_save)).delete()
+        new_reviews = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user)
+        print("New review count: {}".format(new_reviews.count()))
+        assert(new_reviews.count() == 1)
 
 
 def one_time_import_jisho(json_file_path):

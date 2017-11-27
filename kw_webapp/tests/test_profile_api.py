@@ -1,6 +1,7 @@
 import json
 import pprint
 from datetime import timedelta
+from time import sleep
 from unittest import mock
 
 from django.utils import timezone
@@ -9,7 +10,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
-from kw_webapp.models import Level
+from kw_webapp.models import Level, Report, Announcement
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time
 from kw_webapp.utils import one_time_orphaned_level_clear
@@ -360,5 +361,73 @@ class TestProfileApi(APITestCase):
         # No more orphaned levels!
         level_count = Level.objects.filter(profile=None).count()
         self.assertEqual(level_count, 0)
+
+    def test_reporting_vocab_creates_report(self):
+        self.client.force_login(user=self.user)
+
+        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "This makes no sense!!!"})
+
+        reports = Report.objects.all()
+
+        self.assertEqual(reports.count(), 1)
+        report = reports[0]
+        self.assertEqual(report.vocabulary, self.vocabulary)
+        self.assertEqual(report.created_by, self.user)
+        self.assertLessEqual(report.created_at, timezone.now())
+
+    def test_report_counts_endpoint(self):
+        # Report a vocab.
+        self.client.force_login(user=self.user)
+        # This should only ever create ONE report, as we continually update the same one. We do not allow users to
+        # multi-report a single vocab.
+        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "This still makes no sense!!!"})
+        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "ahhh!!!"})
+        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "Help!"})
+        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "asdf!!!"})
+        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "fdsa!!!"})
+        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "Final report!!!!"})
+
+        # Have another user report it
+        user = create_user("test2")
+        create_profile(user, "test", 5)
+        self.client.force_login(user=user)
+        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "This still makes no sense!!!"})
+
+        #Report another vocab, but only once
+        new_vocab = create_vocab("some other vocab")
+        self.client.post(reverse("api:report-list"), data={"vocabulary": new_vocab.id, "reason": "This still makes no sense!!!"})
+
+        resp = self.client.get(reverse("api:report-counts"))
+
+        assert(resp.data[0]["report_count"] > resp.data[1]["report_count"])
+
+        assert(resp.data[0]["report_count"] == 2)
+        assert(resp.data[0]['vocabulary'] == self.vocabulary.id)
+
+        assert(resp.data[1]["report_count"] == 1)
+        assert(resp.data[1]['vocabulary'] == new_vocab.id)
+
+        resp = self.client.get(reverse("api:report-list"))
+        assert(resp.data["count"] == 2)
+
+        # Ensure users can only see the reports they themselves have generated
+
+    def test_ordering_on_announcements_works(self):
+
+        Announcement.objects.create(creator=self.user, title="ASD123", body="ASDSAD")
+        sleep(1)
+        Announcement.objects.create(creator=self.user, title="ASD1234", body="ASDSAD")
+        sleep(1)
+        Announcement.objects.create(creator=self.user, title="ASD1345", body="ASDSAD")
+        sleep(1)
+        Announcement.objects.create(creator=self.user, title="ASD123456", body="ASDSAD")
+        sleep(1)
+
+        response = self.client.get(reverse("api:announcement-list"))
+
+        announcements = response.data['results']
+        self.assertGreater(announcements[0]['pub_date'], announcements[1]['pub_date'])
+        self.assertGreater(announcements[1]['pub_date'], announcements[2]['pub_date'])
+        self.assertGreater(announcements[2]['pub_date'], announcements[3]['pub_date'])
 
 

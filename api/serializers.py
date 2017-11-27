@@ -11,8 +11,17 @@ from rest_framework import serializers
 from api import serializer_fields
 from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS, STREAK_TO_SRS_LEVEL_MAP_KW
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
-    FrequentlyAskedQuestion, Announcement
+    FrequentlyAskedQuestion, Announcement, Report
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
+
+
+class ReportCountSerializer(serializers.BaseSerializer):
+    """
+    Serializer which aggregates report counts by vocabulary.
+    """
+    def to_representation(self, obj):
+        return Report.objects.values("vocabulary", "vocabulary__meaning").annotate(report_count=Count("vocabulary")).order_by("-report_count")
+
 
 
 class SrsCountSerializer(serializers.BaseSerializer):
@@ -260,6 +269,8 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
 
+
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
@@ -297,6 +308,17 @@ class VocabularySerializer(serializers.ModelSerializer):
             except UserSpecific.DoesNotExist:
                 return None
         return None
+
+
+class ReportSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Report
+        fields = '__all__'
+        read_only_fields = ('created_by', 'created_at')
+
+
+class ReportListSerializer(ReportSerializer):
+    vocabulary = VocabularySerializer(many=False, read_only=True)
 
 
 class HyperlinkedVocabularySerializer(VocabularySerializer):

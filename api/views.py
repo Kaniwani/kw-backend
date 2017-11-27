@@ -1,24 +1,26 @@
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
-from rest_framework import generics
+from rest_framework import generics, filters
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.decorators import list_route, detail_route
+from rest_framework.decorators import list_route, detail_route, permission_classes
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
+from rest_framework.viewsets import ModelViewSet
 
 from api.filters import VocabularyFilter, ReviewFilter
 from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
-    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer
+    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
+    ReportSerializer, ReportCountSerializer, ReportListSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
-    Announcement, Profile
+    Announcement, Profile, Report
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
     get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
     user_begins_vacation, follow_user, reset_user, get_users_lessons
@@ -136,6 +138,46 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
             return HyperlinkedVocabularySerializer
         else:
             return VocabularySerializer
+
+
+class ReportViewSet(viewsets.ModelViewSet):
+    filter_fields = ('created_by', 'vocabulary')
+    serializer_class = ReportSerializer
+
+    @list_route(methods=["GET"])
+    @permission_classes((IsAdminUser,))
+    def counts(self, request):
+        serializer = ReportCountSerializer(Report.objects.all())
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        return Report.objects.filter(created_by=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create a new report, or if an identical report already exists, update the existing one.
+        """
+        try:
+            vocabulary_id = request.data["vocabulary"]
+            existing_report = Report.objects.get(vocabulary__id=vocabulary_id, created_by=request.user)
+            serializer = ReportSerializer(existing_report, data=request.data.dict(), partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
+        except Report.DoesNotExist:
+            serializer = ReportSerializer(data=request.data.dict())
+            serializer.is_valid(raise_exception=True)
+            serializer.save(created_by=self.request.user)
+            return Response(serializer.data)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ReportListSerializer
+        return super().get_serializer_class()
+
+    @permission_classes(IsAdminUser,)
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
 
 
 class ReviewViewSet(ListRetrieveUpdateViewSet):
@@ -264,7 +306,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
     """
     permission_classes = (IsAdminOrReadOnly,)
     serializer_class = AnnouncementSerializer
-    queryset = Announcement.objects.all()
+    queryset = Announcement.objects.all().order_by('-pub_date')
 
     def perform_create(self, serializer):
         serializer.save(creator=self.request.user)

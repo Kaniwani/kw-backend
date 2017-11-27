@@ -19,9 +19,9 @@ def filter_meaning_contains_for_review(queryset, name, value):
     if value:
         return queryset.filter(vocabulary__meaning__contains=value)
 
-def filter_vocabulary_tag(queryset, name, value):
+def filter_vocabulary_parts_of_speech(queryset, name, value):
     if value:
-        return queryset.filter(readings__tags__name=value)
+        return queryset.filter(readings__parts_of_speech__part=value)
 
 def filter_srs_level(queryset, name, value):
     if value:
@@ -39,13 +39,14 @@ class VocabularyFilter(filters.FilterSet):
     level = filters.NumberFilter(method=filter_level_for_vocab)
     meaning_contains = filters.CharFilter(method=filter_meaning_contains)
     reading_contains = filters.CharFilter(method=filter_reading_contains)
-    tag = filters.CharFilter(method=filter_vocabulary_tag)
+    part_of_speech = filters.CharFilter(method=filter_vocabulary_parts_of_speech)
     class Meta:
         model = Vocabulary
         fields = '__all__'
 
+
 def filter_tag_multi(queryset, name, value):
-    return queryset.filter(vocabulary__readings__tags__name__iexact=value)
+    return queryset.filter(vocabulary__readings__parts_of_speech__part__iexact=value)
 
 
 class ReviewFilter(filters.FilterSet):
@@ -54,7 +55,7 @@ class ReviewFilter(filters.FilterSet):
     srs_level = filters.NumberFilter(name='streak', lookup_expr='exact')
     srs_level_lt = filters.NumberFilter(name='streak', lookup_expr='lt')
     srs_level_gt = filters.NumberFilter(name='streak', lookup_expr='gt')
-    tag = filters.CharFilter(method=filter_tag_multi)
+    part_of_speech = filters.CharFilter(method=filter_tag_multi)
     class Meta:
         model = UserSpecific
-        fields = 'srs_level', 'srs_level_gt', 'srs_level_lt', 'tag', 'wanikani_burned'
+        fields = 'srs_level', 'srs_level_gt', 'srs_level_lt', 'part_of_speech', 'wanikani_burned'
