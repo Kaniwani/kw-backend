@@ -361,4 +361,11 @@ class TestProfileApi(APITestCase):
         level_count = Level.objects.filter(profile=None).count()
         self.assertEqual(level_count, 0)
 
+    def test_partial_update_to_profile_works(self):
+        self.client.force_login(self.user)
+
+        self.client.patch(reverse("api:profile-detail", args=(self.user.profile.id,)), data={"api_key":"ASDASDASD"})
+
+        resp = self.client.get("api:user-me")
+        print(resp.data)
 
