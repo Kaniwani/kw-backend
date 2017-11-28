@@ -141,8 +141,8 @@ class Tag(models.Model):
 class PartOfSpeech(models.Model):
     part = models.CharField(max_length=30)
 
-    def __unicode__(self):
-        return self.part
+    def __str__(self):
+        return str(self.part)
 
 class Report(models.Model):
     created_by = models.ForeignKey(User)

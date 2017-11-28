@@ -278,7 +278,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class ReadingSerializer(serializers.ModelSerializer):
-    parts_of_speech = serializers.StringRelatedField(many=True)
+    parts_of_speech = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Reading
