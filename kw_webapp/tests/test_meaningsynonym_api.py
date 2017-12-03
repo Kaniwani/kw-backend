@@ -58,6 +58,27 @@ class TestMeaningSynonymApi(APITestCase):
         self.review.refresh_from_db()
         self.assertEqual(len(self.review.synonyms_list()), 0)
 
+    def test_another_user_cannot_CRUD_the_users_synonyms(self):
+        self.client.force_login(self.user)
+        sneaky_user = create_user("sneakster")
+        create_profile(sneaky_user, "any key", 5)
 
+        # Lets have the client create their own synonym.
+        synonym = {
+            'review': self.review.id,
+            'text': "My fancy synonym"
+        }
+        response = self.client.post(reverse("api:meaning-synonym-list"), data=synonym)
+        self.assertEqual(response.status_code, 201)
 
+        # Make sure that the sneaky user CANNOT read it.
+        self.client.force_login(sneaky_user)
+        synonym_id = self.review.meaningsynonym_set.first().id
+        response = self.client.get(reverse("api:meaning-synonym-detail", args=(synonym_id,)))
+        self.assertEqual(response.status_code, 404)
 
+        response = self.client.delete(reverse("api:meaning-synonym-detail", args=(synonym_id,)))
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.put(reverse("api:meaning-synonym-detail", args=(synonym_id,)))
+        self.assertEqual(response.status_code, 404)
