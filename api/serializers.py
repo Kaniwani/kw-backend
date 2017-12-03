@@ -11,7 +11,7 @@ from rest_framework import serializers
 from api import serializer_fields
 from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS, STREAK_TO_SRS_LEVEL_MAP_KW
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
-    FrequentlyAskedQuestion, Announcement, Report
+    FrequentlyAskedQuestion, Announcement, Report, MeaningSynonym
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
 
 
@@ -328,7 +328,19 @@ class HyperlinkedVocabularySerializer(VocabularySerializer):
         pass
 
 
-class SynonymSerializer(serializers.ModelSerializer):
+class MeaningSynonymSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MeaningSynonym
+        fields = '__all__'
+
+    def validate(self, data):
+        review = data['review']
+        if review.user != self.context['request'].user:
+            raise serializers.ValidationError("Can not make a synonym for a review that is not yours!")
+        return data
+
+
+class ReadingSynonymSerializer(serializers.ModelSerializer):
     class Meta:
         model = AnswerSynonym
         fields = '__all__'
@@ -348,7 +360,8 @@ class SynonymSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     vocabulary = VocabularySerializer(many=False, read_only=True, context={'nested_in_review': True})
-    answer_synonyms = SynonymSerializer(many=True, read_only=True)
+    reading_synonyms = ReadingSynonymSerializer(many=True, read_only=True)
+    meaning_synonyms = MeaningSynonymSerializer(many=True, read_only=True)
 
     class Meta:
         model = UserSpecific
@@ -362,8 +375,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 class StubbedReviewSerializer(ReviewSerializer):
     class Meta(ReviewSerializer.Meta):
-        fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak', 'notes', 'answer_synonyms')
-
+        fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak', 'notes', 'answer_synonyms', 'meaning_synonyms')
 
 class LevelSerializer(serializers.Serializer):
     level = serializers.IntegerField(read_only=True)

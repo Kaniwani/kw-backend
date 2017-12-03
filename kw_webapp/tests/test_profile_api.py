@@ -211,7 +211,7 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
         synonym_kana = "いぬ"
         synonym_kanji = "犬"
-        s1 = reverse("api:synonym-list")
+        s1 = reverse("api:reading-synonym-list")
         response = self.client.get(s1)
         self.assertEqual(response.data['count'], 0)
 
