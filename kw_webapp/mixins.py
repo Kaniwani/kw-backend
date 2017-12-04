@@ -10,7 +10,6 @@ class ValidApiRequiredMixin(AccessMixin):
     permission_denied_message = "Your Wanikani API key is invalid! Please change it in the settings"
     raise_exception = True
 
-
     def dispatch(self, request, *args, **kwargs):
         if not request.user.profile.api_valid:
             return self.handle_no_permission()

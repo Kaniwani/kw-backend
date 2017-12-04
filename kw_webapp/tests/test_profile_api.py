@@ -90,8 +90,6 @@ class TestProfileApi(APITestCase):
         user_dict['profile']['on_vacation'] = True
         user_dict['profile']['follow_me'] = True
 
-    # self.client.put(reverse("api:profile-detail", (self.user.profile.id,)), user_dict, format='json')
-
     def test_locking_current_level_disables_following_setting(self):
         self.client.force_login(user=self.user)
         self.user.profile.follow_me = True
@@ -333,7 +331,6 @@ class TestProfileApi(APITestCase):
         levels = Level.objects.filter(profile=self.user.profile, level=5)
         self.assertEqual(levels.count(), 0)
 
-
     def test_one_time_orphan_clear_deletes_orphaned_levels(self):
         l5 = self.user.profile.unlocked_levels.get_or_create(level=5)[0]
         l6 = self.user.profile.unlocked_levels.get_or_create(level=6)[0]
@@ -347,7 +344,7 @@ class TestProfileApi(APITestCase):
         self.user.profile.unlocked_levels.remove(l6)
         self.user.profile.unlocked_levels.remove(l7)
 
-        #Oh no two orphaned levels.
+        # Oh no two orphaned levels.
         level_count = Level.objects.filter(profile=None).count()
         self.assertEqual(level_count, 2)
 
@@ -363,9 +360,20 @@ class TestProfileApi(APITestCase):
 
     def test_partial_update_to_profile_works(self):
         self.client.force_login(self.user)
+        fm = self.user.profile.follow_me
+        resp = self.client.patch(reverse("api:profile-detail", args=(self.user.profile.id,)), data={"follow_me": not self.user.profile.follow_me})
+        resp = self.client.get(reverse("api:user-me"))
+        resp = self.client.get(reverse("api:profile-list"))
 
-        self.client.patch(reverse("api:profile-detail", args=(self.user.profile.id,)), data={"api_key":"ASDASDASD"})
+    def test_bonus_logic_in_profile_serializer_is_correcetly_applied(self):
+        self.client.force_login(self.user)
+        self.user.profile.on_vacation = False
+        self.user.profile.vacation_date = None
 
-        resp = self.client.get("api:user-me")
-        print(resp.data)
+        resp = self.client.patch(reverse("api:profile-detail", args=(self.user.profile.id,)), data={"on_vacation": True})
+        self.assertEqual(resp.status_code, 200)
+        data = resp.data
+        self.assertIsNotNone(data['vacation_date'])
+
+
 

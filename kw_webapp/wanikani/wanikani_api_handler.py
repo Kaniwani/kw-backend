@@ -4,6 +4,7 @@ from . import constants
 from . import exceptions
 logger = logging.getLogger('kw.tasks')
 
+
 def _has_no_errors(response):
     return response and "error" not in response.json() and response.status_code == 200
 

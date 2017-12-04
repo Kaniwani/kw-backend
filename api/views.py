@@ -1,3 +1,4 @@
+from copy import deepcopy
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
 from rest_framework import generics
@@ -303,26 +304,9 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
             serializer = self.get_serializer(user, many=False)
             return Response(serializer.data)
         elif request.method == "PUT":
-            was_following = user.profile.follow_me
-            was_on_vacation = user.profile.on_vacation
             serializer = ProfileSerializer(data=request.data['profile'])
             serializer.is_valid(raise_exception=False)
             serializer.update(instance=user.profile, validated_data=serializer.validated_data)
-            user.refresh_from_db()
-            current_profile = user.profile
-
-            if not was_following and current_profile.follow_me:
-                sync_user_profile_with_wk(user)
-
-            if was_on_vacation and not current_profile.on_vacation:
-                user_returns_from_vacation(user)
-
-            if not was_on_vacation and current_profile.on_vacation:
-                user_begins_vacation(user)
-
-            if not was_following and current_profile.follow_me:
-                follow_user(user)
-
             serializer = self.get_serializer(user, many=False)
             return Response(serializer.data)
 
@@ -350,10 +334,7 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         return Response({"message": "Your account has been reset"})
 
 
-class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
-    """
-    Profile model view set, for INTERNAL TESTING USE ONLY.
-    """
+class ProfileViewSet(ListRetrieveUpdateViewSet):
     permission_classes = (IsAuthenticated,)
     serializer_class = ProfileSerializer
     queryset = Profile.objects.all()
@@ -366,6 +347,12 @@ class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
 
     def patch(self, request, *args, **kwargs):
         return super().patch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        if (self.request.user.is_staff):
+            return Profile.objects.all()
+        else:
+            return Profile.objects.filter(user=self.request.user)
 
 
 class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):

@@ -2,6 +2,7 @@ import datetime
 from collections import OrderedDict
 
 import requests
+from copy import deepcopy
 from django.contrib.auth.models import User
 from django.db.models import Q, Count, TimeField
 from django.utils import timezone
@@ -12,7 +13,8 @@ from api import serializer_fields
 from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS, STREAK_TO_SRS_LEVEL_MAP_KW
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement
-from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
+from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews, \
+    sync_user_profile_with_wk, user_returns_from_vacation, user_begins_vacation, follow_user
 
 
 class SrsCountSerializer(serializers.BaseSerializer):
@@ -87,6 +89,17 @@ class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
         return real_retval
 
 
+def validate_api_key(value):
+    r = requests.get("https://www.wanikani.com/api/user/{}/user-information".format(value))
+    if r.status_code == 200:
+        json_data = r.json()
+        if "error" in json_data.keys():
+            raise serializers.ValidationError("API Key not associated with a WaniKani User!")
+    else:
+        raise serializers.ValidationError("Invalid Api Key!")
+    return value
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='user.username')
     reviews_count = serializers.SerializerMethodField()
@@ -99,6 +112,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     #upcoming_reviews = DetailedUpcomingReviewCountSerializer(source='user', many=False, read_only=True)
     upcoming_reviews = SimpleUpcomingReviewSerializer(source='user', many=False, read_only=True)
     join_date = serializers.SerializerMethodField()
+    api_key = serializers.CharField(max_length=32, validators=[validate_api_key])
 
     class Meta:
         model = Profile
@@ -113,12 +127,27 @@ class ProfileSerializer(serializers.ModelSerializer):
                             'reviews_within_hour_count', 'reviews_count', 'lessons_count', 'srs_counts',
                             'next_review_date', 'last_wanikani_sync_date', 'join_date')
 
+    def update(self, instance, validated_data):
+        old_instance = deepcopy(instance)
+        user = instance.user
+        # When a user decides they want us to follow their progress, we want to immediately sync.
+
+        if not old_instance.follow_me and validated_data.get("follow_me", old_instance.follow_me):
+            follow_user(user)
+
+        if old_instance.on_vacation and not validated_data.get("on_vacation", old_instance.on_vacation):
+            user_returns_from_vacation(user)
+
+        if not old_instance.on_vacation and validated_data.get("on_vacation", old_instance.on_vacation):
+            user_begins_vacation(user)
+
+        return super().update(instance, validated_data)
+
     def get_join_date(self, obj):
         """
         So this is a hack. By default the modelserializer expects a datefield, but a fewww users have datetimefields as their join_date, 
         due to an old version of the model. Eventually we should fix those users but for now this methodfield does the trick.
         """
-
         return obj.join_date
 
     def get_next_review_date(self, obj):
@@ -136,15 +165,15 @@ class ProfileSerializer(serializers.ModelSerializer):
         return get_users_lessons(obj.user).count()
 
     def get_reviews_within_hour_count(self, obj):
-        return get_users_future_reviews(obj.user,
-                                        time_limit=datetime.timedelta(hours=1)).count()
+        return get_users_future_reviews(obj.user, time_limit=datetime.timedelta(hours=1)).count()
 
     def get_reviews_within_day_count(self, obj):
         return get_users_future_reviews(obj.user, time_limit=datetime.timedelta(hours=24)).count()
 
 
+
 class RegistrationSerializer(serializers.ModelSerializer):
-    api_key = serializers.CharField(write_only=True, max_length=32)
+    api_key = serializers.CharField(write_only=True, max_length=32, validators=[validate_api_key])
     password = serializers.CharField(write_only=True,
                                      style={'input_type': 'password'})
 
@@ -155,16 +184,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def validate_password(self, value):
         if len(value) < 4:
             raise serializers.ValidationError("Password is not long enough!")
-        return value
-
-    def validate_api_key(self, value):
-        r = requests.get("https://www.wanikani.com/api/user/{}/user-information".format(value))
-        if r.status_code == 200:
-            json_data = r.json()
-            if "error" in json_data.keys():
-                raise serializers.ValidationError("API Key not associated with a WaniKani User!")
-        else:
-            raise serializers.ValidationError("Invalid!")
         return value
 
     def validate_email(self, value):
