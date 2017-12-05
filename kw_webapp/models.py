@@ -260,7 +260,7 @@ class UserSpecific(models.Model):
         return ", ".join([synonym.text for synonym in self.meaningsynonym_set.all()])
 
     def remove_synonym(self, text):
-        self.meaningsynonym_set.remove(MeaningSynonym.objects.get(text=text))
+        MeaningSynonym.objects.get(text=text).delete()
 
     def answer_synonyms_list(self):
         return [synonym.kana for synonym in self.answer_synonyms.all()]

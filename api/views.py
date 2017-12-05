@@ -14,13 +14,13 @@ from rest_framework.viewsets import ModelViewSet
 from api.filters import VocabularyFilter, ReviewFilter
 from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
-    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, SynonymSerializer, \
+    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
-    ReportSerializer, ReportCountSerializer, ReportListSerializer
+    ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
-    Announcement, Profile, Report
+    Announcement, Profile, Report, MeaningSynonym
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
     get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
     user_begins_vacation, follow_user, reset_user, get_users_lessons
@@ -45,14 +45,18 @@ class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ReadingSerializer
 
 
-class SynonymViewSet(viewsets.ModelViewSet):
-    serializer_class = SynonymSerializer
+class ReadingSynonymViewSet(viewsets.ModelViewSet):
+    serializer_class = ReadingSynonymSerializer
 
     def get_queryset(self):
         return AnswerSynonym.objects.filter(review__user=self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+
+class MeaningSynonymViewSet(viewsets.ModelViewSet):
+    serializer_class = MeaningSynonymSerializer
+
+    def get_queryset(self):
+        return MeaningSynonym.objects.filter(review__user=self.request.user)
 
 
 class LevelViewSet(viewsets.ReadOnlyModelViewSet):
@@ -289,7 +293,9 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_queryset(self):
-      return UserSpecific.objects.filter(user=self.request.user, wanikani_srs_numeric__gte=self.request.user.profile.get_minimum_wk_srs_threshold_for_review())
+        return UserSpecific.objects.filter(user=self.request.user,
+                                           wanikani_srs_numeric__gte=self.request.user.profile.get_minimum_wk_srs_threshold_for_review())
+
 
 class FrequentlyAskedQuestionViewSet(viewsets.ModelViewSet):
     """
