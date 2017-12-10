@@ -8,9 +8,9 @@ from rest_framework.authtoken.models import Token
 
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Profile, Reading, Tag, Vocabulary, MeaningSynonym, AnswerSynonym, \
-    PartOfSpeech, Level
+    PartOfSpeech, Level, logger
 from kw_webapp.tasks import create_new_vocabulary, \
-    has_multiple_kanji
+    has_multiple_kanji, import_vocabulary_from_json
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.tasks import unlock_eligible_vocab_from_levels
 from kw_webapp.tests.utils import create_userspecific, create_review_for_specific_time
@@ -338,3 +338,19 @@ def copy_review_data(new_review, old_review):
 def one_time_orphaned_level_clear():
         levels = Level.objects.filter(profile=None)
         levels.delete()
+
+def repopulate():
+    '''
+    A task that uses my personal API key in order to re-sync the database. Koichi often decides to switch things around
+    on a level-per-level basis, or add synonyms, or change which readings are allowed. This method attempts to synchronize
+    our data sets.
+
+    :return:
+    '''
+    url = "https://www.wanikani.com/api/user/" + constants.API_KEY + "/vocabulary/{}"
+    logger.info("Starting DB Repopulation from WaniKani")
+    for level in range(constants.LEVEL_MIN, constants.LEVEL_MAX + 1):
+        json_data = make_api_call(url.format(level))
+        vocabulary_list = json_data['requested_information']
+        for vocabulary in vocabulary_list:
+            import_vocabulary_from_json(vocabulary)

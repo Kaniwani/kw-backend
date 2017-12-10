@@ -189,3 +189,5 @@ single_vocab_requested_information = {"character": "bleh", "kana": "bleh", "mean
                                                         "reading_max_streak": 8, "reading_current_streak": 8,
                                                         "meaning_note": None,
                                                         "user_synonyms": None, "reading_note": None}}
+
+

@@ -174,6 +174,9 @@ class Reading(models.Model):
     pitch = models.CharField(max_length=100, null=True)
     parts_of_speech = models.ManyToManyField(PartOfSpeech)
 
+    class Meta:
+        unique_together = ('character', 'kana')
+
     def __str__(self):
         return "{} - {} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character, self.level)
 

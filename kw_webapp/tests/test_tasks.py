@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.utils import timezone
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific, MeaningSynonym, AnswerSynonym
-from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, get_vocab_by_meaning, associate_vocab_to_user, \
+from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, associate_vocab_to_user, \
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
@@ -33,14 +33,6 @@ class TestTasks(TestCase):
         all_srs()
         review = UserSpecific.objects.get(pk=self.review.id)
         self.assertTrue(review.needs_review)
-
-    def test_get_vocab_by_meaning_gets_correct_vocab(self):
-        vocab_id = self.vocabulary.id
-        found_vocab = get_vocab_by_meaning("radioactive bat")
-        self.assertEqual(vocab_id, found_vocab.id)
-
-    def test_get_vocab_by_meaning_raises_error_on_unknown_meaning(self):
-        self.assertRaises(Vocabulary.DoesNotExist, get_vocab_by_meaning, "dog!")
 
     def test_associate_vocab_to_user_successfully_creates_review(self):
         new_vocab = create_vocab("dishwasher")
@@ -233,7 +225,7 @@ class TestTasks(TestCase):
 
         sync_unlocked_vocab_with_wk(self.user)
 
-        vocabulary = get_vocab_by_meaning("radioactive bat")
+        vocabulary = Vocabulary.objects.get(meaning="radioactive bat")
 
         self.assertEqual(vocabulary.readings.count(), 1)
 
