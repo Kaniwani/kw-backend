@@ -248,25 +248,25 @@ class UserSpecific(models.Model):
             return False
 
     def get_all_readings(self):
-        return list(chain(self.vocabulary.readings.all(), self.answer_synonyms.all()))
+        return list(chain(self.vocabulary.readings.all(), self.reading_synonyms.all()))
 
     def can_be_managed_by(self, user):
         return self.user == user or user.is_superuser
 
     def synonyms_list(self):
-        return [synonym.text for synonym in self.meaningsynonym_set.all()]
+        return [synonym.text for synonym in self.meaning_synonyms.all()]
 
     def synonyms_string(self):
-        return ", ".join([synonym.text for synonym in self.meaningsynonym_set.all()])
+        return ", ".join([synonym.text for synonym in self.meaning_synonyms.all()])
 
     def remove_synonym(self, text):
         MeaningSynonym.objects.get(text=text).delete()
 
-    def answer_synonyms_list(self):
-        return [synonym.kana for synonym in self.answer_synonyms.all()]
+    def reading_synonyms_list(self):
+        return [synonym.kana for synonym in self.reading_synonyms.all()]
 
     def add_answer_synonym(self, kana, character):
-        synonym, created = self.answer_synonyms.get_or_create(kana=kana, character=character)
+        synonym, created = self.reading_synonyms.get_or_create(kana=kana, character=character)
         return synonym, created
 
     def set_next_review_time(self):

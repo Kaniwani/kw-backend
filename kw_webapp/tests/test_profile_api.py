@@ -220,9 +220,9 @@ class TestProfileApi(APITestCase):
                                               "character": synonym_kanji})
 
         self.review.refresh_from_db()
-        found_synonym = self.review.answer_synonyms.first()
+        found_synonym = self.review.reading_synonyms.first()
 
-        self.assertTrue(synonym_kana in self.review.answer_synonyms_list())
+        self.assertTrue(synonym_kana in self.review.reading_synonyms_list())
         self.assertEqual(found_synonym.kana, synonym_kana)
         self.assertEqual(found_synonym.character, synonym_kanji)
 
@@ -430,7 +430,7 @@ class TestProfileApi(APITestCase):
         self.assertGreater(announcements[1]['pub_date'], announcements[2]['pub_date'])
         self.assertGreater(announcements[2]['pub_date'], announcements[3]['pub_date'])
 
-    def test_review_serializer_shows_both_reading_and_answer_synonyms(self):
+    def test_review_serializer_shows_both_reading_and_reading_synonyms(self):
         self.client.force_login(self.user)
         meaning_synonym = "Wow a meaning synonym!"
         reading_synonym_kana = "kana"
