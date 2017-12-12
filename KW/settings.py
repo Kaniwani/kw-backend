@@ -134,10 +134,10 @@ LOGGING = {
 
 #CELERY SETTINGS
 #CELERY_RESULT_BACKEND = 'amqp'
-CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULTS_BACKEND = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 #CELERY_BROKER_URL = broker = 'amqp://guest@localhost//'
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULTS_SERIALIZER = 'json'
@@ -167,7 +167,7 @@ SECRET_KEY = secrets.SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0', 'www.kaniwani.com', '.kaniwani.com']
 
 # Application definition
 
@@ -245,7 +245,7 @@ REST_FRAMEWORK = {
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': 'localhost:6379'
+        'LOCATION': 'redis:6379'
     }
 }
 
@@ -341,10 +341,3 @@ AUTHENTICATION_BACKENDS = [
     'kw_webapp.backends.EmailOrUsernameAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend'
 ]
-
-DJOSER = {
-    'SERIALIZERS': {
-        "user_registration": 'api.serializers.RegistrationSerializer'
-    },
-    'PASSWORD_RESET_CONFIRM_URL': "/api/v1/auth/password-reset/{uid}/{token}",
-}
