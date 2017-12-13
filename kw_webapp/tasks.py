@@ -88,13 +88,13 @@ def alternative_all_srs(user=None):
     return affected_count
 
 def get_vocab_by_kanji(kanji):
-    try:
-        v = Vocabulary.objects.filter(readings__character=kanji).distinct()
-        if (v.count() > 1):
-            error = "Found multiple Vocabulary with identical kanji with ids: [{}]/ync".format(", ".join([str(vocab.id) for vocab in v]))
-            logger.error(error)
-            raise Vocabulary.MultipleObjectsReturned(error)
-    except Vocabulary.DoesNotExist:
+    v = Vocabulary.objects.filter(readings__character=kanji).distinct()
+    number_of_vocabulary = v.count()
+    if number_of_vocabulary > 1:
+        error = "Found multiple Vocabulary with identical kanji with ids: [{}]/ync".format(", ".join([str(vocab.id) for vocab in v]))
+        logger.error(error)
+        raise Vocabulary.MultipleObjectsReturned(error)
+    elif number_of_vocabulary == 0:
         logger.error("While attempting to get vocabulary {} we could not find it!".format(kanji))
         raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(kanji))
     else:
