@@ -326,6 +326,9 @@ class AnswerSynonym(models.Model):
     kana = models.CharField(max_length=255, null=False)
     review = models.ForeignKey(UserSpecific, related_name="answer_synonyms", null=True)
 
+    class Meta:
+        unique_together = ('character', 'kana', 'review')
+
     def __str__(self):
         return "{} - {} - {} - SYNONYM".format(self.review.vocabulary.meaning, self.kana, self.character)
 

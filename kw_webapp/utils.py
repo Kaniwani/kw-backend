@@ -374,3 +374,20 @@ def clear_duplicate_meaning_synonyms_from_reviews():
             else:
                 print("[{}]First time seeing element {}".format(review_id, synonym.text))
                 seen_synonyms.add(synonym.text)
+
+def clear_duplicate_answer_synonyms_from_reviews():
+    # Fetch all reviews wherein there are duplicate meaning synonyms.
+    reviews = UserSpecific.objects.values('id', 'answer_synonyms__kana', 'answer_synonyms__character').annotate(Count('answer_synonyms__kana')).filter(answer_synonyms__kana__count__gt=1)
+    review_list = list(reviews)
+    review_list = set([review['id'] for review in review_list])
+
+    for review_id in review_list:
+        seen_synonyms = set()
+        synonyms = AnswerSynonym.objects.filter(review=review_id)
+        for synonym in synonyms:
+            if synonym.kana + "_" + synonym.character in seen_synonyms:
+                print("[{}]Deleted element: {}".format(review_id, synonym.kana + "_" + synonym.character))
+                synonym.delete()
+            else:
+                print("[{}]First time seeing element: {}".format(review_id, synonym.kana + "_" + synonym.character))
+                seen_synonyms.add(synonym.kana + "_" + synonym.character)
