@@ -342,7 +342,7 @@ def add_synonyms_from_api_call_to_review(review, user_specific_json):
         return review, new_synonym_count
 
     for synonym in user_specific_json["user_synonyms"]:
-        _, created = review.meaningsynonym_set.filter(text=synonym)
+        _, created = review.meaningsynonym_set.get_or_create(text=synonym)
         if created:
             new_synonym_count += 1
     return review, new_synonym_count
