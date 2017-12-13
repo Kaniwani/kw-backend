@@ -10,7 +10,7 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
-from kw_webapp.models import Level, Report, Announcement, Vocabulary
+from kw_webapp.models import Level, Report, Announcement, Vocabulary, MeaningSynonym
 from kw_webapp.tasks import get_vocab_by_kanji
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time
@@ -445,4 +445,18 @@ class TestProfileApi(APITestCase):
         create_reading(v2, "kana_2", "kanji", 5)
 
         self.assertRaises(Vocabulary.MultipleObjectsReturned, get_vocab_by_kanji, "kanji")
+
+
+    def test_clear_meaning_synonym_duplicates(self):
+        from kw_webapp.utils import clear_duplicate_meaning_synonyms_from_reviews
+        vocab = create_vocab("my weird vocabulary")
+        review = create_userspecific(vocab, self.user)
+        MeaningSynonym.objects.create(review=review, text="text")
+        MeaningSynonym.objects.create(review=review, text="text")
+        MeaningSynonym.objects.create(review=review, text="text2")
+        MeaningSynonym.objects.create(review=review, text="text2")
+        self.assertTrue(review.meaningsynonym_set.count() == 4)
+        clear_duplicate_meaning_synonyms_from_reviews()
+        review.refresh_from_db()
+        self.assertTrue(review.meaningsynonym_set.count() == 2)
 

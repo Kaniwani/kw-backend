@@ -6,6 +6,7 @@ from datetime import timedelta
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.utils import timezone
 
 from kw_webapp import constants
@@ -272,6 +273,10 @@ class UserSpecific(models.Model):
         synonym, created = self.answer_synonyms.get_or_create(kana=kana, character=character)
         return synonym, created
 
+    def add_meaning_synonym(self, text):
+        synonym, created = self.meaningsynonym_set.get_or_create(text=text)
+        return synonym, created
+
     def set_next_review_time(self):
         if self.streak not in constants.SRS_TIMES.keys():
             self.next_review_date = None
@@ -339,3 +344,6 @@ class MeaningSynonym(models.Model):
 
     def __str__(self):
         return self.text
+
+    class Meta:
+        unique_together = ('text', 'review')

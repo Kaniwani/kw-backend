@@ -356,3 +356,21 @@ def repopulate():
         vocabulary_list = json_data['requested_information']
         for vocabulary in vocabulary_list:
             import_vocabulary_from_json(vocabulary)
+
+
+def clear_duplicate_meaning_synonyms_from_reviews():
+    # Fetch all reviews wherein there are duplicate meaning synonyms.
+    reviews = UserSpecific.objects.values('id', 'meaningsynonym__text').annotate(Count('meaningsynonym__text')).filter(meaningsynonym__text__count__gt=1)
+    review_list = list(reviews)
+    review_list = set([review['id'] for review in review_list])
+
+    for review_id in review_list:
+        seen_synonyms = set()
+        synonyms = MeaningSynonym.objects.filter(review=review_id)
+        for synonym in synonyms:
+            if synonym.text in seen_synonyms:
+                print("[{}]Deleted element{}".format(review_id, synonym.text))
+                synonym.delete()
+            else:
+                print("[{}]First time seeing element {}".format(review_id, synonym.text))
+                seen_synonyms.add(synonym.text)

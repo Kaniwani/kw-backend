@@ -91,7 +91,7 @@ def get_vocab_by_kanji(kanji):
     try:
         v = Vocabulary.objects.filter(readings__character=kanji).distinct()
         if (v.count() > 1):
-            error = "Found multiple Vocabulary with identical kanji with ids: [{}]".format(", ".join([str(vocab.id) for vocab in v]))
+            error = "Found multiple Vocabulary with identical kanji with ids: [{}]/ync".format(", ".join([str(vocab.id) for vocab in v]))
             logger.error(error)
             raise Vocabulary.MultipleObjectsReturned(error)
     except Vocabulary.DoesNotExist:
@@ -342,7 +342,7 @@ def add_synonyms_from_api_call_to_review(review, user_specific_json):
         return review, new_synonym_count
 
     for synonym in user_specific_json["user_synonyms"]:
-        _, created = review.meaningsynonym_set.get_or_create(text=synonym)
+        _, created = review.meaningsynonym_set.filter(text=synonym)
         if created:
             new_synonym_count += 1
     return review, new_synonym_count
