@@ -445,32 +445,3 @@ class TestProfileApi(APITestCase):
         create_reading(v2, "kana_2", "kanji", 5)
 
         self.assertRaises(Vocabulary.MultipleObjectsReturned, get_vocab_by_kanji, "kanji")
-
-
-    def test_clear_meaning_synonym_duplicates(self):
-        from kw_webapp.utils import clear_duplicate_meaning_synonyms_from_reviews
-        vocab = create_vocab("my weird vocabulary")
-        review = create_userspecific(vocab, self.user)
-        MeaningSynonym.objects.create(review=review, text="text")
-        MeaningSynonym.objects.create(review=review, text="text")
-        MeaningSynonym.objects.create(review=review, text="text2")
-        MeaningSynonym.objects.create(review=review, text="text2")
-        self.assertTrue(review.meaningsynonym_set.count() == 4)
-        clear_duplicate_meaning_synonyms_from_reviews()
-        review.refresh_from_db()
-        self.assertTrue(review.meaningsynonym_set.count() == 2)
-
-    def test_clear_answer_synonym_duplicates(self):
-        from kw_webapp.utils import clear_duplicate_answer_synonyms_from_reviews
-        vocab = create_vocab("my weird vocabulary")
-        review = create_userspecific(vocab, self.user)
-        AnswerSynonym.objects.create(review=review, kana="kana", character="character")
-        AnswerSynonym.objects.create(review=review, kana="kana", character="character")
-        AnswerSynonym.objects.create(review=review, kana="kana2", character="character2")
-        AnswerSynonym.objects.create(review=review, kana="kana2", character="character2")
-        AnswerSynonym.objects.create(review=review, kana="kana3", character="character2")
-
-        self.assertTrue(review.answer_synonyms.count() == 5)
-        clear_duplicate_answer_synonyms_from_reviews()
-        review.refresh_from_db()
-        self.assertTrue(review.answer_synonyms.count() == 3)
