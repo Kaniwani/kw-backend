@@ -10,7 +10,8 @@ from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
-from kw_webapp.models import Level, Report, Announcement
+from kw_webapp.models import Level, Report, Announcement, Vocabulary
+from kw_webapp.tasks import get_vocab_by_kanji
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time
 from kw_webapp.utils import one_time_orphaned_level_clear
@@ -430,4 +431,18 @@ class TestProfileApi(APITestCase):
         self.assertGreater(announcements[1]['pub_date'], announcements[2]['pub_date'])
         self.assertGreater(announcements[2]['pub_date'], announcements[3]['pub_date'])
 
+    def test_get_vocab_by_kanji_works_in_case_of_multiple_reading_vocab(self):
+        v = create_vocab("my vocab")
+        create_reading(v, "kana_1", "kanji", 5)
+        create_reading(v, "kana_2", "kanji", 5)
+        get_vocab_by_kanji("kanji")
+
+
+    def test_get_vocab_by_kanji_correctly_fails_on_duplicate_kanji(self):
+        v = create_vocab("my vocab")
+        create_reading(v, "kana_1", "kanji", 5)
+        v2 = create_vocab("my vocab")
+        create_reading(v2, "kana_2", "kanji", 5)
+
+        self.assertRaises(Vocabulary.MultipleObjectsReturned, get_vocab_by_kanji, "kanji")
 

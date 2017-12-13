@@ -81,6 +81,8 @@ def one_time_merge_level(level, user=None):
             print("Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(found_vocabulary.count(),
                                                                                             vocabulary_json['meaning']))
             handle_merger(vocabulary_json, found_vocabulary)
+        elif found_vocabulary.count() == 0:
+            create_new_vocabulary(vocabulary_json)
         else:
             print("No conflict, but meaning has changed. Changing meaning!")
             to_be_edited = found_vocabulary[0]
