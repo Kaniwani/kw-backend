@@ -221,9 +221,9 @@ class TestProfileApi(APITestCase):
                                               "character": synonym_kanji})
 
         self.review.refresh_from_db()
-        found_synonym = self.review.answer_synonyms.first()
+        found_synonym = self.review.reading_synonyms.first()
 
-        self.assertTrue(synonym_kana in self.review.answer_synonyms_list())
+        self.assertTrue(synonym_kana in self.review.reading_synonyms_list())
         self.assertEqual(found_synonym.kana, synonym_kana)
         self.assertEqual(found_synonym.character, synonym_kanji)
 
@@ -436,6 +436,32 @@ class TestProfileApi(APITestCase):
         create_reading(v, "kana_1", "kanji", 5)
         create_reading(v, "kana_2", "kanji", 5)
         get_vocab_by_kanji("kanji")
+
+    def test_review_serializer_shows_both_reading_and_reading_synonyms(self):
+        self.client.force_login(self.user)
+        meaning_synonym = "Wow a meaning synonym!"
+        reading_synonym_kana = "kana"
+        reading_synonym_character = "character"
+
+        MeaningSynonym.objects.create(review=self.review, text=meaning_synonym)
+        AnswerSynonym.objects.create(review=self.review, kana=reading_synonym_kana, character=reading_synonym_character)
+
+
+        self.review.refresh_from_db()
+        assert(len(self.review.meaning_synonyms.all()) > 0)
+        assert(len(self.review.reading_synonyms.all()) > 0)
+        response = self.client.get(reverse("api:review-detail", args=(self.review.id,)))
+        data = response.data
+        assert(data['meaning_synonyms'][0]['text'] == meaning_synonym)
+        assert(data['reading_synonyms'][0]['kana'] == reading_synonym_kana)
+        assert(data['reading_synonyms'][0]['character'] == reading_synonym_character)
+
+        response = self.client.get(reverse("api:review-current"))
+        data = response.data
+        assert(data['results'][0]['meaning_synonyms'][0]['text'] == meaning_synonym)
+        assert(data['results'][0]['reading_synonyms'][0]['character'] == reading_synonym_character)
+        assert(data['results'][0]['reading_synonyms'][0]['kana'] == reading_synonym_kana)
+
 
 
     def test_get_vocab_by_kanji_correctly_fails_on_duplicate_kanji(self):

@@ -252,25 +252,25 @@ class UserSpecific(models.Model):
             return False
 
     def get_all_readings(self):
-        return list(chain(self.vocabulary.readings.all(), self.answer_synonyms.all()))
+        return list(chain(self.vocabulary.readings.all(), self.reading_synonyms.all()))
 
     def can_be_managed_by(self, user):
         return self.user == user or user.is_superuser
 
     def synonyms_list(self):
-        return [synonym.text for synonym in self.meaningsynonym_set.all()]
+        return [synonym.text for synonym in self.meaning_synonyms.all()]
 
     def synonyms_string(self):
-        return ", ".join([synonym.text for synonym in self.meaningsynonym_set.all()])
+        return ", ".join([synonym.text for synonym in self.meaning_synonyms.all()])
 
     def remove_synonym(self, text):
         MeaningSynonym.objects.get(text=text).delete()
 
-    def answer_synonyms_list(self):
-        return [synonym.kana for synonym in self.answer_synonyms.all()]
+    def reading_synonyms_list(self):
+        return [synonym.kana for synonym in self.reading_synonyms.all()]
 
     def add_answer_synonym(self, kana, character):
-        synonym, created = self.answer_synonyms.get_or_create(kana=kana, character=character)
+        synonym, created = self.reading_synonyms.get_or_create(kana=kana, character=character)
         return synonym, created
 
     def add_meaning_synonym(self, text):
@@ -324,7 +324,7 @@ class UserSpecific(models.Model):
 class AnswerSynonym(models.Model):
     character = models.CharField(max_length=255, null=True)
     kana = models.CharField(max_length=255, null=False)
-    review = models.ForeignKey(UserSpecific, related_name="answer_synonyms", null=True)
+    review = models.ForeignKey(UserSpecific,related_name='reading_synonyms', null=True)
 
     class Meta:
         unique_together = ('character', 'kana', 'review')
@@ -343,7 +343,7 @@ class AnswerSynonym(models.Model):
 
 class MeaningSynonym(models.Model):
     text = models.CharField(max_length=255, blank=False, null=False)
-    review = models.ForeignKey(UserSpecific, null=True)
+    review = models.ForeignKey(UserSpecific, related_name="meaning_synonyms", null=True)
 
     def __str__(self):
         return self.text

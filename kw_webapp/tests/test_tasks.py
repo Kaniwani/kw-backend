@@ -336,7 +336,7 @@ class TestTasks(TestCase):
 
         # Should have smashed together all the synonyms too.
         self.assertEqual(len(new_review.synonyms_list()), 2)
-        self.assertEqual(len(new_review.answer_synonyms_list()), 2)
+        self.assertEqual(len(new_review.reading_synonyms.all()), 2)
 
         second_users_reviews = UserSpecific.objects.filter(user=user2)
         self.assertEqual(second_users_reviews.count(), 1)

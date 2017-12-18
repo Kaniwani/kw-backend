@@ -23,7 +23,7 @@ class TestModels(TestCase):
         self.user.save()
         self.vocabulary = create_vocab("cat")
         self.review = create_userspecific(self.vocabulary, self.user)
-        self.review.meaningsynonym_set.get_or_create(text="minou")
+        self.review.meaning_synonyms.get_or_create(text="minou")
 
         # default state of a test is a user that has a single review, and the review has a single synonym added.
 
@@ -51,8 +51,8 @@ class TestModels(TestCase):
         self.assertNotEqual(before_toggle_hidden, after_toggle_hidden)
 
     def test_adding_synonym_works(self):
-        self.review.meaningsynonym_set.get_or_create(text="une petite chatte")
-        self.assertEqual(2, len(self.review.meaningsynonym_set.all()))
+        self.review.meaning_synonyms.get_or_create(text="une petite chatte")
+        self.assertEqual(2, len(self.review.meaning_synonyms.all()))
 
     def test_removing_synonym_by_lookup_works(self):
         remove_text = "minou"
@@ -64,8 +64,8 @@ class TestModels(TestCase):
         self.assertRaises(MeaningSynonym.DoesNotExist, self.review.remove_synonym, remove_text)
 
     def test_removing_synonym_by_object_works(self):
-        synonym, created = self.review.meaningsynonym_set.get_or_create(text="minou")
-        self.review.meaningsynonym_set.remove(synonym)
+        synonym, created = self.review.meaning_synonyms.get_or_create(text="minou")
+        self.review.meaning_synonyms.remove(synonym)
 
     def test_reading_clean_fails_with_invalid_levels_too_high(self):
         v = create_vocab("cat")
@@ -92,15 +92,15 @@ class TestModels(TestCase):
         self.assertTrue(len(v.available_readings(2)) == 1)
 
     def test_synonym_adding(self):
-        self.review.meaningsynonym_set.get_or_create(text="kitty")
+        self.review.meaning_synonyms.get_or_create(text="kitty")
 
         self.assertIn("kitty", self.review.synonyms_string())
 
     def test_get_all_readings_returns_original_and_added_readings(self):
         self.vocabulary.readings.create(kana="what", character="ars", level=5)
-        self.review.answer_synonyms.create(kana="shwoop", character="fwoop")
+        self.review.reading_synonyms.create(kana="shwoop", character="fwoop")
 
-        expected = list(chain(self.vocabulary.readings.all(), self.review.answer_synonyms.all()))
+        expected = list(chain(self.vocabulary.readings.all(), self.review.reading_synonyms.all()))
 
         self.assertListEqual(expected, self.review.get_all_readings())
 
