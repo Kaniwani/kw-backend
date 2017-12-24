@@ -150,10 +150,6 @@ CELERY_BEAT_SCHEDULE = {
     'update_users_unlocked_vocab': {
         'task': 'kw_webapp.tasks.sync_all_users_to_wk',
         'schedule': timedelta(hours=12),
-    },
-    'sync_vocab_db_with_wk': {
-        'task': 'kw_webapp.tasks.repopulate',
-        'schedule': timedelta(hours=3)
     }
 }
 

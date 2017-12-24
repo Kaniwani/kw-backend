@@ -369,13 +369,13 @@ class ReviewSerializer(serializers.ModelSerializer):
 
         read_only_fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak',
                             'user', 'needs_review', 'last_studied',
-                            'unlock_date', 'wanikani_srs',
+                            'unlock_date', 'wanikani_srs', 'reading_synonyms', 'meaning_synonyms',
                             'wanikani_srs_numeric', 'wanikani_burned', 'burned', 'critical')
 
 
 class StubbedReviewSerializer(ReviewSerializer):
     class Meta(ReviewSerializer.Meta):
-        fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak', 'notes', 'answer_synonyms', 'meaning_synonyms')
+        fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak', 'notes', 'reading_synonyms', 'meaning_synonyms')
 
 class LevelSerializer(serializers.Serializer):
     level = serializers.IntegerField(read_only=True)

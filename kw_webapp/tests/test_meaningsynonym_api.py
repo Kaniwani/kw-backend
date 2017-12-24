@@ -73,7 +73,7 @@ class TestMeaningSynonymApi(APITestCase):
 
         # Make sure that the sneaky user CANNOT read it.
         self.client.force_login(sneaky_user)
-        synonym_id = self.review.meaningsynonym_set.first().id
+        synonym_id = self.review.meaning_synonyms.first().id
         response = self.client.get(reverse("api:meaning-synonym-detail", args=(synonym_id,)))
         self.assertEqual(response.status_code, 404)
 

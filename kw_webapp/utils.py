@@ -8,9 +8,9 @@ from rest_framework.authtoken.models import Token
 
 from kw_webapp import constants
 from kw_webapp.models import UserSpecific, Profile, Reading, Tag, Vocabulary, MeaningSynonym, AnswerSynonym, \
-    PartOfSpeech, Level
+    PartOfSpeech, Level, logger
 from kw_webapp.tasks import create_new_vocabulary, \
-    has_multiple_kanji
+    has_multiple_kanji, import_vocabulary_from_json
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.tasks import unlock_eligible_vocab_from_levels
 from kw_webapp.tests.utils import create_userspecific, create_review_for_specific_time
@@ -81,6 +81,8 @@ def one_time_merge_level(level, user=None):
             print("Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(found_vocabulary.count(),
                                                                                             vocabulary_json['meaning']))
             handle_merger(vocabulary_json, found_vocabulary)
+        elif found_vocabulary.count() == 0:
+            create_new_vocabulary(vocabulary_json)
         else:
             print("No conflict, but meaning has changed. Changing meaning!")
             to_be_edited = found_vocabulary[0]
@@ -338,3 +340,54 @@ def copy_review_data(new_review, old_review):
 def one_time_orphaned_level_clear():
         levels = Level.objects.filter(profile=None)
         levels.delete()
+
+def repopulate():
+    '''
+    A task that uses my personal API key in order to re-sync the database. Koichi often decides to switch things around
+    on a level-per-level basis, or add synonyms, or change which readings are allowed. This method attempts to synchronize
+    our data sets.
+
+    :return:
+    '''
+    url = "https://www.wanikani.com/api/user/" + constants.API_KEY + "/vocabulary/{}"
+    logger.info("Starting DB Repopulation from WaniKani")
+    for level in range(constants.LEVEL_MIN, constants.LEVEL_MAX + 1):
+        json_data = make_api_call(url.format(level))
+        vocabulary_list = json_data['requested_information']
+        for vocabulary in vocabulary_list:
+            import_vocabulary_from_json(vocabulary)
+
+
+def clear_duplicate_meaning_synonyms_from_reviews():
+    # Fetch all reviews wherein there are duplicate meaning synonyms.
+    reviews = UserSpecific.objects.values('id', 'meaningsynonym__text').annotate(Count('meaningsynonym__text')).filter(meaningsynonym__text__count__gt=1)
+    review_list = list(reviews)
+    review_list = set([review['id'] for review in review_list])
+
+    for review_id in review_list:
+        seen_synonyms = set()
+        synonyms = MeaningSynonym.objects.filter(review=review_id)
+        for synonym in synonyms:
+            if synonym.text in seen_synonyms:
+                print("[{}]Deleted element{}".format(review_id, synonym.text))
+                synonym.delete()
+            else:
+                print("[{}]First time seeing element {}".format(review_id, synonym.text))
+                seen_synonyms.add(synonym.text)
+
+def clear_duplicate_answer_synonyms_from_reviews():
+    # Fetch all reviews wherein there are duplicate meaning synonyms.
+    reviews = UserSpecific.objects.values('id', 'answer_synonyms__kana', 'answer_synonyms__character').annotate(Count('answer_synonyms__kana')).filter(answer_synonyms__kana__count__gt=1)
+    review_list = list(reviews)
+    review_list = set([review['id'] for review in review_list])
+
+    for review_id in review_list:
+        seen_synonyms = set()
+        synonyms = AnswerSynonym.objects.filter(review=review_id)
+        for synonym in synonyms:
+            if synonym.kana + "_" + synonym.character in seen_synonyms:
+                print("[{}]Deleted element: {}".format(review_id, synonym.kana + "_" + synonym.character))
+                synonym.delete()
+            else:
+                print("[{}]First time seeing element: {}".format(review_id, synonym.kana + "_" + synonym.character))
+                seen_synonyms.add(synonym.kana + "_" + synonym.character)

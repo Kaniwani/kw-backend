@@ -61,7 +61,7 @@ class TestViews(TestCase):
 
         self.review.refresh_from_db()
 
-        self.assertListEqual(self.review.answer_synonyms_list(), [])
+        self.assertListEqual(self.review.reading_synonyms_list(), [])
 
     def test_early_termination_redirects_to_home_when_no_reviews_were_done(self):
 
