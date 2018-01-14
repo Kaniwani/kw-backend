@@ -462,6 +462,14 @@ class TestProfileApi(APITestCase):
         assert(data['results'][0]['reading_synonyms'][0]['character'] == reading_synonym_character)
         assert(data['results'][0]['reading_synonyms'][0]['kana'] == reading_synonym_kana)
 
+
+
+        response = self.client.get(reverse("api:review-current"))
+        data = response.data
+        assert(data['results'][0]['meaning_synonyms'][0]['text'] == meaning_synonym)
+        assert(data['results'][0]['reading_synonyms'][0]['character'] == reading_synonym_character)
+        assert(data['results'][0]['reading_synonyms'][0]['kana'] == reading_synonym_kana)
+
     def test_get_vocab_by_kanji_correctly_fails_on_duplicate_kanji(self):
         v = create_vocab("my vocab")
         create_reading(v, "kana_1", "kanji", 5)
