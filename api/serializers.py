@@ -19,9 +19,10 @@ class ReportCountSerializer(serializers.BaseSerializer):
     """
     Serializer which aggregates report counts by vocabulary.
     """
-    def to_representation(self, obj):
-        return Report.objects.values("vocabulary", "vocabulary__meaning").annotate(report_count=Count("vocabulary")).order_by("-report_count")
 
+    def to_representation(self, obj):
+        return Report.objects.values("vocabulary", "vocabulary__meaning").annotate(
+            report_count=Count("vocabulary")).order_by("-report_count")
 
 
 class SrsCountSerializer(serializers.BaseSerializer):
@@ -29,12 +30,15 @@ class SrsCountSerializer(serializers.BaseSerializer):
     Serializer for simply showing SRS counts, e.g., how many apprentice items a user has,
     how many guru, etc.
     """
+
     def to_representation(self, user):
         all_reviews = get_users_reviews(user)
         ordered_srs_counts = OrderedDict.fromkeys([level.name.lower() for level in KwSrsLevel])
         for level in KwSrsLevel:
-            ordered_srs_counts[level.name.lower()] = all_reviews.filter(streak__in=KANIWANI_SRS_LEVELS[level.name]).count()
+            ordered_srs_counts[level.name.lower()] = all_reviews.filter(
+                streak__in=KANIWANI_SRS_LEVELS[level.name]).count()
         return ordered_srs_counts
+
 
 class SimpleUpcomingReviewSerializer(serializers.BaseSerializer):
     """
@@ -44,10 +48,10 @@ class SimpleUpcomingReviewSerializer(serializers.BaseSerializer):
     def to_representation(self, user):
         now = timezone.now()
         one_day_from_now = now + datetime.timedelta(hours=24)
-        reviews = get_users_reviews(user).filter(next_review_date__range=(now, one_day_from_now))\
+        reviews = get_users_reviews(user).filter(next_review_date__range=(now, one_day_from_now)) \
             .annotate(hour=TruncHour('next_review_date', tzinfo=timezone.utc)) \
-            .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc))\
-            .values("date", "hour")\
+            .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc)) \
+            .values("date", "hour") \
             .annotate(review_count=Count('id')).order_by("date", "hour")
 
         expected_hour = now.hour
@@ -62,6 +66,7 @@ class SimpleUpcomingReviewSerializer(serializers.BaseSerializer):
         real_retval = [value for key, value in retval.items()]
         return real_retval
 
+
 class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
     """
     Serializer for counting reviews on an hourly basis for the next 24 hours
@@ -71,10 +76,10 @@ class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
         now = timezone.now()
         one_day_from_now = now + datetime.timedelta(hours=24)
 
-        reviews = get_users_reviews(user).filter(next_review_date__range=(now, one_day_from_now))\
+        reviews = get_users_reviews(user).filter(next_review_date__range=(now, one_day_from_now)) \
             .annotate(hour=TruncHour('next_review_date', tzinfo=timezone.utc)) \
-            .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc))\
-            .values("streak", "date", "hour")\
+            .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc)) \
+            .values("streak", "date", "hour") \
             .annotate(review_count=Count('id')).order_by("date", "hour")
         expected_hour = now.hour
         hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
@@ -92,7 +97,7 @@ class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
             srs_level = STREAK_TO_SRS_LEVEL_MAP_KW[streak].name
             retval[expected_hour][srs_level] += review["review_count"]
 
-        real_retval = [[count for srs_level, count in hourly_count.items()]for hour, hourly_count in retval.items()]
+        real_retval = [[count for srs_level, count in hourly_count.items()] for hour, hourly_count in retval.items()]
         return real_retval
 
 
@@ -105,7 +110,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     reviews_within_hour_count = serializers.SerializerMethodField()
     reviews_within_day_count = serializers.SerializerMethodField()
     srs_counts = SrsCountSerializer(source='user', many=False, read_only=True)
-    #upcoming_reviews = DetailedUpcomingReviewCountSerializer(source='user', many=False, read_only=True)
+    # upcoming_reviews = DetailedUpcomingReviewCountSerializer(source='user', many=False, read_only=True)
     upcoming_reviews = SimpleUpcomingReviewSerializer(source='user', many=False, read_only=True)
     join_date = serializers.SerializerMethodField()
 
@@ -117,7 +122,7 @@ class ProfileSerializer(serializers.ModelSerializer):
                   'reviews_within_day_count', 'reviews_within_hour_count', 'srs_counts',
                   'minimum_wk_srs_level_to_review', 'upcoming_reviews', 'next_review_date', 'join_date')
 
-        read_only_fields = ('id', 'name', 'api_valid',  'level',
+        read_only_fields = ('id', 'name', 'api_valid', 'level',
                             'unlocked_levels', 'vacation_date', 'reviews_within_day_count',
                             'reviews_within_hour_count', 'reviews_count', 'lessons_count', 'srs_counts',
                             'next_review_date', 'last_wanikani_sync_date', 'join_date')
@@ -269,8 +274,6 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
 
-
-
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
@@ -292,19 +295,32 @@ class VocabularySerializer(serializers.ModelSerializer):
         # If this is part of the review response, simply omit the review field, reducing DB calls.
         if 'nested_in_review' in self.context:
             self.fields.pop('review')
+            self.fields.pop('is_reviewable')
 
     readings = ReadingSerializer(many=True, read_only=True)
     review = serializers.SerializerMethodField()
+    is_reviewable = serializers.SerializerMethodField()
 
     class Meta:
         model = Vocabulary
-        fields = ('id', 'meaning', 'readings', 'review')
+        fields = ('id', 'meaning', 'readings', 'review', 'is_reviewable')
 
     # Grab the ID of the related review for this particular user.
     def get_review(self, obj):
         if 'request' in self.context:
             try:
                 return UserSpecific.objects.get(user=self.context['request'].user, vocabulary=obj).id
+            except UserSpecific.DoesNotExist:
+                return None
+        return None
+
+    def get_is_reviewable(self, obj):
+        if 'request' in self.context:
+            try:
+                minimum_level_to_review = self.context['request'].user.profile.get_minimum_wk_srs_threshold_for_review()
+                return UserSpecific.objects.filter(user=self.context['request'].user,
+                                                   vocabulary=obj,
+                                                   wanikani_srs_numeric__gte=minimum_level_to_review).count() > 0
             except UserSpecific.DoesNotExist:
                 return None
         return None
@@ -376,6 +392,7 @@ class ReviewSerializer(serializers.ModelSerializer):
 class StubbedReviewSerializer(ReviewSerializer):
     class Meta(ReviewSerializer.Meta):
         fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak', 'notes', 'reading_synonyms', 'meaning_synonyms')
+
 
 class LevelSerializer(serializers.Serializer):
     level = serializers.IntegerField(read_only=True)
