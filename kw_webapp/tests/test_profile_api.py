@@ -464,6 +464,12 @@ class TestProfileApi(APITestCase):
 
 
 
+        response = self.client.get(reverse("api:review-current"))
+        data = response.data
+        assert(data['results'][0]['meaning_synonyms'][0]['text'] == meaning_synonym)
+        assert(data['results'][0]['reading_synonyms'][0]['character'] == reading_synonym_character)
+        assert(data['results'][0]['reading_synonyms'][0]['kana'] == reading_synonym_kana)
+
     def test_get_vocab_by_kanji_correctly_fails_on_duplicate_kanji(self):
         v = create_vocab("my vocab")
         create_reading(v, "kana_1", "kanji", 5)
@@ -471,3 +477,23 @@ class TestProfileApi(APITestCase):
         create_reading(v2, "kana_2", "kanji", 5)
 
         self.assertRaises(Vocabulary.MultipleObjectsReturned, get_vocab_by_kanji, "kanji")
+
+    def test_fetching_vocabulary_shows_is_reviable_field_on_associated_vocabulary(self):
+        self.client.force_login(self.user)
+
+        self.review.wanikani_srs_numeric = 1
+        self.review.save()
+
+        wk_burned_review = create_userspecific(create_vocab("test"), self.user)
+        wk_burned_review.wanikani_srs_numeric = 9
+        wk_burned_review.save()
+
+        self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.BURNED.name
+        self.user.profile.save()
+        # TODO set my default vocab review to burned.
+        # TODO ensure that the `is_reviewable` is false on first, true on second.
+        response = self.client.get(reverse("api:vocabulary-list"))
+        data = response.data
+
+        assert(data['results'][0]['is_reviewable'] is False)
+        assert(data['results'][1]['is_reviewable'] is True)
