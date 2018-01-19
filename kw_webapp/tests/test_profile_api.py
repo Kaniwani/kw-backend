@@ -11,7 +11,7 @@ from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.models import Level, Report, Announcement, Vocabulary, MeaningSynonym, AnswerSynonym
-from kw_webapp.tasks import get_vocab_by_kanji
+from kw_webapp.tasks import get_vocab_by_kanji, sync_with_wk
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time
 from kw_webapp.utils import one_time_orphaned_level_clear
@@ -509,3 +509,15 @@ class TestProfileApi(APITestCase):
 
         assert(data['results'][0]['is_reviewable'] is False)
         assert(data['results'][1]['is_reviewable'] is True)
+
+    def test_users_with_invalid_api_keys_correctly_get_their_flag_changed_in_profile(self):
+        self.user.profile.api_key = "ABC123"
+        self.user.profile.api_valid = True
+        self.user.profile.save()
+
+        sync_with_wk(self.user.id)
+
+        self.user.profile.refresh_from_db()
+        self.assertFalse(self.user.profile.api_valid)
+
+

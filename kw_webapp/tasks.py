@@ -273,7 +273,7 @@ def sync_with_wk(user_id, full_sync=False):
     user = User.objects.get(pk=user_id)
     logger.info("About to begin sync for user {}.".format(user.username))
     profile_sync_succeeded = sync_user_profile_with_wk(user)
-    if user.profile.api_valid:
+    if profile_sync_succeeded:
         if not full_sync:
             new_review_count, new_synonym_count = sync_recent_unlocked_vocab_with_wk(user)
         else:
@@ -281,7 +281,7 @@ def sync_with_wk(user_id, full_sync=False):
 
         return profile_sync_succeeded, new_review_count, new_synonym_count
     else:
-        logger.warn(
+        logger.warning(
             "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed ")
 
 
