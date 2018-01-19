@@ -1,1 +1,0 @@
-An incoming message from Kaniwani user {{user.username}}

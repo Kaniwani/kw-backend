@@ -302,9 +302,6 @@ LINEAGE_ANCESTOR_PHRASE = "-active"
 
 STATIC_URL = '/static/'
 STATIC_ROOT = "/var/www/kaniwani.com/static"
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "_front-end/dist/assets"),
-)
 
 INTERNAL_IPS = ('127.0.0.1',)
 
