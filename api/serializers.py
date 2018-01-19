@@ -115,7 +115,9 @@ class ProfileSerializer(serializers.ModelSerializer):
                   'level', 'follow_me', 'auto_advance_on_success', 'unlocked_levels', 'last_wanikani_sync_date',
                   'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'on_vacation', 'vacation_date',
                   'reviews_within_day_count', 'reviews_within_hour_count', 'srs_counts',
-                  'minimum_wk_srs_level_to_review', 'upcoming_reviews', 'next_review_date', 'join_date')
+                  'minimum_wk_srs_level_to_review', 'upcoming_reviews', 'next_review_date', 'join_date',
+                  'auto_advance_on_success_delay_milliseconds', 'use_eijiro_pro_link', 'show_kanji_svg_stroke_order',
+                  'show_kanji_svg_grid', 'kanji_svg_draw_speed')
 
         read_only_fields = ('id', 'name', 'api_valid',  'level',
                             'unlocked_levels', 'vacation_date', 'reviews_within_day_count',

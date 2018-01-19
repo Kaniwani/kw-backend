@@ -34,6 +34,18 @@ class TestProfileApi(APITestCase):
         self.assertEqual(response.data['profile']['reviews_within_hour_count'], 0)
         self.assertEqual(response.data['profile']['reviews_within_day_count'], 1)
 
+    def test_profile_contains_expected_fields(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("api:user-me"))
+        data = response.data['profile']
+
+        # Ensure new 2.0 fields are all there
+        self.assertIsNotNone(data['auto_advance_on_success_delay_milliseconds'])
+        self.assertIsNotNone(data['use_eijiro_pro_link'])
+        self.assertIsNotNone(data['show_kanji_svg_stroke_order'])
+        self.assertIsNotNone(data['show_kanji_svg_grid'])
+        self.assertIsNotNone(data['kanji_svg_draw_speed'])
+
     def test_preprocessor_future_reviews_counts_correctly_provides_same_day_review_count(self):
         create_review_for_specific_time(self.user, "some word", timezone.now() + timedelta(minutes=30))
         create_review_for_specific_time(self.user, "some word", timezone.now() + timedelta(hours=12))

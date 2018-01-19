@@ -58,15 +58,27 @@ class Profile(models.Model):
         MinValueValidator(constants.LEVEL_MIN),
         MaxValueValidator(constants.LEVEL_MAX),
     ])
+    minimum_wk_srs_level_to_review = models.CharField(max_length=20, choices=WkSrsLevel.choices(),
+                                                      default=WkSrsLevel.APPRENTICE.name)
 
     # General user-changeable settings
     unlocked_levels = models.ManyToManyField(Level)
     follow_me = models.BooleanField(default=True)
+    show_kanji_svg_stroke_order = models.BooleanField(default=False)
+    show_kanji_svg_grid = models.BooleanField(default=False)
+    kanji_svg_draw_speed = models.PositiveIntegerField(default=1, validators=[
+        MinValueValidator(constants.MIN_SVG_DRAW_SPEED),
+        MaxValueValidator(constants.MAX_SVG_DRAW_SPEED)
+    ])
+
+    # On Success/Failure of review
     auto_advance_on_success = models.BooleanField(default=False)
+    auto_advance_on_success_delay_milliseconds = models.PositiveIntegerField(default=1000)
     auto_expand_answer_on_success = models.BooleanField(default=False)
     auto_expand_answer_on_failure = models.BooleanField(default=False)
-    minimum_wk_srs_level_to_review = models.CharField(max_length=20, choices=WkSrsLevel.choices(),
-                                                      default=WkSrsLevel.APPRENTICE.name)
+
+    # External Site settings
+    use_eijiro_pro_link = models.BooleanField(default=False)
 
     # Vacation Settings
     on_vacation = models.BooleanField(default=False)
