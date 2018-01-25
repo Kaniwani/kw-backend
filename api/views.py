@@ -163,12 +163,12 @@ class ReportViewSet(viewsets.ModelViewSet):
         try:
             vocabulary_id = request.data["vocabulary"]
             existing_report = Report.objects.get(vocabulary__id=vocabulary_id, created_by=request.user)
-            serializer = ReportSerializer(existing_report, data=request.data.dict(), partial=True)
+            serializer = ReportSerializer(existing_report, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
         except Report.DoesNotExist:
-            serializer = ReportSerializer(data=request.data.dict())
+            serializer = ReportSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save(created_by=self.request.user)
             return Response(serializer.data)
@@ -341,7 +341,7 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         if self.request.user.is_staff:
             return User.objects.all()
 
-        return User.objects.get(pk=self.request.user.id)
+        return User.objects.filter(pk=self.request.user.id)
 
     @list_route(methods=["GET", "PUT"])
     def me(self, request):
