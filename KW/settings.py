@@ -32,6 +32,8 @@ MY_TIME_ZONE = 'America/New_York'
 logging_class = 'logging.StreamHandler'
 logging_level = 'ERROR' if secrets.DEPLOY else 'DEBUG'
 
+# This allows the /docs/ endpoints to correctly build urls.
+USE_X_FORWARDED_HOST = True
 
 LOGGING = {
     'version': 1,
@@ -182,9 +184,6 @@ CORS_ALLOW_CREDENTIALS = True
 LOGIN_URL = reverse_lazy("login")
 LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
 
-
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -195,14 +194,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_celery_beat',
-    'crispy_forms',
     'rest_framework',
-    'lineage',
     'kw_webapp.apps.KaniwaniConfig',
     'debug_toolbar',
     'rest_framework.authtoken',
     'corsheaders',
-    'djoser'
+    'djoser',
+    'raven.contrib.django.raven_compat'
 )
 
 MIDDLEWARE = [
@@ -284,9 +282,6 @@ elif secrets.DB_TYPE == "sqlite":
         }
     }
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 USE_I18N = True
@@ -294,8 +289,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-LINEAGE_ANCESTOR_PHRASE = "-active"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -340,4 +333,9 @@ DJOSER = {
         "user_registration": 'api.serializers.RegistrationSerializer'
     },
     'PASSWORD_RESET_CONFIRM_URL': "/api/v1/auth/password-reset/{uid}/{token}",
+}
+
+RAVEN = {
+    'dsn': secrets.RAVEN_DSN,
+    'release':
 }
