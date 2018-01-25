@@ -171,9 +171,6 @@ class Report(models.Model):
                                                                         self.created_by_id,
                                                                         self.created_at)
 
-    def __unicode__(self):
-        return self.__str__()
-
 
 class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
