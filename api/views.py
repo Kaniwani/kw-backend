@@ -341,7 +341,7 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         if self.request.user.is_staff:
             return User.objects.all()
 
-        return User.objects.get(pk=self.request.user.id)
+        return User.objects.filter(pk=self.request.user.id)
 
     @list_route(methods=["GET", "PUT"])
     def me(self, request):

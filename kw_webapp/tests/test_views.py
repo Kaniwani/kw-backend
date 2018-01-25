@@ -2,10 +2,10 @@ from datetime import timedelta
 from unittest import mock
 
 import responses
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseForbidden
 from django.test import TestCase, Client
 from django.utils import timezone
+from rest_framework.reverse import reverse
 
 from kw_webapp.tasks import build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
@@ -42,7 +42,7 @@ class TestViews(TestCase):
                       status=200,
                       content_type='application/json')
 
-        response = self.client.get(reverse("kw:sync"), data={"full_sync": "true"})
+        response = self.client.post(reverse("api:user-sync"), data={"full_sync": "true"})
 
         correct_response = {
             "new_review_count": 0,
@@ -57,16 +57,15 @@ class TestViews(TestCase):
         dummy_characters = "somechar"
         synonym, created = self.review.add_answer_synonym(dummy_kana, dummy_characters)
 
-        self.client.delete(reverse("api:reading-synonym", args=(synonym.id)))
+        self.client.delete(reverse("api:reading-synonym-detail", args=(synonym.id,)))
 
         self.review.refresh_from_db()
 
         self.assertListEqual(self.review.reading_synonyms_list(), [])
 
-
     def test_reviewing_that_does_not_need_to_be_reviewed_fails(self):
         self.review.needs_review = False
         self.review.save()
 
-        response = self.client.post(reverse("kw:record_answer"),data={'user_correct': "true", 'user_specific_id': self.review.id, 'wrong_before': 'false'})
+        response = self.client.post(reverse("api:review-correct", args=(self.review.id,)), data={'wrong_before': 'false'})
         self.assertTrue(isinstance(response, HttpResponseForbidden))

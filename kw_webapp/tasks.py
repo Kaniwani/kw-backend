@@ -87,6 +87,7 @@ def alternative_all_srs(user=None):
     logger.info("Finished SRS run for {}.".format(user or "all users"))
     return affected_count
 
+
 def get_vocab_by_kanji(kanji):
     v = Vocabulary.objects.filter(readings__character=kanji).distinct()
     number_of_vocabulary = v.count()
