@@ -4,19 +4,19 @@ from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http import HttpResponseForbidden
-from django.test import Client, TestCase
+from django.test import Client
 from django.utils import timezone
+from rest_framework.reverse import reverse
+from rest_framework.test import APITestCase
 
 from kw_webapp import constants
-from kw_webapp.constants import WkSrsLevel
 from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag
 from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
 
 
-class TestModels(TestCase):
+class TestModels(APITestCase):
     def setUp(self):
-        self.client = Client()
         self.user = create_user("Tadgh")
         self.user.set_password("password")
         create_profile(self.user, "any key", 1)
@@ -27,15 +27,16 @@ class TestModels(TestCase):
 
         # default state of a test is a user that has a single review, and the review has a single synonym added.
 
-    def test_toggling_review_hidden_ownershp_fails_on_wrong_user(self):
+    def test_toggling_review_hidden_ownership_fails_on_wrong_user(self):
         user2 = create_user("eve")
         user2.set_password("im_a_hacker")
         create_profile(user2, "any_key", 1)
         user2.save()
         relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id
-        if self.client.login(username="eve", password="im_a_hacker"):
-            response = self.client.post(path="/kw/togglevocab/", data={"review_id": relevant_review_id})
-            self.assertIsInstance(response, HttpResponseForbidden)
+
+        self.client.force_login(user2)
+        response = self.client.post(reverse("api:review-hide", args=(relevant_review_id,)))
+        self.assertIsInstance(response, HttpResponseForbidden)
 
     def test_toggling_review_hidden_ownership_works(self):
         relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id

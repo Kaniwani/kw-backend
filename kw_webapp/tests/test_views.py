@@ -57,17 +57,12 @@ class TestViews(TestCase):
         dummy_characters = "somechar"
         synonym, created = self.review.add_answer_synonym(dummy_kana, dummy_characters)
 
-        self.client.post(reverse("kw:remove_synonym"), data={"synonym_id": synonym.id})
+        self.client.delete(reverse("api:reading-synonym", args=(synonym.id)))
 
         self.review.refresh_from_db()
 
         self.assertListEqual(self.review.reading_synonyms_list(), [])
 
-    def test_early_termination_redirects_to_home_when_no_reviews_were_done(self):
-
-        response = self.client.post(reverse("kw:summary"), follow=True)
-
-        self.assertRedirects(response, reverse("kw:home"))
 
     def test_reviewing_that_does_not_need_to_be_reviewed_fails(self):
         self.review.needs_review = False

@@ -157,6 +157,7 @@ class PartOfSpeech(models.Model):
     def __str__(self):
         return str(self.part)
 
+
 class Report(models.Model):
     created_by = models.ForeignKey(User)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -164,10 +165,10 @@ class Report(models.Model):
     reason = models.CharField(max_length=1000)
 
     def __str__(self):
-        return "Issue with {}, reported by {} at {}. Reason: {}".format(self.vocabulary.meaning,
-                                                                        self.created_by.username,
-                                                                        self.created_at,
-                                                                        self.reason)
+        return "Report: vocabulary [{}]: {}, by user [{}] at {}".format(self.vocabulary_id, self.reason, self.created_by_id, self.created_at)
+
+    def __unicode__(self):
+        return self.__str__()
 
 class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
