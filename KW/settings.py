@@ -13,6 +13,8 @@ from datetime import timedelta
 
 import os
 from collections import namedtuple
+
+import raven
 from django.core.urlresolvers import reverse_lazy
 
 try:
@@ -335,7 +337,7 @@ DJOSER = {
     'PASSWORD_RESET_CONFIRM_URL': "/api/v1/auth/password-reset/{uid}/{token}",
 }
 
-RAVEN = {
+RAVEN_CONFIG = {
     'dsn': secrets.RAVEN_DSN,
-    'release':
+    'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
 }
