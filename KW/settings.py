@@ -54,80 +54,33 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'views': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
             'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "views.log"),
+            'class': 'logging.StreamHandler'
         },
-        'models': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
+        'sentry': {
             'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "models.log"),
+            'level': 'WARNING',
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler'
         },
-        'errors': {
-            'level': 'ERROR',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "errors.log"),
-        },
-        'tasks': {
+        'file': {
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename':"./logs/kaniwani.log",
             'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "tasks.log"),
-        },
-        'sporadic_tasks': {
-            'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "sporadic_tasks.log"),
-        },
-        'review_data': {
-            'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'time_only',
-            'filename': os.path.join(BASE_DIR, "logs", "review_data.log"),
+            'backupCount': '30',
+
         }
     },
     'loggers': {
-        'kw.views': {
-            'handlers': ['views', 'errors', 'console'],
+        # ROOT LOGGER
+        '': {
             'level': 'DEBUG',
-            'propagate': True,
+            'handlers': ['console', 'sentry']
         },
-        'kw.models': {
-            'handlers': ['models', 'errors', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'kw.tasks': {
-            'handlers': ['tasks', 'errors', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'kw.db_repopulator': {
-            'handlers': ['sporadic_tasks', 'errors', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'kw.review_data': {
-            'handlers':['review_data', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
+        'api': {
+            'level': 'INFO',
+            'handlers': ['console', 'file', 'sentry']
+        }
     },
 }
 
