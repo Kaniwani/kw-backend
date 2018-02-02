@@ -24,7 +24,7 @@ from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_fro
     get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
     user_begins_vacation, follow_user, reset_user, get_users_lessons
 
-
+print("NAME IS :"  + __name__)
 class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
                                 mixins.UpdateModelMixin,
                                 mixins.RetrieveModelMixin,
