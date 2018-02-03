@@ -27,6 +27,7 @@ except ImportError:
     secrets.SECRET_KEY = "samplekey"
     secrets.EMAIL_HOST_PASSWORD = "nope"
     secrets.EMAIL_HOST_USER = "dontmatter@whatever.com"
+    secrets.RAVEN_DSN = "whatever"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 MY_TIME_ZONE = 'America/New_York'
@@ -117,17 +118,13 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
-    #'all_user_srs_every_hour': {
-    #    'task': 'kw_webapp.tasks.all_srs',
-    #    'schedule': timedelta(minutes=15)
-    #},
-    #'update_users_unlocked_vocab': {
-    #    'task': 'kw_webapp.tasks.sync_all_users_to_wk',
-    #    'schedule': timedelta(hours=12),
-    #},
-    'do-test': {
-        'task': 'kw_webapp.tasks.test',
-        'schedule': timedelta(minutes=1)
+    'all_user_srs_every_hour': {
+        'task': 'kw_webapp.tasks.all_srs',
+        'schedule': timedelta(minutes=15)
+    },
+    'update_users_unlocked_vocab': {
+        'task': 'kw_webapp.tasks.sync_all_users_to_wk',
+        'schedule': timedelta(hours=12),
     }
 }
 
@@ -308,4 +305,4 @@ DJOSER = {
 RAVEN_CONFIG = {
     'dsn': secrets.RAVEN_DSN,
     'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
-}
+} if not DEBUG else {}
