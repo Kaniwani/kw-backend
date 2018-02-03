@@ -161,16 +161,16 @@ LOGIN_URL = reverse_lazy("login")
 LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
 
 INSTALLED_APPS = (
+    'django.contrib.contenttypes',
+    'kw_webapp.apps.KaniwaniConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.humanize',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'kw_webapp.apps.KaniwaniConfig',
     'debug_toolbar',
     'rest_framework.authtoken',
     'corsheaders',

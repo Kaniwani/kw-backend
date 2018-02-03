@@ -128,7 +128,6 @@ def build_API_sync_string_for_user(user):
     return api_call
 
 
-
 def build_API_sync_string_for_user_for_levels(user, levels):
     '''
     Given a user, build a vocabulary request string based on their api key, for a particular level.
