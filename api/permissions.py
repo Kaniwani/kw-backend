@@ -23,5 +23,4 @@ class IsMeOrAdmin(IsAdminUser):
 class IsAuthenticatedOrCreating(IsAuthenticated):
     def has_permission(self, request, view):
         is_authenticated = super().has_permission(request, view)
-        meth = request.method
         return is_authenticated or request.method == 'POST'

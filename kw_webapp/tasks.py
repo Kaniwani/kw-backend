@@ -1,7 +1,6 @@
 from __future__ import absolute_import
-import logging
 
-from celery import shared_task
+from celery import shared_task, task
 from django.contrib.auth.models import User
 from django.db.models import F
 from django.db.models import Min
@@ -14,7 +13,8 @@ from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level, MeaningSy
 from datetime import timedelta, datetime
 from django.utils import timezone
 
-logger = logging.getLogger('kw.tasks')
+import logging
+logger = logging.getLogger(__name__)
 
 
 def past_time(hours_ago):
@@ -38,53 +38,26 @@ def all_srs(user=None):
     :param user: Optional Param, the user to be updated. If left blank, will update all users.
     :return: None
     '''
-    logger.info("Beginning SRS run for {}.".format(user or "all users"))
-    affected_count = 0
-    for streak, srs_timing in constants.SRS_TIMES.items():
-        study_threshold = past_time(srs_timing)
-        if user and not user.profile.on_vacation:
-            review_set = UserSpecific.objects.filter(user=user,
-                                                     last_studied__lte=study_threshold,
-                                                     streak=streak,
-                                                     needs_review=False)
-        else:
-            review_set = UserSpecific.objects.filter(user__profile__on_vacation=False,
-                                                     last_studied__lte=study_threshold,
-                                                     streak=streak,
-                                                     needs_review=False)
-        if review_set.count() > 0:
-            logger.info(
-                "{} has {} reviews for SRS level {}".format((user or "all users"), review_set.count(), streak))
-            affected_count += review_set.update(needs_review=True)
-        else:
-            logger.info("{} has no reviews for SRS level {}".format((user or "all users"), streak))
-
-    logger.info("Finished SRS run for {}.".format(user or "all users"))
-    return affected_count
-
-
-def alternative_all_srs(user=None):
-    logger.info("Beginning Alternative SRS run for {}.".format(user or "all users"))
+    logger.info("Beginning  SRS run for {}.".format(user or "all users"))
     affected_count = 0
     now = timezone.now()
 
-    ## Fetches all reviews with next_review_date greater than or equal to NOW, flips them all to needs_review=True
-    if user and not user.profile.on_vacation:
-        review_set = UserSpecific.objects.filter(user=user,
-                                                 next_review_date__lte=now,
-                                                 needs_review=False)
+    # Fetches all reviews with next_review_date greater than or equal to NOW, flips them all to needs_review=True
+    if user and user.profile.on_vacation:
+        logger.info("Skipping SRS for user {} as they are on vacation as of {}".format(user.username, user.profile.vacation_date))
+        return 0
+
+    if user:
+            review_set = UserSpecific.objects.filter(user=user,
+                                                     next_review_date__lte=now,
+                                                     needs_review=False)
     else:
         review_set = UserSpecific.objects.filter(user__profile__on_vacation=False,
                                                  next_review_date__lte=now,
                                                  needs_review=False)
-    if review_set.count() > 0:
-        logger.info(
-            "{} has {} reviews".format((user or "all users"), review_set.count()))
-        affected_count += review_set.update(needs_review=True)
-    else:
-        logger.info("{} has no reviews".format((user or "all users")))
 
-    logger.info("Finished SRS run for {}.".format(user or "all users"))
+    affected_count += review_set.update(needs_review=True)
+    logger.info("User {} has {} new reviews.".format(user.username if user else "all users", affected_count))
     return affected_count
 
 
@@ -92,7 +65,7 @@ def get_vocab_by_kanji(kanji):
     v = Vocabulary.objects.filter(readings__character=kanji).distinct()
     number_of_vocabulary = v.count()
     if number_of_vocabulary > 1:
-        error = "Found multiple Vocabulary with identical kanji with ids: [{}]/ync".format(", ".join([str(vocab.id) for vocab in v]))
+        error = "Found multiple Vocabulary with identical kanji with ids: [{}]".format(", ".join([str(vocab.id) for vocab in v]))
         logger.error(error)
         raise Vocabulary.MultipleObjectsReturned(error)
     elif number_of_vocabulary == 0:
@@ -442,6 +415,7 @@ def process_single_item_from_wanikani(vocabulary, user):
     review.save()
     return review, created, synonyms_added_count
 
+
 def import_vocabulary_from_json(vocabulary):
     vocab, is_new = get_or_create_vocab_by_json(vocabulary)
     vocab = associate_readings_to_vocab(vocab, vocabulary)
@@ -518,9 +492,6 @@ def sync_all_users_to_wk():
         sync_with_wk.delay(user.id, full_sync=True)
         affected_count += 1
     return affected_count
-
-
-
 
 
 def pull_user_synonyms_by_level(user, level):

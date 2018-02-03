@@ -64,16 +64,23 @@ LOGGING = {
         'sentry': {
             'formatter': 'verbose',
             'level': 'WARNING',
+            'filters': ['require_debug_true'],
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler'
         },
-        'file': {
+        'app_log': {
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename':"./logs/kaniwani.log",
+            'filename': "./logs/kaniwani.log",
             'when': 'midnight',
             'backupCount': '30',
-
-        }
+        },
+        'request_log': {
+            'level': 'INFO',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': "./logs/requests.log",
+            'when': 'midnight',
+            'backupCount': '5',
+        },
     },
     'loggers': {
         # ROOT LOGGER
@@ -81,32 +88,46 @@ LOGGING = {
             'level': 'DEBUG',
             'handlers': ['console', 'sentry']
         },
+        # For anything in the 'api' directory. e.g. api.views, api.tasks, etc.
         'api': {
             'level': 'INFO',
-            'handlers': ['console', 'file', 'sentry']
+            'handlers': ['console', 'app_log', 'sentry']
+        },
+        # Used for drf-tracking which logs all request/response info. For later shipping to ELK
+        'KW.LoggingMiddleware': {
+            'level': 'INFO',
+            'handlers': ['request_log'],
+            'propagate': False
+        },
+        'celery': {
+            'handlers': ['sentry', 'console'],
+            'level': 'INFO',
+            'propagate': False
         }
     },
 }
 
-
 #CELERY SETTINGS
-#CELERY_RESULT_BACKEND = 'amqp'
 CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-#CELERY_BROKER_URL = broker = 'amqp://guest@localhost//'
+CELERYD_HIJACK_ROOT_LOGGER = False
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
-    'all_user_srs_every_hour': {
-        'task': 'kw_webapp.tasks.all_srs',
-        'schedule': timedelta(minutes=15)
-    },
-    'update_users_unlocked_vocab': {
-        'task': 'kw_webapp.tasks.sync_all_users_to_wk',
-        'schedule': timedelta(hours=12),
+    #'all_user_srs_every_hour': {
+    #    'task': 'kw_webapp.tasks.all_srs',
+    #    'schedule': timedelta(minutes=15)
+    #},
+    #'update_users_unlocked_vocab': {
+    #    'task': 'kw_webapp.tasks.sync_all_users_to_wk',
+    #    'schedule': timedelta(hours=12),
+    #},
+    'do-test': {
+        'task': 'kw_webapp.tasks.test',
+        'schedule': timedelta(minutes=1)
     }
 }
 
@@ -148,14 +169,14 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_celery_beat',
     'rest_framework',
     'kw_webapp.apps.KaniwaniConfig',
     'debug_toolbar',
     'rest_framework.authtoken',
     'corsheaders',
     'djoser',
-    'raven.contrib.django.raven_compat'
+    'raven.contrib.django.raven_compat',
+    'rest_framework_tracking'
 )
 
 MIDDLEWARE = [
@@ -215,9 +236,6 @@ EMAIL_USE_TLS = True
 TIME_ZONE = MY_TIME_ZONE
 SITE_ID = 1
 
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
 if secrets.DB_TYPE == "postgres":
     DATABASES = {
         'default': {
@@ -264,10 +282,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 'django.contrib.auth.context_processors.auth',
-                #TODO remove these.
-                "KW.preprocessors.review_count_preprocessor",
                 'django.template.context_processors.request',
-                'django.contrib.messages.context_processors.messages',
             ],
             "debug": DEBUG
         }

@@ -1,5 +1,6 @@
 from contact_form.forms import ContactForm
 
+from KW import settings
 
 class UserContactCustomForm(ContactForm):
 

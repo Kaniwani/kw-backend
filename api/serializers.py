@@ -14,6 +14,9 @@ from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, 
     FrequentlyAskedQuestion, Announcement, Report, MeaningSynonym
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class ReportCountSerializer(serializers.BaseSerializer):
     """

@@ -24,7 +24,12 @@ from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_fro
     get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
     user_begins_vacation, follow_user, reset_user, get_users_lessons
 
-print("NAME IS :"  + __name__)
+
+from KW.LoggingMiddleware import RequestLoggingMixin
+import logging
+logger = logging.getLogger(__name__)
+
+
 class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
                                 mixins.UpdateModelMixin,
                                 mixins.RetrieveModelMixin,
@@ -128,7 +133,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({"locked": removed_count})
 
 
-class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
+class VocabularyViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
     """
     Endpoint for fetching specific vocabulary. You can pass parameter `hyperlink=true` to receive the vocabulary with
     hyperlinked readings (for increased performance), or else they will be inline
@@ -163,11 +168,13 @@ class ReportViewSet(viewsets.ModelViewSet):
         try:
             vocabulary_id = request.data["vocabulary"]
             existing_report = Report.objects.get(vocabulary__id=vocabulary_id, created_by=request.user)
+            logger.info("User" + self.request.user.username + " is updating their report on vocabulary " + request.data["vocabulary"])
             serializer = ReportSerializer(existing_report, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
         except Report.DoesNotExist:
+            logger.info("User" + self.request.user.username + " is reporting vocabulary " + request.data["vocabulary"])
             serializer = ReportSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save(created_by=self.request.user)
@@ -180,6 +187,7 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     @permission_classes(IsAdminUser,)
     def destroy(self, request, *args, **kwargs):
+        logger.info("User " + self.request.user.username + " is deleting report " + s)
         return super().destroy(request, *args, **kwargs)
 
 
