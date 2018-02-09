@@ -566,8 +566,8 @@ class TestProfileApi(APITestCase):
     def test_attempting_to_sync_with_invalid_api_key_sets_correct_profile_value(self):
         # Given
         self.client.force_login(self.user)
-        self.client.profile.api_key = "Some Garbage"
-        self.client.profile.save()
+        self.user.profile.api_key = "Some Garbage"
+        self.user.profile.save()
 
         # When
         self.client.post(reverse("api:user-sync"))
