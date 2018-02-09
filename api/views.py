@@ -397,22 +397,41 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         return Response({"message": "Your account has been reset"})
 
 
-class ProfileViewSet(generics.RetrieveUpdateAPIView, viewsets.GenericViewSet):
+class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
     """
     Profile model view set, for INTERNAL TESTING USE ONLY.
     """
     permission_classes = (IsAuthenticated,)
     serializer_class = ProfileSerializer
-    queryset = Profile.objects.all()
 
-    def put(self, request, *args, **kwargs):
-        return super().put(request, *args, **kwargs)
+    def get_queryset(self):
+        return Profile.objects.filter(user=self.request.user)
 
-    def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+    def perform_update(self, serializer):
 
-    def patch(self, request, *args, **kwargs):
-        return super().patch(request, *args, **kwargs)
+        serializer = self._update_calculated_fields(serializer)
+        instance = serializer.save()
+        return Response(instance)
+
+    def _update_calculated_fields(self, serializer):
+        old_instance = serializer.instance
+        new_instance = serializer.validated_data
+
+        user = old_instance.user
+
+        if not old_instance.follow_me and new_instance['follow_me']:
+            sync_user_profile_with_wk(user)
+
+        if old_instance.on_vacation and not new_instance['on_vacation']:
+            user_returns_from_vacation(user)
+
+        if not old_instance.on_vacation and new_instance['on_vacation']:
+            user_begins_vacation(user)
+
+        if not old_instance.follow_me and new_instance['follow_me']:
+            follow_user(user)
+
+        return serializer
 
 
 class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):

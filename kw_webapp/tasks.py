@@ -284,6 +284,7 @@ def sync_with_wk(user_id, full_sync=False):
     else:
         logger.warning(
             "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed ")
+        return profile_sync_succeeded, 0, 0
 
 
 def create_new_vocabulary(vocabulary_json):
@@ -643,3 +644,4 @@ def reset_reviews(user, reset_to_level=None):
         reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lte=reset_to_level)
 
     reviews_to_delete.delete()
+
