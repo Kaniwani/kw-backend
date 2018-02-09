@@ -520,4 +520,14 @@ class TestProfileApi(APITestCase):
         self.user.profile.refresh_from_db()
         self.assertFalse(self.user.profile.api_valid)
 
+    def test_meaning_contains_checks_for_word_boundaries(self):
+        self.client.force_login(self.user)
+        create_vocab("frog")
+        create_vocab("puppy")
+        create_vocab("up, upwards")
+        create_vocab("not down, up")
+
+        response = self.client.get(reverse("api:vocabulary-list") + "?meaning_contains=up")
+        data = response.data
+        assert(len(data['results']) == 2)
 
