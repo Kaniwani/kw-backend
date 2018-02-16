@@ -16,6 +16,10 @@ from collections import namedtuple
 
 import raven
 from django.core.urlresolvers import reverse_lazy
+from django.utils.log import DEFAULT_LOGGING
+import os
+
+LOGLEVEL = os.environ.get('LOGLEVEL', 'info').upper()
 
 try:
     import KW.secrets as secrets
@@ -40,17 +44,15 @@ USE_X_FORWARDED_HOST = True
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '%(levelname)s---%(asctime)s---%(module)s : %(message)s',
+        'console': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
           },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
+        'request': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s REQUEST: %(message)s'
         },
-        'time_only': {
-            'format': '%(asctime)s---%(message)s'
-        }
+        'django.server': DEFAULT_LOGGING['formatters']['django.server'],
     },
     'filters': {
         'require_debug_true': {
@@ -59,16 +61,17 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'formatter': 'verbose',
+            'formatter': 'console',
             'class': 'logging.StreamHandler'
         },
         'sentry': {
-            'formatter': 'verbose',
+            'formatter': 'console',
             'level': 'WARNING',
             'filters': ['require_debug_true'],
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler'
         },
         'app_log': {
+            'formatter': 'console',
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': "./logs/kaniwani.log",
@@ -76,12 +79,14 @@ LOGGING = {
             'backupCount': '30',
         },
         'request_log': {
+            'formatter': 'request',
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'filename': "./logs/requests.log",
             'when': 'midnight',
             'backupCount': '5',
         },
+        'django.server': DEFAULT_LOGGING['handlers']['django.server'],
     },
     'loggers': {
         # ROOT LOGGER
@@ -91,8 +96,14 @@ LOGGING = {
         },
         # For anything in the 'api' directory. e.g. api.views, api.tasks, etc.
         'api': {
-            'level': 'INFO',
-            'handlers': ['console', 'app_log', 'sentry']
+            'level': LOGLEVEL,
+            'handlers': ['console', 'app_log', 'sentry'],
+            'propagate': False
+        },
+        'kw_webapp': {
+            'level': LOGLEVEL,
+            'handlers': ['console', 'app_log', 'sentry'],
+            'propagate': False
         },
         # Used for drf-tracking which logs all request/response info. For later shipping to ELK
         'KW.LoggingMiddleware': {
@@ -104,11 +115,11 @@ LOGGING = {
             'handlers': ['sentry', 'console'],
             'level': 'INFO',
             'propagate': False
-        }
+        },
+        'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 }
 
-#CELERY SETTINGS
 CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
 CELERYD_HIJACK_ROOT_LOGGER = False
