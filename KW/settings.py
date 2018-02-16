@@ -315,5 +315,6 @@ DJOSER = {
 
 RAVEN_CONFIG = {
     'dsn': secrets.RAVEN_DSN,
-    'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
+    #'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
+    'release': "1"
 } if not DEBUG else {}
