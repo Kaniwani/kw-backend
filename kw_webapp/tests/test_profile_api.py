@@ -531,3 +531,60 @@ class TestProfileApi(APITestCase):
         data = response.data
         assert(len(data['results']) == 2)
 
+    def test_sending_patch_to_profile_correctly_updates_information(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("api:profile-list"))
+        data = response.data
+        id = data['results'][0]['id']
+        self.client.patch(reverse("api:profile-detail", args=(id,)), data={'on_vacation': True}, format='json')
+        self.user.refresh_from_db()
+        self.user.profile.refresh_from_db()
+        assert(self.user.profile.vacation_date is not None)
+
+    def test_sending_put_to_profile_correctly_updates_information(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("api:profile-list"))
+        data = response.data
+        id = data['results'][0]['id']
+        request = data['results'][0]
+        request['on_vacation'] = True
+        response = self.client.put(reverse("api:profile-detail", args=(id,)), data=request, format='json')
+        self.user.refresh_from_db()
+        self.user.profile.refresh_from_db()
+        assert(self.user.profile.vacation_date is not None)
+        data = response.data
+        assert(data is not None)
+
+    def test_enable_follow_me_syncs_user_immediately(self):
+        # Given
+        self.client.force_login(self.user)
+        self.user.profile.follow_me = False
+        self.user.profile.save()
+        response = self.client.get(reverse("api:profile-list"))
+        data = response.data
+        id = data['results'][0]['id']
+
+        # When
+        self.client.patch(reverse("api:profile-detail", args=(id,)), data={'follow_me': True}, format='json')
+
+        # Then
+        self.user.refresh_from_db()
+        self.user.profile.refresh_from_db()
+        assert(self.user.profile.follow_me is True)
+
+    def test_attempting_to_sync_with_invalid_api_key_sets_correct_profile_value(self):
+        # Given
+        self.client.force_login(self.user)
+        self.user.profile.api_key = "Some Garbage"
+        self.user.profile.save()
+
+        # When
+        self.client.post(reverse("api:user-sync"))
+
+        # Then
+        self.user.refresh_from_db()
+        self.user.profile.refresh_from_db()
+        assert(self.user.profile.api_valid is False)
+
