@@ -1,6 +1,12 @@
+import re
+
 from django.db.models import Q
 from django_filters import rest_framework as filters
 from kw_webapp.models import Vocabulary, UserSpecific
+
+
+def whole_word_regex(value):
+    return r"\b" + re.escape(value) + r"\b"
 
 
 def filter_level_for_vocab(queryset, name, value):
@@ -13,11 +19,11 @@ def filter_level_for_review(queryset, name, value):
 
 def filter_meaning_contains(queryset, name, value):
     if value:
-        return queryset.filter(meaning__contains=value)
+        return queryset.filter(meaning__regex=whole_word_regex(value))
 
 def filter_meaning_contains_for_review(queryset, name, value):
     if value:
-        return queryset.filter(vocabulary__meaning__contains=value)
+        return queryset.filter(vocabulary__meaning__regex=whole_word_regex(value))
 
 def filter_vocabulary_parts_of_speech(queryset, name, value):
     if value:
