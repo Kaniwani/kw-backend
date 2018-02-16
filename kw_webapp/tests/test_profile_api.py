@@ -586,3 +586,19 @@ class TestProfileApi(APITestCase):
         self.user.profile.refresh_from_db()
         assert(self.user.profile.api_valid is False)
 
+    def test_correct_does_not_increment_upon_lesson_completion(self):
+        # Given
+        self.client.force_login(self.user)
+        self.review.streak = 0
+        self.review.save()
+
+        # When
+        self.client.post(reverse("api:review-correct", args=(self.review.id,)))
+
+        # Then
+        response = self.client.get(reverse("api:review-detail", args=(self.review.id,)))
+        review = response.data
+        self.assertEqual(review['correct'], 0)
+        self.assertEqual(review['streak'], 1)
+
+
