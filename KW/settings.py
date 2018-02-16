@@ -13,7 +13,13 @@ from datetime import timedelta
 
 import os
 from collections import namedtuple
+
+import raven
 from django.core.urlresolvers import reverse_lazy
+from django.utils.log import DEFAULT_LOGGING
+import os
+
+LOGLEVEL = os.environ.get('LOGLEVEL', 'info').upper()
 
 try:
     import KW.secrets as secrets
@@ -25,6 +31,7 @@ except ImportError:
     secrets.SECRET_KEY = "samplekey"
     secrets.EMAIL_HOST_PASSWORD = "nope"
     secrets.EMAIL_HOST_USER = "dontmatter@whatever.com"
+    secrets.RAVEN_DSN = "whatever"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 MY_TIME_ZONE = 'America/New_York'
@@ -32,20 +39,20 @@ MY_TIME_ZONE = 'America/New_York'
 logging_class = 'logging.StreamHandler'
 logging_level = 'ERROR' if secrets.DEPLOY else 'DEBUG'
 
+# This allows the /docs/ endpoints to correctly build urls.
+USE_X_FORWARDED_HOST = True
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '%(levelname)s---%(asctime)s---%(module)s : %(message)s',
+        'console': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
           },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
+        'request': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s REQUEST: %(message)s'
         },
-        'time_only': {
-            'format': '%(asctime)s---%(message)s'
-        }
+        'django.server': DEFAULT_LOGGING['formatters']['django.server'],
     },
     'filters': {
         'require_debug_true': {
@@ -54,91 +61,70 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'formatter': 'console',
+            'class': 'logging.StreamHandler'
+        },
+        'sentry': {
+            'formatter': 'console',
+            'level': 'WARNING',
             'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler'
         },
-        'views': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "views.log"),
-        },
-        'models': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "models.log"),
-        },
-        'errors': {
-            'level': 'ERROR',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "errors.log"),
-        },
-        'tasks': {
+        'app_log': {
+            'formatter': 'console',
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': "./logs/kaniwani.log",
             'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "tasks.log"),
+            'backupCount': '30',
         },
-        'sporadic_tasks': {
+        'request_log': {
+            'formatter': 'request',
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': "./logs/requests.log",
             'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "sporadic_tasks.log"),
+            'backupCount': '5',
         },
-        'review_data': {
-            'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'time_only',
-            'filename': os.path.join(BASE_DIR, "logs", "review_data.log"),
-        }
+        'django.server': DEFAULT_LOGGING['handlers']['django.server'],
     },
     'loggers': {
-        'kw.views': {
-            'handlers': ['views', 'errors', 'console'],
+        # ROOT LOGGER
+        '': {
             'level': 'DEBUG',
-            'propagate': True,
+            'handlers': ['console', 'sentry']
         },
-        'kw.models': {
-            'handlers': ['models', 'errors', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
+        # For anything in the 'api' directory. e.g. api.views, api.tasks, etc.
+        'api': {
+            'level': LOGLEVEL,
+            'handlers': ['console', 'app_log', 'sentry'],
+            'propagate': False
         },
-        'kw.tasks': {
-            'handlers': ['tasks', 'errors', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
+        'kw_webapp': {
+            'level': LOGLEVEL,
+            'handlers': ['console', 'app_log', 'sentry'],
+            'propagate': False
         },
-        'kw.db_repopulator': {
-            'handlers': ['sporadic_tasks', 'errors', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
+        # Used for drf-tracking which logs all request/response info. For later shipping to ELK
+        'KW.LoggingMiddleware': {
+            'level': 'INFO',
+            'handlers': ['request_log'],
+            'propagate': False
         },
-        'kw.review_data': {
-            'handlers':['review_data', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
+        'celery': {
+            'handlers': ['sentry', 'console'],
+            'level': 'INFO',
+            'propagate': False
         },
+        'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 }
 
-
-#CELERY SETTINGS
-#CELERY_RESULT_BACKEND = 'amqp'
 CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-#CELERY_BROKER_URL = broker = 'amqp://guest@localhost//'
+CELERYD_HIJACK_ROOT_LOGGER = False
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
@@ -182,25 +168,23 @@ CORS_ALLOW_CREDENTIALS = True
 LOGIN_URL = reverse_lazy("login")
 LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
 
-
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-
 INSTALLED_APPS = (
+    'django.contrib.contenttypes',
+    'kw_webapp.apps.KaniwaniConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.humanize',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_celery_beat',
     'rest_framework',
-    'kw_webapp.apps.KaniwaniConfig',
     'debug_toolbar',
     'rest_framework.authtoken',
     'corsheaders',
-    'djoser'
+    'djoser',
+    'raven.contrib.django.raven_compat',
+    'rest_framework_tracking'
 )
 
 MIDDLEWARE = [
@@ -260,9 +244,6 @@ EMAIL_USE_TLS = True
 TIME_ZONE = MY_TIME_ZONE
 SITE_ID = 1
 
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
 if secrets.DB_TYPE == "postgres":
     DATABASES = {
         'default': {
@@ -282,9 +263,6 @@ elif secrets.DB_TYPE == "sqlite":
         }
     }
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 USE_I18N = True
@@ -292,8 +270,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
-LINEAGE_ANCESTOR_PHRASE = "-active"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
@@ -314,10 +290,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 'django.contrib.auth.context_processors.auth',
-                #TODO remove these.
-                "KW.preprocessors.review_count_preprocessor",
                 'django.template.context_processors.request',
-                'django.contrib.messages.context_processors.messages',
             ],
             "debug": DEBUG
         }
@@ -339,3 +312,8 @@ DJOSER = {
     },
     'PASSWORD_RESET_CONFIRM_URL': "/api/v1/auth/password-reset/{uid}/{token}",
 }
+
+RAVEN_CONFIG = {
+    'dsn': secrets.RAVEN_DSN,
+    'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
+} if not DEBUG else {}

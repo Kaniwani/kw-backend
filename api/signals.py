@@ -5,6 +5,9 @@ from djoser.signals import user_registered
 from rest_framework.authtoken.models import Token
 from kw_webapp.tasks import sync_with_wk
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):

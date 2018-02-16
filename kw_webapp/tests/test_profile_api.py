@@ -458,8 +458,8 @@ class TestProfileApi(APITestCase):
         MeaningSynonym.objects.create(review=self.review, text=meaning_synonym)
         AnswerSynonym.objects.create(review=self.review, kana=reading_synonym_kana, character=reading_synonym_character)
 
-
         self.review.refresh_from_db()
+
         assert(len(self.review.meaning_synonyms.all()) > 0)
         assert(len(self.review.reading_synonyms.all()) > 0)
         response = self.client.get(reverse("api:review-detail", args=(self.review.id,)))
@@ -473,8 +473,6 @@ class TestProfileApi(APITestCase):
         assert(data['results'][0]['meaning_synonyms'][0]['text'] == meaning_synonym)
         assert(data['results'][0]['reading_synonyms'][0]['character'] == reading_synonym_character)
         assert(data['results'][0]['reading_synonyms'][0]['kana'] == reading_synonym_kana)
-
-
 
         response = self.client.get(reverse("api:review-current"))
         data = response.data

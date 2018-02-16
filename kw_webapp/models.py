@@ -12,7 +12,7 @@ from django.utils import timezone
 from kw_webapp import constants
 from kw_webapp.constants import TWITTER_USERNAME_REGEX, HTTP_S_REGEX, WkSrsLevel, WANIKANI_SRS_LEVELS
 
-logger = logging.getLogger("kw.models")
+logger = logging.getLogger(__name__)
 
 
 class Announcement(models.Model):
