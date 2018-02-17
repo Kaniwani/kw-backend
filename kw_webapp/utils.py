@@ -234,7 +234,6 @@ def merge_with_model(related_reading, vocabulary_json):
     else:
         retval += "NO COMMON?!"
 
-
     related_reading.isPrimary = True
 
     if "furi" in vocabulary_json:
@@ -244,7 +243,6 @@ def merge_with_model(related_reading, vocabulary_json):
         if len(vocabulary_json["pitch"]) > 0:
             string_pitch = ",".join([str(pitch) for pitch in vocabulary_json["pitch"]])
             related_reading.pitch = string_pitch
-
 
     if "partOfSpeech" in vocabulary_json:
         for pos in vocabulary_json["partOfSpeech"]:
@@ -375,6 +373,7 @@ def clear_duplicate_meaning_synonyms_from_reviews():
                 print("[{}]First time seeing element {}".format(review_id, synonym.text))
                 seen_synonyms.add(synonym.text)
 
+
 def clear_duplicate_answer_synonyms_from_reviews():
     # Fetch all reviews wherein there are duplicate meaning synonyms.
     reviews = UserSpecific.objects.values('id', 'answer_synonyms__kana', 'answer_synonyms__character').annotate(Count('answer_synonyms__kana')).filter(answer_synonyms__kana__count__gt=1)
@@ -391,3 +390,16 @@ def clear_duplicate_answer_synonyms_from_reviews():
             else:
                 print("[{}]First time seeing element: {}".format(review_id, synonym.kana + "_" + synonym.character))
                 seen_synonyms.add(synonym.kana + "_" + synonym.character)
+
+
+def v2_migration():
+    one_time_merger()
+    blow_away_duplicate_reviews_for_all_users()
+    one_time_import_jisho_new_format("wk_vocab_import.json")
+    one_time_orphaned_level_clear()
+    clear_duplicate_meaning_synonyms_from_reviews()
+    clear_duplicate_meaning_synonyms_from_reviews()
+    
+
+
+
