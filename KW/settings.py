@@ -263,6 +263,7 @@ elif secrets.DB_TYPE == "sqlite":
         }
     }
 
+DB_TYPE = secrets.DB_TYPE
 LANGUAGE_CODE = 'en-us'
 
 USE_I18N = True

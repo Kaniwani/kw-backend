@@ -4,9 +4,15 @@ from django.db.models import Q
 from django_filters import rest_framework as filters
 from kw_webapp.models import Vocabulary, UserSpecific
 
+import KW.settings
 
 def whole_word_regex(value):
-    return r"\b" + re.escape(value) + r"\b"
+    # Gross hack to handle this until I fix it:
+    # https://stackoverflow.com/questions/14997536/whole-word-match-only-in-django-query
+    if KW.settings.DB_TYPE == 'sqlite':
+        return r"\b" + re.escape(value) + r"\b"
+    else:
+        return r"\y" + re.escape(value) + r"\y"
 
 
 def filter_level_for_vocab(queryset, name, value):
@@ -21,11 +27,13 @@ def filter_level_for_review(queryset, name, value):
 
 def filter_meaning_contains(queryset, name, value):
     if value:
+        a = whole_word_regex(value)
         return queryset.filter(meaning__regex=whole_word_regex(value))
 
 
 def filter_meaning_contains_for_review(queryset, name, value):
     if value:
+        a = whole_word_regex(value)
         return queryset.filter(vocabulary__meaning__regex=whole_word_regex(value))
 
 
