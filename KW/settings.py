@@ -165,8 +165,7 @@ CORS_ORIGIN_WHITELIST = (
 
 CORS_ALLOW_CREDENTIALS = True
 
-LOGIN_URL = reverse_lazy("login")
-LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
+LOGIN_URL = "/api/v1/auth/login"
 
 INSTALLED_APPS = (
     'django.contrib.contenttypes',

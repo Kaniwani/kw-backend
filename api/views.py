@@ -168,13 +168,13 @@ class ReportViewSet(viewsets.ModelViewSet):
         try:
             vocabulary_id = request.data["vocabulary"]
             existing_report = Report.objects.get(vocabulary__id=vocabulary_id, created_by=request.user)
-            logger.info("User " + self.request.user.username + " is updating their report on vocabulary " + request.data["vocabulary"])
+            logger.info("User {} is updating their report on vocabulary {}".format(request.user.username, request.data["vocabulary"]))
             serializer = ReportSerializer(existing_report, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
         except Report.DoesNotExist:
-            logger.info("User " + self.request.user.username + " is reporting vocabulary " + request.data["vocabulary"])
+            logger.info("User {} is creating report on vocabulary {}".format(request.user.username, request.data["vocabulary"]))
             serializer = ReportSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save(created_by=self.request.user)
