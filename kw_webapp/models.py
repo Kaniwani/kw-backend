@@ -342,7 +342,7 @@ class UserSpecific(models.Model):
 class AnswerSynonym(models.Model):
     character = models.CharField(max_length=255, null=True)
     kana = models.CharField(max_length=255, null=False)
-    review = models.ForeignKey(UserSpecific,related_name='reading_synonyms', null=True)
+    review = models.ForeignKey(UserSpecific, related_name='reading_synonyms', null=True)
 
     class Meta:
         unique_together = ('character', 'kana', 'review')

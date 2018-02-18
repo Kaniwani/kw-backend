@@ -376,7 +376,7 @@ def clear_duplicate_meaning_synonyms_from_reviews():
 
 def clear_duplicate_answer_synonyms_from_reviews():
     # Fetch all reviews wherein there are duplicate meaning synonyms.
-    reviews = UserSpecific.objects.values('id', 'answer_synonyms__kana', 'answer_synonyms__character').annotate(Count('answer_synonyms__kana')).filter(answer_synonyms__kana__count__gt=1)
+    reviews = UserSpecific.objects.values('id', 'reading_synonyms__kana', 'reading_synonyms__character').annotate(Count('reading_synonyms__kana')).filter(reading_synonyms__kana__count__gt=1)
     review_list = list(reviews)
     review_list = set([review['id'] for review in review_list])
 
