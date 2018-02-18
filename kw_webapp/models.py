@@ -292,7 +292,7 @@ class UserSpecific(models.Model):
         return synonym, created
 
     def add_meaning_synonym(self, text):
-        synonym, created = self.meaningsynonym_set.get_or_create(text=text)
+        synonym, created = self.meaning_synonyms.get_or_create(text=text)
         return synonym, created
 
     def set_next_review_time(self):

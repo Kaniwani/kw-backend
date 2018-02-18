@@ -358,7 +358,7 @@ def repopulate():
 
 def clear_duplicate_meaning_synonyms_from_reviews():
     # Fetch all reviews wherein there are duplicate meaning synonyms.
-    reviews = UserSpecific.objects.values('id', 'meaningsynonym__text').annotate(Count('meaningsynonym__text')).filter(meaningsynonym__text__count__gt=1)
+    reviews = UserSpecific.objects.values('id', 'meaning_synonyms__text').annotate(Count('meaning_synonyms__text')).filter(meaning_synonyms__text__count__gt=1)
     review_list = list(reviews)
     review_list = set([review['id'] for review in review_list])
 
@@ -399,7 +399,7 @@ def v2_migration():
     one_time_orphaned_level_clear()
     clear_duplicate_meaning_synonyms_from_reviews()
     clear_duplicate_meaning_synonyms_from_reviews()
-    
+
 
 
 
