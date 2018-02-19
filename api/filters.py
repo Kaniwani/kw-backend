@@ -17,12 +17,12 @@ def whole_word_regex(value):
 
 def filter_level_for_vocab(queryset, name, value):
     if value:
-        return queryset.filter(readings__level=value)
+        return queryset.filter(readings__level=value).distinct()
 
 
 def filter_level_for_review(queryset, name, value):
     if value:
-        return queryset.filter(vocabulary__readings__level=value)
+        return queryset.filter(vocabulary__readings__level=value).distinct()
 
 
 def filter_meaning_contains(queryset, name, value):

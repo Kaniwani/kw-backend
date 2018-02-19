@@ -9,17 +9,18 @@ class ExceptionLoggingMiddleware(MiddlewareMixin):
         import traceback
         print(traceback.format_exc())
 
-
-class RequestLoggingMixin(LoggingMixin):
-
-    def should_log(self, request, response):
-        return response.status_code // 200 == 0
-
     def handle_log(self):
         self.log['response'] = None
         logger.info(self.log)
 
 
 class RequestAndResponseLoggingMixin(LoggingMixin):
+    pass
+
+
+class RequestLoggingMixin(LoggingMixin):
+    def should_log(self, request, response):
+        return response.status_code // 100 == 2 or response.status_code // 300 == 3
+
     def handle_log(self):
         logger.info(self.log)
