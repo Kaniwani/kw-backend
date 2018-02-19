@@ -24,8 +24,7 @@ class ReportCountSerializer(serializers.BaseSerializer):
     """
 
     def to_representation(self, obj):
-        return Report.objects.values("vocabulary", "vocabulary__meaning").annotate(
-            report_count=Count("vocabulary")).order_by("-report_count")
+        return Report.objects.values("reading").annotate(report_count=Count("reading")).order_by("-report_count")
 
 
 class SrsCountSerializer(serializers.BaseSerializer):
@@ -339,7 +338,7 @@ class ReportSerializer(serializers.ModelSerializer):
 
 
 class ReportListSerializer(ReportSerializer):
-    vocabulary = VocabularySerializer(many=False, read_only=True)
+    reading = ReadingSerializer(many=False, read_only=True)
 
 
 class HyperlinkedVocabularySerializer(VocabularySerializer):

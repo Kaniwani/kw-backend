@@ -159,17 +159,6 @@ class PartOfSpeech(models.Model):
         return str(self.part)
 
 
-class Report(models.Model):
-    created_by = models.ForeignKey(User)
-    created_at = models.DateTimeField(auto_now_add=True)
-    vocabulary = models.ForeignKey(Vocabulary)
-    reason = models.CharField(max_length=1000)
-
-    def __str__(self):
-        return "Report: vocabulary [{}]: {}, by user [{}] at {}".format(self.vocabulary_id,
-                                                                        self.reason,
-                                                                        self.created_by_id,
-                                                                        self.created_at)
 
 
 class Reading(models.Model):
@@ -196,6 +185,19 @@ class Reading(models.Model):
     def __str__(self):
         return "{} - {} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character, self.level)
 
+
+class Report(models.Model):
+    # TODO start here makemigrations and modify all usages of vocabulary in report.
+    created_by = models.ForeignKey(User)
+    created_at = models.DateTimeField(auto_now_add=True)
+    reading = models.ForeignKey(Reading, on_delete=models.CASCADE, related_name="reports")
+    reason = models.CharField(max_length=1000)
+
+    def __str__(self):
+        return "Report: reading [{}]: {}, by user [{}] at {}".format(self.reading_id,
+                                                                     self.reason,
+                                                                     self.created_by_id,
+                                                                     self.created_at)
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)

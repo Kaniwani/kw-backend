@@ -379,13 +379,13 @@ class TestProfileApi(APITestCase):
     def test_reporting_vocab_creates_report(self):
         self.client.force_login(user=self.user)
 
-        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "This makes no sense!!!"})
+        self.client.post(reverse("api:report-list"), data={"reading": self.reading.id, "reason": "This makes no sense!!!"})
 
         reports = Report.objects.all()
 
         self.assertEqual(reports.count(), 1)
         report = reports[0]
-        self.assertEqual(report.vocabulary, self.vocabulary)
+        self.assertEqual(report.reading, self.reading)
         self.assertEqual(report.created_by, self.user)
         self.assertLessEqual(report.created_at, timezone.now())
 
@@ -394,37 +394,37 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
         # This should only ever create ONE report, as we continually update the same one. We do not allow users to
         # multi-report a single vocab.
-        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "This still makes no sense!!!"})
-        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "ahhh!!!"})
-        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "Help!"})
-        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "asdf!!!"})
-        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "fdsa!!!"})
-        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "Final report!!!!"})
+        self.client.post(reverse("api:report-list"), data={"reading": self.reading.id, "reason": "This still makes no sense!!!"})
+        self.client.post(reverse("api:report-list"), data={"reading": self.reading.id, "reason": "ahhh!!!"})
+        self.client.post(reverse("api:report-list"), data={"reading": self.reading.id, "reason": "Help!"})
+        self.client.post(reverse("api:report-list"), data={"reading": self.reading.id, "reason": "asdf!!!"})
+        self.client.post(reverse("api:report-list"), data={"reading": self.reading.id, "reason": "fdsa!!!"})
+        self.client.post(reverse("api:report-list"), data={"reading": self.reading.id, "reason": "Final report!!!!"})
 
         # Have another user report it
         user = create_user("test2")
         create_profile(user, "test", 5)
         self.client.force_login(user=user)
-        self.client.post(reverse("api:report-list"), data={"vocabulary": self.vocabulary.id, "reason": "This still makes no sense!!!"})
+        self.client.post(reverse("api:report-list"), data={"reading": self.reading.id, "reason": "This still makes no sense!!!"})
 
         #Report another vocab, but only once
         new_vocab = create_vocab("some other vocab")
-        self.client.post(reverse("api:report-list"), data={"vocabulary": new_vocab.id, "reason": "This still makes no sense!!!"})
+        reading = create_reading(new_vocab, "reading", "reading_char", 1)
+
+        self.client.post(reverse("api:report-list"), data={"reading": reading.id, "reason": "This still makes no sense!!!"})
 
         resp = self.client.get(reverse("api:report-counts"))
 
         assert(resp.data[0]["report_count"] > resp.data[1]["report_count"])
 
         assert(resp.data[0]["report_count"] == 2)
-        assert(resp.data[0]['vocabulary'] == self.vocabulary.id)
+        assert(resp.data[0]['reading'] == self.reading.id)
 
         assert(resp.data[1]["report_count"] == 1)
-        assert(resp.data[1]['vocabulary'] == new_vocab.id)
+        assert(resp.data[1]['reading'] == reading.id)
 
         resp = self.client.get(reverse("api:report-list"))
         assert(resp.data["count"] == 2)
-
-        # Ensure users can only see the reports they themselves have generated
 
     def test_ordering_on_announcements_works(self):
 

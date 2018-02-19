@@ -149,7 +149,7 @@ class VocabularyViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
 
 
 class ReportViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
-    filter_fields = ('created_by', 'vocabulary')
+    filter_fields = ('created_by', 'reading')
     serializer_class = ReportSerializer
 
     @list_route(methods=["GET"])
@@ -166,15 +166,15 @@ class ReportViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
         Create a new report, or if an identical report already exists, update the existing one.
         """
         try:
-            vocabulary_id = request.data["vocabulary"]
-            existing_report = Report.objects.get(vocabulary__id=vocabulary_id, created_by=request.user)
-            logger.info("User {} is updating their report on vocabulary {}".format(request.user.username, request.data["vocabulary"]))
+            reading_id = request.data["reading"]
+            existing_report = Report.objects.get(reading__id=reading_id, created_by=request.user)
+            logger.info("User {} is updating their report on reading {}".format(request.user.username, request.data["reading"]))
             serializer = ReportSerializer(existing_report, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data)
         except Report.DoesNotExist:
-            logger.info("User {} is creating report on vocabulary {}".format(request.user.username, request.data["vocabulary"]))
+            logger.info("User {} is creating report on reading {}".format(request.user.username, request.data["reading"]))
             serializer = ReportSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
             serializer.save(created_by=self.request.user)
