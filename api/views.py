@@ -15,7 +15,7 @@ from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
-    ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer
+    ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer, RegistrationSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
@@ -41,7 +41,7 @@ class ListRetrieveUpdateViewSet(mixins.ListModelMixin,
     pass
 
 
-class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
+class ReadingViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
     """
     For internal use fetching readings specifically.
     """
@@ -49,21 +49,21 @@ class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ReadingSerializer
 
 
-class ReadingSynonymViewSet(viewsets.ModelViewSet):
+class ReadingSynonymViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
     serializer_class = ReadingSynonymSerializer
 
     def get_queryset(self):
         return AnswerSynonym.objects.filter(review__user=self.request.user)
 
 
-class MeaningSynonymViewSet(viewsets.ModelViewSet):
+class MeaningSynonymViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
     serializer_class = MeaningSynonymSerializer
 
     def get_queryset(self):
         return MeaningSynonym.objects.filter(review__user=self.request.user)
 
 
-class LevelViewSet(viewsets.ReadOnlyModelViewSet):
+class LevelViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
     """
     Return a list of all levels and related information.
 
@@ -148,7 +148,7 @@ class VocabularyViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
             return VocabularySerializer
 
 
-class ReportViewSet(viewsets.ModelViewSet):
+class ReportViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
     filter_fields = ('created_by', 'vocabulary')
     serializer_class = ReportSerializer
 
@@ -191,7 +191,7 @@ class ReportViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-class ReviewViewSet(ListRetrieveUpdateViewSet):
+class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
     """
     lesson:
     Get all of user's lessons.
@@ -304,7 +304,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
                                            wanikani_srs_numeric__gte=self.request.user.profile.get_minimum_wk_srs_threshold_for_review())
 
 
-class FrequentlyAskedQuestionViewSet(viewsets.ModelViewSet):
+class FrequentlyAskedQuestionViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
     """
     Frequently Asked Questions that uses will have read access to.
     """
@@ -313,7 +313,7 @@ class FrequentlyAskedQuestionViewSet(viewsets.ModelViewSet):
     queryset = FrequentlyAskedQuestion.objects.all()
 
 
-class AnnouncementViewSet(viewsets.ModelViewSet):
+class AnnouncementViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
     """
     Announcements that users will see upon entering the website.
     """
@@ -325,7 +325,7 @@ class AnnouncementViewSet(viewsets.ModelViewSet):
         serializer.save(creator=self.request.user)
 
 
-class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
+class UserViewSet(RequestLoggingMixin, viewsets.GenericViewSet, generics.ListCreateAPIView):
     """
     Endpoint for user and internally nested profiles. Used primarily for updating user profiles, and creation of users.
 
@@ -381,7 +381,7 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         return Response({"message": "Your account has been reset"})
 
 
-class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
+class ProfileViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
     """
     Profile model view set, for INTERNAL TESTING USE ONLY.
     """
@@ -415,7 +415,7 @@ class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
         return serializer
 
 
-class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
+class ContactViewSet(RequestLoggingMixin, generics.CreateAPIView, viewsets.GenericViewSet):
     """
     Endpoint for contacting the developers. POSTing to this endpoint will send us an email.
     """
@@ -432,3 +432,5 @@ class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
         form.save()
 
         return Response(status=status.HTTP_202_ACCEPTED)
+
+

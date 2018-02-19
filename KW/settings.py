@@ -308,13 +308,12 @@ AUTHENTICATION_BACKENDS = [
 
 DJOSER = {
     'SERIALIZERS': {
-        "user_registration": 'api.serializers.RegistrationSerializer'
+        "user_create": 'api.serializers.RegistrationSerializer'
     },
     'PASSWORD_RESET_CONFIRM_URL': "/api/v1/auth/password-reset/{uid}/{token}",
 }
 
 RAVEN_CONFIG = {
     'dsn': secrets.RAVEN_DSN,
-    #'release': raven.fetch_git_sha(os.path.abspath(os.curdir)),
-    'release': "1"
+    'release': "FILL_ME_IN"
 } if not DEBUG else {}

@@ -21,6 +21,6 @@ router.register(r'contact', ContactViewSet, base_name='contact')
 
 urlpatterns = router.urls + [
     url(r'^auth/login/', jwtviews.obtain_jwt_token),
-    url(r'^auth/', include('djoser.urls.base'))
+    url(r'^auth/', include('djoser.urls.base', namespace="auth"))
 ]
 

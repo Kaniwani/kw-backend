@@ -9,6 +9,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
+from kw_webapp import constants
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.models import Level, Report, Announcement, Vocabulary, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import get_vocab_by_kanji, sync_with_wk
@@ -601,4 +602,11 @@ class TestProfileApi(APITestCase):
         self.assertEqual(review['correct'], 0)
         self.assertEqual(review['streak'], 1)
 
-
+    def test_registration(self):
+        response = self.client.post(reverse("api:auth:user-create"), data={
+            'username': "createme",
+            'password': "password",
+            'api_key': constants.API_KEY,
+            'email': 'asdf@email.com'
+        })
+        assert(response.status_code == 201)
