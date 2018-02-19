@@ -11,6 +11,10 @@ class ExceptionLoggingMiddleware(MiddlewareMixin):
 
 
 class RequestLoggingMixin(LoggingMixin):
+
+    def should_log(self, request, response):
+        return response.status_code // 200 == 0
+
     def handle_log(self):
         self.log['response'] = None
         logger.info(self.log)
