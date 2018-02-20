@@ -193,6 +193,10 @@ def get_wanikani_level_by_api_key(api_key):
     return level
 
 
+def build_user_information_api_string(api_key):
+    return "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
+
+
 @shared_task
 def sync_user_profile_with_wk(user):
     '''
@@ -201,7 +205,7 @@ def sync_user_profile_with_wk(user):
     :param user: The user to sync their profile with WK.
     :return: boolean indicating the success of the API call.
     '''
-    api_string = "https://www.wanikani.com/api/user/{}/user-information".format(user.profile.api_key)
+    api_string = build_user_information_api_string(user.profile.api_key)
 
     try:
         json_data = make_api_call(api_string)
@@ -586,32 +590,29 @@ def follow_user(user):
         user.profile.save()
 
 
-def reset_user(user, reset_to_level=None):
-    reset_levels(user, reset_to_level)
-    reset_reviews(user, reset_to_level)
-    #In case user provides a level, it is enough to just delete everything above.
-    #Upon not providing a level, we must clear everything away, and then rebuild,
-    #thus we must re-unlock the user's current level.
-    if not reset_to_level:
-        unlock_eligible_vocab_from_levels(user, user.profile.level)
-
-
-def reset_levels(user, reset_to_level=None):
-    if reset_to_level:
-        user.profile.unlocked_levels.filter(level__gt=reset_to_level).delete()
-        user.profile.level = reset_to_level
-    else:
-        user.profile.unlocked_levels.clear()
-        user.profile.unlocked_levels.get_or_create(level=user.profile.level)
+def disable_follow_me(user):
+    user.profile.follow_me = False
     user.profile.save()
 
 
-def reset_reviews(user, reset_to_level=None):
+def reset_user(user, reset_to_level):
+    reset_levels(user, reset_to_level)
+    reset_reviews(user, reset_to_level)
+    disable_follow_me(user)
+
+    # Set to current level.
+    level = get_wanikani_level_by_api_key(user.profile.api_key)
+    user.profile.level = level
+    user.profile.save()
+
+
+def reset_levels(user, reset_to_level):
+    user.profile.unlocked_levels.filter(level__gte=reset_to_level).delete()
+    user.profile.save()
+
+
+def reset_reviews(user, reset_to_level):
     reviews_to_delete = UserSpecific.objects.filter(user=user)
-
-    #If optional level is passed, delete only reviews in which are above given level.
-    if reset_to_level:
-        reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lte=reset_to_level)
-
+    reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lt=reset_to_level)
     reviews_to_delete.delete()
 

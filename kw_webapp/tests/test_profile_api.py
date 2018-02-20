@@ -4,6 +4,7 @@ from datetime import timedelta
 from time import sleep
 from unittest import mock
 
+import responses
 from django.utils import timezone
 from rest_framework.renderers import JSONRenderer
 from rest_framework.reverse import reverse, reverse_lazy
@@ -14,12 +15,20 @@ from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.models import Level, Report, Announcement, Vocabulary, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import get_vocab_by_kanji, sync_with_wk
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
-    create_review_for_specific_time
+    create_review_for_specific_time, mock_vocab_list_response_with_single_vocabulary, mock_user_info_response
 from kw_webapp.utils import one_time_orphaned_level_clear
 
 
 class TestProfileApi(APITestCase):
+
+    def prepare_admin(self):
+        self.admin = create_user("admin")
+        create_profile(self.admin, "any_key", 5)
+        self.admin.is_staff = True
+        self.admin.save()
+
     def setUp(self):
+        self.prepare_admin()
         self.user = create_user("Tadgh")
         create_profile(self.user, "any_key", 5)
         self.vocabulary = create_vocab("radioactive bat")
@@ -303,7 +312,6 @@ class TestProfileApi(APITestCase):
         self.assertTrue('review' not in response.data['vocabulary'])
 
     def test_profile_serializer_gets_correct_srs_counts(self):
-
         review1 = create_review_for_specific_time(self.user, "guru", timezone.now()+ timedelta(hours=12))
         review1.streak = 4
         review1.save()
@@ -317,26 +325,23 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse("api:user-me"))
 
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(response.data)
-
-
-    def test_adding_a_level_to_reset_command_only_resets_levels_above_given(self):
+    @responses.activate
+    def test_adding_a_level_to_reset_command_only_resets_levels_above_or_equal_togiven(self):
         self.client.force_login(user=self.user)
         v = create_vocab("test")
         create_reading(v, "test", "test", 3)
         create_userspecific(v, self.user)
-        self.user.profile.unlocked_levels.get_or_create(level=3)
+        mock_user_info_response(self.user.profile.api_key)
+
+        self.user.profile.unlocked_levels.get_or_create(level=2)
         response = self.client.get((reverse("api:review-current")))
         self.assertEqual(response.data['count'], 2)
-        self.assertListEqual(self.user.profile.unlocked_levels_list(), [5,3])
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [5,2])
         self.client.post(reverse("api:user-reset"), data={'level': 3})
 
         response = self.client.get((reverse("api:review-current")))
-        self.assertEqual(response.data['count'], 1)
-        self.user.profile.refresh_from_db()
-        self.assertEqual(self.user.profile.level, 3)
-        self.assertListEqual(self.user.profile.unlocked_levels_list(), [3])
+        self.assertEqual(response.data['count'], 0)
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [2])
 
     def test_locking_a_level_successfully_clears_the_level_object(self):
         self.client.force_login(user=self.user)
@@ -385,6 +390,7 @@ class TestProfileApi(APITestCase):
 
         self.assertEqual(reports.count(), 1)
         report = reports[0]
+        self.client.delete(reverse("api:report-detail", args=(report.id,)))
         self.assertEqual(report.reading, self.reading)
         self.assertEqual(report.created_by, self.user)
         self.assertLessEqual(report.created_at, timezone.now())
@@ -407,12 +413,14 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=user)
         self.client.post(reverse("api:report-list"), data={"reading": self.reading.id, "reason": "This still makes no sense!!!"})
 
-        #Report another vocab, but only once
+        # Report another vocab, but only once
         new_vocab = create_vocab("some other vocab")
         reading = create_reading(new_vocab, "reading", "reading_char", 1)
 
         self.client.post(reverse("api:report-list"), data={"reading": reading.id, "reason": "This still makes no sense!!!"})
 
+        # Login with admin
+        self.client.force_login(self.admin)
         resp = self.client.get(reverse("api:report-counts"))
 
         assert(resp.data[0]["report_count"] > resp.data[1]["report_count"])
@@ -424,7 +432,7 @@ class TestProfileApi(APITestCase):
         assert(resp.data[1]['reading'] == reading.id)
 
         resp = self.client.get(reverse("api:report-list"))
-        assert(resp.data["count"] == 2)
+        assert(resp.data["count"] == 3)
 
     def test_ordering_on_announcements_works(self):
 
@@ -610,3 +618,21 @@ class TestProfileApi(APITestCase):
             'email': 'asdf@email.com'
         })
         assert(response.status_code == 201)
+
+    @responses.activate
+    def test_when_user_resets_account_to_a_given_level_their_current_level_is_also_set(self):
+        # Given
+        mock_user_info_response(self.user.profile.api_key)
+        self.client.force_login(self.user)
+        assert(self.user.profile.level == 5)
+
+        # When
+        response = self.client.post(reverse("api:user-reset"), data={'level': 1})
+        assert("Your account has been reset" in response.data['message'])
+
+        # Then
+        self.user.profile.refresh_from_db()
+        assert(self.user.profile.level == 17)
+
+
+

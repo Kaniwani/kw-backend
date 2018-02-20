@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from rest_framework import generics, filters
 from rest_framework import mixins
 from rest_framework import status
@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
 
 from api.filters import VocabularyFilter, ReviewFilter
-from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating
+from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating, IsAdminOrAuthenticatedAndCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
@@ -151,15 +151,18 @@ class VocabularyViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
 class ReportViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
     filter_fields = ('created_by', 'reading')
     serializer_class = ReportSerializer
+    permission_classes = (IsAdminOrAuthenticatedAndCreating,)
 
     @list_route(methods=["GET"])
-    @permission_classes((IsAdminUser,))
     def counts(self, request):
         serializer = ReportCountSerializer(Report.objects.all())
         return Response(serializer.data)
 
     def get_queryset(self):
-        return Report.objects.filter(created_by=self.request.user)
+        if self.request.user.is_staff:
+            return Report.objects.all()
+        else:
+            return Report.objects.filter(created_by=self.request.user)
 
     def create(self, request, *args, **kwargs):
         """
@@ -185,9 +188,7 @@ class ReportViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
             return ReportListSerializer
         return super().get_serializer_class()
 
-    @permission_classes(IsAdminUser,)
     def destroy(self, request, *args, **kwargs):
-        logger.info("User " + self.request.user.username + " is deleting report " + s)
         return super().destroy(request, *args, **kwargs)
 
 
@@ -377,6 +378,9 @@ class UserViewSet(RequestLoggingMixin, viewsets.GenericViewSet, generics.ListCre
     @list_route(methods=['POST'])
     def reset(self, request):
         reset_to_level = int(request.data['level']) if 'level' in request.data else None
+        if reset_to_level is None:
+            return HttpResponseBadRequest("You must pass a level to reset to.")
+
         reset_user(request.user, reset_to_level)
         return Response({"message": "Your account has been reset"})
 

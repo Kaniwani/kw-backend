@@ -10,11 +10,12 @@ from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, associate
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
-    reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji
+    reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji, \
+    build_user_information_api_string
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading, \
-    create_review_for_specific_time
+    create_review_for_specific_time, mock_vocab_list_response_with_single_vocabulary, mock_user_info_response
 from kw_webapp.utils import generate_user_stats, one_time_merge_level
 
 
@@ -352,9 +353,9 @@ class TestTasks(TestCase):
         self.user.profile.unlocked_levels.get_or_create(level=4)
         self.user.refresh_from_db()
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [5, 1, 2, 3, 4])
-        reset_levels(self.user)
+        reset_levels(self.user, 1)
         self.user.refresh_from_db()
-        self.assertListEqual(self.user.profile.unlocked_levels_list(), [5])
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [])
 
     @responses.activate
     def test_when_user_resets_their_account_we_remove_all_reviews_and_then_unlock_their_current_level(self):
@@ -364,15 +365,13 @@ class TestTasks(TestCase):
         new_review.save()
         self.assertEqual(get_users_current_reviews(self.user).count(), 2)
 
-        #Mock response so that the level changes on our default vocab.
-        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, self.user.profile.level),
-                      json=sample_api_responses.single_vocab_response,
-                      status=200,
-                      content_type='application/json')
+        mock_vocab_list_response_with_single_vocabulary(self.user)
+        mock_user_info_response(self.user.profile.api_key)
 
-        reset_user(self.user)
+        reset_user(self.user, 1)
 
         self.user.refresh_from_db()
-        self.assertEqual(get_users_lessons(self.user).count(), 1)
-        self.assertEqual(self.user.profile.unlocked_levels_list()[0], 5)
+        self.user.profile.refresh_from_db()
+        self.assertEqual(get_users_lessons(self.user).count(), 0)
+        self.assertEqual(self.user.profile.level, 17)
 
