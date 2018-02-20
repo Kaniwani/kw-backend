@@ -598,22 +598,13 @@ def reset_user(user, reset_to_level):
     sync_user_profile_with_wk(user)
 
 
-def reset_levels(user, reset_to_level=None):
-    if reset_to_level:
-        user.profile.unlocked_levels.filter(level__gt=reset_to_level).delete()
-        user.profile.level = reset_to_level
-    else:
-        user.profile.unlocked_levels.clear()
-        user.profile.unlocked_levels.get_or_create(level=user.profile.level)
+def reset_levels(user, reset_to_level):
+    user.profile.unlocked_levels.filter(level__gt=reset_to_level).delete()
     user.profile.save()
 
 
-def reset_reviews(user, reset_to_level=None):
+def reset_reviews(user, reset_to_level):
     reviews_to_delete = UserSpecific.objects.filter(user=user)
-
-    #If optional level is passed, delete only reviews in which are above given level.
-    if reset_to_level:
-        reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lt=reset_to_level)
-
+    reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lt=reset_to_level)
     reviews_to_delete.delete()
 
