@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseBadRequest
 from rest_framework import generics, filters
 from rest_framework import mixins
 from rest_framework import status
@@ -159,7 +159,10 @@ class ReportViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
         return Response(serializer.data)
 
     def get_queryset(self):
-        return Report.objects.filter(created_by=self.request.user)
+        if self.request.user.is_staff:
+            return Report.objects.all()
+        else:
+            return Report.objects.filter(created_by=self.request.user)
 
     def create(self, request, *args, **kwargs):
         """
@@ -375,6 +378,9 @@ class UserViewSet(RequestLoggingMixin, viewsets.GenericViewSet, generics.ListCre
     @list_route(methods=['POST'])
     def reset(self, request):
         reset_to_level = int(request.data['level']) if 'level' in request.data else None
+        if reset_to_level is None:
+            return HttpResponseBadRequest("You must pass a level to reset to.")
+
         reset_user(request.user, reset_to_level)
         return Response({"message": "Your account has been reset"})
 

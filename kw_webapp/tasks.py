@@ -193,6 +193,10 @@ def get_wanikani_level_by_api_key(api_key):
     return level
 
 
+def build_user_information_api_string(api_key):
+    return "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
+
+
 @shared_task
 def sync_user_profile_with_wk(user):
     '''
@@ -201,7 +205,7 @@ def sync_user_profile_with_wk(user):
     :param user: The user to sync their profile with WK.
     :return: boolean indicating the success of the API call.
     '''
-    api_string = "https://www.wanikani.com/api/user/{}/user-information".format(user.profile.api_key)
+    api_string = build_user_information_api_string(user.profile.api_key)
 
     try:
         json_data = make_api_call(api_string)
@@ -595,11 +599,15 @@ def reset_user(user, reset_to_level):
     reset_levels(user, reset_to_level)
     reset_reviews(user, reset_to_level)
     disable_follow_me(user)
-    sync_user_profile_with_wk(user)
+
+    # Set to current level.
+    level = get_wanikani_level_by_api_key(user.profile.api_key)
+    user.profile.level = level
+    user.profile.save()
 
 
 def reset_levels(user, reset_to_level):
-    user.profile.unlocked_levels.filter(level__gt=reset_to_level).delete()
+    user.profile.unlocked_levels.filter(level__gte=reset_to_level).delete()
     user.profile.save()
 
 
