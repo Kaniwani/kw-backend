@@ -370,9 +370,9 @@ class TestTasks(TestCase):
                       status=200,
                       content_type='application/json')
 
-        reset_user(self.user)
+        reset_user(self.user, 1)
 
         self.user.refresh_from_db()
-        self.assertEqual(get_users_lessons(self.user).count(), 1)
-        self.assertEqual(self.user.profile.unlocked_levels_list()[0], 5)
+        self.assertEqual(get_users_lessons(self.user).count(), 0)
+        self.assertEqual(self.user.profile.unlocked_levels_list(), [])
 

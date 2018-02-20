@@ -321,7 +321,7 @@ class TestProfileApi(APITestCase):
         pp.pprint(response.data)
 
 
-    def test_adding_a_level_to_reset_command_only_resets_levels_above_given(self):
+    def test_adding_a_level_to_reset_command_only_resets_levels_above_or_equal_togiven(self):
         self.client.force_login(user=self.user)
         v = create_vocab("test")
         create_reading(v, "test", "test", 3)
@@ -333,9 +333,7 @@ class TestProfileApi(APITestCase):
         self.client.post(reverse("api:user-reset"), data={'level': 3})
 
         response = self.client.get((reverse("api:review-current")))
-        self.assertEqual(response.data['count'], 1)
-        self.user.profile.refresh_from_db()
-        self.assertEqual(self.user.profile.level, 3)
+        self.assertEqual(response.data['count'], 0)
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [3])
 
     def test_locking_a_level_successfully_clears_the_level_object(self):
@@ -385,6 +383,7 @@ class TestProfileApi(APITestCase):
 
         self.assertEqual(reports.count(), 1)
         report = reports[0]
+        self.client.delete(reverse("api:report-detail", args=(report.id,)))
         self.assertEqual(report.reading, self.reading)
         self.assertEqual(report.created_by, self.user)
         self.assertLessEqual(report.created_at, timezone.now())
@@ -610,3 +609,19 @@ class TestProfileApi(APITestCase):
             'email': 'asdf@email.com'
         })
         assert(response.status_code == 201)
+
+    def test_when_user_resets_account_to_a_given_level_their_current_level_is_also_set(self):
+        # Given
+        self.client.force_login(self.user)
+        assert(self.user.profile.level == 5)
+
+        # When
+        response = self.client.post(reverse("api:user-reset"))
+        assert("Your account has been reset" in response.data['message'])
+
+        # Then
+        self.user.profile.refresh_from_db()
+        assert(self.user.profile.level == 5)
+
+
+

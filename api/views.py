@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
 
 from api.filters import VocabularyFilter, ReviewFilter
-from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating
+from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating, IsAdminOrAuthenticatedAndCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
@@ -151,9 +151,9 @@ class VocabularyViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
 class ReportViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
     filter_fields = ('created_by', 'reading')
     serializer_class = ReportSerializer
+    permission_classes = (IsAdminOrAuthenticatedAndCreating,)
 
     @list_route(methods=["GET"])
-    @permission_classes((IsAdminUser,))
     def counts(self, request):
         serializer = ReportCountSerializer(Report.objects.all())
         return Response(serializer.data)
@@ -185,9 +185,7 @@ class ReportViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
             return ReportListSerializer
         return super().get_serializer_class()
 
-    @permission_classes(IsAdminUser,)
     def destroy(self, request, *args, **kwargs):
-        logger.info("User " + self.request.user.username + " is deleting report " + s)
         return super().destroy(request, *args, **kwargs)
 
 

@@ -586,14 +586,16 @@ def follow_user(user):
         user.profile.save()
 
 
-def reset_user(user, reset_to_level=None):
+def disable_follow_me(user):
+    user.profile.follow_me = False
+    user.profile.save()
+
+
+def reset_user(user, reset_to_level):
     reset_levels(user, reset_to_level)
     reset_reviews(user, reset_to_level)
-    #In case user provides a level, it is enough to just delete everything above.
-    #Upon not providing a level, we must clear everything away, and then rebuild,
-    #thus we must re-unlock the user's current level.
-    if not reset_to_level:
-        unlock_eligible_vocab_from_levels(user, user.profile.level)
+    disable_follow_me(user)
+    sync_user_profile_with_wk(user)
 
 
 def reset_levels(user, reset_to_level=None):
@@ -611,7 +613,7 @@ def reset_reviews(user, reset_to_level=None):
 
     #If optional level is passed, delete only reviews in which are above given level.
     if reset_to_level:
-        reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lte=reset_to_level)
+        reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lt=reset_to_level)
 
     reviews_to_delete.delete()
 
