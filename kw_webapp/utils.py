@@ -202,6 +202,7 @@ def one_time_import_jisho(json_file_path):
 
 def one_time_import_jisho_new_format(json_file_path):
     import json
+    no_local_vocab = []
     with open(json_file_path) as file:
         with open("outfile.txt", 'w') as outfile:
             parsed_json = json.load(file)
@@ -211,6 +212,7 @@ def one_time_import_jisho_new_format(json_file_path):
                     related_reading = Reading.objects.get(character=vocabulary_json["character"])
                     outfile.write(merge_with_model(related_reading, vocabulary_json))
                 except Reading.DoesNotExist:
+                    no_local_vocab.append(vocabulary_json)
                     pass
                 except Reading.MultipleObjectsReturned:
                     readings = Reading.objects.filter(character=vocabulary_json["character"])
@@ -219,6 +221,16 @@ def one_time_import_jisho_new_format(json_file_path):
                         if reading.kana == vocabulary_json["reading"]:
                             print(reading.vocabulary.meaning, reading.character, reading.kana, reading.level)
                             merge_with_model(reading, vocabulary_json)
+
+    unfilled_vocabulary= Vocabulary.objects.exclude(readings__sentence_en__isnull=False)
+    if unfilled_vocabulary.count() == 0:
+        print("No missing information!")
+    else:
+        print("Missing some info!")
+        for vocab in unfilled_vocabulary:
+            print(vocab)
+    print("Found no local vocabulary for: ")
+    print(no_local_vocab)
 
 
 def merge_with_model(related_reading, vocabulary_json):
