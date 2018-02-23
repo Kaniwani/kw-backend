@@ -65,8 +65,8 @@ class Profile(models.Model):
     unlocked_levels = models.ManyToManyField(Level)
     follow_me = models.BooleanField(default=True)
     show_kanji_svg_stroke_order = models.BooleanField(default=False)
-    show_kanji_svg_grid = models.BooleanField(default=False)
-    kanji_svg_draw_speed = models.PositiveIntegerField(default=1, validators=[
+    show_kanji_svg_grid = models.BooleanField(default=True)
+    kanji_svg_draw_speed = models.PositiveIntegerField(default=8, validators=[
         MinValueValidator(constants.MIN_SVG_DRAW_SPEED),
         MaxValueValidator(constants.MAX_SVG_DRAW_SPEED)
     ])
@@ -74,7 +74,7 @@ class Profile(models.Model):
     # On Success/Failure of review
     auto_advance_on_success = models.BooleanField(default=False)
     auto_advance_on_success_delay_milliseconds = models.PositiveIntegerField(default=1000)
-    auto_expand_answer_on_success = models.BooleanField(default=False)
+    auto_expand_answer_on_success = models.BooleanField(default=True)
     auto_expand_answer_on_failure = models.BooleanField(default=False)
 
     # External Site settings
