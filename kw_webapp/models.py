@@ -235,6 +235,7 @@ class UserSpecific(models.Model):
         self.set_next_review_time()
         self.set_criticality()
         self.save()
+        return self
 
     def answered_incorrectly(self):
         """
@@ -252,6 +253,7 @@ class UserSpecific(models.Model):
         self.streak = max(0, self.streak)
         self.save()
         self.set_criticality()
+        return self
 
     def set_criticality(self):
         if self.is_critical():
