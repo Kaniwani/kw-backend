@@ -271,17 +271,18 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
             return HttpResponseForbidden("You can't modify that object at this time!")
 
         was_correct_on_first_try = self._correct_on_first_try(request)
-        review.answered_correctly(was_correct_on_first_try)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        review = review.answered_correctly(was_correct_on_first_try)
+        serializer = self.get_serializer(review, many=False)
+        return Response(serializer.data)
 
     @detail_route(methods=['POST'])
     def incorrect(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
         if not review.can_be_managed_by(request.user) or not review.needs_review:
             return HttpResponseForbidden("You can't modify that object at this time!")
-        review.answered_incorrectly()
-
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        review = review.answered_incorrectly()
+        serializer = self.get_serializer(review, many=False)
+        return Response(serializer.data)
 
     @detail_route(methods=['POST'])
     def hide(self, request, pk=None):

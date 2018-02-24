@@ -634,5 +634,29 @@ class TestProfileApi(APITestCase):
         self.user.profile.refresh_from_db()
         assert(self.user.profile.level == 17)
 
+    def test_review_correct_submissions_return_full_modified_review_object(self):
+        self.client.force_login(self.user)
+        previous_streak = self.review.streak
+        previous_correct = self.review.correct
 
+        response = self.client.post(reverse("api:review-correct", args=(self.review.id,)))
+        self.assertEqual(response.data['id'], self.review.id)
+        self.assertEqual(response.data['streak'], previous_streak + 1)
+        self.assertEqual(response.data['correct'], previous_correct + 1)
+
+    def test_review_incorrect_submissions_return_full_modified_review_object(self):
+        self.client.force_login(self.user)
+
+        # We have to bump this to two to be able to see the drop in streak.
+        self.review.streak = 2
+        self.review.save()
+        self.review.refresh_from_db()
+
+        previous_streak = self.review.streak
+        previous_incorrect = self.review.incorrect
+
+        response = self.client.post(reverse("api:review-incorrect", args=(self.review.id,)))
+        self.assertEqual(response.data['id'], self.review.id)
+        self.assertEqual(response.data['streak'], previous_streak - 1)
+        self.assertEqual(response.data['incorrect'], previous_incorrect + 1)
 

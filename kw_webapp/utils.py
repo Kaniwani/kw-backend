@@ -222,7 +222,7 @@ def one_time_import_jisho_new_format(json_file_path):
                             print(reading.vocabulary.meaning, reading.character, reading.kana, reading.level)
                             merge_with_model(reading, vocabulary_json)
 
-    unfilled_vocabulary= Vocabulary.objects.exclude(readings__sentence_en__isnull=False)
+    unfilled_vocabulary = Vocabulary.objects.exclude(readings__sentence_en__isnull=False)
     if unfilled_vocabulary.count() == 0:
         print("No missing information!")
     else:
