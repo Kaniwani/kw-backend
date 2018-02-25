@@ -67,3 +67,10 @@ def mock_user_info_response(api_key):
                   json=sample_api_responses.user_information_response,
                   status=200,
                   content_type='application/json')
+
+
+def mock_invalid_api_user_info_response(api_key):
+    responses.add(responses.GET, build_user_information_api_string(api_key),
+                  json={"Nothing":"Nothing"},
+                  status=200,
+                  content_type='application/json')
