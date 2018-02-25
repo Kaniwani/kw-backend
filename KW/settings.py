@@ -310,7 +310,7 @@ DJOSER = {
     'SERIALIZERS': {
         "user_create": 'api.serializers.RegistrationSerializer'
     },
-    'PASSWORD_RESET_CONFIRM_URL': "/api/v1/auth/password-reset/{uid}/{token}",
+    'PASSWORD_RESET_CONFIRM_URL': "password-reset/{uid}/{token}",
 }
 
 RAVEN_CONFIG = {
