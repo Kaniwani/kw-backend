@@ -404,18 +404,22 @@ class ProfileViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet, viewsets.Ge
 
     def _update_calculated_fields(self, serializer):
         old_instance = serializer.instance
-        new_instance = serializer.validated_data
 
         user = old_instance.user
 
-        if old_instance.on_vacation and not new_instance.get('on_vacation'):
+        if old_instance.on_vacation and not serializer.validated_data.get('on_vacation'):
             user_returns_from_vacation(user)
 
-        if not old_instance.on_vacation and new_instance.get('on_vacation'):
+        if not old_instance.on_vacation and serializer.validated_data.get('on_vacation'):
             user_begins_vacation(user)
 
-        if not old_instance.follow_me and new_instance.get('follow_me'):
+        if not old_instance.follow_me and serializer.validated_data.get('follow_me'):
             follow_user(user)
+
+        # Since if we have gotten this far, we know that API key is valid, we set it here.
+        api_validated = serializer.validated_data.get('api_key', None)
+        if api_validated:
+            serializer.validated_data['api_valid'] = True
 
         return serializer
 

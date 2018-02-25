@@ -15,7 +15,8 @@ from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.models import Level, Report, Announcement, Vocabulary, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import get_vocab_by_kanji, sync_with_wk
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
-    create_review_for_specific_time, mock_vocab_list_response_with_single_vocabulary, mock_user_info_response
+    create_review_for_specific_time, mock_vocab_list_response_with_single_vocabulary, mock_user_info_response, \
+    mock_invalid_api_user_info_response
 from kw_webapp.utils import one_time_orphaned_level_clear
 
 
@@ -549,8 +550,10 @@ class TestProfileApi(APITestCase):
         self.user.profile.refresh_from_db()
         assert(self.user.profile.vacation_date is not None)
 
+    @responses.activate
     def test_sending_put_to_profile_correctly_updates_information(self):
         self.client.force_login(self.user)
+        mock_user_info_response(self.user.profile.api_key)
 
         response = self.client.get(reverse("api:profile-list"))
         data = response.data
@@ -558,6 +561,7 @@ class TestProfileApi(APITestCase):
         request = data['results'][0]
         request['on_vacation'] = True
         response = self.client.put(reverse("api:profile-detail", args=(id,)), data=request, format='json')
+        assert(response.status_code == 200)
         self.user.refresh_from_db()
         self.user.profile.refresh_from_db()
         assert(self.user.profile.vacation_date is not None)
@@ -660,3 +664,31 @@ class TestProfileApi(APITestCase):
         self.assertEqual(response.data['streak'], previous_streak - 1)
         self.assertEqual(response.data['incorrect'], previous_incorrect + 1)
 
+    @responses.activate
+    def test_api_is_validated_any_time_it_is_modified(self):
+        self.client.force_login(self.user)
+        # Setup a valid response
+        valid_key = "valid_key"
+        mock_user_info_response(valid_key)
+        # Setup
+        invalid_api_key = "invalid_key!"
+        mock_invalid_api_user_info_response(invalid_api_key)
+
+        # Test upon PUT in profile.
+        self.user.profile.api_key = invalid_api_key
+        self.user.profile.api_valid = False
+        self.user.profile.save()
+
+        response = self.client.put(reverse("api:profile-detail", args=(self.user.profile.id,)), data=self.user.profile.__dict__)
+        self.assertEqual(response.status_code, 400)
+
+        response = self.client.patch(reverse("api:profile-detail", args=(self.user.profile.id,)), data={"api_key": invalid_api_key})
+        self.assertEqual(response.status_code, 400)
+
+        # Make sure it doesnt get accidentally set if we patch another field.
+        response = self.client.patch(reverse("api:profile-detail", args=(self.user.profile.id,)), data={"kanji_svg_draw_speed": 4})
+        self.assertFalse(response.data['api_valid'])
+
+        # Now patch it to a valid key, which should set it to true.
+        response = self.client.patch(reverse("api:profile-detail", args=(self.user.profile.id,)), data={"api_key": valid_key})
+        self.assertTrue(response.data['api_valid'])
