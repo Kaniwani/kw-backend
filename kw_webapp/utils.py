@@ -257,6 +257,7 @@ def merge_with_model(related_reading, vocabulary_json):
             related_reading.pitch = string_pitch
 
     if "partOfSpeech" in vocabulary_json:
+        related_reading.parts_of_speech.clear()
         for pos in vocabulary_json["partOfSpeech"]:
             part = PartOfSpeech.objects.get_or_create(part=pos)[0]
             if part not in related_reading.parts_of_speech.all():
