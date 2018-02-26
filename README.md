@@ -1,5 +1,6 @@
 ![Build Status](https://travis-ci.org/Kaniwani/KW-Backend.svg)
 [![Deployment status from DeployBot](https://kaniwani.deploybot.com/badge/66802254069768/57929.svg)](http://deploybot.com)
+[![CircleCI](https://circleci.com/gh/Kaniwani/kw-backend.svg?style=svg)](https://circleci.com/gh/Kaniwani/kw-backend)
 
 # KW
 KaniWani
