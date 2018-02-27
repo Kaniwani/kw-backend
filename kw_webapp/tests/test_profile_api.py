@@ -692,3 +692,24 @@ class TestProfileApi(APITestCase):
         # Now patch it to a valid key, which should set it to true.
         response = self.client.patch(reverse("api:profile-detail", args=(self.user.profile.id,)), data={"api_key": valid_key})
         self.assertTrue(response.data['api_valid'])
+
+    def test_searching_based_on_reading_returns_distinct_responses(self):
+        reading_to_search = "eyylmao"
+        v = create_vocab("vocabulary with 2 readings.")
+        create_reading(v, reading_to_search, "character_1", 5)
+        create_reading(v, reading_to_search, "character_2", 5)
+
+        review = create_userspecific(v, self.user)
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("api:review-list") + "?reading_contains={}".format(reading_to_search))
+        self.assertEqual(response.status_code, 200)
+        data = response.data
+        self.assertEqual(len(data["results"]), 1)
+
+        response = self.client.get(reverse("api:vocabulary-list") + "?reading_contains={}".format(reading_to_search))
+        self.assertEqual(response.status_code, 200)
+        data = response.data
+        self.assertEqual(len(data["results"]), 1)
+
+

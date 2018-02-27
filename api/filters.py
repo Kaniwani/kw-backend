@@ -52,7 +52,15 @@ def filter_reading_contains(queryset, name, value):
     Filter function return any vocab wherein the reading kana or kanji contain the requested characters
     '''
     if value:
-        return queryset.filter(Q(readings__kana__contains=value) | Q(readings__character__contains=value))
+        return queryset.filter(Q(readings__kana__contains=value) | Q(readings__character__contains=value)).distinct()
+
+
+def filter_reading_contains_for_review(queryset, name, value):
+    '''
+    Filter function return any reviews wherein the vocabulary reading kana or kanji contain the requested characters
+    '''
+    if value:
+        return queryset.filter(Q(vocabulary__readings__kana__contains=value) | Q(vocabulary__readings__character__contains=value)).distinct()
 
 
 class VocabularyFilter(filters.FilterSet):
@@ -73,6 +81,7 @@ def filter_tag_multi(queryset, name, value):
 class ReviewFilter(filters.FilterSet):
     level = filters.NumberFilter(method=filter_level_for_review)
     meaning_contains = filters.CharFilter(method=filter_meaning_contains_for_review)
+    reading_contains = filters.CharFilter(method=filter_reading_contains_for_review)
     srs_level = filters.NumberFilter(name='streak', lookup_expr='exact')
     srs_level_lt = filters.NumberFilter(name='streak', lookup_expr='lt')
     srs_level_gt = filters.NumberFilter(name='streak', lookup_expr='gt')
