@@ -23,4 +23,4 @@ class RequestLoggingMixin(LoggingMixin):
         return response.status_code // 100 == 2 or response.status_code // 300 == 3
 
     def handle_log(self):
-        logger.info(self.log)
+        logger.info("{}".format(self.log))
