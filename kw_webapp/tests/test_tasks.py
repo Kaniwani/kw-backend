@@ -12,9 +12,7 @@ from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, associate
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
     reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji, \
-    build_user_information_api_string
-    user_returns_from_vacation, get_users_future_reviews, process_vocabulary_response_for_user, sync_all_users_to_wk, \
-    get_level_pages
+    build_user_information_api_string, get_level_pages
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading, \
@@ -142,16 +140,19 @@ class TestTasks(TestCase):
 
     def test_user_returns_from_vacation_correctly_increments_review_timestamps(self):
         now = timezone.now()
-        an_hour_ago = now - timezone.timedelta(hours=1)
         two_hours_ago = now - timezone.timedelta(hours=2)
         two_hours_from_now = now + timezone.timedelta(hours=2)
         four_hours_from_now = now + timezone.timedelta(hours=4)
+
         self.user.profile.on_vacation = True
-        review = create_userspecific(self.vocabulary, self.user)
+
+        # Create review that should be reviewed never again, but got reviewed 2 hours ago.
+        review = create_userspecific(create_vocab("wazoop"), self.user)
         review.burned = True
         review.next_review_date = None
         review.last_studied = two_hours_ago
         review.save()
+
         self.user.profile.vacation_date = two_hours_ago
         self.user.profile.save()
         self.review.last_studied = two_hours_ago
@@ -255,7 +256,7 @@ class TestTasks(TestCase):
         resp_body['requested_information'][0]['meaning'] = "NOT radioactive bat"
 
         # Mock response so that the level changes on our default vocab.
-        responses.add(responses.GET, build_API_sync_string_for_user(self.user),
+        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, [self.user.profile.level, ]),
                       json=resp_body,
                       status=200,
                       content_type='application/json')
@@ -264,7 +265,6 @@ class TestTasks(TestCase):
 
         # Will fail if 2 vocab exist with same kanji.
         vocabulary = get_vocab_by_kanji("猫")
-
 
     @responses.activate
     def test_one_time_script_for_vocabulary_merging_works(self):
@@ -297,7 +297,6 @@ class TestTasks(TestCase):
         v2 = create_vocab("dog, woofer, pupper")  # < -- real, current vocab.
         create_reading(v1, "doggo1", "犬", 5)
         create_reading(v2, "doggo2", "犬", 5)
-
 
         # Make it so that review 1 has overall better SRS score for the user.
         review_1 = create_userspecific(v1, self.user)

@@ -356,14 +356,6 @@ class UserSpecific(models.Model):
         seconds = (self.last_studied - self.last_studied.min.replace(tzinfo=self.last_studied.tzinfo)).seconds
         rounding = (seconds + round_to) // round_to * round_to
         self.last_studied = self.last_studied + timedelta(0, rounding - seconds, 0)
-
-        logger.debug(
-            "Updating Next Review Time for user {} for review {}. Went from {} to {}, a rounding of {:.1f} minutes"
-                .format(self.user,
-                        self.vocabulary.meaning,
-                        original_date.strftime("%H:%M:%S"),
-                        self.next_review_date.strftime("%H:%M:%S"),
-                        (self.next_review_date - original_date).total_seconds() / 60))
         self.save()
 
     def _round_review_time_up(self):

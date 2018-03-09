@@ -37,11 +37,12 @@ class TestViews(TestCase):
                       status=200,
                       content_type="application/json")
 
-        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, [5, 17]) + ",",
+        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, [5, 17]),
                       json=sample_api_responses.single_vocab_response,
                       status=200,
                       content_type='application/json')
 
+        test = build_API_sync_string_for_user_for_levels(self.user, [5, 17])
         response = self.client.post(reverse("api:user-sync"), data={"full_sync": "true"})
 
         correct_response = {

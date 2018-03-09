@@ -572,16 +572,12 @@ def user_returns_from_vacation(user):
     logger.info("{} has returned from vacation!".format(user.username))
     vacation_date = user.profile.vacation_date
     if vacation_date:
-        users_reviews = UserSpecific.objects.filter(user=user, burned=False)
+        users_reviews = UserSpecific.objects.filter(user=user)
         elapsed_vacation_time = timezone.now() - vacation_date
         updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
         users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
         logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
         logger.info("User {} has been gone for timedelta: {}".format(user.username, str(elapsed_vacation_time)))
-
-        updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
-        users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
-        logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
 
     user.profile.vacation_date = None
     user.profile.on_vacation = False
