@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.db import migrations
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -14,8 +14,14 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='userspecific',
-            unique_together=set([('vocabulary', 'user')]),
+        migrations.RemoveField(
+            model_name='report',
+            name='vocabulary',
+        ),
+        migrations.AddField(
+            model_name='report',
+            name='reading',
+            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='kw_webapp.Reading'),
+            preserve_default=False,
         ),
     ]

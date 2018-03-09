@@ -16,4 +16,8 @@ class Migration(migrations.Migration):
             name='reading',
             unique_together=set([('character', 'kana')]),
         ),
+        migrations.AlterUniqueTogether(
+            name='userspecific',
+            unique_together=set([('vocabulary', 'user')]),
+        ),
     ]
