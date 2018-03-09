@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='report',
             name='reading',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='kw_webapp.Reading'),
+            field=models.ForeignKey(default=0, on_delete=models.deletion.CASCADE, to='kw_webapp.Reading'),
             preserve_default=False,
         ),
     ]
