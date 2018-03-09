@@ -1,9 +1,0 @@
-Hello Gary and Duncan! Here is a fresh message from a user!
-username: {{user.username}}
-registered email: {{user.email}}
-
-Name: {{ name }}
-Email: {{ email }}
-
--------------------------
-{{ body|safe}}

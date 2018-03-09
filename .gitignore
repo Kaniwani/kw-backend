@@ -111,3 +111,7 @@ dist
 
 # Ignore all local backup files
 *.bak
+
+# One time import files
+ROLLING_UPDATES.json
+outfile.txt

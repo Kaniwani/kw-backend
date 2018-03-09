@@ -2,7 +2,9 @@ import requests
 import logging
 from . import constants
 from . import exceptions
-logger = logging.getLogger('kw.tasks')
+
+logger = logging.getLogger(__name__)
+
 
 def _has_no_errors(response):
     return response and "error" not in response.json() and response.status_code == 200
@@ -31,12 +33,8 @@ def _get_error(response):
 
 def make_api_call(api_url):
     response = requests.get(api_url)
-    try:
-        if _has_no_errors(response):
-            return response.json()
-        elif _has_invalid_key_error(response):
-            raise _get_error(response)
-    except Exception:
-        logger.error("Error while attempting to make api call at {}".format(api_url), exc_info=1)
+    if response.status_code == 200:
+        return response.json()
 
-
+    if response.status_code == 401:
+        raise exceptions.InvalidWaniKaniKey("Got a 401 from Wanikani!")

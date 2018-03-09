@@ -9,10 +9,17 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from collections import namedtuple
 from datetime import timedelta
+
 import os
+from collections import namedtuple
+
+import raven
 from django.core.urlresolvers import reverse_lazy
+from django.utils.log import DEFAULT_LOGGING
+import os
+
+LOGLEVEL = os.environ.get('LOGLEVEL', 'info').upper()
 
 try:
     import KW.secrets as secrets
@@ -24,6 +31,7 @@ except ImportError:
     secrets.SECRET_KEY = "samplekey"
     secrets.EMAIL_HOST_PASSWORD = "nope"
     secrets.EMAIL_HOST_USER = "dontmatter@whatever.com"
+    secrets.RAVEN_DSN = "whatever"
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 MY_TIME_ZONE = 'America/New_York'
@@ -31,20 +39,20 @@ MY_TIME_ZONE = 'America/New_York'
 logging_class = 'logging.StreamHandler'
 logging_level = 'ERROR' if secrets.DEPLOY else 'DEBUG'
 
+# This allows the /docs/ endpoints to correctly build urls.
+USE_X_FORWARDED_HOST = True
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '%(levelname)s---%(asctime)s---%(module)s : %(message)s',
+        'console': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s'
           },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
+        'request': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s REQUEST: %(message)s'
         },
-        'time_only': {
-            'format': '%(asctime)s---%(message)s'
-        }
+        'django.server': DEFAULT_LOGGING['formatters']['django.server'],
     },
     'filters': {
         'require_debug_true': {
@@ -53,91 +61,70 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'INFO',
+            'formatter': 'console',
+            'class': 'logging.StreamHandler'
+        },
+        'sentry': {
+            'formatter': 'console',
+            'level': 'WARNING',
             'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler'
         },
-        'views': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "views.log"),
-        },
-        'models': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "models.log"),
-        },
-        'errors': {
-            'level': 'ERROR',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "errors.log"),
-        },
-        'tasks': {
+        'app_log': {
+            'formatter': 'console',
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "logs", "kaniwani.log"),
             'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "tasks.log"),
+            'backupCount': '30',
         },
-        'sporadic_tasks': {
+        'request_log': {
+            'formatter': 'request',
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, "logs", "requests.log"),
             'when': 'midnight',
-            'formatter': 'verbose',
-            'filename': os.path.join(BASE_DIR, "logs", "sporadic_tasks.log"),
+            'backupCount': '5',
         },
-        'review_data': {
-            'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'when': 'midnight',
-            'formatter': 'time_only',
-            'filename': os.path.join(BASE_DIR, "logs", "review_data.log"),
-        }
+        'django.server': DEFAULT_LOGGING['handlers']['django.server'],
     },
     'loggers': {
-        'kw.views': {
-            'handlers': ['views', 'errors', 'console'],
+        # ROOT LOGGER
+        '': {
             'level': 'DEBUG',
-            'propagate': True,
+            'handlers': ['console', 'sentry']
         },
-        'kw.models': {
-            'handlers': ['models', 'errors', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
+        # For anything in the 'api' directory. e.g. api.views, api.tasks, etc.
+        'api': {
+            'level': LOGLEVEL,
+            'handlers': ['console', 'app_log', 'sentry'],
+            'propagate': False
         },
-        'kw.tasks': {
-            'handlers': ['tasks', 'errors', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
+        'kw_webapp': {
+            'level': LOGLEVEL,
+            'handlers': ['console', 'app_log', 'sentry'],
+            'propagate': False
         },
-        'kw.db_repopulator': {
-            'handlers': ['sporadic_tasks', 'errors', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
+        # Used for drf-tracking which logs all request/response info. For later shipping to ELK
+        'KW.LoggingMiddleware': {
+            'level': 'INFO',
+            'handlers': ['request_log'],
+            'propagate': False
         },
-        'kw.review_data': {
-            'handlers':['review_data', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
+        'celery': {
+            'handlers': ['sentry', 'console'],
+            'level': 'INFO',
+            'propagate': False
         },
+        'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 }
 
-
-#CELERY SETTINGS
-#CELERY_RESULT_BACKEND = 'amqp'
 CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
 CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-#CELERY_BROKER_URL = broker = 'amqp://guest@localhost//'
+CELERYD_HIJACK_ROOT_LOGGER = False
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
@@ -149,10 +136,6 @@ CELERY_BEAT_SCHEDULE = {
     'update_users_unlocked_vocab': {
         'task': 'kw_webapp.tasks.sync_all_users_to_wk',
         'schedule': timedelta(hours=12),
-    },
-    'sync_vocab_db_with_wk': {
-        'task': 'kw_webapp.tasks.repopulate',
-        'schedule': timedelta(hours=3)
     }
 }
 
@@ -170,32 +153,41 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 
 # Application definition
 
+# CORS Settings
+CORS_ORIGIN_WHITELIST = (
+    'localhost:3000',
+    'http://localhost:3000/',
+    'http://127.0.0.1:3000',
+    '127.0.0.1:3000',
+    'http://96.126.101.77:3000',
+    '96.126.101.77:3000'
+)
 
-LOGIN_URL = reverse_lazy("login")
-LOGIN_REDIRECT_URL = reverse_lazy("kw:home")
+CORS_ALLOW_CREDENTIALS = True
 
-
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+LOGIN_URL = "/api/v1/auth/login"
 
 INSTALLED_APPS = (
+    'django.contrib.contenttypes',
+    'kw_webapp.apps.KaniwaniConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.humanize',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_celery_beat',
-    'crispy_forms',
     'rest_framework',
-    'lineage',
-    'kw_webapp.apps.KaniwaniConfig', #Make sure this is the top entry in order to correctly override template folders.
     'debug_toolbar',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'corsheaders',
+    'djoser',
+    'raven.contrib.django.raven_compat',
+    'rest_framework_tracking'
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -203,33 +195,28 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.gzip.GZipMiddleware',
-    'async_messages.middleware.AsyncMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'kw_webapp.middleware.SetLastVisitMiddleware'
-)
+]
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += (
+    MIDDLEWARE += [
         'KW.LoggingMiddleware.ExceptionLoggingMiddleware',
-    )
+    ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated'
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+        #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
+        #TODO fix this, since obviously it doesnt work.
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
-
-
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100,
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)
-}
-
-REST_FRAMEWORK_DOCS = {
-    'HIDE_DOCS': not DEBUG
 }
 
 CACHES = {
@@ -256,9 +243,6 @@ EMAIL_USE_TLS = True
 TIME_ZONE = MY_TIME_ZONE
 SITE_ID = 1
 
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
 if secrets.DB_TYPE == "postgres":
     DATABASES = {
         'default': {
@@ -278,9 +262,7 @@ elif secrets.DB_TYPE == "sqlite":
         }
     }
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.6/topics/i18n/
-
+DB_TYPE = secrets.DB_TYPE
 LANGUAGE_CODE = 'en-us'
 
 USE_I18N = True
@@ -289,21 +271,13 @@ USE_L10N = True
 
 USE_TZ = True
 
-LINEAGE_ANCESTOR_PHRASE = "-active"
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
 STATIC_ROOT = "/var/www/kaniwani.com/static"
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "_front-end/dist/assets"),
-)
 
 INTERNAL_IPS = ('127.0.0.1',)
-#For cache-busting in production mode.
-if not DEBUG:
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 TEMPLATES = [
     {
@@ -316,18 +290,30 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 'django.contrib.auth.context_processors.auth',
-                "KW.preprocessors.review_count_preprocessor",
-                "KW.preprocessors.srs_level_count_preprocessor",
                 'django.template.context_processors.request',
-                'django.contrib.messages.context_processors.messages',
             ],
             "debug": DEBUG
         }
     }
 ]
 
+JWT_AUTH = {
+        'JWT_VERIFY_EXPIRATION': False
+}
+
 AUTHENTICATION_BACKENDS = [
     'kw_webapp.backends.EmailOrUsernameAuthenticationBackend',
     'django.contrib.auth.backends.ModelBackend'
 ]
 
+DJOSER = {
+    'SERIALIZERS': {
+        "user_create": 'api.serializers.RegistrationSerializer'
+    },
+    'PASSWORD_RESET_CONFIRM_URL': "password-reset/{uid}/{token}",
+}
+
+RAVEN_CONFIG = {
+    'dsn': secrets.RAVEN_DSN,
+    'release': "FILL_ME_IN"
+} if not DEBUG else {}

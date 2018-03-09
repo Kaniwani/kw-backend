@@ -1,21 +1,26 @@
 from django.conf.urls import url, include
 from rest_framework.routers import DefaultRouter
-from rest_framework.authtoken import views as authviews
-
-from api import views
-from api.views import ReviewViewSet
+from rest_framework_jwt import views as jwtviews
+from api.views import ReviewViewSet, VocabularyViewSet, ReadingViewSet, LevelViewSet, ReadingSynonymViewSet, \
+    FrequentlyAskedQuestionViewSet, AnnouncementViewSet, UserViewSet, ContactViewSet, ProfileViewSet, ReportViewSet, \
+    MeaningSynonymViewSet
 
 router = DefaultRouter()
-router.register(r'reviews', ReviewViewSet, base_name="review")
+router.register(r'review', ReviewViewSet, base_name="review")
+router.register(r'profile', ProfileViewSet, base_name='profile')
+router.register(r'vocabulary', VocabularyViewSet, base_name="vocabulary")
+router.register(r'report', ReportViewSet, base_name="report")
+router.register(r'reading', ReadingViewSet, base_name="reading")
+router.register(r'level', LevelViewSet, base_name="level")
+router.register(r'synonym/reading', ReadingSynonymViewSet, base_name="reading-synonym")
+router.register(r'synonym/meaning', MeaningSynonymViewSet, base_name="meaning-synonym")
+router.register(r'faq', FrequentlyAskedQuestionViewSet, base_name='faq')
+router.register(r'announcement', AnnouncementViewSet, base_name='announcement')
+router.register(r'user', UserViewSet, base_name='user')
+router.register(r'contact', ContactViewSet, base_name='contact')
+
 urlpatterns = router.urls + [
-
-    url(r'^profiles/$', views.ProfileList.as_view()),
-    url(r'^profiles/(?P<pk>[0-9]+)$', views.ProfileDetail.as_view()),
-
-    url(r'^vocabulary/$', views.VocabularyList.as_view()),
-    url(r'^vocabulary/(?P<pk>[0-9]+)$', views.VocabularyDetail.as_view()),
-
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^token-auth/', authviews.obtain_auth_token)
+    url(r'^auth/login/', jwtviews.obtain_jwt_token),
+    url(r'^auth/', include('djoser.urls.base', namespace="auth"))
 ]
 

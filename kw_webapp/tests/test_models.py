@@ -4,8 +4,10 @@ from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http import HttpResponseForbidden
-from django.test import Client, TestCase
+from django.test import Client
 from django.utils import timezone
+from rest_framework.reverse import reverse
+from rest_framework.test import APITestCase
 
 from kw_webapp import constants
 from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag
@@ -13,28 +15,28 @@ from kw_webapp.tests.utils import create_user, create_userspecific, create_readi
 from kw_webapp.tests.utils import create_vocab
 
 
-class TestModels(TestCase):
+class TestModels(APITestCase):
     def setUp(self):
-        self.client = Client()
         self.user = create_user("Tadgh")
         self.user.set_password("password")
         create_profile(self.user, "any key", 1)
         self.user.save()
         self.vocabulary = create_vocab("cat")
         self.review = create_userspecific(self.vocabulary, self.user)
-        self.review.meaningsynonym_set.get_or_create(text="minou")
+        self.review.meaning_synonyms.get_or_create(text="minou")
 
         # default state of a test is a user that has a single review, and the review has a single synonym added.
 
-    def test_toggling_review_hidden_ownershp_fails_on_wrong_user(self):
+    def test_toggling_review_hidden_ownership_fails_on_wrong_user(self):
         user2 = create_user("eve")
         user2.set_password("im_a_hacker")
         create_profile(user2, "any_key", 1)
         user2.save()
         relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id
-        if self.client.login(username="eve", password="im_a_hacker"):
-            response = self.client.post(path="/kw/togglevocab/", data={"review_id": relevant_review_id})
-            self.assertIsInstance(response, HttpResponseForbidden)
+
+        self.client.force_login(user2)
+        response = self.client.post(reverse("api:review-hide", args=(relevant_review_id,)))
+        self.assertIsInstance(response, HttpResponseForbidden)
 
     def test_toggling_review_hidden_ownership_works(self):
         relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id
@@ -50,8 +52,8 @@ class TestModels(TestCase):
         self.assertNotEqual(before_toggle_hidden, after_toggle_hidden)
 
     def test_adding_synonym_works(self):
-        self.review.meaningsynonym_set.get_or_create(text="une petite chatte")
-        self.assertEqual(2, len(self.review.meaningsynonym_set.all()))
+        self.review.meaning_synonyms.get_or_create(text="une petite chatte")
+        self.assertEqual(2, len(self.review.meaning_synonyms.all()))
 
     def test_removing_synonym_by_lookup_works(self):
         remove_text = "minou"
@@ -63,8 +65,8 @@ class TestModels(TestCase):
         self.assertRaises(MeaningSynonym.DoesNotExist, self.review.remove_synonym, remove_text)
 
     def test_removing_synonym_by_object_works(self):
-        synonym, created = self.review.meaningsynonym_set.get_or_create(text="minou")
-        self.review.meaningsynonym_set.remove(synonym)
+        synonym, created = self.review.meaning_synonyms.get_or_create(text="minou")
+        self.review.meaning_synonyms.remove(synonym)
 
     def test_reading_clean_fails_with_invalid_levels_too_high(self):
         v = create_vocab("cat")
@@ -91,20 +93,17 @@ class TestModels(TestCase):
         self.assertTrue(len(v.available_readings(2)) == 1)
 
     def test_synonym_adding(self):
-        review = create_userspecific(self.vocabulary, self.user)
+        self.review.meaning_synonyms.get_or_create(text="kitty")
 
-        review.meaningsynonym_set.get_or_create(text="kitty")
-
-        self.assertIn("kitty", review.synonyms_string())
+        self.assertIn("kitty", self.review.synonyms_string())
 
     def test_get_all_readings_returns_original_and_added_readings(self):
         self.vocabulary.readings.create(kana="what", character="ars", level=5)
-        review = create_userspecific(self.vocabulary, self.user)
-        review.answer_synonyms.create(kana="shwoop", character="fwoop")
+        self.review.reading_synonyms.create(kana="shwoop", character="fwoop")
 
-        expected = list(chain(self.vocabulary.readings.all(), review.answer_synonyms.all()))
+        expected = list(chain(self.vocabulary.readings.all(), self.review.reading_synonyms.all()))
 
-        self.assertListEqual(expected, review.get_all_readings())
+        self.assertListEqual(expected, self.review.get_all_readings())
 
     def test_setting_twitter_account_correctly_prepends_at_symbol(self):
         non_prepended_account_name = "Tadgh"
@@ -188,6 +187,7 @@ class TestModels(TestCase):
 
     def test_rounding_a_review_time_only_goes_up(self):
         self.review.next_review_date = self.review.next_review_date.replace(minute=17)
+        self.review.last_studied = self.review.next_review_date.replace(minute=17)
         self.review._round_review_time_up()
         self.review.refresh_from_db()
 
@@ -195,6 +195,13 @@ class TestModels(TestCase):
         self.assertEqual(
             self.review.next_review_date.hour % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)), 0)
         self.assertEqual(self.review.next_review_date.second % constants.REVIEW_ROUNDING_TIME.total_seconds(), 0)
+
+    def test_rounding_up_a_review_rounds_up_last_studied_date(self):
+        self.review.last_studied = timezone.now()
+        self.review.last_studied = self.review.last_studied.replace(minute=17)
+        self.review._round_review_time_up()
+
+        self.assertEqual(self.review.last_studied.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0)
 
     def test_default_review_times_are_not_rounded(self):
         rounded_time = self.review.next_review_date
@@ -275,3 +282,46 @@ class TestModels(TestCase):
     def test_tag_names_are_unique(self):
         original_tag = Tag.objects.create(name='S P I C Y')
         self.assertRaises(IntegrityError, Tag.objects.create, name='S P I C Y')
+
+    def test_setting_criticality_of_review(self):
+        self.review.correct = 1
+        self.review.incorrect = 2
+        self.review.save()
+        self.review.refresh_from_db()
+
+        self.assertFalse(self.review.critical)
+
+        self.review.answered_incorrectly()
+
+        self.assertTrue(self.review.critical)
+
+    def test_critical_not_set_when_below_attempt_threshold(self):
+        self.review.correct = 0
+        self.review.incorrect = 1
+        self.review.save()
+        self.review.refresh_from_db()
+
+        self.assertFalse(self.review.critical)
+
+        # Brings total attempt count to 2
+        self.review.answered_incorrectly()
+
+        self.assertFalse(self.review.critical)
+
+    def test_review_correctly_comes_out_of_critical_once_guru(self):
+        self.review.correct = 1
+        self.review.incorrect = 3
+        self.review.critical = True
+        self.review.save()
+        self.review.refresh_from_db()
+
+        self.assertTrue(self.review.critical)
+
+        self.review.answered_correctly()
+
+        self.review.refresh_from_db()
+        self.assertFalse(self.review.critical)
+
+    def test_newly_created_user_specific_has_null_last_studied_date(self):
+        review = create_userspecific(create_vocab("test"), self.user)
+        self.assertIsNone(review.last_studied)

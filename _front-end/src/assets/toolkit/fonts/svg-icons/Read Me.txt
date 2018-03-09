@@ -1,5 +1,0 @@
-If you prefer to reference an external SVG (containing <defs>) instead of embedding it in HTML, you will need to use *svgxuse.js* in order to support IE 9+. In browsers that don't support referencing external SVGs (such as IE 9), this polyfill sends one HTTP request to fetch and cache all symbol definitions. See *demo-external-svg.html* for this approach. This demo references the *symbol-defs.svg* file and uses the aforementioned polyfill. Note that it must be hosted on a web server to work
-properly. Learn more aobut this polyfill here: https://github.com/Keyamoon/svgxuse
-
-You can import *selection.json* back to the IcoMoon app using the *Import Icons* button (or via Main Menu → Manage Projects) to retrieve your icon selection.
-
