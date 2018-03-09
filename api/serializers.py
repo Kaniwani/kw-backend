@@ -136,7 +136,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_join_date(self, obj):
         """
-        So this is a hack. By default the modelserializer expects a datefield, but a fewww users have datetimefields as their join_date, 
+        So this is a hack. By default the modelserializer expects a datefield, but a fewww users have datetimefields as their join_date,
         due to an old version of the model. Eventually we should fix those users but for now this methodfield does the trick.
         """
         return obj.join_date

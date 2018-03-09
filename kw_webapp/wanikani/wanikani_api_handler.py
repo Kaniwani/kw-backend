@@ -29,6 +29,8 @@ def _get_error(response):
         return exceptions.WanikaniAPIException(error_details['message'])
 
 
+
+
 def make_api_call(api_url):
     response = requests.get(api_url)
     if response.status_code == 200:
