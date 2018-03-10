@@ -404,15 +404,3 @@ def clear_duplicate_answer_synonyms_from_reviews():
                 print("[{}]First time seeing element: {}".format(review_id, synonym.kana + "_" + synonym.character))
                 seen_synonyms.add(synonym.kana + "_" + synonym.character)
 
-
-def v2_migration():
-    one_time_merger()
-    blow_away_duplicate_reviews_for_all_users()
-    one_time_import_jisho_new_format("wk_vocab_import.json")
-    one_time_orphaned_level_clear()
-    clear_duplicate_meaning_synonyms_from_reviews()
-    clear_duplicate_meaning_synonyms_from_reviews()
-
-
-
-

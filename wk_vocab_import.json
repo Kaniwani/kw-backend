@@ -34071,8 +34071,8 @@
     ],
     "common": true,
     "furi": "0:あいだ",
-    "sentenceEn": "Did you catch the train?!",
-    "sentenceJa": "列車に間に合ったのか",
+    "sentenceEn": "He stuck his head out from between the trees.",
+    "sentenceJa": "彼は木と木の間から首を出した",
     "pitch": [
       0
     ]
@@ -34099,8 +34099,8 @@
       "suf"
     ],
     "furi": "1:かん",
-    "sentenceEn": "The test involved having to hold my breath for fixed intervals of time. The most difficult one was for 3 hours, but I did it. ",
-    "sentenceJa": "試験の中に、一定時間息を止めるというものがありました。一番難しかったのは、三時間息を止めるというものだったけれど、私はなんとかやり切りました",
+    "sentenceEn": "Simmer gently for 15 minutes.",
+    "sentenceJa": "15分間、弱火で煮てください",
     "pitch": [
       -1
     ],
@@ -34171,8 +34171,8 @@
     ],
     "common": true,
     "furi": "0:かぞ",
-    "sentenceEn": "My son can count up to a hundred now.",
-    "sentenceJa": "内の息子は迄かぞえられる",
+    "sentenceEn": "Count backwards from ten to one.",
+    "sentenceJa": "10から1まで逆に数える",
     "pitch": [
       3
     ]
@@ -38389,8 +38389,8 @@
     ],
     "common": true,
     "furi": "0:あ",
-    "sentenceEn": "You can’t call dogs off from a fight.",
-    "sentenceJa": "噛み合う犬は呼び難し",
+    "sentenceEn": "These shoes aren't suitable for the party.",
+    "sentenceJa": "この靴はパーティーに合わない",
     "pitch": [
       1
     ]
@@ -50375,8 +50375,8 @@
     ],
     "common": true,
     "furi": "0:たん;1:じょう",
-    "sentenceEn": "Happy birthday, Miss Aiba!",
-    "sentenceJa": "お誕生日おめでとうちゃん",
+    "sentenceEn": "They were born on the same day.",
+    "sentenceJa": "彼らは同じ日に誕生した",
     "pitch": [
       0
     ]
@@ -51834,8 +51834,8 @@
     ],
     "common": true,
     "furi": "0:よ",
-    "sentenceEn": "You can’t call dogs off from a fight.",
-    "sentenceJa": "噛み合う犬は呼び難し",
+    "sentenceEn": "I called his name, but there was no answer.",
+    "sentenceJa": "名前を呼んだが返事はなかった",
     "pitch": [
       0
     ]
@@ -51934,8 +51934,8 @@
     ],
     "common": true,
     "furi": "0:たん;1:じょう;2:び",
-    "sentenceEn": "Happy birthday, Miss Aiba!",
-    "sentenceJa": "お誕生日おめでとうちゃん",
+    "sentenceEn": "Happy belated birthday!",
+    "sentenceJa": "遅まきながらお誕生日おめでとうございます！",
     "pitch": [
       3
     ]
@@ -55122,8 +55122,8 @@
     ],
     "common": false,
     "furi": "1:たん;2:じょう;3:び",
-    "sentenceEn": "Happy birthday, Miss Aiba!",
-    "sentenceJa": "お誕生日おめでとうちゃん",
+    "sentenceEn": "Happy belated birthday!",
+    "sentenceJa": "遅まきながらお誕生日おめでとうございます！",
     "pitch": [
       -1
     ]
@@ -72958,8 +72958,8 @@
     ],
     "common": true,
     "furi": "0:かん",
-    "sentenceEn": "They’re making a killing selling delicious canned coffee.",
-    "sentenceJa": "彼らは、とても美味い缶コーヒーをを販売して、大儲けしている",
+    "sentenceEn": "I'll treat you to a canned coffee.",
+    "sentenceJa": "缶コーヒーをおごるよ",
     "pitch": [
       -1
     ]

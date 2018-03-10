@@ -13,14 +13,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='report',
-            name='vocabulary',
-        ),
-        migrations.AddField(
-            model_name='report',
-            name='reading',
-            field=models.ForeignKey(default=0, on_delete=django.db.models.deletion.CASCADE, to='kw_webapp.Reading'),
-            preserve_default=False,
-        ),
+        # WE have moved this stuff into migration 29, as it was actually needed there.
     ]
