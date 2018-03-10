@@ -160,7 +160,11 @@ CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:3000',
     '127.0.0.1:3000',
     'http://96.126.101.77:3000',
-    '96.126.101.77:3000'
+    '96.126.101.77:3000',
+    'www.kaniwani.com',
+    'https://www.kaniwani.com',
+    'https://kaniwani.com',
+    'kaniwani.com'
 )
 
 CORS_ALLOW_CREDENTIALS = True
