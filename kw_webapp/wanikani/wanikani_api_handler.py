@@ -29,12 +29,13 @@ def _get_error(response):
         return exceptions.WanikaniAPIException(error_details['message'])
 
 
-
-
 def make_api_call(api_url):
     response = requests.get(api_url)
     if response.status_code == 200:
-        return response.json()
+        if _has_no_errors(response):
+            return response.json()
+        else:
+            raise _get_error(response)
 
     if response.status_code == 401:
         raise exceptions.InvalidWaniKaniKey("Got a 401 from Wanikani!")
