@@ -189,8 +189,8 @@ def unlock_eligible_vocab_from_levels(user, levels):
         logger.error("Invalid key found for user {}".format(user.username))
         user.profile.api_valid = False
         user.profile.save()
-    except exceptions.WanikaniAPIException:
-        logger.error("Non-invalid key error found during API call. ")
+    except exceptions.WanikaniAPIException as e:
+        logger.error("Non-invalid key error found during API call. ", e)
 
 
 def get_wanikani_level_by_api_key(api_key):
@@ -468,9 +468,15 @@ def sync_recent_unlocked_vocab_with_wk(user):
                   level in user.profile.unlocked_levels_list()]
         if levels:
             request_string = build_API_sync_string_for_user_for_levels(user, levels)
-            json_data = make_api_call(request_string)
-            new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, json_data)
-            return new_review_count, new_synonym_count
+            try:
+                json_data = make_api_call(request_string)
+                new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, json_data)
+                return new_review_count, new_synonym_count
+            except exceptions.InvalidWaniKaniKey:
+                user.profile.api_valid = False
+                user.profile.save()
+            except exceptions.WanikaniAPIException as e:
+                logger.warn("Couldn't sync recent vocab for {}".format(user.username), e)
     return 0, 0
 
 
@@ -481,10 +487,16 @@ def sync_unlocked_vocab_with_wk(user):
         for page in pages:
             request_string = build_API_sync_string_for_user_for_levels(user, page)
             logger.info("Creating sync string for user {}: {}".format(user.username, user.profile.api_key))
-            response = make_api_call(request_string)
-            current_page_review_count, current_page_synonym_count = process_vocabulary_response_for_user(user, response)
-            new_review_count += current_page_review_count
-            new_synonym_count += current_page_synonym_count
+            try:
+                response = make_api_call(request_string)
+                current_page_review_count, current_page_synonym_count = process_vocabulary_response_for_user(user, response)
+                new_review_count += current_page_review_count
+                new_synonym_count += current_page_synonym_count
+            except exceptions.InvalidWaniKaniKey:
+                user.profile.api_valid = False
+                user.profile.save()
+            except exceptions.WanikaniAPIException as e:
+                logger.error("Couldn't sync recent vocab for {}".format(user.username), e)
         return new_review_count, new_synonym_count
     else:
         return 0, 0
@@ -520,8 +532,8 @@ def pull_user_synonyms_by_level(user, level):
     :return: None
     '''
     request_string = build_API_sync_string_for_user_for_levels(user, level)
-    json_data = make_api_call(request_string)
     try:
+        json_data = make_api_call(request_string)
         vocabulary_list = json_data['requested_information']
         for vocabulary in vocabulary_list:
             meaning = vocabulary["meaning"]
@@ -541,8 +553,12 @@ def pull_user_synonyms_by_level(user, level):
                         logger.error(
                             "Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(
                                 review))
-    except KeyError:
-        logger.error("NO requested info?: {}".format(json_data))
+
+    except exceptions.InvalidWaniKaniKey:
+        user.profile.api_valid = False
+        user.profile.save()
+    except exceptions.WanikaniAPIException as e:
+        logger.warning("Couldnt pull user synonyms for {}".format(user.username), e)
 
 
 def pull_all_user_synonyms(user=None):
