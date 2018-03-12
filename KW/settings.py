@@ -135,9 +135,9 @@ CELERY_BEAT_SCHEDULE = {
     'update_users_unlocked_vocab': {
         'task': 'kw_webapp.tasks.sync_all_users_to_wk',
         'schedule': timedelta(hours=12),
+        'options': {'queue': 'long_running_sync'}
     }
 }
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
