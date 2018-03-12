@@ -1,0 +1,8 @@
+username: {{user.username}}
+registered email: {{user.email}}
+
+Name: {{ name }}
+Email: {{ email }}
+
+-------------------------
+{{ body|safe}}
