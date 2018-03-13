@@ -713,3 +713,16 @@ class TestProfileApi(APITestCase):
         self.assertEqual(len(data["results"]), 1)
 
 
+    def test_upcoming_reviews_no_longer_wrap_around(self):
+        self.client.force_login(self.user)
+        # We place nothing in the upcoming hour, ergo
+        for i in range(1, 26):
+            for j in range(0, i):
+                create_review_for_specific_time(self.user, "review_{}".format(i), (timezone.now() + timedelta(hours=i)).replace(minute=0))
+
+        response = self.client.get(reverse("api:user-me"))
+        data = response.data
+        upcoming_reviews = data['profile']['upcoming_reviews']
+        self.assertEqual(upcoming_reviews[0], 0)
+        self.assertEqual(upcoming_reviews[23], 23)
+
