@@ -13,7 +13,8 @@ from api.validators import WanikaniApiKeyValidator
 from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS, STREAK_TO_SRS_LEVEL_MAP_KW
 from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement, Report, MeaningSynonym
-from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews
+from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews, \
+    build_upcoming_srs_for_user
 
 import logging
 logger = logging.getLogger(__name__)
@@ -49,25 +50,7 @@ class SimpleUpcomingReviewSerializer(serializers.BaseSerializer):
     """
 
     def to_representation(self, user):
-        now = timezone.now()
-        one_day_from_now = now + datetime.timedelta(hours=24)
-        reviews = get_users_reviews(user).filter(next_review_date__range=(now, one_day_from_now)) \
-            .annotate(hour=TruncHour('next_review_date', tzinfo=timezone.utc)) \
-            .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc)) \
-            .values("date", "hour") \
-            .annotate(review_count=Count('id')).order_by("date", "hour")
-
-        expected_hour = now.hour
-        hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
-        retval = OrderedDict.fromkeys(hours, 0)
-        for review in reviews:
-            found_hour = review['hour'].hour
-            while found_hour != expected_hour:
-                expected_hour = (expected_hour + 1) % 24
-            retval[expected_hour] = review["review_count"]
-
-        real_retval = [value for key, value in retval.items()]
-        return real_retval
+        return build_upcoming_srs_for_user(user)
 
 
 class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):

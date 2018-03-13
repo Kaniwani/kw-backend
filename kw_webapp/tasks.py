@@ -1,9 +1,12 @@
 from __future__ import absolute_import
 
+from collections import OrderedDict
+
 from celery import shared_task, task
 from django.contrib.auth.models import User
-from django.db.models import F
+from django.db.models import F, Count
 from django.db.models import Min
+from django.db.models.functions import TruncHour, TruncDate
 
 from kw_webapp.constants import WANIKANI_SRS_LEVELS, KANIWANI_SRS_LEVELS, KwSrsLevel
 from kw_webapp.wanikani import make_api_call
@@ -518,7 +521,7 @@ def sync_all_users_to_wk():
     affected_count = 0
     for user in users:
         logger.info(user.username + " --- " + str(user.profile.last_visit) + " --- " + str(one_week_ago))
-        sync_with_wk.apply_async(user.id, full_sync=True, queue="long_running_sync")
+        sync_with_wk.apply_async(args=[user.id, True], queue="long_running_sync")
         affected_count += 1
     return affected_count
 
@@ -623,6 +626,42 @@ def disable_follow_me(user):
     user.profile.save()
 
 
+def get_24_hour_time_span():
+    # Fetch all reviews from now, until just before this hour tomorrow. e.g. ~24 hour span.
+    now = timezone.now()
+    one_day_from_now = now + timedelta(hours=23)
+    one_day_from_now = one_day_from_now.replace(minute=59)
+    return now, one_day_from_now
+
+
+def build_upcoming_srs_for_user(user):
+    start, finish = get_24_hour_time_span()
+    reviews = get_users_reviews(user).filter(next_review_date__range=(start, finish))
+
+    for review in reviews:
+        logger.debug(review.next_review_date)
+
+    reviews = reviews \
+        .annotate(hour=TruncHour('next_review_date', tzinfo=timezone.utc)) \
+        .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc)) \
+        .values("date", "hour") \
+        .annotate(review_count=Count('id')).order_by("date", "hour")
+
+    expected_hour = start.hour
+    hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
+    retval = OrderedDict.fromkeys(hours, 0)
+    for review in reviews:
+        found_hour = review['hour'].hour
+        while found_hour != expected_hour:
+            logger.debug("{} != {}, skipping.".format(found_hour, expected_hour))
+            expected_hour = (expected_hour + 1) % 24
+        retval[expected_hour] = review["review_count"]
+        logger.debug("Inserting reviews at hour {}".format(expected_hour))
+
+    real_retval = [value for key, value in retval.items()]
+    return real_retval
+
+
 def reset_user(user, reset_to_level):
     reset_levels(user, reset_to_level)
     reset_reviews(user, reset_to_level)
@@ -643,4 +682,3 @@ def reset_reviews(user, reset_to_level):
     reviews_to_delete = UserSpecific.objects.filter(user=user)
     reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lt=reset_to_level)
     reviews_to_delete.delete()
-
