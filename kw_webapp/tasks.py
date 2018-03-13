@@ -44,6 +44,7 @@ def all_srs(user=None):
     logger.info("Beginning  SRS run for {}.".format(user or "all users"))
     affected_count = 0
     now = timezone.now()
+    slightly_ahead_of_now = now + timedelta(minutes=1)
 
     # Fetches all reviews with next_review_date greater than or equal to NOW, flips them all to needs_review=True
     if user and user.profile.on_vacation:
@@ -52,11 +53,11 @@ def all_srs(user=None):
 
     if user:
             review_set = UserSpecific.objects.filter(user=user,
-                                                     next_review_date__lte=now,
+                                                     next_review_date__lte=slightly_ahead_of_now,
                                                      needs_review=False)
     else:
         review_set = UserSpecific.objects.filter(user__profile__on_vacation=False,
-                                                 next_review_date__lte=now,
+                                                 next_review_date__lte=slightly_ahead_of_now,
                                                  needs_review=False)
 
     affected_count += review_set.update(needs_review=True)
