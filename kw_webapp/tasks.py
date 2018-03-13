@@ -521,7 +521,7 @@ def sync_all_users_to_wk():
     affected_count = 0
     for user in users:
         logger.info(user.username + " --- " + str(user.profile.last_visit) + " --- " + str(one_week_ago))
-        sync_with_wk.apply_async(user.id, full_sync=True, queue="long_running_sync")
+        sync_with_wk.apply_async(args=[user.id, True], queue="long_running_sync")
         affected_count += 1
     return affected_count
 
