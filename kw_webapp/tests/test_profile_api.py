@@ -13,10 +13,10 @@ from rest_framework.test import APITestCase
 from kw_webapp import constants
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.models import Level, Report, Announcement, Vocabulary, MeaningSynonym, AnswerSynonym
-from kw_webapp.tasks import get_vocab_by_kanji, sync_with_wk
+from kw_webapp.tasks import get_vocab_by_kanji, sync_with_wk, sync_recent_unlocked_vocab_with_wk
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time, mock_vocab_list_response_with_single_vocabulary, mock_user_info_response, \
-    mock_invalid_api_user_info_response
+    mock_invalid_api_user_info_response, mock_vocab_list_response_with_single_vocabulary_with_four_synonyms
 from kw_webapp.utils import one_time_orphaned_level_clear
 
 
@@ -712,7 +712,6 @@ class TestProfileApi(APITestCase):
         data = response.data
         self.assertEqual(len(data["results"]), 1)
 
-
     def test_upcoming_reviews_no_longer_wrap_around(self):
         self.client.force_login(self.user)
         # We place nothing in the upcoming hour, ergo
@@ -725,4 +724,18 @@ class TestProfileApi(APITestCase):
         upcoming_reviews = data['profile']['upcoming_reviews']
         self.assertEqual(upcoming_reviews[0], 0)
         self.assertEqual(upcoming_reviews[23], 23)
+
+    @responses.activate
+    def test_sync_with_modified_synonyms_replaces_old_synonyms(self):
+        self.client.force_login(self.user)
+        self.review.meaning_synonyms.get_or_create(text="This will disappear")
+        self.review.meaning_synonyms.get_or_create(text="This will also disappear")
+        self.assertEqual(len(self.review.meaning_synonyms.all()), 2)
+
+        mock_vocab_list_response_with_single_vocabulary_with_four_synonyms(self.user)
+
+        sync_recent_unlocked_vocab_with_wk(self.user)
+
+        self.review.refresh_from_db()
+        self.assertEqual(len(self.review.meaning_synonyms.all()), 4)
 

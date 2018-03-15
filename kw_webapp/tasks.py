@@ -327,28 +327,28 @@ def has_multiple_kanji(vocab):
 
 
 def add_synonyms_from_api_call_to_review(review, user_specific_json):
-    new_synonym_count = 0
+    synonym_count = 0
     if user_specific_json["user_synonyms"] is None:
-        return review, new_synonym_count
+        return review, synonym_count
 
     for synonym in user_specific_json["user_synonyms"]:
         _, created = review.meaning_synonyms.get_or_create(text=synonym)
         if created:
-            new_synonym_count += 1
-    return review, new_synonym_count
+            synonym_count += 1
+    return review, synonym_count
 
 
 def associate_synonyms_to_vocab(user, vocab, user_specific_json):
     review = None
-    new_synonym_count = 0
+    synonym_count = 0
 
     try:
         review = UserSpecific.objects.get(user=user, vocabulary=vocab)
-        _, new_synonym_count = add_synonyms_from_api_call_to_review(review, user_specific_json)
+        _, synonym_count = add_synonyms_from_api_call_to_review(review, user_specific_json)
     except UserSpecific.DoesNotExist:
         pass
 
-    return review, new_synonym_count
+    return review, synonym_count
 
 
 def get_users_reviews(user):
