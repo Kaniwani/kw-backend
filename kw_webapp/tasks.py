@@ -326,29 +326,38 @@ def has_multiple_kanji(vocab):
     return len(kanji2) > 1
 
 
-def add_synonyms_from_api_call_to_review(review, user_specific_json):
-    new_synonym_count = 0
-    if user_specific_json["user_synonyms"] is None:
-        return review, new_synonym_count
+def synchronize_synonyms(review, user_specific_json):
+    synonym_count = 0
+    incoming_synonyms = user_specific_json["user_synonyms"]
+    if incoming_synonyms is None or len(incoming_synonyms) == 0:
+        return review, synonym_count
 
-    for synonym in user_specific_json["user_synonyms"]:
+    # Add new synonyms
+    for synonym in incoming_synonyms:
         _, created = review.meaning_synonyms.get_or_create(text=synonym)
         if created:
-            new_synonym_count += 1
-    return review, new_synonym_count
+            synonym_count += 1
+
+    # Delete Stale Synonyms
+    for synonym in review.meaning_synonyms.all():
+        if synonym.text not in user_specific_json["user_synonyms"]:
+            synonym.delete()
+            synonym_count -= 1
+
+    return review, synonym_count
 
 
 def associate_synonyms_to_vocab(user, vocab, user_specific_json):
     review = None
-    new_synonym_count = 0
+    synonym_count = 0
 
     try:
         review = UserSpecific.objects.get(user=user, vocabulary=vocab)
-        _, new_synonym_count = add_synonyms_from_api_call_to_review(review, user_specific_json)
+        _, synonym_count = synchronize_synonyms(review, user_specific_json)
     except UserSpecific.DoesNotExist:
         pass
 
-    return review, new_synonym_count
+    return review, synonym_count
 
 
 def get_users_reviews(user):
@@ -424,7 +433,7 @@ def process_single_item_from_wanikani(vocabulary, user):
     user_specific = vocabulary['user_specific']
     vocab, _ = import_vocabulary_from_json(vocabulary)
     review, created = associate_vocab_to_user(vocab, user)
-    review, synonyms_added_count = add_synonyms_from_api_call_to_review(review, user_specific)
+    review, synonyms_added_count = synchronize_synonyms(review, user_specific)
     review.wanikani_srs = user_specific["srs"]
     review.wanikani_srs_numeric = user_specific["srs_numeric"]
     review.wanikani_burned = user_specific["burned"]

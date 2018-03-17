@@ -74,3 +74,10 @@ def mock_invalid_api_user_info_response(api_key):
                   json={"Nothing":"Nothing"},
                   status=200,
                   content_type='application/json')
+
+
+def mock_vocab_list_response_with_single_vocabulary_with_four_synonyms(user):
+    responses.add(responses.GET, build_API_sync_string_for_user_for_levels(user, [user.profile.level, ]),
+                  json=sample_api_responses.single_vocab_response_with_4_meaning_synonyms,
+                  status=200,
+                  content_type='application/json')
