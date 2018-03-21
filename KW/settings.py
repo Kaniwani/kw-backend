@@ -30,7 +30,6 @@ LOGLEVEL = env("LOGLEVEL", default="INFO").upper()
 
 # This allows the /docs/ endpoints to correctly build urls.
 USE_X_FORWARDED_HOST = True
-a = root.path("logs").file("kaniwani.log")
 MY_TIME_ZONE = 'America/New_York'
 
 LOGGING = {
@@ -111,8 +110,7 @@ LOGGING = {
     },
 }
 
-CELERY_RESULTS_BACKEND = env.cache_url("REDIS_URL")
-CELERY_RESULT_BACKEND = env.cache_url("REDIS_URL")
+CELERY_RESULT_BACKEND = env.cache_url("REDIS_URL")["LOCATION"]
 CELERYD_HIJACK_ROOT_LOGGER = False
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['application/json']
