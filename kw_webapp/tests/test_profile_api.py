@@ -739,3 +739,10 @@ class TestProfileApi(APITestCase):
         self.review.refresh_from_db()
         self.assertEqual(len(self.review.meaning_synonyms.all()), 4)
 
+    def test_reading_review_detail_levels_from_profile(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("api:user-me"))
+        data = response.data
+        self.assertEqual(data['profile']['info_detail_level_on_success'], 1)
+        self.assertEqual(data['profile']['info_detail_level_on_failure'], 0)
+
