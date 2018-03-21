@@ -212,6 +212,8 @@ DATABASES = {
     'default': env.db(default="sqlite://db.sqlite3")
 }
 
+DB_ENGINE = DATABASES['default']['ENGINE'].split(".")[-1]
+
 LANGUAGE_CODE = 'en-us'
 USE_I18N = True
 USE_L10N = True

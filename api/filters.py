@@ -2,14 +2,17 @@ import re
 
 from django.db.models import Q
 from django_filters import rest_framework as filters
+from environ import environ
+
 from kw_webapp.models import Vocabulary, UserSpecific
 
 import KW.settings
 
+
 def whole_word_regex(value):
     # Gross hack to handle this until I fix it:
     # https://stackoverflow.com/questions/14997536/whole-word-match-only-in-django-query
-    if KW.settings.DB_TYPE == 'sqlite':
+    if KW.settings.DB_ENGINE == 'sqlite3':
         return r"\b" + re.escape(value) + r"\b"
     else:
         return r"\y" + re.escape(value) + r"\y"
