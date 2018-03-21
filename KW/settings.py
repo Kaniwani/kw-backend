@@ -14,33 +14,23 @@ from datetime import timedelta
 import os
 from collections import namedtuple
 
+import environ
 import raven
 from celery.schedules import crontab
 from django.core.urlresolvers import reverse_lazy
 from django.utils.log import DEFAULT_LOGGING
 
-LOGLEVEL = os.environ.get('LOGLEVEL', 'info').upper()
+root = environ.Path(__file__) - 2
+log_root = root.path("logs")
 
-try:
-    import KW.secrets as secrets
-except ImportError:
-    print("Couldn't find a secrets file. Defaulting")
-    secrets = namedtuple('secrets', ['DEPLOY', 'SECRET_KEY', 'DB_TYPE'])
-    secrets.DB_TYPE = "sqlite"
-    secrets.DEPLOY = False
-    secrets.SECRET_KEY = "samplekey"
-    secrets.EMAIL_HOST_PASSWORD = "nope"
-    secrets.EMAIL_HOST_USER = "dontmatter@whatever.com"
-    secrets.RAVEN_DSN = "whatever"
+env = environ.Env(DEBUG=(bool, False))
+environ.Env.read_env(root.path("KW").file(".env"))
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-MY_TIME_ZONE = 'America/New_York'
-
-logging_class = 'logging.StreamHandler'
-logging_level = 'ERROR' if secrets.DEPLOY else 'DEBUG'
+LOGLEVEL = env("LOGLEVEL", default="INFO").upper()
 
 # This allows the /docs/ endpoints to correctly build urls.
 USE_X_FORWARDED_HOST = True
+MY_TIME_ZONE = 'America/New_York'
 
 LOGGING = {
     'version': 1,
@@ -72,9 +62,9 @@ LOGGING = {
         },
         'app_log': {
             'formatter': 'console',
-            'level': 'INFO',
+            'level': LOGLEVEL,
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, "logs", "kaniwani.log"),
+            'filename': log_root("kaniwani.log"),
             'when': 'midnight',
             'backupCount': '30',
         },
@@ -82,7 +72,7 @@ LOGGING = {
             'formatter': 'request',
             'level': 'INFO',
             'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, "logs", "requests.log"),
+            'filename': log_root("requests.log"),
             'when': 'midnight',
             'backupCount': '5',
         },
@@ -91,7 +81,7 @@ LOGGING = {
     'loggers': {
         # ROOT LOGGER
         '': {
-            'level': 'DEBUG',
+            'level': LOGLEVEL,
             'handlers': ['console', 'sentry']
         },
         # For anything in the 'api' directory. e.g. api.views, api.tasks, etc.
@@ -107,21 +97,20 @@ LOGGING = {
         },
         # Used for drf-tracking which logs all request/response info. For later shipping to ELK
         'KW.LoggingMiddleware': {
-            'level': 'INFO',
+            'level': LOGLEVEL,
             'handlers': ['request_log'],
             'propagate': False
         },
         'celery': {
             'handlers': ['sentry', 'console'],
-            'level': 'INFO',
+            'level': LOGLEVEL,
             'propagate': False
         },
         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 }
 
-CELERY_RESULTS_BACKEND = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = env.cache_url("REDIS_URL")["LOCATION"]
 CELERYD_HIJACK_ROOT_LOGGER = False
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_ACCEPT_CONTENT = ['application/json']
@@ -143,29 +132,12 @@ CELERY_BEAT_SCHEDULE = {
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = secrets.SECRET_KEY
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+SECRET_KEY = env("SECRET_KEY")
+DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'www.kaniwani.com', '.kaniwani.com']
 
-# Application definition
-
-# CORS Settings
-CORS_ORIGIN_WHITELIST = (
-    'localhost:3000',
-    'http://localhost:3000/',
-    'http://127.0.0.1:3000',
-    '127.0.0.1:3000',
-    'http://96.126.101.77:3000',
-    '96.126.101.77:3000',
-    'www.kaniwani.com',
-    'https://www.kaniwani.com',
-    'https://kaniwani.com',
-    'kaniwani.com'
-)
+CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -211,8 +183,6 @@ if DEBUG:
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
-        #'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
-        #TODO fix this, since obviously it doesnt work.
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
@@ -224,55 +194,29 @@ REST_FRAMEWORK = {
 }
 
 CACHES = {
-    'default': {
-        'BACKEND': 'redis_cache.RedisCache',
-        'LOCATION': 'localhost:6379'
-    }
+    'default': env.cache("REDIS_URL", default="rediscache://127.0.0.1:6379/0")
 }
 
 ROOT_URLCONF = 'KW.urls'
 
 WSGI_APPLICATION = 'KW.wsgi.application'
 
-#EMAIL BACKEND SETTINGS
-MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
-DEFAULT_FROM_EMAIL = "gary@kaniwani.com"
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = secrets.EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = secrets.EMAIL_HOST_PASSWORD
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-
+# EMAIL BACKEND SETTINGS
+EMAIL_CONFIG = env.email_url('EMAIL_URL', default="dummymail://")
+vars().update(EMAIL_CONFIG)
 
 TIME_ZONE = MY_TIME_ZONE
 SITE_ID = 1
 
-if secrets.DB_TYPE == "postgres":
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': secrets.DB_NAME,
-            'USER': secrets.DB_USER,
-            'PASSWORD': secrets.DB_PASSWORD,
-            'HOST': 'localhost',
-            'PORT': '',
-        }
-    }
-elif secrets.DB_TYPE == "sqlite":
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
+DATABASES = {
+    'default': env.db(default="sqlite://db.sqlite3")
+}
 
-DB_TYPE = secrets.DB_TYPE
+DB_ENGINE = DATABASES['default']['ENGINE'].split(".")[-1]
+
 LANGUAGE_CODE = 'en-us'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
@@ -281,14 +225,20 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = "/var/www/kaniwani.com/static"
 
+# Security stuff
+CSRF_COOKIE_SECURE = True
+X_FRAME_OPTIONS = "DENY"
+SESSION_COOKIE_SECURE = True
+
+
 INTERNAL_IPS = ('127.0.0.1',)
 
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [
-            os.path.join(BASE_DIR,  'templates'),
-            os.path.join(BASE_DIR,  'kw_webapp/templates/kw_webapp')
+            root("templates"),
+            root("kw_webapp/templates/kw_webapp")
         ],
         "APP_DIRS": True,
         "OPTIONS": {
@@ -300,6 +250,9 @@ TEMPLATES = [
         }
     }
 ]
+
+MANAGERS = [("Gary", "tadgh@cs.toronto.edu",), ("Duncan", "duncan.bay@gmail.com")]
+DEFAULT_FROM_EMAIL = "gary@kaniwani.com"
 
 JWT_AUTH = {
         'JWT_VERIFY_EXPIRATION': False
@@ -318,6 +271,6 @@ DJOSER = {
 }
 
 RAVEN_CONFIG = {
-    'dsn': secrets.RAVEN_DSN,
-    'release': os.environ.get("RELEASE", "UNKNOWN")
+    'dsn': env("RAVEN_DSN"),
+    'release': env("RELEASE", default="UNKNOWN")
 } if not DEBUG else {}
