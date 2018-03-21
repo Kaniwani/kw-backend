@@ -76,6 +76,12 @@ class Profile(models.Model):
     auto_advance_on_success_delay_milliseconds = models.PositiveIntegerField(default=1000)
     auto_expand_answer_on_success = models.BooleanField(default=True)
     auto_expand_answer_on_failure = models.BooleanField(default=False)
+    info_detail_level_on_success = models.PositiveIntegerField(default=1, validators=[
+        MaxValueValidator(constants.MAX_REVIEW_DETAIL_LEVEL)
+    ])
+    info_detail_level_on_failure = models.PositiveIntegerField(default=0, validators=[
+        MaxValueValidator(constants.MAX_REVIEW_DETAIL_LEVEL)
+    ])
 
     # External Site settings
     use_eijiro_pro_link = models.BooleanField(default=False)

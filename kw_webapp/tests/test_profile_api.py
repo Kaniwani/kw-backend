@@ -739,3 +739,23 @@ class TestProfileApi(APITestCase):
         self.review.refresh_from_db()
         self.assertEqual(len(self.review.meaning_synonyms.all()), 4)
 
+    def test_reading_review_detail_levels_from_profile(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("api:profile-list"))
+        data = response.data['results'][0]
+        self.assertEqual(data['info_detail_level_on_success'], 1)
+        self.assertEqual(data['info_detail_level_on_failure'], 0)
+        patch = {}
+        patch['info_detail_level_on_success'] = 2
+        patch['info_detail_level_on_failure'] = 2
+
+        response = self.client.patch(reverse("api:profile-detail", args=(data['id'],)), data=patch)
+        data = response.data
+        self.assertEqual(data['info_detail_level_on_success'], 2)
+        self.assertEqual(data['info_detail_level_on_failure'], 2)
+
+        # Oh no this is too high, should 400
+        patch['info_detail_level_on_failure'] = 4
+        response = self.client.patch(reverse("api:profile-detail", args=(data['id'],)), data=patch)
+        self.assertEqual(response.status_code, 400)
+
