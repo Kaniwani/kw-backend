@@ -69,4 +69,9 @@ class TestViews(TestCase):
         self.review.save()
 
         response = self.client.post(reverse("api:review-correct", args=(self.review.id,)), data={'wrong_before': 'false'})
-        self.assertTrue(isinstance(response, HttpResponseForbidden))
+        self.assertEqual(response.status_code, 403)
+        self.assertIsNotNone(response.data['detail'])
+
+        response = self.client.post(reverse("api:review-incorrect", args=(self.review.id,)))
+        self.assertEqual(response.status_code, 403)
+        self.assertIsNotNone(response.data['detail'])

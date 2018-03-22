@@ -5,6 +5,7 @@ from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.decorators import list_route, detail_route, permission_classes
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
@@ -268,7 +269,7 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
     def correct(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
         if not review.can_be_managed_by(request.user) or not review.needs_review:
-            return HttpResponseForbidden("You can't modify that object at this time!")
+            raise PermissionDenied("You can't review a review that doesn't need to be reviewed! ٩(ఠ益ఠ)۶")
 
         was_correct_on_first_try = self._correct_on_first_try(request)
         review = review.answered_correctly(was_correct_on_first_try)
@@ -279,7 +280,7 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
     def incorrect(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
         if not review.can_be_managed_by(request.user) or not review.needs_review:
-            return HttpResponseForbidden("You can't modify that object at this time!")
+            raise PermissionDenied("You can't review a review that doesn't need to be reviewed! ٩(ఠ益ఠ)۶")
         review = review.answered_incorrectly()
         serializer = self.get_serializer(review, many=False)
         return Response(serializer.data)
