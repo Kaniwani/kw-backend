@@ -759,3 +759,14 @@ class TestProfileApi(APITestCase):
         response = self.client.patch(reverse("api:profile-detail", args=(data['id'],)), data=patch)
         self.assertEqual(response.status_code, 400)
 
+    def test_review_counts_endpoints(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("api:review-counts"))
+        data = response.data
+        self.assertIsNotNone(data['reviews_count'])
+        self.assertIsNotNone(data['lessons_count'])
+
+
+
+
