@@ -87,6 +87,21 @@ class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
         return real_retval
 
 
+class ReviewCountSerializer(serializers.BaseSerializer):
+
+    def to_representation(self, user):
+        return {
+            "reviews_count": self.get_reviews_count(user),
+            "lessons_count": self.get_lessons_count(user),
+        }
+
+    def get_reviews_count(self, obj):
+        return get_users_current_reviews(obj).count()
+
+    def get_lessons_count(self, obj):
+        return get_users_lessons(obj).count()
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='user.username')
     reviews_count = serializers.SerializerMethodField()
