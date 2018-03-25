@@ -33,7 +33,7 @@ class TestViews(TestCase):
     def test_sync_now_endpoint_returns_correct_json(self):
         responses.add(responses.GET,
                       "https://www.wanikani.com/api/user/{}/user-information".format(self.user.profile.api_key),
-                      json=sample_api_responses.user_information_response,
+                      json=sample_api_responses.user_information_response_with_higher_level,
                       status=200,
                       content_type="application/json")
 

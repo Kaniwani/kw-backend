@@ -391,5 +391,5 @@ class TestTasks(TestCase):
         self.user.refresh_from_db()
         self.user.profile.refresh_from_db()
         self.assertEqual(get_users_lessons(self.user).count(), 0)
-        self.assertEqual(self.user.profile.level, 17)
+        self.assertEqual(self.user.profile.level, 5)
 
