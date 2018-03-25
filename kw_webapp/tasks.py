@@ -283,12 +283,17 @@ def create_new_vocabulary(vocabulary_json):
     '''
     meaning = vocabulary_json["meaning"]
     vocab = Vocabulary.objects.create(meaning=meaning)
-    vocab = associate_readings_to_vocab(vocab, vocabulary_json)
+    vocab = update_local_vocabulary_information(vocab, vocabulary_json)
     return vocab
 
 
-def associate_readings_to_vocab(vocab, vocabulary_json):
+def update_local_vocabulary_information(vocab, vocabulary_json):
+
     kana_list = [reading.strip() for reading in vocabulary_json["kana"].split(",")]
+    # Update the local meaning based on WK meaning
+    meaning = vocabulary_json['meaning']
+    vocab.meaning = meaning
+
     character = vocabulary_json["character"]
     level = vocabulary_json["level"]
     for reading in kana_list:
@@ -299,6 +304,7 @@ def associate_readings_to_vocab(vocab, vocabulary_json):
             logger.info("""Created new reading: {}, level {}
                                      associated to vocab {}""".format(new_reading.kana, new_reading.level,
                                                                       new_reading.vocabulary.meaning))
+    vocab.save()
     return vocab
 
 
@@ -443,7 +449,7 @@ def process_single_item_from_wanikani(vocabulary, user):
 
 def import_vocabulary_from_json(vocabulary):
     vocab, is_new = get_or_create_vocab_by_json(vocabulary)
-    vocab = associate_readings_to_vocab(vocab, vocabulary)
+    vocab = update_local_vocabulary_information(vocab, vocabulary)
     return vocab, is_new
 
 
