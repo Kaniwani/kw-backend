@@ -84,5 +84,5 @@ class TestViews(TestCase):
             "email": "test@test.com",
             "body": "test",
         })
-        json = response.data
+        json = response.content
         self.assertIsNotNone(json)

@@ -440,6 +440,7 @@ class ContactViewSet(RequestLoggingMixin, generics.CreateAPIView, viewsets.Gener
         if not form.is_valid():
             return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
         form.save()
-        return Response({"detail": "Successfully sent contact email"}, status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_202_ACCEPTED)
+        # return Response({"detail": "Successfully sent contact email"}, status=status.HTTP_202_ACCEPTED)
 
 

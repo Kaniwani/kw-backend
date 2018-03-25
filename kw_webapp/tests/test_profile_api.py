@@ -777,5 +777,3 @@ class TestProfileApi(APITestCase):
 
         self.vocabulary.refresh_from_db()
         self.assertEqual(self.vocabulary.meaning, sample_api_responses.single_vocab_response_with_changed_meaning['requested_information'][0]['meaning'])
-
-
