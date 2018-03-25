@@ -16,7 +16,8 @@ from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating, IsAdmi
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
-    ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer, RegistrationSerializer
+    ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer, RegistrationSerializer, \
+    ReviewCountSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
@@ -292,6 +293,12 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
     @detail_route(methods=['POST'])
     def unhide(self, request, pk=None):
         return self._set_hidden(request, False, pk)
+
+    @list_route(methods=['GET'])
+    def counts(self, request):
+        user = request.user
+        serializer = ReviewCountSerializer(user)
+        return Response(serializer.data)
 
     def _set_hidden(self, request, should_hide, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
