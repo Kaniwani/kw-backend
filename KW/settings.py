@@ -188,6 +188,10 @@ REST_FRAMEWORK = {
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication'
     ],
+    'DEFAULT_RENDERER_CLASSES': [
+        # Simple overridden class which will dump empty JSON into the response if we find that the content is empty.
+        'kw_webapp.renderers.FallbackJSONRenderer'
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100,
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',)

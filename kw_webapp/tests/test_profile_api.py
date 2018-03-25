@@ -14,9 +14,11 @@ from kw_webapp import constants
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.models import Level, Report, Announcement, Vocabulary, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import get_vocab_by_kanji, sync_with_wk, sync_recent_unlocked_vocab_with_wk
+from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
     create_review_for_specific_time, mock_vocab_list_response_with_single_vocabulary, mock_user_info_response, \
-    mock_invalid_api_user_info_response, mock_vocab_list_response_with_single_vocabulary_with_four_synonyms
+    mock_invalid_api_user_info_response, mock_vocab_list_response_with_single_vocabulary_with_four_synonyms, \
+    mock_vocab_list_response_with_single_vocabulary_with_changed_meaning, mock_user_info_response_with_higher_level
 from kw_webapp.utils import one_time_orphaned_level_clear
 
 
@@ -626,7 +628,7 @@ class TestProfileApi(APITestCase):
     @responses.activate
     def test_when_user_resets_account_to_a_given_level_their_current_level_is_also_set(self):
         # Given
-        mock_user_info_response(self.user.profile.api_key)
+        mock_user_info_response_with_higher_level(self.user.profile.api_key)
         self.client.force_login(self.user)
         assert(self.user.profile.level == 5)
 
@@ -767,6 +769,16 @@ class TestProfileApi(APITestCase):
         self.assertIsNotNone(data['reviews_count'])
         self.assertIsNotNone(data['lessons_count'])
 
+    @responses.activate
+    def test_vocabulary_meaning_changes_reflect_locally(self):
+        self.client.force_login(self.user)
 
+        self.assertEqual(self.vocabulary.meaning, "radioactive bat")
 
+        mock_user_info_response(self.user.profile.api_key)
+        mock_vocab_list_response_with_single_vocabulary_with_changed_meaning(self.user)
 
+        sync_with_wk(self.user.id)
+
+        self.vocabulary.refresh_from_db()
+        self.assertEqual(self.vocabulary.meaning, sample_api_responses.single_vocab_response_with_changed_meaning['requested_information'][0]['meaning'])

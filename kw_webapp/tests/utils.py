@@ -62,6 +62,13 @@ def mock_vocab_list_response_with_single_vocabulary(user):
                   content_type='application/json')
 
 
+def mock_user_info_response_with_higher_level(api_key):
+    responses.add(responses.GET, build_user_information_api_string(api_key),
+                  json=sample_api_responses.user_information_response_with_higher_level,
+                  status=200,
+                  content_type='application/json')
+
+
 def mock_user_info_response(api_key):
     responses.add(responses.GET, build_user_information_api_string(api_key),
                   json=sample_api_responses.user_information_response,
@@ -79,5 +86,12 @@ def mock_invalid_api_user_info_response(api_key):
 def mock_vocab_list_response_with_single_vocabulary_with_four_synonyms(user):
     responses.add(responses.GET, build_API_sync_string_for_user_for_levels(user, [user.profile.level, ]),
                   json=sample_api_responses.single_vocab_response_with_4_meaning_synonyms,
+                  status=200,
+                  content_type='application/json')
+
+
+def mock_vocab_list_response_with_single_vocabulary_with_changed_meaning(user):
+    responses.add(responses.GET, build_API_sync_string_for_user_for_levels(user, [user.profile.level, ]),
+                  json=sample_api_responses.single_vocab_response_with_changed_meaning,
                   status=200,
                   content_type='application/json')

@@ -33,7 +33,7 @@ class TestViews(TestCase):
     def test_sync_now_endpoint_returns_correct_json(self):
         responses.add(responses.GET,
                       "https://www.wanikani.com/api/user/{}/user-information".format(self.user.profile.api_key),
-                      json=sample_api_responses.user_information_response,
+                      json=sample_api_responses.user_information_response_with_higher_level,
                       status=200,
                       content_type="application/json")
 
@@ -69,4 +69,20 @@ class TestViews(TestCase):
         self.review.save()
 
         response = self.client.post(reverse("api:review-correct", args=(self.review.id,)), data={'wrong_before': 'false'})
-        self.assertTrue(isinstance(response, HttpResponseForbidden))
+        self.assertEqual(response.status_code, 403)
+        self.assertIsNotNone(response.data['detail'])
+
+        response = self.client.post(reverse("api:review-incorrect", args=(self.review.id,)))
+        self.assertEqual(response.status_code, 403)
+        self.assertIsNotNone(response.data['detail'])
+
+    def test_sending_contact_email_returns_json_response(self):
+        self.client.force_login(self.user)
+
+        response = self.client.post(reverse("api:contact-list"), data={
+            "name": "test",
+            "email": "test@test.com",
+            "body": "test",
+        })
+        json = response.content
+        self.assertIsNotNone(json)
