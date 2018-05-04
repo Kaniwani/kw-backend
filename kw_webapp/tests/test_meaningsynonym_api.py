@@ -11,7 +11,7 @@ from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.models import Level, Report, Announcement
-from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
+from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_review, \
     create_review_for_specific_time
 from kw_webapp.utils import one_time_orphaned_level_clear
 
@@ -22,7 +22,7 @@ class TestMeaningSynonymApi(APITestCase):
         create_profile(self.user, "any_key", 5)
         self.vocabulary = create_vocab("radioactive bat")
         self.reading = create_reading(self.vocabulary, "ねこ", "猫", 5)
-        self.review = create_userspecific(self.vocabulary, self.user)
+        self.review = create_review(self.vocabulary, self.user)
 
     def test_user_can_CRUD_all_their_own_synonyms(self):
         self.client.force_login(self.user)

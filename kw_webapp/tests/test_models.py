@@ -11,7 +11,7 @@ from rest_framework.test import APITestCase
 
 from kw_webapp import constants
 from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag
-from kw_webapp.tests.utils import create_user, create_userspecific, create_reading, create_profile
+from kw_webapp.tests.utils import create_user, create_review, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
 
 
@@ -22,7 +22,7 @@ class TestModels(APITestCase):
         create_profile(self.user, "any key", 1)
         self.user.save()
         self.vocabulary = create_vocab("cat")
-        self.review = create_userspecific(self.vocabulary, self.user)
+        self.review = create_review(self.vocabulary, self.user)
         self.review.meaning_synonyms.get_or_create(text="minou")
 
         # default state of a test is a user that has a single review, and the review has a single synonym added.
@@ -216,7 +216,7 @@ class TestModels(APITestCase):
 
     def test_default_review_times_are_not_rounded(self):
         rounded_time = self.review.next_review_date
-        new_vocab = create_userspecific(create_vocab("fresh"), self.user)
+        new_vocab = create_review(create_vocab("fresh"), self.user)
 
         self.assertNotEqual(rounded_time, new_vocab.next_review_date)
 
@@ -334,5 +334,5 @@ class TestModels(APITestCase):
         self.assertFalse(self.review.critical)
 
     def test_newly_created_user_specific_has_null_last_studied_date(self):
-        review = create_userspecific(create_vocab("test"), self.user)
+        review = create_review(create_vocab("test"), self.user)
         self.assertIsNone(review.last_studied)

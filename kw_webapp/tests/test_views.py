@@ -9,7 +9,7 @@ from rest_framework.reverse import reverse
 
 from kw_webapp.tasks import build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
-from kw_webapp.tests.utils import create_user, create_userspecific, create_profile, create_reading
+from kw_webapp.tests.utils import create_user, create_review, create_profile, create_reading
 from kw_webapp.tests.utils import create_vocab
 
 
@@ -24,7 +24,7 @@ class TestViews(TestCase):
         self.cat_reading = create_reading(self.vocabulary, "ねこ", "猫", 5)
 
         # setup a review with two synonyms
-        self.review = create_userspecific(self.vocabulary, self.user)
+        self.review = create_review(self.vocabulary, self.user)
 
         self.client = Client()
         self.client.login(username="user1", password="password")

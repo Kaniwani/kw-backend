@@ -149,6 +149,9 @@ class ProfileSerializer(serializers.ModelSerializer):
                 next_review_date = reviews[0].next_review_date
                 return next_review_date
 
+    def get_reviews_count(self, obj):
+        return get_users_current_reviews(obj.user).count()
+
     def get_reviews_within_hour_count(self, obj):
         return get_users_future_reviews(obj.user,
                                         time_limit=datetime.timedelta(hours=1)).count()

@@ -15,10 +15,11 @@ from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.models import Level, Report, Announcement, Vocabulary, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import get_vocab_by_kanji, sync_with_wk, sync_recent_unlocked_vocab_with_wk
 from kw_webapp.tests import sample_api_responses
-from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_userspecific, \
+from kw_webapp.tests.utils import create_user, create_profile, create_vocab, create_reading, create_review, \
     create_review_for_specific_time, mock_vocab_list_response_with_single_vocabulary, mock_user_info_response, \
     mock_invalid_api_user_info_response, mock_vocab_list_response_with_single_vocabulary_with_four_synonyms, \
-    mock_vocab_list_response_with_single_vocabulary_with_changed_meaning, mock_user_info_response_with_higher_level
+    mock_vocab_list_response_with_single_vocabulary_with_changed_meaning, mock_user_info_response_with_higher_level, \
+    create_lesson
 from kw_webapp.utils import one_time_orphaned_level_clear
 
 
@@ -36,7 +37,7 @@ class TestProfileApi(APITestCase):
         create_profile(self.user, "any_key", 5)
         self.vocabulary = create_vocab("radioactive bat")
         self.reading = create_reading(self.vocabulary, "ねこ", "猫", 5)
-        self.review = create_userspecific(self.vocabulary, self.user)
+        self.review = create_review(self.vocabulary, self.user)
 
     def test_profile_contains_correct_within_day_or_hour_counts(self):
         self.client.force_login(user=self.user)
@@ -69,7 +70,6 @@ class TestProfileApi(APITestCase):
 
         self.assertEqual(response.data["profile"]['reviews_within_day_count'], 2)
         self.assertEqual(response.data["profile"]['reviews_within_hour_count'], 1)
-        self.assertEqual(response.data["profile"]['reviews_count'], 1)
 
     def test_future_review_counts_preprocessor_does_not_include_currently_active_reviews(self):
         within_day_review = create_review_for_specific_time(self.user, "some word",
@@ -82,7 +82,6 @@ class TestProfileApi(APITestCase):
 
         self.assertEqual(response.data["profile"]['reviews_within_day_count'], 0)
         self.assertEqual(response.data["profile"]['reviews_within_hour_count'], 0)
-        self.assertEqual(response.data["profile"]['reviews_count'], 2)
 
     def test_review_count_preprocessor_returns_sane_values_when_user_has_no_vocabulary_unlocked(self):
         self.review.delete()
@@ -92,7 +91,6 @@ class TestProfileApi(APITestCase):
 
         self.assertEqual(response.data["profile"]['reviews_within_day_count'], 0)
         self.assertEqual(response.data["profile"]['reviews_within_hour_count'], 0)
-        self.assertEqual(response.data["profile"]['reviews_count'], 0)
 
     def test_preprocessor_srs_counts_are_correct(self):
         self.client.force_login(user=self.user)
@@ -149,7 +147,7 @@ class TestProfileApi(APITestCase):
         word = create_vocab("phlange")
         self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.BURNED.name
         self.user.profile.save()
-        another_review = create_userspecific(word, self.user)
+        another_review = create_review(word, self.user)
         another_review.wanikani_srs_numeric = WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name][0]
         another_review.save()
 
@@ -163,7 +161,7 @@ class TestProfileApi(APITestCase):
         word = create_vocab("phlange")
         self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.APPRENTICE.name
         self.user.profile.save()
-        another_review = create_userspecific(word, self.user)
+        another_review = create_review(word, self.user)
         another_review.wanikani_srs_numeric = 5
         another_review.save()
 
@@ -222,7 +220,7 @@ class TestProfileApi(APITestCase):
         self.review.needs_review = False
         self.review.save()
 
-        older_burnt_review = create_userspecific(create_vocab("test"), self.user)
+        older_burnt_review = create_review(create_vocab("test"), self.user)
         older_burnt_review.burned = True
         older_burnt_review.needs_review = False
         an_hour_ago = current_time - timedelta(hours=1)
@@ -256,7 +254,7 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
 
         # Create a lesson
-        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review = create_review(create_vocab("sample"), self.user)
         new_review.streak = 0
         new_review.save()
 
@@ -267,7 +265,7 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
 
         # Create a lesson
-        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review = create_review(create_vocab("sample"), self.user)
         new_review.streak = 0
         new_review.save()
 
@@ -287,7 +285,7 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
 
         # Create a lesson
-        new_review = create_userspecific(create_vocab("sample"), self.user)
+        new_review = create_review(create_vocab("sample"), self.user)
         new_review.streak = 0
         new_review.save()
 
@@ -333,7 +331,7 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
         v = create_vocab("test")
         create_reading(v, "test", "test", 3)
-        create_userspecific(v, self.user)
+        create_review(v, self.user)
         mock_user_info_response(self.user.profile.api_key)
 
         self.user.profile.unlocked_levels.get_or_create(level=2)
@@ -506,7 +504,7 @@ class TestProfileApi(APITestCase):
         self.review.wanikani_srs_numeric = 1
         self.review.save()
 
-        wk_burned_review = create_userspecific(create_vocab("test"), self.user)
+        wk_burned_review = create_review(create_vocab("test"), self.user)
         wk_burned_review.wanikani_srs_numeric = 9
         wk_burned_review.save()
 
@@ -701,7 +699,7 @@ class TestProfileApi(APITestCase):
         create_reading(v, reading_to_search, "character_1", 5)
         create_reading(v, reading_to_search, "character_2", 5)
 
-        review = create_userspecific(v, self.user)
+        review = create_review(v, self.user)
         self.client.force_login(self.user)
 
         response = self.client.get(reverse("api:review-list") + "?reading_contains={}".format(reading_to_search))
@@ -782,3 +780,18 @@ class TestProfileApi(APITestCase):
 
         self.vocabulary.refresh_from_db()
         self.assertEqual(self.vocabulary.meaning, sample_api_responses.single_vocab_response_with_changed_meaning['requested_information'][0]['meaning'])
+
+    def test_review_counts_endpoint_returns_correct_information(self):
+        self.client.force_login(self.user)
+
+        # Our initial review should be ready to review.
+        response = self.client.get(reverse("api:review-counts"))
+        self.assertEqual(response.data['reviews_count'], 1)
+        self.assertEqual(response.data['lessons_count'], 0)
+
+        create_lesson(create_vocab("new_lesson"), self.user)
+
+        # Now we should have 1 lesson and 1 review.
+        response = self.client.get(reverse("api:review-counts"))
+        self.assertEqual(response.data['reviews_count'], 1)
+        self.assertEqual(response.data['lessons_count'], 1)
