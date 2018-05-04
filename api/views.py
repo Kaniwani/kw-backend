@@ -216,6 +216,9 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
 
     unhide:
     include this item in the SRS algorithm and review queue.
+
+    reset:
+    Reset all SRS information relating to this review.
     """
     serializer_class = ReviewSerializer
     filter_class = ReviewFilter
@@ -299,6 +302,12 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
         user = request.user
         serializer = ReviewCountSerializer(user)
         return Response(serializer.data)
+
+    @detail_route(methods=['POST'])
+    def reset(self, request, pk=None):
+        review = get_object_or_404(UserSpecific, pk=pk)
+        review.reset()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def _set_hidden(self, request, should_hide, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)

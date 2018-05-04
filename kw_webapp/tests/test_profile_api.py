@@ -1,6 +1,6 @@
 import json
 import pprint
-from datetime import timedelta
+from datetime import timedelta, time
 from time import sleep
 from unittest import mock
 
@@ -782,3 +782,27 @@ class TestProfileApi(APITestCase):
 
         self.vocabulary.refresh_from_db()
         self.assertEqual(self.vocabulary.meaning, sample_api_responses.single_vocab_response_with_changed_meaning['requested_information'][0]['meaning'])
+
+    def test_resetting_a_review_resets_all_data(self):
+        self.client.force_login(self.user)
+
+        # Burn a review
+        self.review.streak = 9
+        self.review.correct = 9
+        self.review.burned = True
+        self.review.last_studied = timezone.now()
+        self.review.next_review_date = None
+        self.review.save()
+
+        # Ensure does not need to be reviewed
+        resp = self.client.get(reverse("api:review-current"))
+        self.assertEqual(resp.data["count"], 0)
+
+        # Reset the review.
+        resp = self.client.post(reverse("api:review-reset", args=(self.review.id,)))
+        self.assertEqual(resp.status_code, 204)
+
+        # Ensure it now needs to be reviewed.
+        resp = self.client.get(reverse("api:review-current"))
+        self.assertEqual(resp.data["count"], 1)
+
