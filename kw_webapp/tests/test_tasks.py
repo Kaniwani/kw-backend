@@ -15,7 +15,7 @@ from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, associate
     build_user_information_api_string, get_level_pages
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
-from kw_webapp.tests.utils import create_userspecific, create_vocab, create_user, create_profile, create_reading, \
+from kw_webapp.tests.utils import create_review, create_vocab, create_user, create_profile, create_reading, \
     create_review_for_specific_time, mock_vocab_list_response_with_single_vocabulary, mock_user_info_response
 from kw_webapp.utils import generate_user_stats, one_time_merge_level
 
@@ -27,7 +27,7 @@ class TestTasks(TestCase):
         create_profile(self.user, "any_key", 5)
         self.vocabulary = create_vocab("radioactive bat")
         self.reading = create_reading(self.vocabulary, "ねこ", "猫", 2)
-        self.review = create_userspecific(self.vocabulary, self.user)
+        self.review = create_review(self.vocabulary, self.user)
         self._vocab_api_regex = re.compile("https://www\.wanikani\.com/api/user/.*")
 
     def testLevelPageCreator(self):
@@ -147,7 +147,7 @@ class TestTasks(TestCase):
         self.user.profile.on_vacation = True
 
         # Create review that should be reviewed never again, but got reviewed 2 hours ago.
-        review = create_userspecific(create_vocab("wazoop"), self.user)
+        review = create_review(create_vocab("wazoop"), self.user)
         review.burned = True
         review.next_review_date = None
         review.last_studied = two_hours_ago
@@ -192,7 +192,7 @@ class TestTasks(TestCase):
         self.assertEqual(reviews_affected, 0)
 
     def test_returning_review_count_that_is_time_delimited_functions_correctly(self):
-        new_review = create_userspecific(create_vocab("arbitrary word"), self.user)
+        new_review = create_review(create_vocab("arbitrary word"), self.user)
         new_review.needs_review = False
         more_than_24_hours_from_now = timezone.now() + timezone.timedelta(hours=25)
         new_review.next_review_date = more_than_24_hours_from_now
@@ -299,13 +299,13 @@ class TestTasks(TestCase):
         create_reading(v2, "doggo2", "犬", 5)
 
         # Make it so that review 1 has overall better SRS score for the user.
-        review_1 = create_userspecific(v1, self.user)
+        review_1 = create_review(v1, self.user)
         review_1.streak = 4
         review_1.correct = 4
         review_1.incorrect = 2
         review_1.save()
 
-        review_2 = create_userspecific(v2, self.user)
+        review_2 = create_review(v2, self.user)
         review_2.streak = 2
         review_2.correct = 4
         review_2.incorrect = 3
@@ -318,7 +318,7 @@ class TestTasks(TestCase):
 
         # Assign another user an old version of the vocab.
         user2 = create_user("asdf")
-        review_3 = create_userspecific(v1, user2)
+        review_3 = create_review(v1, user2)
         review_3.streak = 5
         review_3.correct = 5
         review_3.incorrect = 0
@@ -378,7 +378,7 @@ class TestTasks(TestCase):
     @responses.activate
     def test_when_user_resets_their_account_we_remove_all_reviews_and_then_unlock_their_current_level(self):
         self.user.profile.unlocked_levels.get_or_create(level=1)
-        new_review = create_userspecific(create_vocab("arbitrary word"), self.user)
+        new_review = create_review(create_vocab("arbitrary word"), self.user)
         new_review.needs_review = True
         new_review.save()
         self.assertEqual(get_users_current_reviews(self.user).count(), 2)
