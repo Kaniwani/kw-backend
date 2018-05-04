@@ -104,8 +104,6 @@ class ReviewCountSerializer(serializers.BaseSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     name = serializers.ReadOnlyField(source='user.username')
-    reviews_count = serializers.SerializerMethodField()
-    lessons_count = serializers.SerializerMethodField()
     next_review_date = serializers.SerializerMethodField()
     unlocked_levels = serializers.StringRelatedField(many=True, read_only=True)
     reviews_within_hour_count = serializers.SerializerMethodField()
@@ -119,7 +117,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ('id', 'name', 'reviews_count', 'lessons_count', 'api_key', 'api_valid',
+        fields = ('id', 'name', 'api_key', 'api_valid',
                   'level', 'follow_me', 'auto_advance_on_success', 'unlocked_levels', 'last_wanikani_sync_date',
                   'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'on_vacation', 'vacation_date',
                   'reviews_within_day_count', 'reviews_within_hour_count', 'srs_counts',
@@ -130,7 +128,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
         read_only_fields = ('id', 'name', 'api_valid', 'level',
                             'unlocked_levels', 'vacation_date', 'reviews_within_day_count',
-                            'reviews_within_hour_count', 'reviews_count', 'lessons_count', 'srs_counts',
+                            'reviews_within_hour_count', 'srs_counts',
                             'next_review_date', 'last_wanikani_sync_date', 'join_date')
 
     def get_join_date(self, obj):
@@ -150,12 +148,6 @@ class ProfileSerializer(serializers.ModelSerializer):
             if reviews:
                 next_review_date = reviews[0].next_review_date
                 return next_review_date
-
-    def get_reviews_count(self, obj):
-        return get_users_current_reviews(obj.user).count()
-
-    def get_lessons_count(self, obj):
-        return get_users_lessons(obj.user).count()
 
     def get_reviews_within_hour_count(self, obj):
         return get_users_future_reviews(obj.user,
