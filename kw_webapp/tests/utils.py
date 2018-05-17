@@ -16,9 +16,16 @@ def create_user(username):
     return u
 
 
-def create_userspecific(vocabulary, user):
+def create_review(vocabulary, user):
     u = UserSpecific.objects.create(vocabulary=vocabulary, user=user)
     u.streak = 1
+    u.save()
+    return u
+
+
+def create_lesson(vocabulary, user):
+    u = UserSpecific.objects.create(vocabulary=vocabulary, user=user)
+    u.streak = 0
     u.save()
     return u
 
@@ -41,7 +48,7 @@ def create_reading(vocab, reading, character, level):
 
 
 def create_review_for_specific_time(user, meaning, time_to_review):
-    timed_review = create_userspecific(create_vocab(meaning), user)
+    timed_review = create_review(create_vocab(meaning), user)
     timed_review.needs_review = False
     timed_review.streak = 1
     timed_review.last_studied = time_to_review + timedelta(hours=-6)

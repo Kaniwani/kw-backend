@@ -13,7 +13,7 @@ from kw_webapp.tasks import create_new_vocabulary, \
     has_multiple_kanji, import_vocabulary_from_json
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.tasks import unlock_eligible_vocab_from_levels
-from kw_webapp.tests.utils import create_userspecific, create_review_for_specific_time
+from kw_webapp.tests.utils import create_review, create_review_for_specific_time
 
 
 def wipe_all_reviews_for_user(user):
