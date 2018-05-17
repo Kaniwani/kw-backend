@@ -333,6 +333,17 @@ class UserSpecific(models.Model):
             self._round_review_time_up()
             self._round_last_studied_up()
 
+    def reset(self):
+        # During a reset, we bring them down to the lowest review level, _not_ lesson level.
+        self.streak = 1
+        self.last_studied = None
+        self.next_review_date = timezone.now()
+        self.correct = 1
+        self.incorrect = 0
+        self.burned = False
+        self.needs_review = True
+        self.save()
+
     def _round_last_studied_up(self):
         original_date = self.last_studied
         round_to = constants.REVIEW_ROUNDING_TIME.total_seconds()
