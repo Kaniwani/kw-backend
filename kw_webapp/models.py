@@ -3,6 +3,7 @@ from itertools import chain
 
 from datetime import timedelta
 
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
@@ -165,8 +166,6 @@ class PartOfSpeech(models.Model):
         return str(self.part)
 
 
-
-
 class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
     character = models.CharField(max_length=255)
@@ -184,6 +183,7 @@ class Reading(models.Model):
     furigana = models.CharField(max_length=100, null=True)
     pitch = models.CharField(max_length=100, null=True)
     parts_of_speech = models.ManyToManyField(PartOfSpeech)
+    furigana_sentence_ja = JSONField(max_length=1000, default={})
 
     class Meta:
         unique_together = ('character', 'kana')

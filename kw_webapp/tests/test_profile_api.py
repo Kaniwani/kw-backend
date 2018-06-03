@@ -804,7 +804,6 @@ class TestProfileApi(APITestCase):
         resp = self.client.get(reverse("api:review-current"))
         self.assertEqual(resp.data["count"], 1)
 
-
     def test_review_counts_endpoint_returns_correct_information(self):
         self.client.force_login(self.user)
 
@@ -819,3 +818,17 @@ class TestProfileApi(APITestCase):
         response = self.client.get(reverse("api:review-counts"))
         self.assertEqual(response.data['reviews_count'], 1)
         self.assertEqual(response.data['lessons_count'], 1)
+
+    def test_sentence_furigana_is_a_dictionary(self):
+        self.client.force_login(self.user)
+
+        self.reading.furigana_sentence_ja = {
+            "preamble": [],
+            "focus": [],
+            "postamble": []
+        }
+
+        self.reading.save()
+        response = self.client.get(reverse("api:vocabulary-detail", args=(self.vocabulary.id, )))
+        data = response.data
+        self.assertEqual(len(data['readings'][0]['furigana_sentence_ja']), 3)

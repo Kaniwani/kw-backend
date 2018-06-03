@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='profile',
             name='join_date',
-            field=models.DateField(auto_now_add=True),
+            field=models.DateField(null=True, auto_now_add=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -54,7 +54,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='profile',
             name='title',
-            field=models.CharField(default='Turtles', max_length=255),
+            field=models.CharField(null=True, max_length=255, default='Turtles'),
             preserve_default=True,
         ),
         migrations.AddField(

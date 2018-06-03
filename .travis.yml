@@ -1,9 +1,13 @@
 language: python
 services:
   - redis-server
+  - postgresql
 python:
+  - 3.6
   - 3.5
   - 3.4
+before_script:
+  - psql -c "CREATE USER testuser WITH PASSWORD 'testpassword'; CREATE DATABASE test_KaniWaniDB WITH OWNER = testuser;"
 install:
   - pip install -r requirements.txt
 script:

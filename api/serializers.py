@@ -268,7 +268,7 @@ class ReadingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Reading
-        fields = ('id', 'character', 'kana', 'level', 'sentence_en', 'sentence_ja',
+        fields = ('id', 'character', 'kana', 'level', 'sentence_en', 'sentence_ja', 'furigana_sentence_ja',
                   'common', "furigana", "pitch", "parts_of_speech")
 
 
