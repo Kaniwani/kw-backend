@@ -9,6 +9,8 @@ python:
 before_script:
   - psql -c "CREATE USER testuser WITH PASSWORD 'testpassword';" -U postgres
   - psql -c "ALTER USER testuser CREATEDB;" -U postgres
+addons:
+  postgresql: "9.4"
 install:
   - pip install -r requirements.txt
 script:
