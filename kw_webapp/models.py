@@ -129,7 +129,7 @@ class Profile(models.Model):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
 
 
-class Vocabulary(models.Model):
+class AbstractVocabulary(models.Model):
     meaning = models.CharField(max_length=255)
 
     def reading_count(self):
@@ -138,11 +138,16 @@ class Vocabulary(models.Model):
     def available_readings(self, level):
         return self.readings.filter(level__lte=level)
 
-    def get_absolute_url(self):
-        return "https://www.wanikani.com/vocabulary/{}/".format(self.readings.all()[0])
-
     def __str__(self):
         return self.meaning
+
+    class Meta:
+        abstract = True
+
+
+class Vocabulary(AbstractVocabulary):
+    def get_absolute_url(self):
+        return "https://www.wanikani.com/vocabulary/{}/".format(self.readings.all()[0])
 
 
 class Tag(models.Model):
@@ -165,16 +170,9 @@ class PartOfSpeech(models.Model):
         return str(self.part)
 
 
-
-
-class Reading(models.Model):
-    vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
+class AbstractReading(models.Model):
     character = models.CharField(max_length=255)
     kana = models.CharField(max_length=255)
-    level = models.PositiveIntegerField(null=True, validators=[
-        MinValueValidator(constants.LEVEL_MIN),
-        MaxValueValidator(constants.LEVEL_MAX),
-    ])
 
     # JISHO information
     sentence_en = models.CharField(max_length=1000, null=True)
@@ -186,7 +184,19 @@ class Reading(models.Model):
     parts_of_speech = models.ManyToManyField(PartOfSpeech)
 
     class Meta:
+        abstract = True
         unique_together = ('character', 'kana')
+
+    def __str__(self):
+        return "{} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character)
+
+
+class Reading(AbstractReading):
+    vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
+    level = models.PositiveIntegerField(null=True, validators=[
+        MinValueValidator(constants.LEVEL_MIN),
+        MaxValueValidator(constants.LEVEL_MAX),
+    ])
 
     def __str__(self):
         return "{} - {} - {} - {}".format(self.vocabulary.meaning, self.kana, self.character, self.level)
@@ -205,25 +215,21 @@ class Report(models.Model):
                                                                      self.created_by_id,
                                                                      self.created_at)
 
-class UserSpecific(models.Model):
-    vocabulary = models.ForeignKey(Vocabulary)
-    user = models.ForeignKey(User, related_name='reviews', on_delete=models.CASCADE)
+
+class AbstractReview(models.Model):
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)
     streak = models.PositiveIntegerField(default=0)
     last_studied = models.DateTimeField(blank=True, null=True)
     needs_review = models.BooleanField(default=True)
-    unlock_date = models.DateTimeField(default=timezone.now, blank=True)
     next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
     burned = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
-    wanikani_srs = models.CharField(max_length=255, default="unknown")
-    wanikani_srs_numeric = models.IntegerField(default=0)
-    wanikani_burned = models.BooleanField(default=False)
     notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
     critical = models.BooleanField(default=False)
 
     class Meta:
+        abstract = True
         unique_together = ('vocabulary', 'user')
 
     def answered_correctly(self, first_try=True):
@@ -381,6 +387,26 @@ class UserSpecific(models.Model):
         self._round_last_studied_date()
 
     def __str__(self):
+        return "{} - {} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{}".format(self.id,
+                                                                                   self.vocabulary.meaning,
+                                                                                   self.user.username,
+                                                                                   self.correct,
+                                                                                   self.incorrect,
+                                                                                   self.streak,
+                                                                                   self.last_studied,
+                                                                                   self.needs_review)
+
+
+class UserSpecific(AbstractReview):
+    vocabulary = models.ForeignKey(Vocabulary)
+    user = models.ForeignKey(User, related_name='reviews', on_delete=models.CASCADE)
+    unlock_date = models.DateTimeField(default=timezone.now, blank=True)
+    wanikani_srs = models.CharField(max_length=255, default="unknown")
+    wanikani_srs_numeric = models.IntegerField(default=0)
+    wanikani_burned = models.BooleanField(default=False)
+
+
+    def __str__(self):
         return "{} - {} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(self.id,
                                                                                    self.vocabulary.meaning,
                                                                                    self.user.username,
@@ -421,3 +447,16 @@ class MeaningSynonym(models.Model):
 
     class Meta:
         unique_together = ('text', 'review')
+
+
+class CustomVocabulary(AbstractVocabulary):
+    user = models.ForeignKey(User, related_name='custom_vocabularies')
+
+
+class CustomReading(AbstractReading):
+    vocabulary = models.ForeignKey(CustomVocabulary, related_name='readings', on_delete=models.CASCADE)
+
+
+class CustomMeaningReview(AbstractReview):
+    vocabulary = models.ForeignKey(CustomVocabulary)
+    user = models.ForeignKey(User, related_name='custom_meaning_reviews', on_delete=models.CASCADE)
