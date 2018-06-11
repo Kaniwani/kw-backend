@@ -4,7 +4,7 @@ import responses
 from django.contrib.auth.models import User
 
 from kw_webapp.constants import API_KEY
-from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile, CustomVocabulary, CustomReading, CustomMeaningReview
+from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile
 from kw_webapp.tasks import build_user_information_api_string, build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
 
@@ -23,25 +23,11 @@ def create_review(vocabulary, user):
     return u
 
 
-def create_custom_meaning_review(vocabulary, user):
-    cmr = CustomMeaningReview.objects.create(vocabulary=vocabulary, user=user)
-    cmr.streak = 1
-    cmr.save()
-    return cmr
-
-
 def create_lesson(vocabulary, user):
     u = UserSpecific.objects.create(vocabulary=vocabulary, user=user)
     u.streak = 0
     u.save()
     return u
-
-
-def create_custom_meaning_lesson(vocabulary, user):
-    cmr = CustomMeaningReview.objects.create(vocabulary=vocabulary, user=user)
-    cmr.streak = 0
-    cmr.save()
-    return cmr
 
 
 def create_profile(user, api_key, level):
@@ -55,19 +41,9 @@ def create_vocab(meaning):
     return v
 
 
-def create_custom_vocab(meaning):
-    v = CustomVocabulary.objects.create(meaning=meaning)
-    return v
-
-
 def create_reading(vocab, reading, character, level):
     r = Reading.objects.create(vocabulary=vocab,
                                kana=reading, level=level, character=character)
-    return r
-
-
-def create_custom_reading(vocab, reading, character):
-    r = Reading.objects.create(vocabulary=vocab, kana=reading, character=character)
     return r
 
 
