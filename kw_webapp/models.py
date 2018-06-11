@@ -6,7 +6,6 @@ from datetime import timedelta
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
-from django.db.models import Count
 from django.utils import timezone
 
 from kw_webapp import constants
@@ -165,8 +164,6 @@ class PartOfSpeech(models.Model):
         return str(self.part)
 
 
-
-
 class Reading(models.Model):
     vocabulary = models.ForeignKey(Vocabulary, related_name='readings', on_delete=models.CASCADE)
     character = models.CharField(max_length=255)
@@ -204,6 +201,7 @@ class Report(models.Model):
                                                                      self.reason,
                                                                      self.created_by_id,
                                                                      self.created_at)
+
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
