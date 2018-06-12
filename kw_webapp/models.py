@@ -128,9 +128,14 @@ class Profile(models.Model):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
 
 
+class Pack(models.Model):
+    name = models.CharField(max_length=255, blank=False, null=False)
+
+
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
     source = models.CharField(max_length=255, choices=constants.Source.choices())
+    packs = models.ManyToManyField(Pack)
 
     def reading_count(self):
         return self.readings.all().count()
