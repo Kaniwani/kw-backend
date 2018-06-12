@@ -130,6 +130,7 @@ class Profile(models.Model):
 
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
+    source = models.CharField(max_length=255, choices=constants.Source.choices())
 
     def reading_count(self):
         return self.readings.all().count()
@@ -138,7 +139,7 @@ class Vocabulary(models.Model):
         return self.readings.filter(level__lte=level)
 
     def get_absolute_url(self):
-        return "https://www.wanikani.com/vocabulary/{}/".format(self.readings.all()[0])
+        return constants.SOURCES_TO_LOOKUP_URL_MAP[self.source].format(self.readings.all()[0])
 
     def __str__(self):
         return self.meaning
@@ -215,11 +216,13 @@ class UserSpecific(models.Model):
     next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
     burned = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
+    notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
+    critical = models.BooleanField(default=False)
+
+    # WK Specific
     wanikani_srs = models.CharField(max_length=255, default="unknown")
     wanikani_srs_numeric = models.IntegerField(default=0)
     wanikani_burned = models.BooleanField(default=False)
-    notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
-    critical = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('vocabulary', 'user')

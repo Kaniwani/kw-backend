@@ -282,7 +282,7 @@ def create_new_vocabulary(vocabulary_json):
     :return: The newly created Vocabulary object.
     '''
     meaning = vocabulary_json["meaning"]
-    vocab = Vocabulary.objects.create(meaning=meaning)
+    vocab = Vocabulary.objects.create(meaning=meaning, source=constants.Source.WANIKANI)
     vocab = update_local_vocabulary_information(vocab, vocabulary_json)
     return vocab
 
