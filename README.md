@@ -50,7 +50,14 @@ one_time_import_jisho_new_format("wk_vocab_import.json")
 ```
 The app will now import a bunch of additional data from the local `wk_vocab_import.json` file. This will take quite some time, so sit tight.
 
-18. Ctrl + Alt + R one last time. Type in the command `runserver --noreload` (`python manage.py runserver --noreload` if using a terminal).
+18. (Also subject to change..) We can now import additional vocab packs. Execute the following in the `shell`:
+```python
+from kw_webapp.utils import import_packs
+import_packs("packs.json")
+```
+The app will now import additional vocabulary packs from the local `packs.json` file. This shouldn't take _too_ long.
+
+19. Ctrl + Alt + R one last time. Type in the command `runserver --noreload` (`python manage.py runserver --noreload` if using a terminal).
 
 If all went well, it will start a server at 127.0.0.1:8000
 

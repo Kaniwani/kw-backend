@@ -12,7 +12,7 @@ from kw_webapp.constants import WANIKANI_SRS_LEVELS, KANIWANI_SRS_LEVELS, KwSrsL
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
 from kw_webapp import constants
-from kw_webapp.models import MeaningReview, Vocabulary, Profile, Level, MeaningSynonym, AnswerSynonym
+from kw_webapp.models import MeaningReview, Vocabulary, Profile, Level, MeaningSynonym, AnswerSynonym, Pack
 from datetime import timedelta, datetime
 from django.utils import timezone
 
@@ -698,3 +698,113 @@ def reset_reviews(user, reset_to_level):
     reviews_to_delete = MeaningReview.objects.filter(user=user)
     reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lt=reset_to_level)
     reviews_to_delete.delete()
+
+
+
+def import_vocabulary_to_pack(vocabulary, pack):
+    '''
+    Import the Vocabulary dictionary into the database, associated to the provided Pack object.
+    :param vocabulary: Vocabulary dictionary
+    :param pack: Pack object
+    :return: Vocabulary object and whether it was newly created or not
+    '''
+    vocab, is_new = get_or_create_vocab_by_pack_json(vocabulary)
+    if vocab.source is constants.Source.WANIKANI:
+        logger.error("Vocab %s is associated to WaniKani", vocabulary['character'])
+    else:
+        vocab = update_local_vocabulary_information_from_pack(vocab, vocabulary, pack)
+        vocab.save()
+    return vocab, is_new
+
+
+def get_or_create_vocab_by_pack_json(vocab_json):
+    '''
+    Get a Vocabulary object from the database by Pack packaged json. If it doesn't exist, create it.
+    :param vocab_json: Vocabulary dictionary (Pack json)
+    :return: Vocabulary object and whether it was newly created or not
+    '''
+    try:
+        vocab = get_vocab_by_kanji(vocab_json['character'])
+        is_new = False
+    except Vocabulary.DoesNotExist:
+        vocab = create_new_vocabulary_from_jisho(vocab_json)
+        is_new = True
+    return vocab, is_new
+
+
+def create_new_vocabulary_from_jisho(vocabulary_json):
+    '''
+    Create a new vocabulary based on a json object provided by Jisho and returns this vocabulary.
+    :param vocabulary_json: A JSON object representing a single vocabulary.
+    :return: The newly created Vocabulary object.
+    '''
+    meaning = vocabulary_json["meaning"]
+    vocab = Vocabulary.objects.create(meaning=meaning, source=constants.Source.JISHO)
+    return vocab
+
+
+def update_local_vocabulary_information_from_pack(vocab, vocabulary_json, pack):
+    '''
+    Update a Vocabulary object with information from a Pack dictionary and a Pack object.
+    :param vocab: Vocabulary object
+    :param vocabulary_json: Vocabulary dictionary
+    :param pack: Pack object
+    :return: Updated Vocabulary object
+    '''
+    kana_list = [reading.strip() for reading in vocabulary_json["reading"].split(",")]
+    # Update the local meaning based on WK meaning
+    meaning = vocabulary_json['meaning']
+    vocab.meaning = meaning
+    vocab.packs.add(pack)
+
+    character = vocabulary_json["character"]
+    for reading in kana_list:
+        new_reading, created = vocab.readings.get_or_create(kana=reading, character=character)
+        new_reading.save()
+        if created:
+            logger.info("Created new reading: %s associated to vocab %s", new_reading.kana,
+                        new_reading.vocabulary.meaning)
+    vocab.save()
+    return vocab
+
+
+def get_or_create_pack_by_name(name):
+    '''
+    Get a pack object from the database by name. If it doesn't exist, create it.
+    :param name: Pack name
+    :return: Pack object
+    '''
+    try:
+        pack = get_pack_by_name(name)
+        created = False
+    except Pack.DoesNotExist:
+        pack = create_new_pack(name)
+        created = True
+    return pack, created
+
+
+def get_pack_by_name(name):
+    '''
+    Get a pack object from the database by name.
+    :param name: Pack name
+    :return: Pack object
+    '''
+    packs = Pack.objects.filter(name=name)
+    if packs.count() == 0:
+        logger.error("Pack %s does not exist and cannot be retrieved.", name)
+        raise Pack.DoesNotExist("Pack %s does not exist.", name)
+    else:
+        logger.info("Retrieved pack %s", name)
+        return packs.first()
+
+
+def create_new_pack(name):
+    '''
+    Create a new Pack object in the database.
+    :param name: Pack name
+    :return: The newly created Pack object
+    '''
+    pack = Pack.objects.create(name=name)
+    pack.save()
+    logger.info("Created pack %s", name)
+    return pack
