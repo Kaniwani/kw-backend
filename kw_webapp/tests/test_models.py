@@ -10,7 +10,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from kw_webapp import constants
-from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag
+from kw_webapp.models import MeaningSynonym, MeaningReview, Profile, Tag
 from kw_webapp.tests.utils import create_user, create_review, create_reading, create_profile
 from kw_webapp.tests.utils import create_vocab
 
@@ -32,15 +32,15 @@ class TestModels(APITestCase):
         user2.set_password("im_a_hacker")
         create_profile(user2, "any_key", 1)
         user2.save()
-        relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id
+        relevant_review_id = MeaningReview.objects.get(user=self.user, vocabulary=self.vocabulary).id
 
         self.client.force_login(user2)
         response = self.client.post(reverse("api:review-hide", args=(relevant_review_id,)))
         self.assertIsInstance(response, HttpResponseForbidden)
 
     def test_toggling_review_hidden_ownership_works(self):
-        relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id
-        before_toggle_hidden = UserSpecific.objects.get(id=relevant_review_id).hidden
+        relevant_review_id = MeaningReview.objects.get(user=self.user, vocabulary=self.vocabulary).id
+        before_toggle_hidden = MeaningReview.objects.get(id=relevant_review_id).hidden
 
         if self.client.login(username=self.user.username, password="password"):
             response = self.client.post(path="/kw/togglevocab/", data={"review_id": relevant_review_id})
@@ -48,7 +48,7 @@ class TestModels(APITestCase):
         else:
             self.fail("Couldn't log in!?")
 
-        after_toggle_hidden = UserSpecific.objects.get(id=relevant_review_id)
+        after_toggle_hidden = MeaningReview.objects.get(id=relevant_review_id)
         self.assertNotEqual(before_toggle_hidden, after_toggle_hidden)
 
     def test_adding_synonym_works(self):

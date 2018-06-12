@@ -11,7 +11,7 @@ from rest_framework import serializers
 from api import serializer_fields
 from api.validators import WanikaniApiKeyValidator
 from kw_webapp.constants import KwSrsLevel, KANIWANI_SRS_LEVELS, STREAK_TO_SRS_LEVEL_MAP_KW
-from kw_webapp.models import Profile, Vocabulary, UserSpecific, Reading, Level, Tag, AnswerSynonym, \
+from kw_webapp.models import Profile, Vocabulary, MeaningReview, Reading, Level, Tag, AnswerSynonym, \
     FrequentlyAskedQuestion, Announcement, Report, MeaningSynonym
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_future_reviews, get_users_reviews, \
     build_upcoming_srs_for_user
@@ -292,8 +292,8 @@ class VocabularySerializer(serializers.ModelSerializer):
     def get_review(self, obj):
         if 'request' in self.context:
             try:
-                return UserSpecific.objects.get(user=self.context['request'].user, vocabulary=obj).id
-            except UserSpecific.DoesNotExist:
+                return MeaningReview.objects.get(user=self.context['request'].user, vocabulary=obj).id
+            except MeaningReview.DoesNotExist:
                 return None
         return None
 
@@ -301,10 +301,10 @@ class VocabularySerializer(serializers.ModelSerializer):
         if 'request' in self.context:
             try:
                 minimum_level_to_review = self.context['request'].user.profile.get_minimum_wk_srs_threshold_for_review()
-                return UserSpecific.objects.filter(user=self.context['request'].user,
-                                                   vocabulary=obj,
-                                                   wanikani_srs_numeric__gte=minimum_level_to_review).count() > 0
-            except UserSpecific.DoesNotExist:
+                return MeaningReview.objects.filter(user=self.context['request'].user,
+                                                    vocabulary=obj,
+                                                    wanikani_srs_numeric__gte=minimum_level_to_review).count() > 0
+            except MeaningReview.DoesNotExist:
                 return None
         return None
 
@@ -363,7 +363,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     meaning_synonyms = MeaningSynonymSerializer(many=True, read_only=True)
 
     class Meta:
-        model = UserSpecific
+        model = MeaningReview
         fields = '__all__'
 
         read_only_fields = ('id', 'vocabulary', 'correct', 'incorrect', 'streak',

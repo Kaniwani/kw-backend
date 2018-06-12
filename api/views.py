@@ -20,7 +20,7 @@ from api.serializers import ReviewSerializer, VocabularySerializer, StubbedRevie
     ReviewCountSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
-from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
+from kw_webapp.models import Vocabulary, MeaningReview, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
     Announcement, Profile, Report, MeaningSynonym
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
     get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
@@ -271,7 +271,7 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
 
     @detail_route(methods=['POST'])
     def correct(self, request, pk=None):
-        review = get_object_or_404(UserSpecific, pk=pk)
+        review = get_object_or_404(MeaningReview, pk=pk)
         if not review.can_be_managed_by(request.user) or not review.needs_review:
             raise PermissionDenied("You can't review a review that doesn't need to be reviewed! ٩(ఠ益ఠ)۶")
 
@@ -282,7 +282,7 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
 
     @detail_route(methods=['POST'])
     def incorrect(self, request, pk=None):
-        review = get_object_or_404(UserSpecific, pk=pk)
+        review = get_object_or_404(MeaningReview, pk=pk)
         if not review.can_be_managed_by(request.user) or not review.needs_review:
             raise PermissionDenied("You can't review a review that doesn't need to be reviewed! ٩(ఠ益ఠ)۶")
         review = review.answered_incorrectly()
@@ -305,12 +305,12 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
 
     @detail_route(methods=['POST'])
     def reset(self, request, pk=None):
-        review = get_object_or_404(UserSpecific, pk=pk)
+        review = get_object_or_404(MeaningReview, pk=pk)
         review.reset()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def _set_hidden(self, request, should_hide, pk=None):
-        review = get_object_or_404(UserSpecific, pk=pk)
+        review = get_object_or_404(MeaningReview, pk=pk)
         if not review.can_be_managed_by(request.user):
             return HttpResponseForbidden("You can't modify that object!")
 
@@ -319,8 +319,8 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_queryset(self):
-        return UserSpecific.objects.filter(user=self.request.user,
-                                           wanikani_srs_numeric__gte=self.request.user.profile.get_minimum_wk_srs_threshold_for_review())
+        return MeaningReview.objects.filter(user=self.request.user,
+                                            wanikani_srs_numeric__gte=self.request.user.profile.get_minimum_wk_srs_threshold_for_review())
 
 
 class FrequentlyAskedQuestionViewSet(RequestLoggingMixin, viewsets.ModelViewSet):

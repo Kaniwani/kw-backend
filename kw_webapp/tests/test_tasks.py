@@ -6,7 +6,7 @@ import time
 from django.test import TestCase
 from django.utils import timezone
 from kw_webapp import constants
-from kw_webapp.models import Vocabulary, UserSpecific, MeaningSynonym, AnswerSynonym
+from kw_webapp.models import Vocabulary, MeaningReview, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, associate_vocab_to_user, \
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
@@ -42,7 +42,7 @@ class TestTasks(TestCase):
         self.review.last_studied = past_time(5)
         self.review.save()
         all_srs()
-        review = UserSpecific.objects.get(pk=self.review.id)
+        review = MeaningReview.objects.get(pk=self.review.id)
         self.assertTrue(review.needs_review)
 
     def test_associate_vocab_to_user_successfully_creates_review(self):
@@ -70,7 +70,7 @@ class TestTasks(TestCase):
 
         lock_level_for_user(5, self.user)
 
-        available_reviews = UserSpecific.objects.filter(user=self.user, vocabulary__readings__level=5).all()
+        available_reviews = MeaningReview.objects.filter(user=self.user, vocabulary__readings__level=5).all()
         self.assertFalse(available_reviews)
 
     def test_locking_level_removes_level_from_unlocked_list(self):
@@ -133,7 +133,7 @@ class TestTasks(TestCase):
                       content_type='application/json')
 
         sync_unlocked_vocab_with_wk(self.user)
-        newly_synced_review = UserSpecific.objects.get(user=self.user, vocabulary__meaning=self.vocabulary.meaning)
+        newly_synced_review = MeaningReview.objects.get(user=self.user, vocabulary__meaning=self.vocabulary.meaning)
 
         self.assertEqual(newly_synced_review.wanikani_srs, "apprentice")
         self.assertEqual(newly_synced_review.wanikani_srs_numeric, 3)
@@ -344,7 +344,7 @@ class TestTasks(TestCase):
         new_vocab = Vocabulary.objects.filter(readings__character="犬")
         self.assertEqual(new_vocab.count(), 1)
 
-        new_review = UserSpecific.objects.filter(user=self.user, vocabulary__readings__character="犬")
+        new_review = MeaningReview.objects.filter(user=self.user, vocabulary__readings__character="犬")
         self.assertEqual(new_review.count(), 1)
         new_review = new_review[0]
         self.assertEqual(new_review.streak, review_1.streak)
@@ -357,7 +357,7 @@ class TestTasks(TestCase):
         self.assertEqual(len(new_review.synonyms_list()), 2)
         self.assertEqual(len(new_review.reading_synonyms.all()), 2)
 
-        second_users_reviews = UserSpecific.objects.filter(user=user2)
+        second_users_reviews = MeaningReview.objects.filter(user=user2)
         self.assertEqual(second_users_reviews.count(), 1)
         user_two_review = second_users_reviews[0]
         self.assertEqual(user_two_review.streak, 5)

@@ -12,7 +12,7 @@ from kw_webapp.constants import WANIKANI_SRS_LEVELS, KANIWANI_SRS_LEVELS, KwSrsL
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
 from kw_webapp import constants
-from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level, MeaningSynonym, AnswerSynonym
+from kw_webapp.models import MeaningReview, Vocabulary, Profile, Level, MeaningSynonym, AnswerSynonym
 from datetime import timedelta, datetime
 from django.utils import timezone
 
@@ -52,13 +52,13 @@ def all_srs(user=None):
         return 0
 
     if user:
-            review_set = UserSpecific.objects.filter(user=user,
-                                                     next_review_date__lte=slightly_ahead_of_now,
-                                                     needs_review=False)
+            review_set = MeaningReview.objects.filter(user=user,
+                                                      next_review_date__lte=slightly_ahead_of_now,
+                                                      needs_review=False)
     else:
-        review_set = UserSpecific.objects.filter(user__profile__on_vacation=False,
-                                                 next_review_date__lte=slightly_ahead_of_now,
-                                                 needs_review=False)
+        review_set = MeaningReview.objects.filter(user__profile__on_vacation=False,
+                                                  next_review_date__lte=slightly_ahead_of_now,
+                                                  needs_review=False)
 
     affected_count += review_set.update(needs_review=True)
     logger.info("User {} has {} new reviews.".format(user.username if user else "all users", affected_count))
@@ -103,15 +103,15 @@ def associate_vocab_to_user(vocab, user):
     :return: the vocabulary object after association to the user
     '''
     try:
-        review, created = UserSpecific.objects.get_or_create(vocabulary=vocab, user=user)
+        review, created = MeaningReview.objects.get_or_create(vocabulary=vocab, user=user)
         if created:
             review.needs_review = True
             review.next_review_date = timezone.now()
             review.save()
         return review, created
 
-    except UserSpecific.MultipleObjectsReturned:
-        us = UserSpecific.objects.filter(vocabulary=vocab, user=user)
+    except MeaningReview.MultipleObjectsReturned:
+        us = MeaningReview.objects.filter(vocabulary=vocab, user=user)
         for u in us:
             logger.error(
                 "during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(user.username,
@@ -154,7 +154,7 @@ def build_API_sync_string_for_user_for_levels(user, levels):
 
 def lock_level_for_user(requested_level, user):
     requested_level = int(requested_level)
-    reviews = UserSpecific.objects.filter(user=user, vocabulary__readings__level=requested_level).distinct()
+    reviews = MeaningReview.objects.filter(user=user, vocabulary__readings__level=requested_level).distinct()
     count = reviews.count()
     reviews.delete()
     level = Level.objects.get(profile=user.profile, level=requested_level)
@@ -358,51 +358,51 @@ def associate_synonyms_to_vocab(user, vocab, user_specific_json):
     synonym_count = 0
 
     try:
-        review = UserSpecific.objects.get(user=user, vocabulary=vocab)
+        review = MeaningReview.objects.get(user=user, vocabulary=vocab)
         _, synonym_count = synchronize_synonyms(review, user_specific_json)
-    except UserSpecific.DoesNotExist:
+    except MeaningReview.DoesNotExist:
         pass
 
     return review, synonym_count
 
 
 def get_users_reviews(user):
-    return UserSpecific.objects.filter(user=user,
-                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
-                                       hidden=False)
+    return MeaningReview.objects.filter(user=user,
+                                        wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                        hidden=False)
 
 
 def get_users_critical_reviews(user):
-    return UserSpecific.objects.filter(user=user,
-                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
-                                       hidden=False,
-                                       critical=True)
+    return MeaningReview.objects.filter(user=user,
+                                        wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                        hidden=False,
+                                        critical=True)
 
 
 def get_users_lessons(user):
-    return UserSpecific.objects.filter(user=user,
-                                       needs_review=True,
-                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
-                                       hidden=False,
-                                       streak=KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name][0])
+    return MeaningReview.objects.filter(user=user,
+                                        needs_review=True,
+                                        wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                        hidden=False,
+                                        streak=KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name][0])
 
 
 def get_users_current_reviews(user):
-    return UserSpecific.objects.filter(user=user,
-                                       needs_review=True,
-                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
-                                       hidden=False,
-                                       burned=False,
-                                       streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0])
+    return MeaningReview.objects.filter(user=user,
+                                        needs_review=True,
+                                        wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                        hidden=False,
+                                        burned=False,
+                                        streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0])
 
 
 def get_users_future_reviews(user, time_limit=None):
-    queryset = UserSpecific.objects.filter(user=user,
-                                           needs_review=False,
-                                           wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
-                                           hidden=False,
-                                           burned=False,
-                                           streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0]).annotate(
+    queryset = MeaningReview.objects.filter(user=user,
+                                            needs_review=False,
+                                            wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                            hidden=False,
+                                            burned=False,
+                                            streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0]).annotate(
         Min('next_review_date')).order_by('next_review_date')
 
     if isinstance(time_limit, timedelta):
@@ -558,16 +558,16 @@ def pull_user_synonyms_by_level(user, level):
             meaning = vocabulary["meaning"]
             if vocabulary['user_specific'] and vocabulary['user_specific']['user_synonyms']:
                 try:
-                    review = UserSpecific.objects.get(user=user, vocabulary__meaning=meaning)
+                    review = MeaningReview.objects.get(user=user, vocabulary__meaning=meaning)
                     for synonym in vocabulary['user_specific']['user_synonyms']:
                         review.meaning_synonyms.get_or_create(text=synonym)
                     review.save()
-                except UserSpecific.DoesNotExist as e:
+                except MeaningReview.DoesNotExist as e:
                     logger.error("Couldn't pull review during a synonym sync: {}".format(e))
                 except KeyError as e:
                     logger.error("No user_specific or synonyms?: {}".format(json_data))
-                except UserSpecific.MultipleObjectsReturned:
-                    reviews = UserSpecific.objects.filter(user=user, vocabulary__meaning=meaning)
+                except MeaningReview.MultipleObjectsReturned:
+                    reviews = MeaningReview.objects.filter(user=user, vocabulary__meaning=meaning)
                     for review in reviews:
                         logger.error(
                             "Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(
@@ -607,7 +607,7 @@ def user_returns_from_vacation(user):
     logger.info("{} has returned from vacation!".format(user.username))
     vacation_date = user.profile.vacation_date
     if vacation_date:
-        users_reviews = UserSpecific.objects.filter(user=user)
+        users_reviews = MeaningReview.objects.filter(user=user)
         elapsed_vacation_time = timezone.now() - vacation_date
         updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
         users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
@@ -695,6 +695,6 @@ def reset_levels(user, reset_to_level):
 
 
 def reset_reviews(user, reset_to_level):
-    reviews_to_delete = UserSpecific.objects.filter(user=user)
+    reviews_to_delete = MeaningReview.objects.filter(user=user)
     reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lt=reset_to_level)
     reviews_to_delete.delete()

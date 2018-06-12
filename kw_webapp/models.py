@@ -209,7 +209,7 @@ class Report(models.Model):
                                                                      self.created_at)
 
 
-class UserSpecific(models.Model):
+class MeaningReview(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
     user = models.ForeignKey(User, related_name='reviews', on_delete=models.CASCADE)
     correct = models.PositiveIntegerField(default=0)
@@ -401,7 +401,7 @@ class UserSpecific(models.Model):
 class AnswerSynonym(models.Model):
     character = models.CharField(max_length=255, null=True)
     kana = models.CharField(max_length=255, null=False)
-    review = models.ForeignKey(UserSpecific, related_name='reading_synonyms', null=True)
+    review = models.ForeignKey(MeaningReview, related_name='reading_synonyms', null=True)
 
     class Meta:
         unique_together = ('character', 'kana', 'review')
@@ -420,7 +420,7 @@ class AnswerSynonym(models.Model):
 
 class MeaningSynonym(models.Model):
     text = models.CharField(max_length=255, blank=False, null=False)
-    review = models.ForeignKey(UserSpecific, related_name="meaning_synonyms", null=True)
+    review = models.ForeignKey(MeaningReview, related_name="meaning_synonyms", null=True)
 
     def __str__(self):
         return self.text

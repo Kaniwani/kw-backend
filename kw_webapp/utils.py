@@ -7,7 +7,7 @@ from django.utils import timezone
 from rest_framework.authtoken.models import Token
 
 from kw_webapp import constants
-from kw_webapp.models import UserSpecific, Profile, Reading, Tag, Vocabulary, MeaningSynonym, AnswerSynonym, \
+from kw_webapp.models import MeaningReview, Profile, Reading, Tag, Vocabulary, MeaningSynonym, AnswerSynonym, \
     PartOfSpeech, Level, logger
 from kw_webapp.tasks import create_new_vocabulary, \
     has_multiple_kanji, import_vocabulary_from_json
@@ -17,7 +17,7 @@ from kw_webapp.tests.utils import create_review, create_review_for_specific_time
 
 
 def wipe_all_reviews_for_user(user):
-    reviews = UserSpecific.objects.filter(user=user)
+    reviews = MeaningReview.objects.filter(user=user)
     reviews.delete()
     if len(reviews) > 0:
         raise ValueError
@@ -26,13 +26,13 @@ def wipe_all_reviews_for_user(user):
 
 
 def reset_reviews_for_user(user):
-    reviews = UserSpecific.objects.filter(user=user)
+    reviews = MeaningReview.objects.filter(user=user)
     reviews.update(needs_review=False)
     reviews.update(last_studied=timezone.now())
 
 
 def flag_all_reviews_for_user(user, needed):
-    reviews = UserSpecific.objects.filter(user=user)
+    reviews = MeaningReview.objects.filter(user=user)
     reviews.update(needs_review=needed)
 
 
@@ -54,7 +54,7 @@ def create_profile_for_user(user):
 
 
 def correct_next_review_dates():
-    us = UserSpecific.objects.all()
+    us = MeaningReview.objects.all()
     i = 0
     for u in us:
         u.set_next_review_time_based_on_last_studied()
@@ -102,12 +102,12 @@ def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
         " -> ".join([str(a) for a in found_vocabulary.exclude(id=vocabulary.id).values_list('id', flat=True)])))
     ids = found_vocabulary.values_list('id').exclude(id=vocabulary.id)
     for user in User.objects.all():
-        old_reviews = UserSpecific.objects.filter(user=user, vocabulary__in=ids)
+        old_reviews = MeaningReview.objects.filter(user=user, vocabulary__in=ids)
         if old_reviews.count() > 0:
             print("User [{}] had [{}] reviews which used one of the now merged vocab.".format(user.username,
                                                                                               old_reviews.count()))
             print("Giving them a review for our new vocabulary object...")
-            new_review = UserSpecific.objects.create(vocabulary=vocabulary, user=user)
+            new_review = MeaningReview.objects.create(vocabulary=vocabulary, user=user)
             # Go over all the reviews which were duplicates, and pick the best one as the new accurate one.
             for old_review in old_reviews:
                 if old_review.streak > new_review.streak:
@@ -129,7 +129,7 @@ def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
             new_review.save()
 
 def generate_user_stats(user):
-    reviews = UserSpecific.objects.filter(user=user)
+    reviews = MeaningReview.objects.filter(user=user)
     kanji_review_map = {}
     for review in reviews:
         for reading in review.vocabulary.readings.all():
@@ -161,7 +161,7 @@ def blow_away_duplicate_reviews_for_all_users():
         blow_away_duplicate_reviews_for_user(user)
 
 def blow_away_duplicate_reviews_for_user(user):
-    dupe_revs = UserSpecific.objects.filter(user=user)\
+    dupe_revs = MeaningReview.objects.filter(user=user)\
         .values("vocabulary")\
         .annotate(num_reviews=Count("vocabulary")).filter(
         num_reviews__gt=1)
@@ -174,9 +174,9 @@ def blow_away_duplicate_reviews_for_user(user):
 
     print("Here are the vocabulary IDs we are gonna check: {}".format(vocabulary_ids))
     for voc_id in vocabulary_ids:
-        review_id_to_save = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user).values_list("id", flat=True)[0]
-        UserSpecific.objects.filter(vocabulary__id=voc_id, user=user).exclude(pk=int(review_id_to_save)).delete()
-        new_reviews = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user)
+        review_id_to_save = MeaningReview.objects.filter(vocabulary__id=voc_id, user=user).values_list("id", flat=True)[0]
+        MeaningReview.objects.filter(vocabulary__id=voc_id, user=user).exclude(pk=int(review_id_to_save)).delete()
+        new_reviews = MeaningReview.objects.filter(vocabulary__id=voc_id, user=user)
         print("New review count: {}".format(new_reviews.count()))
         assert(new_reviews.count() == 1)
 
@@ -371,7 +371,7 @@ def repopulate():
 
 def clear_duplicate_meaning_synonyms_from_reviews():
     # Fetch all reviews wherein there are duplicate meaning synonyms.
-    reviews = UserSpecific.objects.values('id', 'meaning_synonyms__text').annotate(Count('meaning_synonyms__text')).filter(meaning_synonyms__text__count__gt=1)
+    reviews = MeaningReview.objects.values('id', 'meaning_synonyms__text').annotate(Count('meaning_synonyms__text')).filter(meaning_synonyms__text__count__gt=1)
     review_list = list(reviews)
     review_list = set([review['id'] for review in review_list])
 
@@ -389,7 +389,7 @@ def clear_duplicate_meaning_synonyms_from_reviews():
 
 def clear_duplicate_answer_synonyms_from_reviews():
     # Fetch all reviews wherein there are duplicate meaning synonyms.
-    reviews = UserSpecific.objects.values('id', 'reading_synonyms__kana', 'reading_synonyms__character').annotate(Count('reading_synonyms__kana')).filter(reading_synonyms__kana__count__gt=1)
+    reviews = MeaningReview.objects.values('id', 'reading_synonyms__kana', 'reading_synonyms__character').annotate(Count('reading_synonyms__kana')).filter(reading_synonyms__kana__count__gt=1)
     review_list = list(reviews)
     review_list = set([review['id'] for review in review_list])
 
