@@ -8,12 +8,11 @@ from rest_framework.authtoken.models import Token
 
 from kw_webapp import constants
 from kw_webapp.models import MeaningReview, Profile, Reading, Tag, Vocabulary, MeaningSynonym, AnswerSynonym, \
-    PartOfSpeech, Level, logger
+    PartOfSpeech, Level, logger, Pack
 from kw_webapp.tasks import create_new_vocabulary, \
-    has_multiple_kanji, import_vocabulary_from_json, get_or_create_pack_by_name, import_vocabulary_to_pack
+    has_multiple_kanji, import_vocabulary_from_json, import_vocabulary_to_pack
 from kw_webapp.wanikani import make_api_call
-from kw_webapp.tasks import unlock_eligible_vocab_from_levels
-from kw_webapp.tests.utils import create_review, create_review_for_specific_time
+from kw_webapp.tests.utils import create_review_for_specific_time
 
 
 def wipe_all_reviews_for_user(user):
@@ -415,7 +414,7 @@ def import_packs(json_file_path):
 
 
 def import_pack(name, words):
-    pack, is_new = get_or_create_pack_by_name(name)
+    pack, is_new = Pack.objects.get_or_create(name=name)
 
     for word in words:
         import_vocabulary_to_pack(word, pack)
