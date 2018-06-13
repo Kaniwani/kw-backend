@@ -4,7 +4,7 @@ import responses
 from django.contrib.auth.models import User
 
 from kw_webapp.constants import API_KEY
-from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile
+from kw_webapp.models import Vocabulary, Reading, MeaningReview, Profile
 from kw_webapp.tasks import build_user_information_api_string, build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
 
@@ -17,14 +17,14 @@ def create_user(username):
 
 
 def create_review(vocabulary, user):
-    u = UserSpecific.objects.create(vocabulary=vocabulary, user=user)
+    u = MeaningReview.objects.create(vocabulary=vocabulary, user=user)
     u.streak = 1
     u.save()
     return u
 
 
 def create_lesson(vocabulary, user):
-    u = UserSpecific.objects.create(vocabulary=vocabulary, user=user)
+    u = MeaningReview.objects.create(vocabulary=vocabulary, user=user)
     u.streak = 0
     u.save()
     return u

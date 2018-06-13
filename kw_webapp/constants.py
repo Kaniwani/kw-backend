@@ -91,3 +91,16 @@ CRITICALITY_THRESHOLD = 0.75
 # Can safely remove these, associated tests, and model data for twitter/webpage
 TWITTER_USERNAME_REGEX = re.compile("[a-zA-Z0-9_]+")
 HTTP_S_REGEX = re.compile("https?://")
+
+
+class Source(Enum):
+    WANIKANI = "WaniKani"
+    JISHO = "Jisho"
+
+    @classmethod
+    def choices(cls):
+        return ((source.name, source.value) for source in Source)
+
+SOURCES_TO_LOOKUP_URL_MAP = OrderedDict()
+SOURCES_TO_LOOKUP_URL_MAP[Source.WANIKANI.name] = "https://www.wanikani.com/vocabulary/{}/"
+SOURCES_TO_LOOKUP_URL_MAP[Source.JISHO.name] = "https://jisho.org/word/{}"

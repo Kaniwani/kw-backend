@@ -1,0 +1,742 @@
+[
+    {
+        "name": "jlpt-n5",
+        "words": [
+            {
+                "character": "戸",
+                "reading": "と",
+                "meaning": "door"
+            },
+            {
+                "character": "タバコ",
+                "reading": "たばこ",
+                "meaning": "tobacco, cigarette, cigaret, cigar"
+            },
+            {
+                "character": "風呂",
+                "reading": "ふろ",
+                "meaning": "bath, bathtub"
+            },
+            {
+                "character": "洗濯",
+                "reading": "せんたく",
+                "meaning": "washing, laundry"
+            },
+            {
+                "character": "茶碗",
+                "reading": "ちゃわん",
+                "meaning": "rice bowl, tea cup, teacup"
+            },
+            {
+                "character": "背広",
+                "reading": "せびろ",
+                "meaning": "business suit"
+            },
+            {
+                "character": "大使館",
+                "reading": "たいしかん",
+                "meaning": "embassy"
+            },
+            {
+                "character": "鞄",
+                "reading": "かばん",
+                "meaning": "bag, satchel, briefcase, basket"
+            },
+            {
+                "character": "石鹸",
+                "reading": "せっけん",
+                "meaning": "soap"
+            },
+            {
+                "character": "飴",
+                "reading": "あめ",
+                "meaning": "candy, hard candy, toffee"
+            },
+            {
+                "character": "八百屋",
+                "reading": "やおや",
+                "meaning": "greengrocer"
+            },
+            {
+                "character": "より",
+                "reading": "より",
+                "meaning": "than"
+            },
+            {
+                "character": "其の",
+                "reading": "その",
+                "meaning": "that, the"
+            },
+            {
+                "character": "此の",
+                "reading": "この",
+                "meaning": "this"
+            },
+            {
+                "character": "皆",
+                "reading": "みんな",
+                "meaning": "all, everyone, everybody"
+            },
+            {
+                "character": "貴方",
+                "reading": "あなた",
+                "meaning": "you"
+            },
+            {
+                "character": "大きな",
+                "reading": "おおきな",
+                "meaning": "big, large, great"
+            },
+            {
+                "character": "何の",
+                "reading": "どの",
+                "meaning": "which, what way"
+            },
+            {
+                "character": "余り",
+                "reading": "あまり",
+                "meaning": "remainder, remnant, rest, balance, surplus, remains of a meal, leftovers"
+            },
+            {
+                "character": "両親",
+                "reading": "りょうしん",
+                "meaning": "parents, both parents"
+            },
+            {
+                "character": "始め",
+                "reading": "はじめ",
+                "meaning": "beginning, start, outset, opening"
+            },
+            {
+                "character": "上着",
+                "reading": "うわぎ",
+                "meaning": "coat, tunic, jacket, outer garment"
+            },
+            {
+                "character": "夕方",
+                "reading": "ゆうがた",
+                "meaning": "evening, dusk"
+            },
+            {
+                "character": "毎週",
+                "reading": "まいしゅう",
+                "meaning": "every week"
+            },
+            {
+                "character": "一昨年",
+                "reading": "いっさくねん",
+                "meaning": "year before last"
+            },
+            {
+                "character": "其れ",
+                "reading": "それ",
+                "meaning": "that, it"
+            },
+            {
+                "character": "迚も",
+                "reading": "とても",
+                "meaning": "very, awfully, exceedingly"
+            },
+            {
+                "character": "何時も",
+                "reading": "いつも",
+                "meaning": "always, usually, every time"
+            },
+            {
+                "character": "何処",
+                "reading": "どこ",
+                "meaning": "where, what place"
+            },
+            {
+                "character": "何方",
+                "reading": "どなた",
+                "meaning": "who?"
+            },
+            {
+                "character": "一寸",
+                "reading": "ちょっと",
+                "meaning": "a little, a bit, slightly"
+            },
+            {
+                "character": "一日",
+                "reading": "いちにち",
+                "meaning": "one day"
+            },
+            {
+                "character": "如何して",
+                "reading": "どうして",
+                "meaning": "why?, for what reason, how, in what way, for what purpose, what for"
+            },
+            {
+                "character": "然し",
+                "reading": "しかし",
+                "meaning": "however, but"
+            },
+            {
+                "character": "無くす",
+                "reading": "なくす",
+                "meaning": "to lose something, to mislay"
+            },
+            {
+                "character": "此方",
+                "reading": "こちら",
+                "meaning": "this way, this direction"
+            },
+            {
+                "character": "今晩",
+                "reading": "こんばん",
+                "meaning": "tonight, this evening"
+            },
+            {
+                "character": "パージ",
+                "reading": "ぺーじ",
+                "meaning": "page"
+            },
+            {
+                "character": "彼処",
+                "reading": "あそこ",
+                "meaning": "there, over there, that place, yonder, you-know-where"
+            },
+            {
+                "character": "詰らない",
+                "reading": "つまらない",
+                "meaning": "dull, uninteresting, boring, tedious"
+            },
+            {
+                "character": "真っ直ぐ",
+                "reading": "まっすぐ",
+                "meaning": "straight, straight ahead, direct, upright, erect"
+            },
+            {
+                "character": "其方",
+                "reading": "そちら",
+                "meaning": "that way"
+            },
+            {
+                "character": "黄色い",
+                "reading": "きいろい",
+                "meaning": "yellow"
+            },
+            {
+                "character": "賑やか",
+                "reading": "にぎやか",
+                "meaning": "bustling, busy, lively"
+            },
+            {
+                "character": "夕飯",
+                "reading": "ゆうはん",
+                "meaning": "evening meal"
+            },
+            {
+                "character": "ワイシャツ",
+                "reading": "わいしゃつ",
+                "meaning": "shirt, business shirt, dress shirt"
+            },
+            {
+                "character": "お巡りさん",
+                "reading": "おまわりさん",
+                "meaning": "police officer"
+            },
+            {
+                "character": "キロメートル",
+                "reading": "きろめーとる",
+                "meaning": "kilometer, kilometre"
+            },
+            {
+                "character": "良く",
+                "reading": "よく",
+                "meaning": "nicely, properly, well, skillfully, skilfully"
+            },
+            {
+                "character": "其処",
+                "reading": "そこ",
+                "meaning": "there"
+            },
+            {
+                "character": "小さな",
+                "reading": "ちいさな",
+                "meaning": "small, little, tiny"
+            },
+            {
+                "character": "もう一度",
+                "reading": "もういちど",
+                "meaning": "once more, again"
+            },
+            {
+                "character": "お弁当",
+                "reading": "おべんとう",
+                "meaning": "bento, Japanese box lunch"
+            },
+            {
+                "character": "でも",
+                "reading": "でも",
+                "meaning": "but, however, though, nevertheless, still, yet, even so, also, as well"
+            },
+            {
+                "character": "等",
+                "reading": "など",
+                "meaning": "et cetera, etc., and the like, and so forth"
+            },
+            {
+                "character": "クラス",
+                "reading": "くらす",
+                "meaning": "class"
+            },
+            {
+                "character": "プール",
+                "reading": "ぷーる",
+                "meaning": "swimming pool, pool"
+            },
+            {
+                "character": "テレビ",
+                "reading": "てれび",
+                "meaning": "television, TV"
+            },
+            {
+                "character": "コーヒー",
+                "reading": "こーひー",
+                "meaning": "coffee"
+            },
+            {
+                "character": "ホテル",
+                "reading": "ほてる",
+                "meaning": "hotel"
+            },
+            {
+                "character": "ニュース",
+                "reading": "にゅーす",
+                "meaning": "news"
+            },
+            {
+                "character": "テーブル",
+                "reading": "てーぶる",
+                "meaning": "table"
+            },
+            {
+                "character": "カメラ",
+                "reading": "かめら",
+                "meaning": "camera"
+            },
+            {
+                "character": "タクシー",
+                "reading": "たくしー",
+                "meaning": "taxi"
+            },
+            {
+                "character": "スポーツ",
+                "reading": "すぽーつ",
+                "meaning": "sport, sports"
+            },
+            {
+                "character": "ラジオ",
+                "reading": "らじお",
+                "meaning": "radio"
+            },
+            {
+                "character": "ペン",
+                "reading": "ぺん",
+                "meaning": "pen"
+            },
+            {
+                "character": "レストラン",
+                "reading": "れすとらん",
+                "meaning": "restaurant"
+            },
+            {
+                "character": "テスト",
+                "reading": "てすと",
+                "meaning": "test"
+            },
+            {
+                "character": "ベッド",
+                "reading": "べっど",
+                "meaning": "bed"
+            },
+            {
+                "character": "パン",
+                "reading": "ぱん",
+                "meaning": "bread, pastries, pastry-based products"
+            },
+            {
+                "character": "ナイフ",
+                "reading": "ないふ",
+                "meaning": "knife"
+            },
+            {
+                "character": "シャツ",
+                "reading": "しゃつ",
+                "meaning": "shirt, undershirt, singlet"
+            },
+            {
+                "character": "ネクタイ",
+                "reading": "ねくたい",
+                "meaning": "tie, necktie"
+            },
+            {
+                "character": "ギター",
+                "reading": "ぎたー",
+                "meaning": "guitar"
+            },
+            {
+                "character": "メートル",
+                "reading": "めーとる",
+                "meaning": "metre, meter"
+            },
+            {
+                "character": "セーター",
+                "reading": "せーたー",
+                "meaning": "sweater, jumper"
+            },
+            {
+                "character": "アパート",
+                "reading": "あぱーと",
+                "meaning": "apartment, apartment building, apartment block, apartment house"
+            },
+            {
+                "character": "ポケット",
+                "reading": "ぽけっと",
+                "meaning": "pocket"
+            },
+            {
+                "character": "バター",
+                "reading": "ばたー",
+                "meaning": "butter"
+            },
+            {
+                "character": "キロ",
+                "reading": "きろ",
+                "meaning": "kilo-, 1000, kilo"
+            },
+            {
+                "character": "スカート",
+                "reading": "すかーと",
+                "meaning": "skirt"
+            },
+            {
+                "character": "レコード",
+                "reading": "れこーど",
+                "meaning": "record"
+            },
+            {
+                "character": "エレベーター",
+                "reading": "えれべーたー",
+                "meaning": "elevator, lift"
+            },
+            {
+                "character": "ズボン",
+                "reading": "ずぼん",
+                "meaning": "trousers, pants"
+            },
+            {
+                "character": "ポスト",
+                "reading": "ぽすと",
+                "meaning": "postbox, mail box, pillar box"
+            },
+            {
+                "character": "コピー",
+                "reading": "こぴー",
+                "meaning": "copy, photocopy"
+            },
+            {
+                "character": "シャワー",
+                "reading": "しゃわー",
+                "meaning": "shower"
+            },
+            {
+                "character": "ハンカチ",
+                "reading": "はんかち",
+                "meaning": "handkerchief"
+            },
+            {
+                "character": "ストーブ",
+                "reading": "すとーぶ",
+                "meaning": "stove"
+            },
+            {
+                "character": "テープ",
+                "reading": "てーぷ",
+                "meaning": "tape"
+            },
+            {
+                "character": "カップ",
+                "reading": "かっぷ",
+                "meaning": "cup"
+            },
+            {
+                "character": "テープレコーダー",
+                "reading": "てーぷれこーだー",
+                "meaning": "tape recorder"
+            },
+            {
+                "character": "ボールペン",
+                "reading": "ぼーるぺん",
+                "meaning": "ball-point pen"
+            },
+            {
+                "character": "スプーン",
+                "reading": "すぷーん",
+                "meaning": "spoon"
+            },
+            {
+                "character": "スリッパ",
+                "reading": "すりっぱ",
+                "meaning": "slipper, slippers"
+            },
+            {
+                "character": "はい",
+                "reading": "はい",
+                "meaning": "yes, that is correct"
+            },
+            {
+                "character": "ペット",
+                "reading": "ぺっと",
+                "meaning": "pet"
+            },
+            {
+                "character": "為る",
+                "reading": "する",
+                "meaning": "to do"
+            },
+            {
+                "character": "彼",
+                "reading": "あれ",
+                "meaning": "that"
+            },
+            {
+                "character": "バス",
+                "reading": "ばす",
+                "meaning": "bus"
+            },
+            {
+                "character": "後",
+                "reading": "あと",
+                "meaning": "behind, rear"
+            },
+            {
+                "character": "辛い",
+                "reading": "からい",
+                "meaning": "spicy, hot"
+            },
+            {
+                "character": "此処",
+                "reading": "ここ",
+                "meaning": "here, this place"
+            },
+            {
+                "character": "もう",
+                "reading": "もう",
+                "meaning": "now, soon, shortly, before long, presently"
+            },
+            {
+                "character": "如何",
+                "reading": "どう",
+                "meaning": "how, in what way, how about"
+            },
+            {
+                "character": "方",
+                "reading": "かた",
+                "meaning": "direction, way"
+            },
+            {
+                "character": "もっと",
+                "reading": "もっと",
+                "meaning": "some more, even more, longer, further"
+            },
+            {
+                "character": "何時",
+                "reading": "いつ",
+                "meaning": "when, how soon"
+            },
+            {
+                "character": "パーティ",
+                "reading": "ぱーてぃ",
+                "meaning": "party"
+            },
+            {
+                "character": "ドア",
+                "reading": "どあ",
+                "meaning": "door, western-style door"
+            },
+            {
+                "character": "何方",
+                "reading": "どちら",
+                "meaning": "which way, which direction, where"
+            },
+            {
+                "character": "どうぞ",
+                "reading": "どうぞ",
+                "meaning": "please, kindly, I beg of you"
+            },
+            {
+                "character": "こんな",
+                "reading": "こんな",
+                "meaning": "such, like this"
+            },
+            {
+                "character": "然して",
+                "reading": "そして",
+                "meaning": "and, and then, thus, and now, and finally"
+            },
+            {
+                "character": "ゆっくり",
+                "reading": "ゆっくり",
+                "meaning": "slowly, at ease, restful"
+            },
+            {
+                "character": "コート",
+                "reading": "こーと",
+                "meaning": "coat"
+            },
+            {
+                "character": "さあ",
+                "reading": "さあ",
+                "meaning": "come, come now, come along, go on, hurry up"
+            },
+            {
+                "character": "どうも",
+                "reading": "どうも",
+                "meaning": "thank you, thanks"
+            },
+            {
+                "character": "じゃあ",
+                "reading": "じゃあ",
+                "meaning": "then, well, so, well then"
+            },
+            {
+                "character": "コップ",
+                "reading": "こっぷ",
+                "meaning": "glass (drinking vessel), tumbler"
+            },
+            {
+                "character": "其れから",
+                "reading": "それから",
+                "meaning": "and then, after that"
+            },
+            {
+                "character": "ええ",
+                "reading": "ええ",
+                "meaning": "yes, that is correct, right"
+            },
+            {
+                "character": "ノート",
+                "reading": "のーと",
+                "meaning": "notebook, copy-book, exercise book"
+            },
+            {
+                "character": "ボタン",
+                "reading": "ぼたん",
+                "meaning": "button"
+            },
+            {
+                "character": "デパート",
+                "reading": "でぱーと",
+                "meaning": "department store"
+            },
+            {
+                "character": "トイレ",
+                "reading": "といれ",
+                "meaning": "toilet, restroom, bathroom, lavatory"
+            },
+            {
+                "character": "其れでは",
+                "reading": "それでは",
+                "meaning": "well then ..."
+            },
+            {
+                "character": "フォーク",
+                "reading": "ふぉーく",
+                "meaning": "fork"
+            },
+            {
+                "character": "明後日",
+                "reading": "あさって",
+                "meaning": "day after tomorrow"
+            },
+            {
+                "character": "何れ",
+                "reading": "どれ",
+                "meaning": "which"
+            },
+            {
+                "character": "彼方",
+                "reading": "あちら",
+                "meaning": "that way, over there, yonder"
+            },
+            {
+                "character": "では",
+                "reading": "では",
+                "meaning": "then, well, so, well then"
+            },
+            {
+                "character": "フィルム",
+                "reading": "ふぃるむ",
+                "meaning": "film"
+            },
+            {
+                "character": "温い",
+                "reading": "ぬるい",
+                "meaning": "lukewarm, tepid"
+            },
+            {
+                "character": "カレンダー",
+                "reading": "かれんだー",
+                "meaning": "calendar"
+            },
+            {
+                "character": "然うして",
+                "reading": "そうして",
+                "meaning": "and, like that"
+            },
+            {
+                "character": "グラム",
+                "reading": "ぐらむ",
+                "meaning": "gram, gramme"
+            },
+            {
+                "character": "キログラム",
+                "reading": "きろぐらむ",
+                "meaning": "kilogram, kilogramme"
+            },
+            {
+                "character": "直ぐに",
+                "reading": "すぐに",
+                "meaning": "immediately, right away, at once, instantly"
+            },
+            {
+                "character": "一月",
+                "reading": "ひとつき",
+                "meaning": "one month"
+            },
+            {
+                "character": "あのう",
+                "reading": "あのう",
+                "meaning": "say, well, errr ..."
+            },
+            {
+                "character": "マッチ",
+                "reading": "まっち",
+                "meaning": "match, contest"
+            },
+            {
+                "character": "燐寸",
+                "reading": "まっち",
+                "meaning": "match"
+            },
+            {
+                "character": "カレー",
+                "reading": "かれー",
+                "meaning": "curry"
+            },
+            {
+                "character": "字引",
+                "reading": "じびき",
+                "meaning": "dictionary"
+            },
+            {
+                "character": "ラジカセ",
+                "reading": "らじかせ",
+                "meaning": "radio-cassette player"
+            }
+        ]
+    }
+]

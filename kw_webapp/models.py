@@ -6,7 +6,6 @@ from datetime import timedelta
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
-from django.db.models import Count
 from django.utils import timezone
 
 from kw_webapp import constants
@@ -129,8 +128,14 @@ class Profile(models.Model):
         return "{} -- {} -- {} -- {}".format(self.user.username, self.api_key, self.level, self.unlocked_levels_list())
 
 
+class Pack(models.Model):
+    name = models.CharField(max_length=255, blank=False, null=False)
+
+
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
+    source = models.CharField(max_length=255, choices=constants.Source.choices())
+    packs = models.ManyToManyField(Pack)
 
     def reading_count(self):
         return self.readings.all().count()
@@ -139,7 +144,7 @@ class Vocabulary(models.Model):
         return self.readings.filter(level__lte=level)
 
     def get_absolute_url(self):
-        return "https://www.wanikani.com/vocabulary/{}/".format(self.readings.all()[0])
+        return constants.SOURCES_TO_LOOKUP_URL_MAP[self.source].format(self.readings.all()[0])
 
     def __str__(self):
         return self.meaning
@@ -163,8 +168,6 @@ class PartOfSpeech(models.Model):
 
     def __str__(self):
         return str(self.part)
-
-
 
 
 class Reading(models.Model):
@@ -205,7 +208,8 @@ class Report(models.Model):
                                                                      self.created_by_id,
                                                                      self.created_at)
 
-class UserSpecific(models.Model):
+
+class MeaningReview(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
     user = models.ForeignKey(User, related_name='reviews', on_delete=models.CASCADE)
     correct = models.PositiveIntegerField(default=0)
@@ -217,11 +221,13 @@ class UserSpecific(models.Model):
     next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
     burned = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
+    notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
+    critical = models.BooleanField(default=False)
+
+    # WK Specific
     wanikani_srs = models.CharField(max_length=255, default="unknown")
     wanikani_srs_numeric = models.IntegerField(default=0)
     wanikani_burned = models.BooleanField(default=False)
-    notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
-    critical = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('vocabulary', 'user')
@@ -395,7 +401,7 @@ class UserSpecific(models.Model):
 class AnswerSynonym(models.Model):
     character = models.CharField(max_length=255, null=True)
     kana = models.CharField(max_length=255, null=False)
-    review = models.ForeignKey(UserSpecific, related_name='reading_synonyms', null=True)
+    review = models.ForeignKey(MeaningReview, related_name='reading_synonyms', null=True)
 
     class Meta:
         unique_together = ('character', 'kana', 'review')
@@ -414,7 +420,7 @@ class AnswerSynonym(models.Model):
 
 class MeaningSynonym(models.Model):
     text = models.CharField(max_length=255, blank=False, null=False)
-    review = models.ForeignKey(UserSpecific, related_name="meaning_synonyms", null=True)
+    review = models.ForeignKey(MeaningReview, related_name="meaning_synonyms", null=True)
 
     def __str__(self):
         return self.text

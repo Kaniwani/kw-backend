@@ -4,7 +4,7 @@ from django.db.models import Q
 from django_filters import rest_framework as filters
 from environ import environ
 
-from kw_webapp.models import Vocabulary, UserSpecific
+from kw_webapp.models import Vocabulary, MeaningReview
 
 import KW.settings
 
@@ -91,5 +91,5 @@ class ReviewFilter(filters.FilterSet):
     part_of_speech = filters.CharFilter(method=filter_tag_multi)
 
     class Meta:
-        model = UserSpecific
+        model = MeaningReview
         fields = ('srs_level', 'srs_level_gt', 'srs_level_lt', 'part_of_speech', 'wanikani_burned')
