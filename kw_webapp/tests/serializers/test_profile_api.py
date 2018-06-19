@@ -77,25 +77,6 @@ class TestProfileApi(APITestCase):
 
         self.assertEqual(response.data['profile']['next_review_date'], current_time)
 
-    def test_profile_serializer_gets_correct_srs_counts(self):
-        review1 = create_review_for_specific_time(self.user, "guru", timezone.now()+ timedelta(hours=12))
-        review1.streak = 4
-        review1.save()
-        review2 = create_review_for_specific_time(self.user, "appren1", timezone.now()+ timedelta(hours=12))
-        review2.streak = 3
-        review2.save()
-        review3 = create_review_for_specific_time(self.user, "appren2", timezone.now()+ timedelta(hours=12))
-        review3.streak = 3
-        review3.save()
-
-        self.client.force_login(user=self.user)
-        #TODO wtf fix this test, it does literally nothing
-        response = self.client.get(reverse("api:user-me"))
-
-
-
-
-
     def test_ordering_on_announcements_works(self):
 
         Announcement.objects.create(creator=self.user, title="ASD123", body="ASDSAD")

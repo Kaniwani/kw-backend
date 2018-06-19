@@ -29,8 +29,6 @@ class TestVocabulary(APITestCase):
 
         self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.BURNED.name
         self.user.profile.save()
-        # TODO set my default vocab review to burned.
-        # TODO ensure that the `is_reviewable` is false on first, true on second.
         response = self.client.get(reverse("api:vocabulary-list"))
         data = response.data
 
