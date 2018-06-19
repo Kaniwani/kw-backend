@@ -102,3 +102,21 @@ def mock_vocab_list_response_with_single_vocabulary_with_changed_meaning(user):
                   json=sample_api_responses.single_vocab_response_with_changed_meaning,
                   status=200,
                   content_type='application/json')
+
+
+def setupTestFixture(self):
+    #Setup an admin user.
+    self.admin = create_user("admin")
+    create_profile(self.admin, "any_key", 5)
+    self.admin.is_staff = True
+    self.admin.save()
+
+    # Setup a non-admin user.
+    self.user = create_user("Tadgh")
+    create_profile(self.user, "any_key", 5)
+
+    # Setup some basic vocabulary / reading / review information.
+    self.vocabulary = create_vocab("radioactive bat")
+    self.reading = create_reading(self.vocabulary, "ねこ", "猫", 5)
+    self.review = create_review(self.vocabulary, self.user)
+
