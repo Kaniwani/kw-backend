@@ -29,29 +29,6 @@ class TestViews(TestCase):
         self.client = Client()
         self.client.login(username="user1", password="password")
 
-    @responses.activate
-    def test_sync_now_endpoint_returns_correct_json(self):
-        responses.add(responses.GET,
-                      "https://www.wanikani.com/api/user/{}/user-information".format(self.user.profile.api_key),
-                      json=sample_api_responses.user_information_response_with_higher_level,
-                      status=200,
-                      content_type="application/json")
-
-        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, [5, 17]),
-                      json=sample_api_responses.single_vocab_response,
-                      status=200,
-                      content_type='application/json')
-
-        test = build_API_sync_string_for_user_for_levels(self.user, [5, 17])
-        response = self.client.post(reverse("api:user-sync"), data={"full_sync": "true"})
-
-        correct_response = {
-            "new_review_count": 0,
-            "profile_sync_succeeded": True,
-            "new_synonym_count": 0
-        }
-
-        self.assertJSONEqual(str(response.content, encoding='utf8'), correct_response)
 
     def test_removing_synonym_removes_synonym(self):
         dummy_kana = "whatever"
