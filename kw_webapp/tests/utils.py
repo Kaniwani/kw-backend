@@ -118,5 +118,22 @@ def setupTestFixture(self):
     # Setup some basic vocabulary / reading / review information.
     self.vocabulary = create_vocab("radioactive bat")
     self.reading = create_reading(self.vocabulary, "ねこ", "猫", 5)
+    self.reading.furigana_sentence_ja = {
+          "preamble": [
+            "その"
+          ],
+          "focus": [
+            ["議員", "0:ぎ;1:いん"],
+          ],
+          "postamble": [
+              "は、",
+              ["公私", "0:こう;1:し"],
+              "のけじめをつけることを",
+              ["学ぶ", "0:まな"],
+              ["必要", "0:ひつ;1:よう"],
+              "があります"
+          ]
+    }
+    self.reading.save()
     self.review = create_review(self.vocabulary, self.user)
 

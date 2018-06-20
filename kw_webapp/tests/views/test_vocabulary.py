@@ -59,3 +59,15 @@ class TestVocabulary(APITestCase):
         self.assertEqual(response.status_code, 200)
         data = response.data
         self.assertEqual(len(data["results"]), 1)
+
+    def test_sentence_furigana_appears_in_vocabulary_response(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("api:vocabulary-detail", args=(self.vocabulary.id, )))
+        data = response.data
+        self.assertTrue(data['readings'][0]['furigana_sentence_ja'] is not None)
+
+
+
+
+
