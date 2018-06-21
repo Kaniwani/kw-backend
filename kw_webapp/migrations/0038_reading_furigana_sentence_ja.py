@@ -8,14 +8,14 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0037_auto_20180321_1551'),
-    ]
+    dependencies = [("kw_webapp", "0037_auto_20180321_1551")]
 
     operations = [
         migrations.AddField(
-            model_name='reading',
-            name='furigana_sentence_ja',
-            field=django.contrib.postgres.fields.jsonb.JSONField(default={}, max_length=1000),
-        ),
+            model_name="reading",
+            name="furigana_sentence_ja",
+            field=django.contrib.postgres.fields.jsonb.JSONField(
+                default={}, max_length=1000
+            ),
+        )
     ]

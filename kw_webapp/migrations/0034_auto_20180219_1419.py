@@ -8,9 +8,7 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0033_auto_20180119_1214'),
-    ]
+    dependencies = [("kw_webapp", "0033_auto_20180119_1214")]
 
     operations = [
         # WE have moved this stuff into migration 29, as it was actually needed there.

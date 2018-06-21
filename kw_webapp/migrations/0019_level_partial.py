@@ -7,14 +7,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0018_auto_20161211_1701'),
-    ]
+    dependencies = [("kw_webapp", "0018_auto_20161211_1701")]
 
     operations = [
         migrations.AddField(
-            model_name='level',
-            name='partial',
-            field=models.BooleanField(default=False),
-        ),
+            model_name="level", name="partial", field=models.BooleanField(default=False)
+        )
     ]

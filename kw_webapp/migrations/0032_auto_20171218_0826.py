@@ -8,19 +8,27 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0031_auto_20171213_1513'),
-    ]
+    dependencies = [("kw_webapp", "0031_auto_20171213_1513")]
 
     operations = [
         migrations.AlterField(
-            model_name='answersynonym',
-            name='review',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='reading_synonyms', to='kw_webapp.UserSpecific'),
+            model_name="answersynonym",
+            name="review",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="reading_synonyms",
+                to="kw_webapp.UserSpecific",
+            ),
         ),
         migrations.AlterField(
-            model_name='meaningsynonym',
-            name='review',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='meaning_synonyms', to='kw_webapp.UserSpecific'),
+            model_name="meaningsynonym",
+            name="review",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="meaning_synonyms",
+                to="kw_webapp.UserSpecific",
+            ),
         ),
     ]

@@ -9,7 +9,6 @@ from kw_webapp.utils import one_time_orphaned_level_clear
 
 
 class TestLevel(APITestCase):
-
     def setUp(self):
         setupTestFixture(self)
 
@@ -25,7 +24,9 @@ class TestLevel(APITestCase):
 
     def test_locking_a_level_locks_successfully(self):
         self.client.force_login(user=self.user)
-        response = self.client.post(reverse("api:level-lock", args=(self.user.profile.level,)))
+        response = self.client.post(
+            reverse("api:level-lock", args=(self.user.profile.level,))
+        )
 
         self.assertEqual(response.data["locked"], 1)
 
@@ -38,14 +39,17 @@ class TestLevel(APITestCase):
         response = self.client.post(reverse("api:level-unlock", args=(level_too_high,)))
         self.assertEqual(response.status_code, 403)
 
-    @mock.patch("api.views.unlock_eligible_vocab_from_levels", side_effect=lambda x, y: [1, 0, 0])
+    @mock.patch(
+        "api.views.unlock_eligible_vocab_from_levels",
+        side_effect=lambda x, y: [1, 0, 0],
+    )
     def test_unlocking_a_level_unlocks_all_vocab(self, garbage):
         self.client.force_login(user=self.user)
         self.user.profile.api_valid = True
         self.user.profile.save()
         s1 = reverse("api:level-unlock", args=(5,))
         response = self.client.post(s1)
-        self.assertEqual(response.data['unlocked_now'], 1)
+        self.assertEqual(response.data["unlocked_now"], 1)
 
     def test_locking_a_level_successfully_clears_the_level_object(self):
         self.client.force_login(user=self.user)
@@ -70,7 +74,7 @@ class TestLevel(APITestCase):
         self.user.profile.unlocked_levels.remove(l6)
         self.user.profile.unlocked_levels.remove(l7)
 
-        #Oh no two orphaned levels.
+        # Oh no two orphaned levels.
         level_count = Level.objects.filter(profile=None).count()
         self.assertEqual(level_count, 2)
 

@@ -44,6 +44,7 @@ class WkSrsLevel(Enum):
     def choices(cls):
         return ((level.name, level.value) for level in WkSrsLevel)
 
+
 # Internal SRS levels. Level 0 for us is lesson, whereas WK does not expose lessons at all.
 KANIWANI_SRS_LEVELS = OrderedDict()
 KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name] = [0]

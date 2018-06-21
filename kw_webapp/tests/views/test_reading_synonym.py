@@ -5,7 +5,6 @@ from kw_webapp.tests.utils import setupTestFixture
 
 
 class TestReadingSynonym(APITestCase):
-
     def setUp(self):
         setupTestFixture(self)
 
@@ -15,11 +14,16 @@ class TestReadingSynonym(APITestCase):
         synonym_kanji = "犬"
         s1 = reverse("api:reading-synonym-list")
         response = self.client.get(s1)
-        self.assertEqual(response.data['count'], 0)
+        self.assertEqual(response.data["count"], 0)
 
-        response = self.client.post(s1, data={"review": self.review.id,
-                                              "kana": synonym_kana,
-                                              "character": synonym_kanji})
+        response = self.client.post(
+            s1,
+            data={
+                "review": self.review.id,
+                "kana": synonym_kana,
+                "character": synonym_kanji,
+            },
+        )
 
         self.review.refresh_from_db()
         found_synonym = self.review.reading_synonyms.first()

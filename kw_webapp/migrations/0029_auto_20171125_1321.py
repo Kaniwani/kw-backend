@@ -10,18 +10,17 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('kw_webapp', '0028_report'),
+        ("kw_webapp", "0028_report"),
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='report',
-            name='vocabulary',
-        ),
+        migrations.RemoveField(model_name="report", name="vocabulary"),
         migrations.AddField(
-            model_name='report',
-            name='reading',
-            field=models.ForeignKey(default=0, on_delete=models.deletion.CASCADE, to='kw_webapp.Reading'),
+            model_name="report",
+            name="reading",
+            field=models.ForeignKey(
+                default=0, on_delete=models.deletion.CASCADE, to="kw_webapp.Reading"
+            ),
             preserve_default=False,
         ),
     ]

@@ -11,7 +11,12 @@ from rest_framework.test import APITestCase
 
 from kw_webapp import constants
 from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag
-from kw_webapp.tests.utils import create_user, create_review, create_reading, create_profile
+from kw_webapp.tests.utils import (
+    create_user,
+    create_review,
+    create_reading,
+    create_profile,
+)
 from kw_webapp.tests.utils import create_vocab
 
 
@@ -32,18 +37,26 @@ class TestModels(APITestCase):
         user2.set_password("im_a_hacker")
         create_profile(user2, "any_key", 1)
         user2.save()
-        relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id
+        relevant_review_id = UserSpecific.objects.get(
+            user=self.user, vocabulary=self.vocabulary
+        ).id
 
         self.client.force_login(user2)
-        response = self.client.post(reverse("api:review-hide", args=(relevant_review_id,)))
+        response = self.client.post(
+            reverse("api:review-hide", args=(relevant_review_id,))
+        )
         self.assertIsInstance(response, HttpResponseForbidden)
 
     def test_toggling_review_hidden_ownership_works(self):
-        relevant_review_id = UserSpecific.objects.get(user=self.user, vocabulary=self.vocabulary).id
+        relevant_review_id = UserSpecific.objects.get(
+            user=self.user, vocabulary=self.vocabulary
+        ).id
         before_toggle_hidden = UserSpecific.objects.get(id=relevant_review_id).hidden
 
         if self.client.login(username=self.user.username, password="password"):
-            response = self.client.post(path="/kw/togglevocab/", data={"review_id": relevant_review_id})
+            response = self.client.post(
+                path="/kw/togglevocab/", data={"review_id": relevant_review_id}
+            )
             print(response.content)
         else:
             self.fail("Couldn't log in!?")
@@ -62,7 +75,9 @@ class TestModels(APITestCase):
 
     def test_removing_nonexistent_synonym_fails(self):
         remove_text = "un chien"
-        self.assertRaises(MeaningSynonym.DoesNotExist, self.review.remove_synonym, remove_text)
+        self.assertRaises(
+            MeaningSynonym.DoesNotExist, self.review.remove_synonym, remove_text
+        )
 
     def test_removing_synonym_by_object_works(self):
         synonym, created = self.review.meaning_synonyms.get_or_create(text="minou")
@@ -101,7 +116,9 @@ class TestModels(APITestCase):
         self.vocabulary.readings.create(kana="what", character="ars", level=5)
         self.review.reading_synonyms.create(kana="shwoop", character="fwoop")
 
-        expected = list(chain(self.vocabulary.readings.all(), self.review.reading_synonyms.all()))
+        expected = list(
+            chain(self.vocabulary.readings.all(), self.review.reading_synonyms.all())
+        )
 
         self.assertListEqual(expected, self.review.get_all_readings())
 
@@ -191,10 +208,21 @@ class TestModels(APITestCase):
         self.review.answered_correctly(first_try=True)
         self.review.refresh_from_db()
 
-        self.assertEqual(self.review.next_review_date.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0)
         self.assertEqual(
-            self.review.next_review_date.hour % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)), 0)
-        self.assertEqual(self.review.next_review_date.second % constants.REVIEW_ROUNDING_TIME.total_seconds(), 0)
+            self.review.next_review_date.minute
+            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60),
+            0,
+        )
+        self.assertEqual(
+            self.review.next_review_date.hour
+            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)),
+            0,
+        )
+        self.assertEqual(
+            self.review.next_review_date.second
+            % constants.REVIEW_ROUNDING_TIME.total_seconds(),
+            0,
+        )
 
     def test_rounding_a_review_time_only_goes_up(self):
         self.review.next_review_date = self.review.next_review_date.replace(minute=17)
@@ -202,17 +230,32 @@ class TestModels(APITestCase):
         self.review._round_review_time_up()
         self.review.refresh_from_db()
 
-        self.assertEqual(self.review.next_review_date.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0)
         self.assertEqual(
-            self.review.next_review_date.hour % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)), 0)
-        self.assertEqual(self.review.next_review_date.second % constants.REVIEW_ROUNDING_TIME.total_seconds(), 0)
+            self.review.next_review_date.minute
+            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60),
+            0,
+        )
+        self.assertEqual(
+            self.review.next_review_date.hour
+            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)),
+            0,
+        )
+        self.assertEqual(
+            self.review.next_review_date.second
+            % constants.REVIEW_ROUNDING_TIME.total_seconds(),
+            0,
+        )
 
     def test_rounding_up_a_review_rounds_up_last_studied_date(self):
         self.review.last_studied = timezone.now()
         self.review.last_studied = self.review.last_studied.replace(minute=17)
         self.review._round_review_time_up()
 
-        self.assertEqual(self.review.last_studied.minute % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60), 0)
+        self.assertEqual(
+            self.review.last_studied.minute
+            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60),
+            0,
+        )
 
     def test_default_review_times_are_not_rounded(self):
         rounded_time = self.review.next_review_date
@@ -241,16 +284,20 @@ class TestModels(APITestCase):
 
         self.review.refresh_from_db()
 
-        self.assertTrue(self.review.next_review_date - future_time < timedelta(minutes=15))
+        self.assertTrue(
+            self.review.next_review_date - future_time < timedelta(minutes=15)
+        )
 
     def test_tag_search_works(self):
         vocab = create_vocab("spicy meatball")
         vocab2 = create_vocab("spicy pizza")
 
         reading = create_reading(vocab, "SOME_READING", "SOME_CHARACTER", 5)
-        reading2 = create_reading(vocab2, "SOME_OTHER_READING", "SOME_OTHER_CHARACTER", 5)
+        reading2 = create_reading(
+            vocab2, "SOME_OTHER_READING", "SOME_OTHER_CHARACTER", 5
+        )
 
-        spicy_tag = Tag.objects.create(name='spicy')
+        spicy_tag = Tag.objects.create(name="spicy")
 
         reading.tags.add(spicy_tag)
         reading2.tags.add(spicy_tag)
@@ -263,13 +310,17 @@ class TestModels(APITestCase):
 
         self.assertTrue(spicy_vocab.count() == 2)
 
-    def test_vocabulary_that_has_multiple_readings_with_same_tag_appears_only_once(self):
+    def test_vocabulary_that_has_multiple_readings_with_same_tag_appears_only_once(
+        self
+    ):
         vocab = create_vocab("spicy meatball")
 
         reading = create_reading(vocab, "SOME_READING", "SOME_CHARACTER", 5)
-        reading2 = create_reading(vocab, "SOME_OTHER_READING", "SOME_OTHER_CHARACTER", 5)
+        reading2 = create_reading(
+            vocab, "SOME_OTHER_READING", "SOME_OTHER_CHARACTER", 5
+        )
 
-        spicy_tag = Tag.objects.create(name='spicy')
+        spicy_tag = Tag.objects.create(name="spicy")
 
         reading.tags.add(spicy_tag)
         reading2.tags.add(spicy_tag)
@@ -291,8 +342,8 @@ class TestModels(APITestCase):
         self.assertTrue(self.review.notes is not None)
 
     def test_tag_names_are_unique(self):
-        original_tag = Tag.objects.create(name='S P I C Y')
-        self.assertRaises(IntegrityError, Tag.objects.create, name='S P I C Y')
+        original_tag = Tag.objects.create(name="S P I C Y")
+        self.assertRaises(IntegrityError, Tag.objects.create, name="S P I C Y")
 
     def test_setting_criticality_of_review(self):
         self.review.correct = 1

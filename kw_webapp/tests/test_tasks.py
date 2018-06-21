@@ -7,21 +7,43 @@ from django.test import TestCase
 from django.utils import timezone
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific, MeaningSynonym, AnswerSynonym
-from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, associate_vocab_to_user, \
-    build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
-    lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
-    user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
-    reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji, \
-    build_user_information_api_string, get_level_pages
+from kw_webapp.tasks import (
+    create_new_vocabulary,
+    past_time,
+    all_srs,
+    associate_vocab_to_user,
+    build_API_sync_string_for_user,
+    sync_unlocked_vocab_with_wk,
+    lock_level_for_user,
+    unlock_all_possible_levels_for_user,
+    build_API_sync_string_for_user_for_levels,
+    user_returns_from_vacation,
+    get_users_future_reviews,
+    sync_all_users_to_wk,
+    reset_user,
+    get_users_current_reviews,
+    reset_levels,
+    get_users_lessons,
+    get_vocab_by_kanji,
+    build_user_information_api_string,
+    get_level_pages,
+)
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
-from kw_webapp.tests.utils import create_review, create_vocab, create_user, create_profile, create_reading, \
-    create_review_for_specific_time, mock_vocab_list_response_with_single_vocabulary, mock_user_info_response
+from kw_webapp.tests.utils import (
+    create_review,
+    create_vocab,
+    create_user,
+    create_profile,
+    create_reading,
+    create_review_for_specific_time,
+    mock_vocab_list_response_with_single_vocabulary,
+    mock_user_info_response,
+)
 from kw_webapp.utils import generate_user_stats, one_time_merge_level
 
 
 class TestTasks(TestCase):
-
     def setUp(self):
         self.user = create_user("Tadgh")
         create_profile(self.user, "any_key", 5)
@@ -70,7 +92,9 @@ class TestTasks(TestCase):
 
         lock_level_for_user(5, self.user)
 
-        available_reviews = UserSpecific.objects.filter(user=self.user, vocabulary__readings__level=5).all()
+        available_reviews = UserSpecific.objects.filter(
+            user=self.user, vocabulary__readings__level=5
+        ).all()
         self.assertFalse(available_reviews)
 
     def test_locking_level_removes_level_from_unlocked_list(self):
@@ -88,12 +112,18 @@ class TestTasks(TestCase):
     @responses.activate
     def test_creating_new_synonyms_on_sync(self):
         resp_body = deepcopy(sample_api_responses.single_vocab_response)
-        resp_body["requested_information"][0]["user_specific"]["user_synonyms"] = ["kitten", "large rat"]
+        resp_body["requested_information"][0]["user_specific"]["user_synonyms"] = [
+            "kitten",
+            "large rat",
+        ]
 
-        responses.add(responses.GET, self._vocab_api_regex,
-                      json=resp_body,
-                      status=200,
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            self._vocab_api_regex,
+            json=resp_body,
+            status=200,
+            content_type="application/json",
+        )
 
         sync_unlocked_vocab_with_wk(self.user)
         self.assertTrue("kitten" in self.review.synonyms_list())
@@ -101,8 +131,9 @@ class TestTasks(TestCase):
 
     def test_building_unlock_all_string_works(self):
         sample_level = constants.LEVEL_MAX
-        api_string = build_API_sync_string_for_user_for_levels(self.user,
-                                                               [level for level in range(1, sample_level + 1)])
+        api_string = build_API_sync_string_for_user_for_levels(
+            self.user, [level for level in range(1, sample_level + 1)]
+        )
 
         expected = ",".join([str(level) for level in range(1, sample_level + 1)])
 
@@ -114,13 +145,17 @@ class TestTasks(TestCase):
         self.user.profile.save()
         resp_body = sample_api_responses.single_vocab_response
         level_list = [level for level in range(1, self.user.profile.level + 1)]
-        responses.add(responses.GET, self._vocab_api_regex,
-                      json=resp_body,
-                      status=200,
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            self._vocab_api_regex,
+            json=resp_body,
+            status=200,
+            content_type="application/json",
+        )
 
         checked_levels, unlocked_now_count, total_unlocked_count, locked_count = unlock_all_possible_levels_for_user(
-            self.user)
+            self.user
+        )
 
         self.assertListEqual(level_list, checked_levels)
         self.assertEqual(total_unlocked_count, 1)
@@ -128,13 +163,18 @@ class TestTasks(TestCase):
     @responses.activate
     def test_syncing_vocabulary_pulls_srs_level_successfully(self):
         resp_body = sample_api_responses.single_vocab_response
-        responses.add(responses.GET, self._vocab_api_regex,
-                      json=resp_body,
-                      status=200,
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            self._vocab_api_regex,
+            json=resp_body,
+            status=200,
+            content_type="application/json",
+        )
 
         sync_unlocked_vocab_with_wk(self.user)
-        newly_synced_review = UserSpecific.objects.get(user=self.user, vocabulary__meaning=self.vocabulary.meaning)
+        newly_synced_review = UserSpecific.objects.get(
+            user=self.user, vocabulary__meaning=self.vocabulary.meaning
+        )
 
         self.assertEqual(newly_synced_review.wanikani_srs, "apprentice")
         self.assertEqual(newly_synced_review.wanikani_srs_numeric, 3)
@@ -167,9 +207,17 @@ class TestTasks(TestCase):
         self.review.refresh_from_db()
         self.assertNotEqual(self.review.last_studied, previously_studied)
 
-        self.assertAlmostEqual(self.review.next_review_date, four_hours_from_now, delta=timezone.timedelta(minutes=15))
-        self.assertAlmostEqual(self.review.last_studied, now, delta=timezone.timedelta(minutes=15))
-        self.assertAlmostEqual(review.last_studied, two_hours_ago, delta=timezone.timedelta(minutes=15))
+        self.assertAlmostEqual(
+            self.review.next_review_date,
+            four_hours_from_now,
+            delta=timezone.timedelta(minutes=15),
+        )
+        self.assertAlmostEqual(
+            self.review.last_studied, now, delta=timezone.timedelta(minutes=15)
+        )
+        self.assertAlmostEqual(
+            review.last_studied, two_hours_ago, delta=timezone.timedelta(minutes=15)
+        )
         self.assertAlmostEqual(review.next_review_date, None)
 
     def test_users_who_are_on_vacation_are_ignored_by_all_srs_algorithm(self):
@@ -202,25 +250,35 @@ class TestTasks(TestCase):
         self.review.needs_review = False
         self.review.save()
 
-        future_reviews = get_users_future_reviews(self.user, time_limit=timezone.timedelta(hours=24))
+        future_reviews = get_users_future_reviews(
+            self.user, time_limit=timezone.timedelta(hours=24)
+        )
 
         self.assertEqual(future_reviews.count(), 1)
 
-    def test_returning_future_review_count_with_invalid_time_limit_returns_empty_queryset(self):
+    def test_returning_future_review_count_with_invalid_time_limit_returns_empty_queryset(
+        self
+    ):
         self.review.next_review_date = timezone.now()
         self.review.needs_review = False
         self.review.save()
 
-        future_reviews = get_users_future_reviews(self.user, time_limit=timezone.timedelta(hours=-1))
+        future_reviews = get_users_future_reviews(
+            self.user, time_limit=timezone.timedelta(hours=-1)
+        )
 
         self.assertEqual(future_reviews.count(), 0)
 
-    def test_returning_future_review_count_with_incorrect_argument_type_falls_back_to_default(self):
+    def test_returning_future_review_count_with_incorrect_argument_type_falls_back_to_default(
+        self
+    ):
         self.review.next_review_date = timezone.now()
         self.review.needs_review = False
         self.review.save()
 
-        future_reviews = get_users_future_reviews(self.user, time_limit="this is not a timedelta")
+        future_reviews = get_users_future_reviews(
+            self.user, time_limit="this is not a timedelta"
+        )
 
         self.assertGreater(future_reviews.count(), 0)
 
@@ -236,14 +294,19 @@ class TestTasks(TestCase):
         self.assertEqual(affected_count, 1)
 
     @responses.activate
-    def test_when_reading_level_changes_on_wanikani_we_catch_that_change_and_comply(self):
+    def test_when_reading_level_changes_on_wanikani_we_catch_that_change_and_comply(
+        self
+    ):
         resp_body = sample_api_responses.single_vocab_response
 
         # Mock response so that the level changes on our default vocab.
-        responses.add(responses.GET, self._vocab_api_regex,
-                      json=sample_api_responses.single_vocab_response,
-                      status=200,
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            self._vocab_api_regex,
+            json=sample_api_responses.single_vocab_response,
+            status=200,
+            content_type="application/json",
+        )
 
         sync_unlocked_vocab_with_wk(self.user)
 
@@ -254,13 +317,18 @@ class TestTasks(TestCase):
     @responses.activate
     def test_when_wanikani_changes_meaning_no_duplicate_is_created(self):
         resp_body = deepcopy(sample_api_responses.single_vocab_response)
-        resp_body['requested_information'][0]['meaning'] = "NOT radioactive bat"
+        resp_body["requested_information"][0]["meaning"] = "NOT radioactive bat"
 
         # Mock response so that the level changes on our default vocab.
-        responses.add(responses.GET, build_API_sync_string_for_user_for_levels(self.user, [self.user.profile.level, ]),
-                      json=resp_body,
-                      status=200,
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            build_API_sync_string_for_user_for_levels(
+                self.user, [self.user.profile.level]
+            ),
+            json=resp_body,
+            status=200,
+            content_type="application/json",
+        )
 
         sync_unlocked_vocab_with_wk(self.user)
 
@@ -330,10 +398,15 @@ class TestTasks(TestCase):
         # Pull fake "current" vocab. this response, wherein we fetch the data from WK, and it turns out we already
         # have a local vocabulary with an identical meaning (i.e., we have already stored the correct and
         # currently active vocabulary.
-        responses.add(responses.GET,  "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(constants.API_KEY, self.user.profile.level),
-                      json=sample_api_responses.single_vocab_existing_meaning_and_should_now_merge,
-                      status=200,
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(
+                constants.API_KEY, self.user.profile.level
+            ),
+            json=sample_api_responses.single_vocab_existing_meaning_and_should_now_merge,
+            status=200,
+            content_type="application/json",
+        )
 
         old_vocab = Vocabulary.objects.filter(readings__character="犬")
         self.assertEqual(old_vocab.count(), 2)
@@ -345,7 +418,9 @@ class TestTasks(TestCase):
         new_vocab = Vocabulary.objects.filter(readings__character="犬")
         self.assertEqual(new_vocab.count(), 1)
 
-        new_review = UserSpecific.objects.filter(user=self.user, vocabulary__readings__character="犬")
+        new_review = UserSpecific.objects.filter(
+            user=self.user, vocabulary__readings__character="犬"
+        )
         self.assertEqual(new_review.count(), 1)
         new_review = new_review[0]
         self.assertEqual(new_review.streak, review_1.streak)
@@ -364,8 +439,9 @@ class TestTasks(TestCase):
         self.assertEqual(user_two_review.streak, 5)
         self.assertTrue(user_two_review.vocabulary.meaning == "dog, woofer, pupper")
 
-
-    def test_when_user_resets_their_account_all_unlocked_levels_are_removed_except_current_wk_level(self):
+    def test_when_user_resets_their_account_all_unlocked_levels_are_removed_except_current_wk_level(
+        self
+    ):
         self.user.profile.unlocked_levels.get_or_create(level=1)
         self.user.profile.unlocked_levels.get_or_create(level=2)
         self.user.profile.unlocked_levels.get_or_create(level=3)
@@ -377,7 +453,9 @@ class TestTasks(TestCase):
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [])
 
     @responses.activate
-    def test_when_user_resets_their_account_we_remove_all_reviews_and_then_unlock_their_current_level(self):
+    def test_when_user_resets_their_account_we_remove_all_reviews_and_then_unlock_their_current_level(
+        self
+    ):
         self.user.profile.unlocked_levels.get_or_create(level=1)
         new_review = create_review(create_vocab("arbitrary word"), self.user)
         new_review.needs_review = True
@@ -393,4 +471,3 @@ class TestTasks(TestCase):
         self.user.profile.refresh_from_db()
         self.assertEqual(get_users_lessons(self.user).count(), 0)
         self.assertEqual(self.user.profile.level, 5)
-

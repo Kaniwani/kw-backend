@@ -6,14 +6,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0011_vacation_settings'),
-    ]
+    dependencies = [("kw_webapp", "0011_vacation_settings")]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='last_wanikani_sync_date',
+            model_name="profile",
+            name="last_wanikani_sync_date",
             field=models.DateTimeField(auto_now_add=True, null=True),
-        ),
+        )
     ]

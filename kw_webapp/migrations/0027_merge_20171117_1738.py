@@ -8,9 +8,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('kw_webapp', '0026_auto_20171117_1231'),
-        ('kw_webapp', '0026_auto_20170815_0813'),
+        ("kw_webapp", "0026_auto_20171117_1231"),
+        ("kw_webapp", "0026_auto_20170815_0813"),
     ]
 
-    operations = [
-    ]
+    operations = []

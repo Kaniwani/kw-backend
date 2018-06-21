@@ -5,7 +5,6 @@ from kw_webapp.tasks import build_user_information_api_string
 
 
 class WanikaniApiKeyValidator(object):
-
     def __init__(self):
         self.failure_message = "This API key appears to be invalid"
 

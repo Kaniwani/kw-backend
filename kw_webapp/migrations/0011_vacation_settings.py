@@ -6,20 +6,18 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', "0010_auto_20160207_2013"),
-    ]
+    dependencies = [("kw_webapp", "0010_auto_20160207_2013")]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='on_vacation',
+            model_name="profile",
+            name="on_vacation",
             field=models.BooleanField(default=False),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='profile',
-            name='vacation_date',
+            model_name="profile",
+            name="vacation_date",
             field=models.DateTimeField(null=True, blank=True, default=None),
             preserve_default=True,
         ),

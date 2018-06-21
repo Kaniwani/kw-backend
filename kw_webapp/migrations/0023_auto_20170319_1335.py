@@ -7,14 +7,22 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0022_auto_20170319_1310'),
-    ]
+    dependencies = [("kw_webapp", "0022_auto_20170319_1310")]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='minimum_wk_srs_level_to_review',
-            field=models.CharField(choices=[('APPRENTICE', 'apprentice'), ('GURU', 'guru'), ('MASTER', 'master'), ('ENLIGHTENED', 'enlightened'), ('BURNED', 'burned')], default='APPRENTICE', max_length=20),
-        ),
+            model_name="profile",
+            name="minimum_wk_srs_level_to_review",
+            field=models.CharField(
+                choices=[
+                    ("APPRENTICE", "apprentice"),
+                    ("GURU", "guru"),
+                    ("MASTER", "master"),
+                    ("ENLIGHTENED", "enlightened"),
+                    ("BURNED", "burned"),
+                ],
+                default="APPRENTICE",
+                max_length=20,
+            ),
+        )
     ]

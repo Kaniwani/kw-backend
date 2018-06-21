@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0020_frequentlyaskedquestion'),
-    ]
+    dependencies = [("kw_webapp", "0020_frequentlyaskedquestion")]
 
     operations = [
         migrations.AddField(
-            model_name='userspecific',
-            name='critical',
+            model_name="userspecific",
+            name="critical",
             field=models.BooleanField(default=False),
-        ),
+        )
     ]

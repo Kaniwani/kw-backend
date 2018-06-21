@@ -8,14 +8,16 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0034_auto_20180219_1419'),
-    ]
+    dependencies = [("kw_webapp", "0034_auto_20180219_1419")]
 
     operations = [
         migrations.AlterField(
-            model_name='report',
-            name='reading',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='reports', to='kw_webapp.Reading'),
-        ),
+            model_name="report",
+            name="reading",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="reports",
+                to="kw_webapp.Reading",
+            ),
+        )
     ]

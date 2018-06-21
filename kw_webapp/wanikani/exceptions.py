@@ -15,5 +15,5 @@ class InvalidArguments(WanikaniAPIException):
 
 ExceptionSelector = {
     constants.INVALID_WK_API_ERROR: InvalidWaniKaniKey,
-    constants.INVALID_ARGUMENTS_ERROR: InvalidArguments
+    constants.INVALID_ARGUMENTS_ERROR: InvalidArguments,
 }

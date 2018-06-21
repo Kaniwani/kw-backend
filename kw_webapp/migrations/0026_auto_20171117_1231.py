@@ -7,35 +7,38 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0025_merge_20170509_1806'),
-    ]
+    dependencies = [("kw_webapp", "0025_merge_20170509_1806")]
 
     operations = [
         migrations.CreateModel(
-            name='PartOfSpeech',
+            name="PartOfSpeech",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('part', models.CharField(max_length=30)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("part", models.CharField(max_length=30)),
             ],
         ),
-        migrations.RemoveField(
-            model_name='reading',
-            name='jlpt',
-        ),
+        migrations.RemoveField(model_name="reading", name="jlpt"),
         migrations.AddField(
-            model_name='reading',
-            name='furigana',
+            model_name="reading",
+            name="furigana",
             field=models.CharField(max_length=100, null=True),
         ),
         migrations.AddField(
-            model_name='reading',
-            name='pitch',
+            model_name="reading",
+            name="pitch",
             field=models.CharField(max_length=100, null=True),
         ),
         migrations.AddField(
-            model_name='reading',
-            name='parts_of_speech',
-            field=models.ManyToManyField(to='kw_webapp.PartOfSpeech'),
+            model_name="reading",
+            name="parts_of_speech",
+            field=models.ManyToManyField(to="kw_webapp.PartOfSpeech"),
         ),
     ]
