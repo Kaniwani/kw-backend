@@ -4,8 +4,6 @@ services:
   - postgresql
 python:
   - 3.6
-  - 3.5
-  - 3.4
 before_script:
   - psql -c "CREATE USER testuser WITH PASSWORD 'testpassword';" -U postgres
   - psql -c "ALTER USER testuser CREATEDB;" -U postgres
