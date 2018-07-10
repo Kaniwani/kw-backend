@@ -474,7 +474,7 @@ def process_vocabulary_response_for_user(user, json_data):
                 new_review_count += 1
             review.save()
         else: # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
-            vocabulary = get_or_create_vocab_by_json(vocabulary_json)
+            vocabulary, created = get_or_create_vocab_by_json(vocabulary_json)
             new_review, synonyms_added_count = associate_synonyms_to_vocab(user, vocabulary, vocabulary_json['user_specific'])
             new_synonym_count += synonyms_added_count
     logger.info("Synced Vocabulary for {}".format(user.username))
