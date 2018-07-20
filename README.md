@@ -5,6 +5,7 @@
 KaniWani
 
 ### Getting started:
+
 #### Backend
 Since we're using Django, a fair bit of setup is required to get a development environment up and running. Here are all the tools you need.
 
@@ -27,9 +28,10 @@ Since we're using Django, a fair bit of setup is required to get a development e
 16. Execute this:
 
 ```python
-from kw_webapp.tasks import repopulate
+from kw_webapp.utils import repopulate
 repopulate()
 ```
+
 Chances are your system will spit a bunch of errors at you. Ignore them and wait. Eventually they will stop.
 
 17. (subject to change!) Now you need to import supplemental data that isn't synced from WK. Execute the following in the **shell**:
@@ -42,3 +44,10 @@ one_time_import_jisho_new_format("wk_vocab_import.json")
 
 If all went well, it will start a server at 127.0.0.1:8000
 
+## Building Docker
+
+To build the standalone Docker container run 
+
+```
+> docker build -t kw-backend . 
+```
