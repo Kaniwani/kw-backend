@@ -17,7 +17,7 @@ services:
     volumes:
       - ./Docker/postgres/data:/data
     environment:
-      - POSTGRES_USER=kw_backend
+      - POSTGRES_USER=kaniwani
       - POSTGRES_PASSWORD=password
       - PGDATA=/data
 

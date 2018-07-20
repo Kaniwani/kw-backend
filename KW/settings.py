@@ -213,7 +213,7 @@ TIME_ZONE = MY_TIME_ZONE
 SITE_ID = 1
 
 DATABASES = {
-    'default': env.db(default="sqlite://db.sqlite3")
+    'default': env.db('DATABASE_URL', default="sqlite://db.sqlite3")
 }
 
 DB_ENGINE = DATABASES['default']['ENGINE'].split(".")[-1]
