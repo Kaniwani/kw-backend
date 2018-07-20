@@ -115,3 +115,4 @@ dist
 # One time import files
 ROLLING_UPDATES.json
 outfile.txt
+Docker/postgres/data/

@@ -1,5 +1,6 @@
 version: '3'
 services:
+
   kw-backend:
     build: .
     command: python3 manage.py runserver 0.0.0.0:8000
@@ -7,3 +8,23 @@ services:
       - 8000:8000
     volumes:
       - ./:/app
+    depends_on:
+      - db
+ 
+  db:
+    image: postgres:9.6
+    restart: always
+    volumes:
+      - ./Docker/postgres/data:/data
+    environment:
+      - POSTGRES_USER=kw_backend
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
