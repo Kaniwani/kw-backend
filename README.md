@@ -49,4 +49,6 @@ Since this is the first run we will need to apply our migrations and populate th
 # A lot more things flying by on the terminal. This shouldn't take long but you might as well stretch!
 ```
 
-Sweeeeet! Now you have some data. To check it you can open [Adminer]() at https://localhost:8001. Adminer is a simple SQL UI. To login select Postgres as the DB type, `kanawani` as the database, username as the username, and password as the password. This is great for development, but obviously not to be used in prod. Have fun ;) 
+Sweeeeet! Now you have some data. To check it you can open [Adminer]() at https://localhost:8001. Adminer is a simple SQL UI. To login select Postgres as the DB type, `kanawani` as the database, username as the username, and password as the password. This is great for development, but obviously not to be used in prod. You can also connect to Redis at the default port (6379) and `redis-cli`. 
+
+Have fun ;) 

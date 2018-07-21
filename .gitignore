@@ -115,4 +115,7 @@ dist
 # One time import files
 ROLLING_UPDATES.json
 outfile.txt
+
+# Docker & docker-compose
 Docker/postgres/data/
+Docker/redis/data/

@@ -16,11 +16,11 @@ services:
     image: postgres:9.6
     restart: always
     volumes:
-      - ./Docker/postgres/data:/data
+      - ./Docker/postgres/data:/postgres/data
     environment:
       - POSTGRES_USER=kaniwani
       - POSTGRES_PASSWORD=password
-      - PGDATA=/data
+      - PGDATA=/postgres/data
 
   adminer:
     image: adminer
@@ -32,6 +32,7 @@ services:
 
   redis:
     image: redis:4.0
+    restart: always
     ports:
       # Expose the Redis port to the host machine to allow connecting with via
       # the redis CLI. This shouldn't be done in production because docker-compose
@@ -39,3 +40,4 @@ services:
       - 6379:6379
     volumes:
       - ./Docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./Docker/redis/data:/redis/data
