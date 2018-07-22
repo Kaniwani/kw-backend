@@ -1,11 +1,19 @@
 language: python
 services:
   - redis-server
+  - postgresql
+addons:
+  # This maps `redis` and `db` to 127.0.0.1 to match Docker and minimize difference between the Docker environment
+  # and the Travis-CI build env.
+  hosts:
+    - redis
+    - db
 python:
   - 3.5
   - 3.4
 install:
   - pip install -r requirements.txt
+cache: pip # Speeds up installs
 script:
   - python manage.py test
 notifications:
