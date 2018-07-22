@@ -110,9 +110,11 @@ LOGGING = {
     },
 }
 
-CELERY_RESULT_BACKEND = env.cache_url("REDIS_URL")["LOCATION"]
+REDIS_URL = env.cache_url("REDIS_URL", default="rediscache://localhost:6379/0")
+
+CELERY_RESULT_BACKEND = REDIS_URL["LOCATION"]
 CELERYD_HIJACK_ROOT_LOGGER = False
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = REDIS_URL["LOCATION"]
 CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULTS_SERIALIZER = 'json'
@@ -198,7 +200,7 @@ REST_FRAMEWORK = {
 }
 
 CACHES = {
-    'default': env.cache("REDIS_URL", default="rediscache://127.0.0.1:6379/0")
+    'default': REDIS_URL["LOCATION"]
 }
 
 ROOT_URLCONF = 'KW.urls'
