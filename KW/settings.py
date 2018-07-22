@@ -200,7 +200,7 @@ REST_FRAMEWORK = {
 }
 
 CACHES = {
-    'default': REDIS_URL["LOCATION"]
+    'default': REDIS_URL
 }
 
 ROOT_URLCONF = 'KW.urls'
