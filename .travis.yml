@@ -20,7 +20,7 @@ cache: pip # Speeds up installs
 before_script:
   - psql -U postgres -c 'CREATE DATABASE kaniwani;'
   - psql -U postgres -c "CREATE USER kaniwani WITH PASSWORD 'password';"
-  - psql -U postgres -c 'GRANT admins TO kaniwani;'
+  - psql -U postgres -c "ALTER USER kaniwani CREATEDB;"
 script:
   - python manage.py test
 
