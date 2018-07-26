@@ -41,3 +41,20 @@ services:
     volumes:
       - ./Docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
       - ./Docker/redis/data:/redis/data
+
+  scheduler:
+    build: .
+    command: celery -A KW.celery_app beat --loglevel=INFO --logfile=kwbeat.log --workdir=/app
+    volumes:
+      - ./:/app
+    depends_on:
+      - redis
+      - worker
+
+  worker:
+    build: .
+    command: celery -A KW.celery_app worker --loglevel=INFO --logfile=kwworker.log --workdir=/app
+    volumes:
+      - ./:/app
+    depends_on:
+      - redis
