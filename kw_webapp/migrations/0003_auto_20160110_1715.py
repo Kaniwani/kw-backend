@@ -11,13 +11,13 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='profile',
             name='join_date',
             field=models.DateField(null=True, auto_now_add=True),
             preserve_default=True,
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='profile',
             name='title',
             field=models.CharField(null=True, max_length=255, default='Turtles'),
