@@ -95,12 +95,6 @@ LOGGING = {
             'handlers': ['console', 'app_log', 'sentry'],
             'propagate': False
         },
-        # Used for drf-tracking which logs all request/response info. For later shipping to ELK
-        'KW.LoggingMiddleware': {
-            'level': LOGLEVEL,
-            'handlers': ['request_log'],
-            'propagate': False
-        },
         'celery': {
             'handlers': ['sentry', 'console'],
             'level': LOGLEVEL,
@@ -161,7 +155,6 @@ INSTALLED_APPS = (
     'corsheaders',
     'djoser',
     'raven.contrib.django.raven_compat',
-    'rest_framework_tracking'
 )
 
 MIDDLEWARE = [

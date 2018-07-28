@@ -62,6 +62,9 @@ class Profile(models.Model):
     minimum_wk_srs_level_to_review = models.CharField(max_length=20, choices=WkSrsLevel.choices(),
                                                       default=WkSrsLevel.APPRENTICE.name)
 
+    maximum_wk_srs_level_to_review = models.CharField(max_length=20, choices=WkSrsLevel.choices(),
+                                                      default=WkSrsLevel.BURNED.name)
+
     # General user-changeable settings
     unlocked_levels = models.ManyToManyField(Level)
     follow_me = models.BooleanField(default=True)
@@ -95,6 +98,13 @@ class Profile(models.Model):
         minimum_wk_srs = self.minimum_wk_srs_level_to_review
         minimum_streak = WANIKANI_SRS_LEVELS[minimum_wk_srs][0]
         return minimum_streak
+
+    def get_maximum_wk_srs_threshold_for_review(self):
+        maximum_wk_srs = self.maximum_wk_srs_level_to_review
+        # Get the maximum allowable WK srs level from the list of levels -> names.
+        maximum_streak = WANIKANI_SRS_LEVELS[maximum_wk_srs][-1]
+        return maximum_streak
+
 
     def set_twitter_account(self, twitter_account):
         if not twitter_account:
@@ -194,7 +204,6 @@ class Reading(models.Model):
 
 
 class Report(models.Model):
-    # TODO start here makemigrations and modify all usages of vocabulary in report.
     created_by = models.ForeignKey(User)
     created_at = models.DateTimeField(auto_now_add=True)
     reading = models.ForeignKey(Reading, on_delete=models.CASCADE, related_name="reports")
@@ -205,6 +214,7 @@ class Report(models.Model):
                                                                      self.reason,
                                                                      self.created_by_id,
                                                                      self.created_at)
+
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)

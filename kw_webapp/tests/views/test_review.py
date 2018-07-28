@@ -184,3 +184,30 @@ class TestReview(APITestCase):
         self.assertEqual(response.data['id'], self.review.id)
         self.assertEqual(response.data['streak'], previous_streak + 1)
         self.assertEqual(response.data['correct'], previous_correct + 1)
+
+    def test_setting_reviews_to_order_by_level_works(self):
+        pass
+
+    def test_review_filtering_by_maximum_wk_srs_level(self):
+        self.client.force_login(self.user)
+
+        self.user.profile.maximum_wk_srs_level_to_review = WkSrsLevel.APPRENTICE.name
+        self.user.profile.save()
+
+        self.review.wanikani_srs_numeric = 5
+        self.review.wanikani_srs = WkSrsLevel.GURU.name
+        self.review.needs_review = True
+        self.review.save()
+
+        # Prepare an apprentice review.
+        apprentice_review = create_review(create_vocab("new_vocab"), self.user)
+        apprentice_review.wanikani_srs_numeric = 1
+        apprentice_review.needs_review = True
+        apprentice_review.save()
+
+        response = self.client.get(reverse("api:review-current"))
+        data = response.data
+        self.assertEqual(data["count"], 1)
+        # Ensure that any reviews tha tare apprentice on WK are not shown.
+
+
