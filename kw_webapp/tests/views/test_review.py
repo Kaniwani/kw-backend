@@ -202,6 +202,8 @@ class TestReview(APITestCase):
         actual_review_order = [review["vocabulary"]["readings"][0]["level"] for review in reviews]
 
         assert len(reviews) == 4
+        print(actual_review_order)
+        print("%*%*%*%")
         assert [5, 4, 5, 3] == actual_review_order
 
         self.user.profile.order_reviews_by_level = True
