@@ -388,13 +388,15 @@ def get_users_lessons(user):
 
 
 def get_users_current_reviews(user):
-    return UserSpecific.objects.filter(user=user,
+    queryset = UserSpecific.objects.filter(user=user,
                                        needs_review=True,
                                        wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
                                        hidden=False,
                                        burned=False,
                                        streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0])
-
+    if user.profile.order_reviews_by_level:
+        queryset = queryset.order_by("vocabulary__readings__level")
+    return queryset
 
 def get_users_future_reviews(user, time_limit=None):
     queryset = UserSpecific.objects.filter(user=user,

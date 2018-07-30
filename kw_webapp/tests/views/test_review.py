@@ -186,7 +186,33 @@ class TestReview(APITestCase):
         self.assertEqual(response.data['correct'], previous_correct + 1)
 
     def test_setting_reviews_to_order_by_level_works(self):
-        pass
+        self.client.force_login(self.user)
+
+        level_4_review = create_review(create_vocab("level4"), self.user)
+        level_4_review.vocabulary.readings.create(level=4, character="level4", kana="level4")
+
+        level_5_review = create_review(create_vocab("level5"), self.user)
+        level_5_review.vocabulary.readings.create(level=5, character="level5", kana="level5")
+
+        level_3_review = create_review(create_vocab("level3"), self.user)
+        level_3_review.vocabulary.readings.create(level=3, character="level3", kana="level3")
+
+        response = self.client.get(reverse("api:review-current"))
+        reviews = response.data["results"]
+        actual_review_order = [review["vocabulary"]["readings"][0]["level"] for review in reviews]
+
+        assert len(reviews) == 4
+        assert [5, 4, 5, 3] == actual_review_order
+
+        self.user.profile.order_reviews_by_level = True
+        self.user.profile.save()
+
+        response = self.client.get(reverse("api:review-current"))
+        reviews = response.data["results"]
+        actual_review_order = [review["vocabulary"]["readings"][0]["level"] for review in reviews]
+
+        assert len(reviews) == 4
+        assert [3, 4, 5, 5] == actual_review_order
 
     def test_review_filtering_by_maximum_wk_srs_level(self):
         self.client.force_login(self.user)

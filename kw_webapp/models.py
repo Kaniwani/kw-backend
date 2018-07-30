@@ -65,6 +65,8 @@ class Profile(models.Model):
     maximum_wk_srs_level_to_review = models.CharField(max_length=20, choices=WkSrsLevel.choices(),
                                                       default=WkSrsLevel.BURNED.name)
 
+    order_reviews_by_level = models.BooleanField(default=False)
+
     # General user-changeable settings
     unlocked_levels = models.ManyToManyField(Level)
     follow_me = models.BooleanField(default=True)

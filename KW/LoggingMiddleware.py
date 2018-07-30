@@ -1,5 +1,4 @@
 from django.utils.deprecation import MiddlewareMixin
-from rest_framework_tracking.mixins import LoggingMixin
 import logging
 logger = logging.getLogger(__name__)
 

@@ -68,14 +68,6 @@ LOGGING = {
             'when': 'midnight',
             'backupCount': '30',
         },
-        'request_log': {
-            'formatter': 'request',
-            'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': log_root("requests.log"),
-            'when': 'midnight',
-            'backupCount': '5',
-        },
         'django.server': DEFAULT_LOGGING['handlers']['django.server'],
     },
     'loggers': {
@@ -103,6 +95,7 @@ LOGGING = {
         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 }
+
 
 REDIS_URL = env.cache_url("REDIS_URL", default="rediscache://localhost:6379/0")
 
@@ -273,3 +266,4 @@ RAVEN_CONFIG = {
     'dsn': env("RAVEN_DSN"),
     'release': env("RELEASE", default="UNKNOWN")
 } if not DEBUG else {}
+
