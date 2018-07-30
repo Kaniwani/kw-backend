@@ -420,7 +420,7 @@ def get_users_future_reviews(user, time_limit=None):
 def get_all_users_reviews(user):
     min_wk_srs = user.profile.get_minimum_wk_srs_threshold_for_review()
     max_wk_srs = user.profile.get_maximum_wk_srs_threshold_for_review()
-    return UserSpecific.objects.filter(user=self.request.user,
+    return UserSpecific.objects.filter(user=user,
                                        wanikani_srs_numeric__range=(min_wk_srs, max_wk_srs))
 
 
