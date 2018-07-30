@@ -380,11 +380,16 @@ def get_users_critical_reviews(user):
 
 
 def get_users_lessons(user):
-    return UserSpecific.objects.filter(user=user,
+    qs = UserSpecific.objects.filter(user=user,
                                        needs_review=True,
                                        wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
                                        hidden=False,
                                        streak=KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name][0])
+
+    if user.profile.order_reviews_by_level:
+        qs = qs.order_by("vocabulary__readings__level")
+
+    return qs
 
 
 def get_users_current_reviews(user):
