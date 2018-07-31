@@ -368,38 +368,45 @@ def associate_synonyms_to_vocab(user, vocab, user_specific_json):
 
 def get_users_reviews(user):
     return UserSpecific.objects.filter(user=user,
-                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                       wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
                                        hidden=False)
 
 
 def get_users_critical_reviews(user):
     return UserSpecific.objects.filter(user=user,
-                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                       wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
                                        hidden=False,
                                        critical=True)
 
 
 def get_users_lessons(user):
-    return UserSpecific.objects.filter(user=user,
+    qs = UserSpecific.objects.filter(user=user,
                                        needs_review=True,
-                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                       wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
                                        hidden=False,
                                        streak=KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name][0])
 
+    if user.profile.order_reviews_by_level:
+        qs = qs.order_by("vocabulary__readings__level")
+
+    return qs
+
 
 def get_users_current_reviews(user):
-    return UserSpecific.objects.filter(user=user,
+    queryset = UserSpecific.objects.filter(user=user,
                                        needs_review=True,
-                                       wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                       wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
                                        hidden=False,
                                        burned=False,
                                        streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0])
-
+    if user.profile.order_reviews_by_level:
+        queryset = queryset.order_by("vocabulary__readings__level")
+    return queryset
 
 def get_users_future_reviews(user, time_limit=None):
     queryset = UserSpecific.objects.filter(user=user,
                                            needs_review=False,
-                                           wanikani_srs_numeric__gte=user.profile.get_minimum_wk_srs_threshold_for_review(),
+                                           wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
                                            hidden=False,
                                            burned=False,
                                            streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0]).annotate(
@@ -409,6 +416,12 @@ def get_users_future_reviews(user, time_limit=None):
         queryset = queryset.filter(next_review_date__lte=timezone.now() + time_limit)
 
     return queryset
+
+def get_all_users_reviews(user):
+    min_wk_srs = user.profile.get_minimum_wk_srs_threshold_for_review()
+    max_wk_srs = user.profile.get_maximum_wk_srs_threshold_for_review()
+    return UserSpecific.objects.filter(user=user,
+                                       wanikani_srs_numeric__range=(min_wk_srs, max_wk_srs))
 
 
 def process_vocabulary_response_for_unlock(user, json_data):

@@ -121,10 +121,10 @@ class ProfileSerializer(serializers.ModelSerializer):
                   'level', 'follow_me', 'auto_advance_on_success', 'unlocked_levels', 'last_wanikani_sync_date',
                   'auto_expand_answer_on_success', 'auto_expand_answer_on_failure', 'on_vacation', 'vacation_date',
                   'reviews_within_day_count', 'reviews_within_hour_count', 'srs_counts',
-                  'minimum_wk_srs_level_to_review', 'upcoming_reviews', 'next_review_date', 'join_date',
+                  'minimum_wk_srs_level_to_review', 'maximum_wk_srs_level_to_review', 'upcoming_reviews', 'next_review_date', 'join_date',
                   'auto_advance_on_success_delay_milliseconds', 'use_eijiro_pro_link', 'show_kanji_svg_stroke_order',
                   'show_kanji_svg_grid', 'kanji_svg_draw_speed', 'info_detail_level_on_success',
-                  'info_detail_level_on_failure')
+                  'info_detail_level_on_failure', 'order_reviews_by_level')
 
         read_only_fields = ('id', 'name', 'api_valid', 'level',
                             'unlocked_levels', 'vacation_date', 'reviews_within_day_count',
@@ -301,9 +301,11 @@ class VocabularySerializer(serializers.ModelSerializer):
         if 'request' in self.context:
             try:
                 minimum_level_to_review = self.context['request'].user.profile.get_minimum_wk_srs_threshold_for_review()
+                maximum_level_to_review = self.context['request'].user.profile.get_maximum_wk_srs_threshold_for_review()
                 return UserSpecific.objects.filter(user=self.context['request'].user,
                                                    vocabulary=obj,
-                                                   wanikani_srs_numeric__gte=minimum_level_to_review).count() > 0
+                                                   wanikani_srs_numeric__range=(minimum_level_to_review, maximum_level_to_review)).count() > 0
+
             except UserSpecific.DoesNotExist:
                 return None
         return None

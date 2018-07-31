@@ -68,14 +68,6 @@ LOGGING = {
             'when': 'midnight',
             'backupCount': '30',
         },
-        'request_log': {
-            'formatter': 'request',
-            'level': 'INFO',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': log_root("requests.log"),
-            'when': 'midnight',
-            'backupCount': '5',
-        },
         'django.server': DEFAULT_LOGGING['handlers']['django.server'],
     },
     'loggers': {
@@ -95,12 +87,6 @@ LOGGING = {
             'handlers': ['console', 'app_log', 'sentry'],
             'propagate': False
         },
-        # Used for drf-tracking which logs all request/response info. For later shipping to ELK
-        'KW.LoggingMiddleware': {
-            'level': LOGLEVEL,
-            'handlers': ['request_log'],
-            'propagate': False
-        },
         'celery': {
             'handlers': ['sentry', 'console'],
             'level': LOGLEVEL,
@@ -109,6 +95,7 @@ LOGGING = {
         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 }
+
 
 REDIS_URL = env.cache_url("REDIS_URL", default="rediscache://localhost:6379/0")
 
@@ -161,7 +148,6 @@ INSTALLED_APPS = (
     'corsheaders',
     'djoser',
     'raven.contrib.django.raven_compat',
-    'rest_framework_tracking'
 )
 
 MIDDLEWARE = [
@@ -280,3 +266,4 @@ RAVEN_CONFIG = {
     'dsn': env("RAVEN_DSN"),
     'release': env("RELEASE", default="UNKNOWN")
 } if not DEBUG else {}
+
