@@ -73,3 +73,14 @@ class TestUser(APITestCase):
         # Then
         self.user.profile.refresh_from_db()
         assert(self.user.profile.level == 17)
+
+    def test_invalid_api_key_during_reset_correctly_shows_400(self):
+        self.client.force_login(self.user)
+        self.user.profile.api_key = "definitelybrokenAPIkey"
+        self.user.profile.save()
+
+        response = self.client.post(reverse("api:user-reset"), data={"level": 1})
+        assert response.status_code == 400
+
+        self.user.profile.refresh_from_db()
+        assert not self.user.profile.api_valid
