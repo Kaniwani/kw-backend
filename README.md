@@ -4,41 +4,51 @@
 # KW
 KaniWani
 
-### Getting started:
-#### Backend
-Since we're using Django, a fair bit of setup is required to get a development environment up and running. Here are all the tools you need.
+## Getting started:
 
-1. Python 3. [You can get it from activestate](http://www.activestate.com/activepython/downloads)
-2. If you want to use the distributed messaging queue for tasks, [Install a redis server](http://redis.io/) This is only necessary if you want to use the periodic features(for example having the SRS run every 15 minutes).
-3. Install Pycharm (or use whatever editor you like).
-4. Clone the repository wherever you like.
-5. Move the **secrets.py** file into the same directory as the **settings.py** file.
-6. Fire up pycharm and open the parent KW directory.
-7. After a bit, there should be a prompt to install a list of requirements, hit yes and let the installation go. It'll give you a popup when it is done.
-7b. If this doesn't happen, and you know your way around the terminal, try *pip install -r requirements.txt*
-8. Delete the db.sqlite3 file
-9. hit Ctrl + alt + r . This will open up a manage.py command window.
-10. execute the command **makemigrations**
-11. It may prompt you to create a superuser, do so.
-12. Ctrl + alt + r again.
-13. This time execute **migrate**. The database is now built, but not yet populated.
-14. Ctrl + alt + r again.
-15. Execute the command **shell**. This brings you to application shell.
-16. Execute this:
+Getting the KaniWani backend up and running is pretty simple, but first you'll need to make sure you have [Docker]() and [`docker-compose`]() installed. Once you've installed Docker and `docker-compose` you should be ready to get started :tada:
 
-```python
-from kw_webapp.tasks import repopulate
-repopulate()
+To start the KaniWani backend just run:
+
 ```
-Chances are your system will spit a bunch of errors at you. Ignore them and wait. Eventually they will stop.
-
-17. (subject to change!) Now you need to import supplemental data that isn't synced from WK. Execute the following in the **shell**:
-```python
-from kw_webapp.utils one_time_import_jisho_new_format
-one_time_import_jisho_new_format("wk_vocab_import.json")
+> docker-compose up --detach # :rocket:
 ```
 
-18. Ctrl + alt + r one last time. Type in the command **runserver --noreload**
+You should now be able to view the KaniWani API docs by browsing to `http://127.0.0.1:8000/docs/`! 
 
-If all went well, it will start a server at 127.0.0.1:8000
+### First run
 
+The first time you run `docker-compose` will take a while to download the service containers (Postgres, Adminer, and Redis) and build our Dockerfile. Subsequent runs should be really quick though. Now that your containers are running lets take a look at them. Run the following to see the stack: 
+
+```
+> docker ps
+CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                              NAMES
+aea125aba4dd        kw-backend_kw-backend   "python3 manage.py r…"   9 minutes ago       Up 8 minutes        0.0.0.0:8000->8000/tcp             kw-backend_kw-backend_1
+ea330cf79337        adminer                 "entrypoint.sh docke…"   9 minutes ago       Up 8 minutes        8080/tcp, 0.0.0.0:8080->8001/tcp   kw-backend_adminer_1
+f786ac7434a3        redis:4.0               "docker-entrypoint.s…"   9 minutes ago       Up 8 minutes        0.0.0.0:6379->6379/tcp             kw-backend_redis_1
+049a3da0810e        postgres:9.6            "docker-entrypoint.s…"   10 hours ago        Up 8 minutes        5432/tcp                           kw-backend_db_1
+```
+
+To conner to a container run `docker exec -it <container instance name> bash`. Let's connect to the KW backend container!
+
+```
+> docker exec -it kw-backend_kw-backend_1 bash
+# <- This is the container terminal! 
+```
+
+Since this is the first run we will need to apply our migrations and populate the database with our vocab. Django gives us to tools to do this. To open the Django management shell and import our data run:
+
+```
+# ./manage.py migrate
+# ./manage.py shell
+>>> from kw_webapp.utils import repopulate
+>>> repopulate()
+# A lot of stuff is going to happen here and you may see some errors. Don't panic unless things explode :boom:
+>>> from kw_webapp.utils import one_time_import_jisho_new_format
+>>> one_time_import_jisho_new_format("wk_vocab_import.json")
+# A lot more things flying by on the terminal. This shouldn't take long but you might as well stretch!
+```
+
+Sweeeeet! Now you have some data. To check it you can open [Adminer]() at https://localhost:8001. Adminer is a simple SQL UI. To login select Postgres as the DB type, `kanawani` as the database, username as the username, and password as the password. This is great for development, but obviously not to be used in prod. You can also connect to Redis at the default port (6379) and `redis-cli`. 
+
+Have fun ;) 

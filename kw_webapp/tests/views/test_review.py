@@ -196,3 +196,56 @@ class TestReview(APITestCase):
         self.assertEqual(response.data["id"], self.review.id)
         self.assertEqual(response.data["streak"], previous_streak + 1)
         self.assertEqual(response.data["correct"], previous_correct + 1)
+
+    def test_setting_reviews_to_order_by_level_works(self):
+        self.client.force_login(self.user)
+
+        level_4_review = create_review(create_vocab("level4"), self.user)
+        level_4_review.vocabulary.readings.create(level=4, character="level4", kana="level4")
+
+        level_5_review = create_review(create_vocab("level5"), self.user)
+        level_5_review.vocabulary.readings.create(level=5, character="level5", kana="level5")
+
+        level_3_review = create_review(create_vocab("level3"), self.user)
+        level_3_review.vocabulary.readings.create(level=3, character="level3", kana="level3")
+
+        response = self.client.get(reverse("api:review-current"))
+        reviews = response.data["results"]
+        actual_review_order = [review["vocabulary"]["readings"][0]["level"] for review in reviews]
+
+        assert len(reviews) == 4
+        assert [3, 4, 5, 5] != actual_review_order
+
+        self.user.profile.order_reviews_by_level = True
+        self.user.profile.save()
+
+        response = self.client.get(reverse("api:review-current"))
+        reviews = response.data["results"]
+        actual_review_order = [review["vocabulary"]["readings"][0]["level"] for review in reviews]
+
+        assert len(reviews) == 4
+        assert [3, 4, 5, 5] == actual_review_order
+
+    def test_review_filtering_by_maximum_wk_srs_level(self):
+        self.client.force_login(self.user)
+
+        self.user.profile.maximum_wk_srs_level_to_review = WkSrsLevel.APPRENTICE.name
+        self.user.profile.save()
+
+        self.review.wanikani_srs_numeric = 5
+        self.review.wanikani_srs = WkSrsLevel.GURU.name
+        self.review.needs_review = True
+        self.review.save()
+
+        # Prepare an apprentice review.
+        apprentice_review = create_review(create_vocab("new_vocab"), self.user)
+        apprentice_review.wanikani_srs_numeric = 1
+        apprentice_review.needs_review = True
+        apprentice_review.save()
+
+        response = self.client.get(reverse("api:review-current"))
+        data = response.data
+        self.assertEqual(data["count"], 1)
+        # Ensure that any reviews tha tare apprentice on WK are not shown.
+
+

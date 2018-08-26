@@ -28,6 +28,12 @@ from kw_webapp.tasks import (
     build_user_information_api_string,
     get_level_pages,
 )
+from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, associate_vocab_to_user, \
+    build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
+    lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
+    user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
+    reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji, \
+    build_user_information_api_string, get_level_pages, sync_with_wk
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import (
@@ -126,8 +132,10 @@ class TestTasks(TestCase):
         )
 
         sync_unlocked_vocab_with_wk(self.user)
-        self.assertTrue("kitten" in self.review.synonyms_list())
-        self.assertTrue("large rat" in self.review.synonyms_list())
+
+        synonyms_list = self.review.synonyms_list()
+        self.assertIn("large rat", synonyms_list)
+        self.assertIn("kitten", synonyms_list)
 
     def test_building_unlock_all_string_works(self):
         sample_level = constants.LEVEL_MAX
@@ -471,3 +479,24 @@ class TestTasks(TestCase):
         self.user.profile.refresh_from_db()
         self.assertEqual(get_users_lessons(self.user).count(), 0)
         self.assertEqual(self.user.profile.level, 5)
+
+
+    @responses.activate
+    def test_creating_new_synonyms_for_users_who_arent_being_followed(self):
+        resp_body = deepcopy(sample_api_responses.single_vocab_response)
+        resp_body["requested_information"][0]["user_specific"]["user_synonyms"] = ["kitten", "large rat"]
+
+        responses.add(responses.GET, self._vocab_api_regex,
+                      json=resp_body,
+                      status=200,
+                      content_type='application/json')
+
+        #sync_unlocked_vocab_with_wk(self.user)
+        self.user.profile.follow_me = False
+        self.user.profile.save()
+
+        sync_with_wk(self.user.id)
+
+        synonyms_list = self.review.synonyms_list()
+        self.assertIn("kitten", synonyms_list)
+        self.assertIn("large rat", synonyms_list)

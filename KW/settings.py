@@ -83,12 +83,6 @@ LOGGING = {
             "handlers": ["console", "app_log", "sentry"],
             "propagate": False,
         },
-        # Used for drf-tracking which logs all request/response info. For later shipping to ELK
-        "KW.LoggingMiddleware": {
-            "level": LOGLEVEL,
-            "handlers": ["request_log"],
-            "propagate": False,
-        },
         "celery": {
             "handlers": ["sentry", "console"],
             "level": LOGLEVEL,
@@ -98,12 +92,15 @@ LOGGING = {
     },
 }
 
-CELERY_RESULT_BACKEND = env.cache_url("REDIS_URL")["LOCATION"]
+
+REDIS_URL = env.cache_url("REDIS_URL", default="rediscache://localhost:6379/0")
+
+CELERY_RESULT_BACKEND = REDIS_URL["LOCATION"]
 CELERYD_HIJACK_ROOT_LOGGER = False
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_ACCEPT_CONTENT = ["application/json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULTS_SERIALIZER = "json"
+CELERY_BROKER_URL = REDIS_URL["LOCATION"]
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     "all_user_srs_every_hour": {
@@ -147,7 +144,6 @@ INSTALLED_APPS = (
     "corsheaders",
     "djoser",
     "raven.contrib.django.raven_compat",
-    "rest_framework_tracking",
 )
 
 MIDDLEWARE = [
@@ -183,7 +179,9 @@ REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
 }
 
-CACHES = {"default": env.cache("REDIS_URL", default="rediscache://127.0.0.1:6379/0")}
+CACHES = {
+    'default': REDIS_URL
+}
 
 ROOT_URLCONF = "KW.urls"
 
@@ -196,7 +194,9 @@ vars().update(EMAIL_CONFIG)
 TIME_ZONE = MY_TIME_ZONE
 SITE_ID = 1
 
-DATABASES = {"default": env.db(default="sqlite://db.sqlite3")}
+DATABASES = {
+    'default': env.db('DATABASE_URL', default="sqlite://db.sqlite3")
+}
 
 DB_ENGINE = DATABASES["default"]["ENGINE"].split(".")[-1]
 
@@ -254,3 +254,4 @@ RAVEN_CONFIG = (
     if not DEBUG
     else {}
 )
+

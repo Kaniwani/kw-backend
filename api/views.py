@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponseForbidden, HttpResponseBadRequest, Http404
 from rest_framework import generics, filters
 from rest_framework import mixins
 from rest_framework import status
@@ -11,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
 
+from api.decorators import checks_wanikani
 from api.filters import VocabularyFilter, ReviewFilter
 from api.permissions import (
     IsAdminOrReadOnly,
@@ -37,6 +38,13 @@ from api.serializers import (
     RegistrationSerializer,
     ReviewCountSerializer,
 )
+from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating, IsAdminOrAuthenticatedAndCreating
+from api.responses import InvalidWanikaniAPIKeyResponse
+from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
+    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
+    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
+    ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer, RegistrationSerializer, \
+    ReviewCountSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import (
@@ -65,10 +73,16 @@ from kw_webapp.tasks import (
     reset_user,
     get_users_lessons,
 )
+from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
+    Announcement, Profile, Report, MeaningSynonym
+from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
+    get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
+    user_begins_vacation, follow_user, reset_user, get_users_lessons, get_all_users_reviews
 
-
-from KW.LoggingMiddleware import RequestLoggingMixin
 import logging
+
+from kw_webapp.wanikani.exceptions import InvalidWaniKaniKey
+
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +101,7 @@ class ListRetrieveUpdateViewSet(
     pass
 
 
-class ReadingViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
+class ReadingViewSet(viewsets.ReadOnlyModelViewSet):
     """
     For internal use fetching readings specifically.
     """
@@ -96,21 +110,21 @@ class ReadingViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
     serializer_class = ReadingSerializer
 
 
-class ReadingSynonymViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
+class ReadingSynonymViewSet(viewsets.ModelViewSet):
     serializer_class = ReadingSynonymSerializer
 
     def get_queryset(self):
         return AnswerSynonym.objects.filter(review__user=self.request.user)
 
 
-class MeaningSynonymViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
+class MeaningSynonymViewSet(viewsets.ModelViewSet):
     serializer_class = MeaningSynonymSerializer
 
     def get_queryset(self):
         return MeaningSynonym.objects.filter(review__user=self.request.user)
 
 
-class LevelViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
+class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Return a list of all levels and related information.
 
@@ -167,6 +181,7 @@ class LevelViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
         return reverse_lazy("api:level-unlock", args=(level,))
 
     @detail_route(methods=["POST"])
+    @checks_wanikani
     def unlock(self, request, pk=None):
         user = self.request.user
         requested_level = pk
@@ -189,15 +204,15 @@ class LevelViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
     @detail_route(methods=["POST"])
     def lock(self, request, pk=None):
         requested_level = pk
+        removed_count = lock_level_for_user(requested_level, request.user)
         if request.user.profile.level == int(requested_level):
             request.user.profile.follow_me = False
             request.user.profile.save()
-        removed_count = lock_level_for_user(requested_level, request.user)
 
         return Response({"locked": removed_count})
 
 
-class VocabularyViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
+class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Endpoint for fetching specific vocabulary. You can pass parameter `hyperlink=true` to receive the vocabulary with
     hyperlinked readings (for increased performance), or else they will be inline
@@ -213,7 +228,7 @@ class VocabularyViewSet(RequestLoggingMixin, viewsets.ReadOnlyModelViewSet):
             return VocabularySerializer
 
 
-class ReportViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
+class ReportViewSet(viewsets.ModelViewSet):
     filter_fields = ("created_by", "reading")
     serializer_class = ReportSerializer
     permission_classes = (IsAdminOrAuthenticatedAndCreating,)
@@ -269,7 +284,7 @@ class ReportViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
 
 
-class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
+class ReviewViewSet(ListRetrieveUpdateViewSet):
     """
     lesson:
     Get all of user's lessons.
@@ -399,13 +414,10 @@ class ReviewViewSet(RequestLoggingMixin, ListRetrieveUpdateViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def get_queryset(self):
-        return UserSpecific.objects.filter(
-            user=self.request.user,
-            wanikani_srs_numeric__gte=self.request.user.profile.get_minimum_wk_srs_threshold_for_review(),
-        )
+        return get_all_users_reviews(self.request.user)
 
 
-class FrequentlyAskedQuestionViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
+class FrequentlyAskedQuestionViewSet(viewsets.ModelViewSet):
     """
     Frequently Asked Questions that uses will have read access to.
     """
@@ -415,7 +427,7 @@ class FrequentlyAskedQuestionViewSet(RequestLoggingMixin, viewsets.ModelViewSet)
     queryset = FrequentlyAskedQuestion.objects.all()
 
 
-class AnnouncementViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
+class AnnouncementViewSet(viewsets.ModelViewSet):
     """
     Announcements that users will see upon entering the website.
     """
@@ -428,9 +440,7 @@ class AnnouncementViewSet(RequestLoggingMixin, viewsets.ModelViewSet):
         serializer.save(creator=self.request.user)
 
 
-class UserViewSet(
-    RequestLoggingMixin, viewsets.GenericViewSet, generics.ListCreateAPIView
-):
+class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
     """
     Endpoint for user and internally nested profiles. Used primarily for updating user profiles, and creation of users.
 
@@ -486,19 +496,17 @@ class UserViewSet(
         new_review_count = get_users_current_reviews(request.user).count()
         return Response({"review_count": new_review_count})
 
-    @list_route(methods=["POST"])
+    @list_route(methods=['POST'])
+    @checks_wanikani
     def reset(self, request):
         reset_to_level = int(request.data["level"]) if "level" in request.data else None
         if reset_to_level is None:
             return HttpResponseBadRequest("You must pass a level to reset to.")
-
         reset_user(request.user, reset_to_level)
         return Response({"message": "Your account has been reset"})
 
 
-class ProfileViewSet(
-    RequestLoggingMixin, ListRetrieveUpdateViewSet, viewsets.GenericViewSet
-):
+class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
     """
     Profile model view set, for INTERNAL TESTING USE ONLY.
     """
@@ -541,9 +549,7 @@ class ProfileViewSet(
         return serializer
 
 
-class ContactViewSet(
-    RequestLoggingMixin, generics.CreateAPIView, viewsets.GenericViewSet
-):
+class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
     """
     Endpoint for contacting the developers. POSTing to this endpoint will send us an email.
     """
@@ -560,4 +566,3 @@ class ContactViewSet(
             return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
         form.save()
         return Response(status=status.HTTP_202_ACCEPTED)
-        # return Response({"detail": "Successfully sent contact email"}, status=status.HTTP_202_ACCEPTED)

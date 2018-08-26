@@ -1,0 +1,60 @@
+version: '3'
+services:
+
+  kw-backend:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./:/app
+    depends_on:
+      - db
+      - redis
+ 
+  db:
+    image: postgres:9.6
+    restart: always
+    volumes:
+      - ./Docker/postgres/data:/postgres/data
+    environment:
+      - POSTGRES_USER=kaniwani
+      - POSTGRES_PASSWORD=password
+      - PGDATA=/postgres/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8001:8080
+    depends_on:
+      - db
+
+  redis:
+    image: redis:4.0
+    restart: always
+    ports:
+      # Expose the Redis port to the host machine to allow connecting with via
+      # the redis CLI. This shouldn't be done in production because docker-compose
+      # sets up an internal network between containers.
+      - 6379:6379
+    volumes:
+      - ./Docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./Docker/redis/data:/redis/data
+
+  scheduler:
+    build: .
+    command: celery -A KW.celery_app beat --loglevel=INFO --logfile=kwbeat.log --workdir=/app
+    volumes:
+      - ./:/app
+    depends_on:
+      - redis
+      - worker
+
+  worker:
+    build: .
+    command: celery -A KW.celery_app worker --loglevel=INFO --logfile=kwworker.log --workdir=/app
+    volumes:
+      - ./:/app
+    depends_on:
+      - redis

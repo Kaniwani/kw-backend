@@ -182,6 +182,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "kanji_svg_draw_speed",
             "info_detail_level_on_success",
             "info_detail_level_on_failure",
+            "order_reviews_by_level"
         )
 
         read_only_fields = (
@@ -402,14 +403,16 @@ class VocabularySerializer(serializers.ModelSerializer):
                 minimum_level_to_review = self.context[
                     "request"
                 ].user.profile.get_minimum_wk_srs_threshold_for_review()
+                maximum_level_to_review = self.context['request'].user.profile.get_maximum_wk_srs_threshold_for_review()
                 return (
                     UserSpecific.objects.filter(
                         user=self.context["request"].user,
                         vocabulary=obj,
-                        wanikani_srs_numeric__gte=minimum_level_to_review,
+                        wanikani_srs_numeric__range=(minimum_level_to_review, maximum_level_to_review)
                     ).count()
                     > 0
                 )
+
             except UserSpecific.DoesNotExist:
                 return None
         return None
