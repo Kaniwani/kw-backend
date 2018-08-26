@@ -8,7 +8,7 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [("kw_webapp", "0037_auto_20180321_1551")]
+    dependencies = [("kw_webapp", "0039_profile_order_reviews_by_level")]
 
     operations = [
         migrations.AddField(
