@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden, HttpResponseBadRequest
+from django.http import HttpResponseForbidden, HttpResponseBadRequest, Http404
 from rest_framework import generics, filters
 from rest_framework import mixins
 from rest_framework import status
@@ -11,8 +11,10 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
 
+from api.decorators import checks_wanikani
 from api.filters import VocabularyFilter, ReviewFilter
 from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating, IsAdminOrAuthenticatedAndCreating
+from api.responses import InvalidWanikaniAPIKeyResponse
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
@@ -27,6 +29,9 @@ from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_fro
     user_begins_vacation, follow_user, reset_user, get_users_lessons, get_all_users_reviews
 
 import logging
+
+from kw_webapp.wanikani.exceptions import InvalidWaniKaniKey
+
 logger = logging.getLogger(__name__)
 
 
@@ -109,6 +114,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
         return reverse_lazy('api:level-unlock', args=(level,))
 
     @detail_route(methods=['POST'])
+    @checks_wanikani
     def unlock(self, request, pk=None):
         user = self.request.user
         requested_level = pk
@@ -116,6 +122,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
         unlocked_this_request, total_unlocked, locked = unlock_eligible_vocab_from_levels(user, requested_level)
+
         user.profile.unlocked_levels.get_or_create(level=requested_level)
 
         return Response(dict(unlocked_now=unlocked_this_request,
@@ -125,10 +132,10 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     @detail_route(methods=['POST'])
     def lock(self, request, pk=None):
         requested_level = pk
+        removed_count = lock_level_for_user(requested_level, request.user)
         if request.user.profile.level == int(requested_level):
             request.user.profile.follow_me = False
             request.user.profile.save()
-        removed_count = lock_level_for_user(requested_level, request.user)
 
         return Response({"locked": removed_count})
 
@@ -391,11 +398,11 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         return Response({'review_count': new_review_count})
 
     @list_route(methods=['POST'])
+    @checks_wanikani
     def reset(self, request):
         reset_to_level = int(request.data['level']) if 'level' in request.data else None
         if reset_to_level is None:
             return HttpResponseBadRequest("You must pass a level to reset to.")
-
         reset_user(request.user, reset_to_level)
         return Response({"message": "Your account has been reset"})
 

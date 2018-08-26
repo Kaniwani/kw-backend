@@ -184,17 +184,9 @@ def unlock_eligible_vocab_from_levels(user, levels):
     """
 
     api_call_string = build_API_sync_string_for_user_for_levels(user, levels)
-
-    try:
-        response = make_api_call(api_call_string)
-        unlocked_this_request, total_unlocked, locked = process_vocabulary_response_for_unlock(user, response)
-        return unlocked_this_request, total_unlocked, locked
-    except exceptions.InvalidWaniKaniKey:
-        logger.error("Invalid key found for user {}".format(user.username))
-        user.profile.api_valid = False
-        user.profile.save()
-    except exceptions.WanikaniAPIException as e:
-        logger.error("Non-invalid key error found during API call. ", e)
+    response = make_api_call(api_call_string)
+    unlocked_this_request, total_unlocked, locked = process_vocabulary_response_for_unlock(user, response)
+    return unlocked_this_request, total_unlocked, locked
 
 
 def get_wanikani_level_by_api_key(api_key):
