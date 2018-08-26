@@ -11,7 +11,7 @@ Getting the KaniWani backend up and running is pretty simple, but first you'll n
 To start the KaniWani backend just run:
 
 ```
-> docker-compose up --detach # :rocket:
+> docker-compose up --detach
 ```
 
 You should now be able to view the KaniWani API docs by browsing to `http://127.0.0.1:8000/docs/`! 
