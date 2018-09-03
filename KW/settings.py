@@ -59,14 +59,6 @@ LOGGING = {
             "when": "midnight",
             "backupCount": "30",
         },
-        "request_log": {
-            "formatter": "request",
-            "level": "INFO",
-            "class": "logging.handlers.TimedRotatingFileHandler",
-            "filename": log_root("requests.log"),
-            "when": "midnight",
-            "backupCount": "5",
-        },
         "django.server": DEFAULT_LOGGING["handlers"]["django.server"],
     },
     "loggers": {
