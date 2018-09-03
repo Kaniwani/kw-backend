@@ -12,15 +12,13 @@ from KW import settings
 admin.autodiscover()
 
 urlpatterns = (
-    url(r'^$', RedirectView.as_view(url="/docs/")),
-    url(r'^docs/', include_docs_urls(title='Kaniwani Docs')),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^api/v1/', include('api.urls', namespace='api')),
+    url(r"^$", RedirectView.as_view(url="/docs/")),
+    url(r"^docs/", include_docs_urls(title="Kaniwani Docs")),
+    url(r"^admin/", include(admin.site.urls)),
+    url(r"^api/v1/", include("api.urls", namespace="api")),
 )
 
 if settings.DEBUG:
     import debug_toolbar
 
-    urlpatterns += (
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    )
+    urlpatterns += (url(r"^__debug__/", include(debug_toolbar.urls)),)

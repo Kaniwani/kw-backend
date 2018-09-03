@@ -8,19 +8,23 @@ import kw_webapp.constants
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0021_userspecific_critical'),
-    ]
+    dependencies = [("kw_webapp", "0021_userspecific_critical")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='profile',
-            name='only_review_burned',
-        ),
+        migrations.RemoveField(model_name="profile", name="only_review_burned"),
         migrations.AddField(
-            model_name='profile',
-            name='minimum_wk_srs_level_to_review',
-            field=models.CharField(choices=[('APPRENTICE', 'apprentice'), ('GURU', 'guru'), ('MASTER', 'master'), ('ENLIGHTENED', 'enlightened'), ('BURNED', 'burned')], default='APPRENTICE', max_length=20),
-
+            model_name="profile",
+            name="minimum_wk_srs_level_to_review",
+            field=models.CharField(
+                choices=[
+                    ("APPRENTICE", "apprentice"),
+                    ("GURU", "guru"),
+                    ("MASTER", "master"),
+                    ("ENLIGHTENED", "enlightened"),
+                    ("BURNED", "burned"),
+                ],
+                default="APPRENTICE",
+                max_length=20,
+            ),
         ),
     ]

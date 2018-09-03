@@ -7,46 +7,50 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0016_profile_last_visit'),
-    ]
+    dependencies = [("kw_webapp", "0016_profile_last_visit")]
 
     operations = [
         migrations.CreateModel(
-            name='Tag',
+            name="Tag",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, unique=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, unique=True)),
             ],
         ),
         migrations.AddField(
-            model_name='reading',
-            name='common',
-            field=models.NullBooleanField(),
+            model_name="reading", name="common", field=models.NullBooleanField()
         ),
         migrations.AddField(
-            model_name='reading',
-            name='jlpt',
+            model_name="reading",
+            name="jlpt",
             field=models.CharField(max_length=20, null=True),
         ),
         migrations.AddField(
-            model_name='reading',
-            name='sentence_en',
+            model_name="reading",
+            name="sentence_en",
             field=models.CharField(max_length=1000, null=True),
         ),
         migrations.AddField(
-            model_name='reading',
-            name='sentence_ja',
+            model_name="reading",
+            name="sentence_ja",
             field=models.CharField(max_length=1000, null=True),
         ),
         migrations.AddField(
-            model_name='userspecific',
-            name='notes',
+            model_name="userspecific",
+            name="notes",
             field=models.CharField(blank=True, max_length=500, null=True),
         ),
         migrations.AddField(
-            model_name='reading',
-            name='tags',
-            field=models.ManyToManyField(to='kw_webapp.Tag'),
+            model_name="reading",
+            name="tags",
+            field=models.ManyToManyField(to="kw_webapp.Tag"),
         ),
     ]

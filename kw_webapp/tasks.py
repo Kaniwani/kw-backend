@@ -12,11 +12,19 @@ from kw_webapp.constants import WANIKANI_SRS_LEVELS, KANIWANI_SRS_LEVELS, KwSrsL
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
 from kw_webapp import constants
-from kw_webapp.models import UserSpecific, Vocabulary, Profile, Level, MeaningSynonym, AnswerSynonym
+from kw_webapp.models import (
+    UserSpecific,
+    Vocabulary,
+    Profile,
+    Level,
+    MeaningSynonym,
+    AnswerSynonym,
+)
 from datetime import timedelta, datetime
 from django.utils import timezone
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -34,13 +42,13 @@ def past_time(hours_ago):
 
 @shared_task
 def all_srs(user=None):
-    '''
+    """
     Task that performs an SRS update for users. Checks user current streak and last_reviewed_date in order to determine
     when the next review should be. If the time for the review is in the past, flag it for review for the user.
 
     :param user: Optional Param, the user to be updated. If left blank, will update all users.
     :return: None
-    '''
+    """
     logger.info("Beginning  SRS run for {}.".format(user or "all users"))
     affected_count = 0
     now = timezone.now()
@@ -48,20 +56,30 @@ def all_srs(user=None):
 
     # Fetches all reviews with next_review_date greater than or equal to NOW, flips them all to needs_review=True
     if user and user.profile.on_vacation:
-        logger.info("Skipping SRS for user {} as they are on vacation as of {}".format(user.username, user.profile.vacation_date))
+        logger.info(
+            "Skipping SRS for user {} as they are on vacation as of {}".format(
+                user.username, user.profile.vacation_date
+            )
+        )
         return 0
 
     if user:
-            review_set = UserSpecific.objects.filter(user=user,
-                                                     next_review_date__lte=slightly_ahead_of_now,
-                                                     needs_review=False)
+        review_set = UserSpecific.objects.filter(
+            user=user, next_review_date__lte=slightly_ahead_of_now, needs_review=False
+        )
     else:
-        review_set = UserSpecific.objects.filter(user__profile__on_vacation=False,
-                                                 next_review_date__lte=slightly_ahead_of_now,
-                                                 needs_review=False)
+        review_set = UserSpecific.objects.filter(
+            user__profile__on_vacation=False,
+            next_review_date__lte=slightly_ahead_of_now,
+            needs_review=False,
+        )
 
     affected_count += review_set.update(needs_review=True)
-    logger.info("User {} has {} new reviews.".format(user.username if user else "all users", affected_count))
+    logger.info(
+        "User {} has {} new reviews.".format(
+            user.username if user else "all users", affected_count
+        )
+    )
     return affected_count
 
 
@@ -69,11 +87,15 @@ def get_vocab_by_kanji(kanji):
     v = Vocabulary.objects.filter(readings__character=kanji).distinct()
     number_of_vocabulary = v.count()
     if number_of_vocabulary > 1:
-        error = "Found multiple Vocabulary with identical kanji with ids: [{}]".format(", ".join([str(vocab.id) for vocab in v]))
+        error = "Found multiple Vocabulary with identical kanji with ids: [{}]".format(
+            ", ".join([str(vocab.id) for vocab in v])
+        )
         logger.error(error)
         raise Vocabulary.MultipleObjectsReturned(error)
     elif number_of_vocabulary == 0:
-        logger.error("While attempting to get vocabulary {} we could not find it!".format(kanji))
+        logger.error(
+            "While attempting to get vocabulary {} we could not find it!".format(kanji)
+        )
         raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(kanji))
     else:
         return v.first()
@@ -89,21 +111,27 @@ def get_vocab_by_meaning(meaning):
     try:
         v = Vocabulary.objects.get(meaning=meaning)
     except Vocabulary.DoesNotExist:
-        logger.error("While attempting to get vocabulary {} we could not find it!".format(meaning))
+        logger.error(
+            "While attempting to get vocabulary {} we could not find it!".format(
+                meaning
+            )
+        )
         raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(meaning))
     else:
         return v
 
 
 def associate_vocab_to_user(vocab, user):
-    '''
+    """
     takes a vocab, and creates a UserSpecific object for the user based on it. Returns the vocab object.
     :param vocab: the vocabulary object to associate to the user.
     :param user: The user.
     :return: the vocabulary object after association to the user
-    '''
+    """
     try:
-        review, created = UserSpecific.objects.get_or_create(vocabulary=vocab, user=user)
+        review, created = UserSpecific.objects.get_or_create(
+            vocabulary=vocab, user=user
+        )
         if created:
             review.needs_review = True
             review.next_review_date = timezone.now()
@@ -114,47 +142,59 @@ def associate_vocab_to_user(vocab, user):
         us = UserSpecific.objects.filter(vocabulary=vocab, user=user)
         for u in us:
             logger.error(
-                "during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(user.username,
-                                                                                                     u))
+                "during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(
+                    user.username, u
+                )
+            )
         return None, None
 
 
 def get_level_pages(levels):
     page_size = 5
-    return [levels[i:i+page_size] for i in range(0, len(levels), page_size)]
+    return [levels[i : i + page_size] for i in range(0, len(levels), page_size)]
 
 
 def build_API_sync_string_for_user(user):
-    '''
+    """
     Builds a vocabulary api string for the user which includes all relevant levels. Goes back 3 levels from current by default.
 
     :param user: The user to have their vocab updated
     :return: A fully formed and ready-to-request API string.
-    '''
-    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/".format(user.profile.api_key)
+    """
+    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/".format(
+        user.profile.api_key
+    )
     # if the user has unlocked recent levels, check for new vocab on them as well.
     levels = user.profile.unlocked_levels_list()
-    level_string = ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
+    level_string = (
+        ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
+    )
     api_call += level_string
     return api_call
 
 
 def build_API_sync_string_for_user_for_levels(user, levels):
-    '''
+    """
     Given a user, build a vocabulary request string based on their api key, for a particular level.
     :param user: The related user.
     :param level: The level of vocabulary we want to update.
     :return: The fully formatted API string that will provide.
-    '''
-    level_string = ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
-    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(user.profile.api_key, level_string)
-    api_call += ','
+    """
+    level_string = (
+        ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
+    )
+    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(
+        user.profile.api_key, level_string
+    )
+    api_call += ","
     return api_call
 
 
 def lock_level_for_user(requested_level, user):
     requested_level = int(requested_level)
-    reviews = UserSpecific.objects.filter(user=user, vocabulary__readings__level=requested_level).distinct()
+    reviews = UserSpecific.objects.filter(
+        user=user, vocabulary__readings__level=requested_level
+    ).distinct()
     count = reviews.count()
     reviews.delete()
     level = Level.objects.get(profile=user.profile, level=requested_level)
@@ -170,7 +210,9 @@ def unlock_all_possible_levels_for_user(user):
     how many vocab remain locked (as they are locked in WK)
     """
     level_list = [level for level in range(1, user.profile.level + 1)]
-    unlocked_now, unlocked_total, locked = unlock_eligible_vocab_from_levels(user, level_list)
+    unlocked_now, unlocked_total, locked = unlock_eligible_vocab_from_levels(
+        user, level_list
+    )
     return level_list, unlocked_now, unlocked_total, locked
 
 
@@ -203,12 +245,12 @@ def build_user_information_api_string(api_key):
 
 @shared_task
 def sync_user_profile_with_wk(user):
-    '''
+    """
     Hits the WK api with user information in order to synchronize user metadata such as level and gravatar information.
 
     :param user: The user to sync their profile with WK.
     :return: boolean indicating the success of the API call.
-    '''
+    """
     api_string = build_user_information_api_string(user.profile.api_key)
 
     try:
@@ -241,14 +283,14 @@ def sync_user_profile_with_wk(user):
 
 @shared_task
 def sync_with_wk(user_id, full_sync=False):
-    '''
+    """
     Takes a user. Checks the vocab list from WK for all levels. If anything new has been unlocked on the WK side,
     it also unlocks it here on Kaniwani and creates a new review for the user.
 
     :param user_id: id of the user to sync
     :param full_sync:
     :return: None
-    '''
+    """
     # We split this into two seperate API calls as we do not necessarily know the current level until
     # For the love of god don't delete this next line
     user = User.objects.get(pk=user_id)
@@ -256,23 +298,26 @@ def sync_with_wk(user_id, full_sync=False):
     profile_sync_succeeded = sync_user_profile_with_wk(user)
     if profile_sync_succeeded:
         if not full_sync:
-            new_review_count, new_synonym_count = sync_recent_unlocked_vocab_with_wk(user)
+            new_review_count, new_synonym_count = sync_recent_unlocked_vocab_with_wk(
+                user
+            )
         else:
             new_review_count, new_synonym_count = sync_unlocked_vocab_with_wk(user)
 
         return profile_sync_succeeded, new_review_count, new_synonym_count
     else:
         logger.warning(
-            "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed ")
+            "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed "
+        )
         return profile_sync_succeeded, 0, 0
 
 
 def create_new_vocabulary(vocabulary_json):
-    '''
+    """
     Creates a new vocabulary based on a json object provided by Wanikani and returns this vocabulary.
     :param vocabulary_json: A JSON object representing a single vocabulary, as provided by Wanikani.
     :return: The newly created Vocabulary object.
-    '''
+    """
     meaning = vocabulary_json["meaning"]
     vocab = Vocabulary.objects.create(meaning=meaning)
     vocab = update_local_vocabulary_information(vocab, vocabulary_json)
@@ -283,19 +328,24 @@ def update_local_vocabulary_information(vocab, vocabulary_json):
 
     kana_list = [reading.strip() for reading in vocabulary_json["kana"].split(",")]
     # Update the local meaning based on WK meaning
-    meaning = vocabulary_json['meaning']
+    meaning = vocabulary_json["meaning"]
     vocab.meaning = meaning
 
     character = vocabulary_json["character"]
     level = vocabulary_json["level"]
     for reading in kana_list:
-        new_reading, created = vocab.readings.get_or_create(kana=reading, character=character)
+        new_reading, created = vocab.readings.get_or_create(
+            kana=reading, character=character
+        )
         new_reading.level = level
         new_reading.save()
         if created:
-            logger.info("""Created new reading: {}, level {}
-                                     associated to vocab {}""".format(new_reading.kana, new_reading.level,
-                                                                      new_reading.vocabulary.meaning))
+            logger.info(
+                """Created new reading: {}, level {}
+                                     associated to vocab {}""".format(
+                    new_reading.kana, new_reading.level, new_reading.vocabulary.meaning
+                )
+            )
     vocab.save()
     return vocab
 
@@ -310,7 +360,7 @@ def get_or_create_vocab_by_json(vocab_json):
     """
 
     try:
-        vocab = get_vocab_by_kanji(vocab_json['character'])
+        vocab = get_vocab_by_kanji(vocab_json["character"])
         created = False
     except Vocabulary.DoesNotExist:
         vocab = create_new_vocabulary(vocab_json)
@@ -423,10 +473,13 @@ def process_vocabulary_response_for_unlock(user, json_data):
     :param json_data:
     :return:
     """
-    vocab_list = json_data['requested_information']
+    vocab_list = json_data["requested_information"]
     original_length = len(vocab_list)
-    vocab_list = [vocab_json for vocab_json in vocab_list if
-                  vocab_json['user_specific'] is not None]  # filters out locked items.
+    vocab_list = [
+        vocab_json
+        for vocab_json in vocab_list
+        if vocab_json["user_specific"] is not None
+    ]  # filters out locked items.
     total_unlocked_count = 0
     unlocked_this_request = 0
     for vocabulary_json in vocab_list:
@@ -441,7 +494,7 @@ def process_vocabulary_response_for_unlock(user, json_data):
 
 
 def process_single_item_from_wanikani(vocabulary, user):
-    user_specific = vocabulary['user_specific']
+    user_specific = vocabulary["user_specific"]
     vocab, _ = import_vocabulary_from_json(vocabulary)
     review, created = associate_vocab_to_user(vocab, user)
     review, synonyms_added_count = synchronize_synonyms(review, user_specific)
@@ -467,13 +520,19 @@ def process_vocabulary_response_for_user(user, json_data):
     """
     new_review_count = 0
     new_synonym_count = 0
-    vocab_list = json_data['requested_information']
+    vocab_list = json_data["requested_information"]
     # Filter items the user has not unlocked.
-    vocab_list = [vocab_json for vocab_json in vocab_list if vocab_json['user_specific'] is not None]
+    vocab_list = [
+        vocab_json
+        for vocab_json in vocab_list
+        if vocab_json["user_specific"] is not None
+    ]
 
     for vocabulary_json in vocab_list:
         if user.profile.follow_me:
-            review, created, synonyms_added_count = process_single_item_from_wanikani(vocabulary_json, user)
+            review, created, synonyms_added_count = process_single_item_from_wanikani(
+                vocabulary_json, user
+            )
             synonyms_added_count += new_synonym_count
             if created:
                 new_review_count += 1
@@ -488,19 +547,26 @@ def process_vocabulary_response_for_user(user, json_data):
 
 def sync_recent_unlocked_vocab_with_wk(user):
     if user.profile.unlocked_levels_list():
-        levels = [level for level in range(user.profile.level - 2, user.profile.level + 1) if
-                  level in user.profile.unlocked_levels_list()]
+        levels = [
+            level
+            for level in range(user.profile.level - 2, user.profile.level + 1)
+            if level in user.profile.unlocked_levels_list()
+        ]
         if levels:
             request_string = build_API_sync_string_for_user_for_levels(user, levels)
             try:
                 json_data = make_api_call(request_string)
-                new_review_count, new_synonym_count = process_vocabulary_response_for_user(user, json_data)
+                new_review_count, new_synonym_count = process_vocabulary_response_for_user(
+                    user, json_data
+                )
                 return new_review_count, new_synonym_count
             except exceptions.InvalidWaniKaniKey:
                 user.profile.api_valid = False
                 user.profile.save()
             except exceptions.WanikaniAPIException as e:
-                logger.warn("Couldn't sync recent vocab for {}".format(user.username), e)
+                logger.warn(
+                    "Couldn't sync recent vocab for {}".format(user.username), e
+                )
     return 0, 0
 
 
@@ -510,17 +576,25 @@ def sync_unlocked_vocab_with_wk(user):
         new_review_count = new_synonym_count = 0
         for page in pages:
             request_string = build_API_sync_string_for_user_for_levels(user, page)
-            logger.info("Creating sync string for user {}: {}".format(user.username, user.profile.api_key))
+            logger.info(
+                "Creating sync string for user {}: {}".format(
+                    user.username, user.profile.api_key
+                )
+            )
             try:
                 response = make_api_call(request_string)
-                current_page_review_count, current_page_synonym_count = process_vocabulary_response_for_user(user, response)
+                current_page_review_count, current_page_synonym_count = process_vocabulary_response_for_user(
+                    user, response
+                )
                 new_review_count += current_page_review_count
                 new_synonym_count += current_page_synonym_count
             except exceptions.InvalidWaniKaniKey:
                 user.profile.api_valid = False
                 user.profile.save()
             except exceptions.WanikaniAPIException as e:
-                logger.error("Couldn't sync recent vocab for {}".format(user.username), e)
+                logger.error(
+                    "Couldn't sync recent vocab for {}".format(user.username), e
+                )
         return new_review_count, new_synonym_count
     else:
         return 0, 0
@@ -528,11 +602,11 @@ def sync_unlocked_vocab_with_wk(user):
 
 @shared_task
 def sync_all_users_to_wk():
-    '''
+    """
     calls sync_with_wk for all users, causing all users to have their newly unlocked vocabulary synchronized to KW.
 
     :return: the number of users successfully synced to WK.
-    '''
+    """
     one_week_ago = past_time(24 * 7)
     logger.info("Beginning Bi-daily Sync for all user!")
     users = User.objects.all().exclude(profile__isnull=True)
@@ -541,42 +615,59 @@ def sync_all_users_to_wk():
     logger.info("Sync will occur for {} users.".format(users.count()))
     affected_count = 0
     for user in users:
-        logger.info(user.username + " --- " + str(user.profile.last_visit) + " --- " + str(one_week_ago))
+        logger.info(
+            user.username
+            + " --- "
+            + str(user.profile.last_visit)
+            + " --- "
+            + str(one_week_ago)
+        )
         sync_with_wk.apply_async(args=[user.id, True], queue="long_running_sync")
         affected_count += 1
     return affected_count
 
 
 def pull_user_synonyms_by_level(user, level):
-    '''
+    """
     Retrieves vocabulary list from the WK API, specifically searching to pull in synonyms.
 
     :param user: User to pull WK synonyms or
     :param level: The level for synonyms that should be pulled
     :return: None
-    '''
+    """
     request_string = build_API_sync_string_for_user_for_levels(user, level)
     try:
         json_data = make_api_call(request_string)
-        vocabulary_list = json_data['requested_information']
+        vocabulary_list = json_data["requested_information"]
         for vocabulary in vocabulary_list:
             meaning = vocabulary["meaning"]
-            if vocabulary['user_specific'] and vocabulary['user_specific']['user_synonyms']:
+            if (
+                vocabulary["user_specific"]
+                and vocabulary["user_specific"]["user_synonyms"]
+            ):
                 try:
-                    review = UserSpecific.objects.get(user=user, vocabulary__meaning=meaning)
-                    for synonym in vocabulary['user_specific']['user_synonyms']:
+                    review = UserSpecific.objects.get(
+                        user=user, vocabulary__meaning=meaning
+                    )
+                    for synonym in vocabulary["user_specific"]["user_synonyms"]:
                         review.meaning_synonyms.get_or_create(text=synonym)
                     review.save()
                 except UserSpecific.DoesNotExist as e:
-                    logger.error("Couldn't pull review during a synonym sync: {}".format(e))
+                    logger.error(
+                        "Couldn't pull review during a synonym sync: {}".format(e)
+                    )
                 except KeyError as e:
                     logger.error("No user_specific or synonyms?: {}".format(json_data))
                 except UserSpecific.MultipleObjectsReturned:
-                    reviews = UserSpecific.objects.filter(user=user, vocabulary__meaning=meaning)
+                    reviews = UserSpecific.objects.filter(
+                        user=user, vocabulary__meaning=meaning
+                    )
                     for review in reviews:
                         logger.error(
                             "Found something janky! Multiple reviews under 1 vocab meaning?!?: {}".format(
-                                review))
+                                review
+                            )
+                        )
 
     except exceptions.InvalidWaniKaniKey:
         user.profile.api_valid = False
@@ -586,12 +677,12 @@ def pull_user_synonyms_by_level(user, level):
 
 
 def pull_all_user_synonyms(user=None):
-    '''
+    """
     Syncs up the user's synonyms for WK for all levels that they have currently unlocked.
 
     :param user: The user to pull all synonyms for
     :return: None
-    '''
+    """
     if user:
         for level in user.profile.unlocked_levels_list():
             pull_user_synonyms_by_level(user, level)
@@ -614,10 +705,22 @@ def user_returns_from_vacation(user):
     if vacation_date:
         users_reviews = UserSpecific.objects.filter(user=user)
         elapsed_vacation_time = timezone.now() - vacation_date
-        updated_count = users_reviews.update(last_studied=F('last_studied') + elapsed_vacation_time)
-        users_reviews.update(next_review_date=F('next_review_date') + elapsed_vacation_time)
-        logger.info("brought {} reviews out of hibernation for {}".format(updated_count, user.username))
-        logger.info("User {} has been gone for timedelta: {}".format(user.username, str(elapsed_vacation_time)))
+        updated_count = users_reviews.update(
+            last_studied=F("last_studied") + elapsed_vacation_time
+        )
+        users_reviews.update(
+            next_review_date=F("next_review_date") + elapsed_vacation_time
+        )
+        logger.info(
+            "brought {} reviews out of hibernation for {}".format(
+                updated_count, user.username
+            )
+        )
+        logger.info(
+            "User {} has been gone for timedelta: {}".format(
+                user.username, str(elapsed_vacation_time)
+            )
+        )
 
     user.profile.vacation_date = None
     user.profile.on_vacation = False
@@ -662,17 +765,19 @@ def build_upcoming_srs_for_user(user):
     for review in reviews:
         logger.debug(review.next_review_date)
 
-    reviews = reviews \
-        .annotate(hour=TruncHour('next_review_date', tzinfo=timezone.utc)) \
-        .annotate(date=TruncDate('next_review_date', tzinfo=timezone.utc)) \
-        .values("date", "hour") \
-        .annotate(review_count=Count('id')).order_by("date", "hour")
+    reviews = (
+        reviews.annotate(hour=TruncHour("next_review_date", tzinfo=timezone.utc))
+        .annotate(date=TruncDate("next_review_date", tzinfo=timezone.utc))
+        .values("date", "hour")
+        .annotate(review_count=Count("id"))
+        .order_by("date", "hour")
+    )
 
     expected_hour = start.hour
     hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
     retval = OrderedDict.fromkeys(hours, 0)
     for review in reviews:
-        found_hour = review['hour'].hour
+        found_hour = review["hour"].hour
         while found_hour != expected_hour:
             logger.debug("{} != {}, skipping.".format(found_hour, expected_hour))
             expected_hour = (expected_hour + 1) % 24
@@ -701,5 +806,7 @@ def reset_levels(user, reset_to_level):
 
 def reset_reviews(user, reset_to_level):
     reviews_to_delete = UserSpecific.objects.filter(user=user)
-    reviews_to_delete = reviews_to_delete.exclude(vocabulary__readings__level__lt=reset_to_level)
+    reviews_to_delete = reviews_to_delete.exclude(
+        vocabulary__readings__level__lt=reset_to_level
+    )
     reviews_to_delete.delete()

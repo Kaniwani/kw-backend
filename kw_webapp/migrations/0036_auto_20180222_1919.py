@@ -8,24 +8,28 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0035_auto_20180219_1425'),
-    ]
+    dependencies = [("kw_webapp", "0035_auto_20180219_1425")]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='auto_expand_answer_on_success',
+            model_name="profile",
+            name="auto_expand_answer_on_success",
             field=models.BooleanField(default=True),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='kanji_svg_draw_speed',
-            field=models.PositiveIntegerField(default=8, validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(10)]),
+            model_name="profile",
+            name="kanji_svg_draw_speed",
+            field=models.PositiveIntegerField(
+                default=8,
+                validators=[
+                    django.core.validators.MinValueValidator(1),
+                    django.core.validators.MaxValueValidator(10),
+                ],
+            ),
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='show_kanji_svg_grid',
+            model_name="profile",
+            name="show_kanji_svg_grid",
             field=models.BooleanField(default=True),
         ),
     ]

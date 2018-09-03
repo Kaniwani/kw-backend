@@ -7,9 +7,8 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('kw_webapp', '0012_profile_auto_expand_answer_on_success'),
-        ('kw_webapp', '0012_profile_last_wanikani_sync_date'),
+        ("kw_webapp", "0012_profile_auto_expand_answer_on_success"),
+        ("kw_webapp", "0012_profile_last_wanikani_sync_date"),
     ]
 
-    operations = [
-    ]
+    operations = []

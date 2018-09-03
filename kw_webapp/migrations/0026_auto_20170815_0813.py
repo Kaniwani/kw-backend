@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0025_merge_20170509_1806'),
-    ]
+    dependencies = [("kw_webapp", "0025_merge_20170509_1806")]
 
     operations = [
         migrations.AlterField(
-            model_name='userspecific',
-            name='last_studied',
+            model_name="userspecific",
+            name="last_studied",
             field=models.DateTimeField(blank=True, null=True),
-        ),
+        )
     ]

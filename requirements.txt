@@ -1,11 +1,14 @@
 amqp==2.2.2
 anyjson==0.3.3
+appdirs==1.4.3
+attrs==18.1.0
 Babel==2.5.3
 backports-abc==0.5
 billiard==3.5.0.3
 celery==4.1.0
 certifi==2017.4.17
 chardet==3.0.3
+click==6.7
 colorama==0.3.7
 contextlib2==0.5.4
 cookies==2.2.1
@@ -25,6 +28,7 @@ django-templated-mail==1.1.1
 djangorestframework==3.7.7
 djangorestframework-jwt==1.11.0
 djoser==1.1.5
+drf-tracking==1.4.0
 drfdocs==0.0.11
 flower==0.9.2
 gunicorn==19.7.1
@@ -35,6 +39,7 @@ Jinja2==2.9.6
 kombu==4.1.0
 Markdown==2.6.8
 MarkupSafe==1.0
+newrelic==2.74.0.54
 psycopg2==2.7.3.1
 pydotplus==2.0.2
 Pygments==2.2.0
@@ -48,6 +53,7 @@ responses==0.5.1
 simplejson==3.10.0
 six==1.11.0
 sqlparse==0.2.4
+toml==0.9.4
 tornado==4.5.3
 typing==3.6.4
 uritemplate==3.0.0

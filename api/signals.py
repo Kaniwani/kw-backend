@@ -6,6 +6,7 @@ from rest_framework.authtoken.models import Token
 from kw_webapp.tasks import sync_with_wk
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -16,8 +17,8 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 
 def sync_unlocks_with_wk(sender, **kwargs):
-    if kwargs['user']:
-        user = kwargs['user']
+    if kwargs["user"]:
+        user = kwargs["user"]
         sync_with_wk(user.id, full_sync=user.profile.follow_me)
 
 

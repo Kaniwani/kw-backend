@@ -3,11 +3,15 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
-from kw_webapp.tests.utils import create_lesson, create_vocab, create_review, setupTestFixture
+from kw_webapp.tests.utils import (
+    create_lesson,
+    create_vocab,
+    create_review,
+    setupTestFixture,
+)
 
 
 class TestReview(APITestCase):
-
     def setUp(self):
         setupTestFixture(self)
 
@@ -16,8 +20,8 @@ class TestReview(APITestCase):
 
         response = self.client.get(reverse("api:review-counts"))
         data = response.data
-        self.assertIsNotNone(data['reviews_count'])
-        self.assertIsNotNone(data['lessons_count'])
+        self.assertIsNotNone(data["reviews_count"])
+        self.assertIsNotNone(data["lessons_count"])
 
     def test_resetting_a_review_resets_all_data(self):
         self.client.force_login(self.user)
@@ -47,23 +51,24 @@ class TestReview(APITestCase):
 
         # Our initial review should be ready to review.
         response = self.client.get(reverse("api:review-counts"))
-        self.assertEqual(response.data['reviews_count'], 1)
-        self.assertEqual(response.data['lessons_count'], 0)
+        self.assertEqual(response.data["reviews_count"], 1)
+        self.assertEqual(response.data["lessons_count"], 0)
 
         create_lesson(create_vocab("new_lesson"), self.user)
 
         # Now we should have 1 lesson and 1 review.
         response = self.client.get(reverse("api:review-counts"))
-        self.assertEqual(response.data['reviews_count'], 1)
-        self.assertEqual(response.data['lessons_count'], 1)
-
+        self.assertEqual(response.data["reviews_count"], 1)
+        self.assertEqual(response.data["lessons_count"], 1)
 
     def test_nonexistent_user_specific_id_raises_error_in_record_answer(self):
         self.client.force_login(user=self.user)
         non_existent_review_id = 9999
 
-        response = self.client.post(reverse("api:review-correct", args=(non_existent_review_id,)),
-                                    data={'wrong_before': 'false'})
+        response = self.client.post(
+            reverse("api:review-correct", args=(non_existent_review_id,)),
+            data={"wrong_before": "false"},
+        )
 
         self.assertEqual(response.status_code, 404)
 
@@ -120,7 +125,7 @@ class TestReview(APITestCase):
 
         response = self.client.get(reverse("api:review-detail", args=(self.review.id,)))
 
-        self.assertTrue('review' not in response.data['vocabulary'])
+        self.assertTrue("review" not in response.data["vocabulary"])
 
     def test_review_requires_login(self):
         response = self.client.get(reverse("api:review-current"))
@@ -129,7 +134,10 @@ class TestReview(APITestCase):
     def test_recording_answer_works_on_correct_answer(self):
         self.client.force_login(user=self.user)
 
-        self.client.post(reverse("api:review-correct", args=(self.review.id,)), data={"wrong_before": "false"})
+        self.client.post(
+            reverse("api:review-correct", args=(self.review.id,)),
+            data={"wrong_before": "false"},
+        )
         self.review.refresh_from_db()
 
         self.assertEqual(self.review.correct, 1)
@@ -167,7 +175,9 @@ class TestReview(APITestCase):
         self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.BURNED.name
         self.user.profile.save()
         another_review = create_review(word, self.user)
-        another_review.wanikani_srs_numeric = WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name][0]
+        another_review.wanikani_srs_numeric = WANIKANI_SRS_LEVELS[
+            WkSrsLevel.BURNED.name
+        ][0]
         another_review.save()
 
         response = self.client.get(reverse("api:review-current"))
@@ -180,10 +190,12 @@ class TestReview(APITestCase):
         previous_streak = self.review.streak
         previous_correct = self.review.correct
 
-        response = self.client.post(reverse("api:review-correct", args=(self.review.id,)))
-        self.assertEqual(response.data['id'], self.review.id)
-        self.assertEqual(response.data['streak'], previous_streak + 1)
-        self.assertEqual(response.data['correct'], previous_correct + 1)
+        response = self.client.post(
+            reverse("api:review-correct", args=(self.review.id,))
+        )
+        self.assertEqual(response.data["id"], self.review.id)
+        self.assertEqual(response.data["streak"], previous_streak + 1)
+        self.assertEqual(response.data["correct"], previous_correct + 1)
 
     def test_setting_reviews_to_order_by_level_works(self):
         self.client.force_login(self.user)

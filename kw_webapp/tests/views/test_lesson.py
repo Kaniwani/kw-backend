@@ -3,11 +3,15 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from kw_webapp.constants import WkSrsLevel
-from kw_webapp.tests.utils import create_lesson, create_vocab, create_review, setupTestFixture
+from kw_webapp.tests.utils import (
+    create_lesson,
+    create_vocab,
+    create_review,
+    setupTestFixture,
+)
 
 
 class TestLesson(APITestCase):
-
     def setUp(self):
         setupTestFixture(self)
 
@@ -23,5 +27,5 @@ class TestLesson(APITestCase):
         # Then
         response = self.client.get(reverse("api:review-detail", args=(self.review.id,)))
         review = response.data
-        self.assertEqual(review['correct'], 0)
-        self.assertEqual(review['streak'], 1)
+        self.assertEqual(review["correct"], 0)
+        self.assertEqual(review["streak"], 1)

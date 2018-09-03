@@ -1,10 +1,10 @@
 import os
 from celery import Celery
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', "KW.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "KW.settings")
 
-app = Celery('KW')
-app.config_from_object('django.conf:settings', namespace="CELERY")
+app = Celery("KW")
+app.config_from_object("django.conf:settings", namespace="CELERY")
 
 app.autodiscover_tasks()
 app.log.setup()

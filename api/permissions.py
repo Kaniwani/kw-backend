@@ -23,11 +23,12 @@ class IsMeOrAdmin(IsAdminUser):
 class IsAuthenticatedOrCreating(IsAuthenticated):
     def has_permission(self, request, view):
         is_authenticated = super().has_permission(request, view)
-        return is_authenticated or request.method == 'POST'
+        return is_authenticated or request.method == "POST"
 
 
 class IsAdminOrAuthenticatedAndCreating(IsAuthenticated):
     def has_permission(self, request, view):
         is_authenticated = super().has_permission(request, view)
-        return (is_authenticated and request.method in ['POST', 'PUT']) or request.user.is_staff
-
+        return (
+            is_authenticated and request.method in ["POST", "PUT"]
+        ) or request.user.is_staff

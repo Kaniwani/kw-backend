@@ -8,19 +8,21 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0036_auto_20180222_1919'),
-    ]
+    dependencies = [("kw_webapp", "0036_auto_20180222_1919")]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='info_detail_level_on_failure',
-            field=models.PositiveIntegerField(default=0, validators=[django.core.validators.MaxValueValidator(2)]),
+            model_name="profile",
+            name="info_detail_level_on_failure",
+            field=models.PositiveIntegerField(
+                default=0, validators=[django.core.validators.MaxValueValidator(2)]
+            ),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='info_detail_level_on_success',
-            field=models.PositiveIntegerField(default=1, validators=[django.core.validators.MaxValueValidator(2)]),
+            model_name="profile",
+            name="info_detail_level_on_success",
+            field=models.PositiveIntegerField(
+                default=1, validators=[django.core.validators.MaxValueValidator(2)]
+            ),
         ),
     ]

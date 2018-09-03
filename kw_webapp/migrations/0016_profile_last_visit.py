@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0015_auto_20160605_1254'),
-    ]
+    dependencies = [("kw_webapp", "0015_auto_20160605_1254")]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='last_visit',
+            model_name="profile",
+            name="last_visit",
             field=models.DateTimeField(auto_now_add=True, null=True),
-        ),
+        )
     ]

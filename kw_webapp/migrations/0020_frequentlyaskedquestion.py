@@ -7,17 +7,23 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0019_level_partial'),
-    ]
+    dependencies = [("kw_webapp", "0019_level_partial")]
 
     operations = [
         migrations.CreateModel(
-            name='FrequentlyAskedQuestion',
+            name="FrequentlyAskedQuestion",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('question', models.CharField(max_length=10000)),
-                ('answer', models.CharField(max_length=10000)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("question", models.CharField(max_length=10000)),
+                ("answer", models.CharField(max_length=10000)),
             ],
-        ),
+        )
     ]

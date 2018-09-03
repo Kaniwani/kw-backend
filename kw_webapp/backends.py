@@ -3,10 +3,10 @@ from django.contrib.auth.models import User
 
 class EmailOrUsernameAuthenticationBackend:
     def authenticate(self, username=None, password=None):
-        if '@' in username:
-            kwargs = {'email': username}
+        if "@" in username:
+            kwargs = {"email": username}
         else:
-            kwargs = {'username': username}
+            kwargs = {"username": username}
 
         try:
             user = User.objects.get(**kwargs)
