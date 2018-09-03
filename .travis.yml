@@ -6,6 +6,7 @@ services:
 addons:
   # This maps `redis` and `db` to 127.0.0.1 to match Docker and minimize difference between the Docker environment
   # and the Travis-CI build env.
+  postgresql: "9.4"
   hosts:
     - redis
     - db
