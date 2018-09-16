@@ -172,6 +172,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "reviews_within_hour_count",
             "srs_counts",
             "minimum_wk_srs_level_to_review",
+            "maximum_wk_srs_level_to_review",
             "upcoming_reviews",
             "next_review_date",
             "join_date",
