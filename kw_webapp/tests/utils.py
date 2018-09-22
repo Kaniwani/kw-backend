@@ -44,8 +44,6 @@ def create_profile(user, api_key, level):
     p.unlocked_levels.create(level=level)
     return p
 
-
-
 def create_vocab(meaning):
     v = Vocabulary.objects.create(meaning=meaning)
     return v
@@ -91,11 +89,11 @@ def mock_vocab_list_response_with_single_vocabulary(user):
         content_type="application/json",
     )
 
-def mock_user_info_response_at_level_1(api_key):
+def mock_user_info_response_at_level(api_key, level):
     responses.add(
         responses.GET,
         build_user_information_api_string(api_key),
-        json=sample_api_responses.user_information_response_at_level_1,
+        json=sample_api_responses.user_information_response_at_level(level),
         status=200,
         content_type="application/json",
     )
@@ -139,6 +137,14 @@ def mock_vocab_list_response_with_single_vocabulary_with_four_synonyms(user):
         content_type="application/json",
     )
 
+def mock_vocab_list_response_with_single_vocabulary(api_key, level):
+    responses.add(
+        responses.GET,
+        build_API_sync_string_for_api_key_for_levels(api_key, level),
+        json=sample_api_responses.single_vocab_response_with_changed_meaning,
+        status=200,
+        content_type="application/json",
+    )
 
 def mock_vocab_list_response_with_single_vocabulary_with_changed_meaning(user):
     responses.add(
