@@ -174,6 +174,9 @@ def build_API_sync_string_for_user(user):
 
 
 def build_API_sync_string_for_user_for_levels(user, levels):
+    return build_API_sync_string_for_api_key_for_levels(user.profile.api_key, levels)
+
+def build_API_sync_string_for_api_key_for_levels(api_key, levels):
     """
     Given a user, build a vocabulary request string based on their api key, for a particular level.
     :param user: The related user.
@@ -184,7 +187,7 @@ def build_API_sync_string_for_user_for_levels(user, levels):
         ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
     )
     api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(
-        user.profile.api_key, level_string
+        api_key, level_string
     )
     api_call += ","
     return api_call

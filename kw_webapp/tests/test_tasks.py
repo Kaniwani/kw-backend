@@ -470,7 +470,7 @@ class TestTasks(TestCase):
         new_review.save()
         self.assertEqual(get_users_current_reviews(self.user).count(), 2)
 
-        mock_vocab_list_response_with_single_vocabulary(self.user)
+        mock_vocab_list_response_with_single_vocabulary(self.user, self.user.profile.level)
         mock_user_info_response(self.user.profile.api_key)
 
         reset_user(self.user, 1)

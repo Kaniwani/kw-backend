@@ -8,7 +8,9 @@ from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile
 from kw_webapp.tasks import (
     build_user_information_api_string,
     build_API_sync_string_for_user_for_levels,
-)
+    build_API_sync_string_for_api_key_for_levels)
+
+from requests.exceptions import ConnectionError
 from kw_webapp.tests import sample_api_responses
 
 
@@ -32,12 +34,15 @@ def create_lesson(vocabulary, user):
     u.save()
     return u
 
-
+@responses.activate
 def create_profile(user, api_key, level):
-    p = Profile.objects.create(user=user, api_key=api_key, level=level)
+    try:
+        p = Profile.objects.create(user=user, api_key=api_key, level=level)
+    except ConnectionError as e:
+        print("Ignore this failed connection....due to uninitialized mocks")
+    p = Profile.objects.get(user=user)
     p.unlocked_levels.create(level=level)
     return p
-
 
 def create_vocab(meaning):
     v = Vocabulary.objects.create(meaning=meaning)
@@ -66,6 +71,15 @@ def build_test_api_string_for_merging():
     return api_call
 
 
+def mock_empty_vocabulary_response(api_key, level):
+    responses.add(
+        responses.GET,
+        build_API_sync_string_for_api_key_for_levels(api_key, level),
+        json=sample_api_responses.no_vocab_response,
+        status=200,
+        content_type="application/json",
+    )
+
 def mock_vocab_list_response_with_single_vocabulary(user):
     responses.add(
         responses.GET,
@@ -75,6 +89,14 @@ def mock_vocab_list_response_with_single_vocabulary(user):
         content_type="application/json",
     )
 
+def mock_user_info_response_at_level(api_key, level):
+    responses.add(
+        responses.GET,
+        build_user_information_api_string(api_key),
+        json=sample_api_responses.user_information_response_at_level(level),
+        status=200,
+        content_type="application/json",
+    )
 
 def mock_user_info_response_with_higher_level(api_key):
     responses.add(
@@ -115,6 +137,14 @@ def mock_vocab_list_response_with_single_vocabulary_with_four_synonyms(user):
         content_type="application/json",
     )
 
+def mock_vocab_list_response_with_single_vocabulary(api_key, level):
+    responses.add(
+        responses.GET,
+        build_API_sync_string_for_api_key_for_levels(api_key, level),
+        json=sample_api_responses.single_vocab_response_with_changed_meaning,
+        status=200,
+        content_type="application/json",
+    )
 
 def mock_vocab_list_response_with_single_vocabulary_with_changed_meaning(user):
     responses.add(
