@@ -51,6 +51,7 @@ class Level(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
     api_key = models.CharField(max_length=255)
+    api_key_v2 = models.CharField(max_length=255, null=True)
     api_valid = models.BooleanField(default=True)
     gravatar = models.CharField(max_length=255)
     about = models.CharField(max_length=255, default="")
@@ -165,8 +166,26 @@ class Profile(models.Model):
         )
 
 
+class PartOfSpeech(models.Model):
+    part = models.CharField(max_length=30)
+
+    def __str__(self):
+        return str(self.part)
+
+
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
+    alternate_meanings = models.CharField
+    wk_subject_id = models.IntegerField(default=0) #TODO we will need to run a one-time script to match up vocab by kanji, then assign a WK id.
+    wk_last_modified = models.DateTimeField(null=True)
+    parts_of_speech = models.ManyToManyField(PartOfSpeech)
+    level = models.PositiveIntegerField(
+        null=True,
+        validators=[
+            MinValueValidator(constants.LEVEL_MIN),
+            MaxValueValidator(constants.LEVEL_MAX),
+        ],
+    )
 
     def reading_count(self):
         return self.readings.all().count()
@@ -176,6 +195,56 @@ class Vocabulary(models.Model):
 
     def get_absolute_url(self):
         return "https://www.wanikani.com/vocabulary/{}/".format(self.readings.all()[0])
+
+    def is_out_of_date(self, vocabulary):
+        return self.wk_last_modified is None or vocabulary.data_updated_at > self.wk_last_modified
+
+    def reconcile(self, vocabulary):
+        self.wk_last_modified = vocabulary.data_updated_at
+        self.level = vocabulary.level
+        # Set whatever is the new primary meaning.
+        for meaning_obj in vocabulary.meanings:
+            if meaning_obj.primary:
+                self.meaning = meaning_obj.meaning
+
+        # Reset alternate meanings to whatever is current
+        self.alternate_meanings = ",".join([m.meaning for m in vocabulary.meanings if not m.primary])
+
+        # Reconcile the difference in readings.
+        self._delete_stale_readings_based_on(vocabulary)
+        self._add_new_readings_based_on(vocabulary)
+        self._reconcile_parts_of_speech_based_on(vocabulary)
+
+        # Save it!
+        self.save()
+
+    def _reconcile_parts_of_speech_based_on(self, vocabulary):
+        self.parts_of_speech.clear()
+        for pos in vocabulary.parts_of_speech:
+            self.parts_of_speech.get_or_create(part=pos)
+
+    def _delete_stale_readings_based_on(self, vocabulary):
+        reading_kanas = [r.reading for r in  vocabulary.readings]
+        # Clear out old readings that aren't needed anymore.
+        reading_ids_to_delete = []
+        for reading in self.readings.all():
+            if reading.kana not in reading_kanas:
+                reading_ids_to_delete.append(reading.id)
+        self.readings.filter(id__in=reading_ids_to_delete).delete()
+
+    def _add_new_readings_based_on(self, vocabulary):
+        # Add new readings that weren't there before
+        current_reading_kanas = [reading.kana for reading in self.readings.all()]
+        readings_to_add = []
+        for reading_obj in vocabulary.readings:
+            if reading_obj.reading not in current_reading_kanas:
+                new_reading = Reading()
+                new_reading.vocabulary = self
+                new_reading.kana = reading_obj.reading
+                new_reading.character = vocabulary.characters
+                new_reading.level = vocabulary.level
+                readings_to_add.append(new_reading)
+        self.readings.add(*readings_to_add, bulk=False)
 
     def __str__(self):
         return self.meaning
@@ -195,11 +264,6 @@ class Tag(models.Model):
         return self.name
 
 
-class PartOfSpeech(models.Model):
-    part = models.CharField(max_length=30)
-
-    def __str__(self):
-        return str(self.part)
 
 
 class Reading(models.Model):
@@ -234,6 +298,7 @@ class Reading(models.Model):
             self.vocabulary.meaning, self.kana, self.character, self.level
         )
 
+wk_last_seen_date = models.DateTimeField()
 
 class Report(models.Model):
     created_by = models.ForeignKey(User)

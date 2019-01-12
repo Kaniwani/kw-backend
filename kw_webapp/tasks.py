@@ -2,23 +2,21 @@ from __future__ import absolute_import
 
 from collections import OrderedDict
 
-from celery import shared_task, task
+from celery import shared_task
 from django.contrib.auth.models import User
 from django.db.models import F, Count
 from django.db.models import Min
 from django.db.models.functions import TruncHour, TruncDate
-
-from kw_webapp.constants import WANIKANI_SRS_LEVELS, KANIWANI_SRS_LEVELS, KwSrsLevel
+from wanikani_api.client import Client as WkV2Client
+from wanikani_api.exceptions import InvalidWanikaniApiKeyException
+from kw_webapp.constants import KANIWANI_SRS_LEVELS, KwSrsLevel
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
-from kw_webapp import constants
 from kw_webapp.models import (
     UserSpecific,
     Vocabulary,
     Profile,
-    Level,
-    MeaningSynonym,
-    AnswerSynonym,
+    Level
 )
 from datetime import timedelta, datetime
 from django.utils import timezone
@@ -254,29 +252,21 @@ def sync_user_profile_with_wk(user):
     :param user: The user to sync their profile with WK.
     :return: boolean indicating the success of the API call.
     """
-    api_string = build_user_information_api_string(user.profile.api_key)
-
     try:
-        json_data = make_api_call(api_string)
-    except exceptions.InvalidWaniKaniKey:
+        client = WkV2Client(user.profile.api_key_v2)
+        profile_info = client.user_information()
+    except InvalidWanikaniApiKeyException:
         user.profile.api_valid = False
         user.profile.save()
         return False
 
-    user_info = json_data["user_information"]
-    user.profile.title = user_info["title"]
-    user.profile.join_date = datetime.utcfromtimestamp(user_info["creation_date"])
-    user.profile.topics_count = user_info["topics_count"]
-    user.profile.posts_count = user_info["posts_count"]
-    user.profile.about = user_info["about"]
-    user.profile.set_website(user_info["website"])
-    user.profile.set_twitter_account(user_info["twitter"])
-    user.profile.gravatar = user_info["gravatar"]
+    user.profile.join_date = profile_info.started_at
     user.profile.last_wanikani_sync_date = timezone.now()
     user.profile.api_valid = True
+
     if user.profile.follow_me:
-        user.profile.unlocked_levels.get_or_create(level=user_info["level"])
-        user.profile.handle_wanikani_level_change(user_info["level"])
+        user.profile.unlocked_levels.get_or_create(level=profile_info.level)
+        user.profile.handle_wanikani_level_change(profile_info.level)
 
     user.profile.save()
 

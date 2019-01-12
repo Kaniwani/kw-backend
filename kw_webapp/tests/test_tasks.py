@@ -27,7 +27,7 @@ from kw_webapp.tasks import (
     get_vocab_by_kanji,
     build_user_information_api_string,
     get_level_pages,
-)
+    sync_user_profile_with_wk)
 from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, associate_vocab_to_user, \
     build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
@@ -500,3 +500,9 @@ class TestTasks(TestCase):
         synonyms_list = self.review.synonyms_list()
         self.assertIn("kitten", synonyms_list)
         self.assertIn("large rat", synonyms_list)
+
+    def test_syncing_user_profile_on_v2(self):
+        self.user.profile.api_key_v2 = "2510f001-fe9e-414c-ba19-ccf79af40060"
+        self.user.profile.save()
+
+        sync_user_profile_with_wk(self.user)
