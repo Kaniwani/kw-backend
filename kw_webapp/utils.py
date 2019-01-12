@@ -460,6 +460,31 @@ def one_time_orphaned_level_clear():
     levels.delete()
 
 
+
+def add_subject_ids():
+    from wanikani_api.client import Client
+    from kw_webapp.tasks import get_vocab_by_kanji
+    client = Client("2510f001-fe9e-414c-ba19-ccf79af40060")
+    subjects = client.subjects(fetch_all=True, types="vocabulary", hidden=False)
+    total_subs = len(subjects)
+    match_count = 0
+    no_local_equivalent = []
+    for subject in subjects:
+        try:
+            local_vocabulary = get_vocab_by_kanji(subject.characters)
+            local_vocabulary.wk_subject_id = subject.id
+            local_vocabulary.reconcile(subject)
+            match_count += 1
+            logger.info(f"{match_count}/{total_subs}:\t{subject.characters}")
+        except Vocabulary.DoesNotExist as e:
+            no_local_equivalent.append(subject)
+
+    unmatched = Vocabulary.objects.filter(wk_subject_id=0)
+    return unmatched, no_local_equivalent
+
+
+
+
 def repopulate():
     """
     A task that uses my personal API key in order to re-sync the database. Koichi often decides to switch things around

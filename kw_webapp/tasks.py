@@ -353,6 +353,8 @@ def get_or_create_vocab_by_json(vocab_json):
     """
 
     try:
+        if vocab_json["character"] == "文句する":
+            print("WOAH NELLY")
         vocab = get_vocab_by_kanji(vocab_json["character"])
         created = False
     except Vocabulary.DoesNotExist:
