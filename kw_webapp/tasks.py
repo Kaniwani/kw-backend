@@ -291,13 +291,13 @@ def sync_with_wk(user_id, full_sync=False):
     profile_sync_succeeded = sync_user_profile_with_wk(user)
     if profile_sync_succeeded:
         if not full_sync:
-            new_review_count, new_synonym_count = sync_recent_unlocked_vocab_with_wk(
+            new_review_count = sync_recent_unlocked_vocab_with_wk_v2(
                 user
             )
         else:
-            new_review_count, new_synonym_count = sync_unlocked_vocab_with_wk(user)
+            new_review_count = sync_unlocked_vocab_with_wk_v2(user)
 
-        return profile_sync_succeeded, new_review_count, new_synonym_count
+        return profile_sync_succeeded, new_review_count
     else:
         logger.warning(
             "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed "
@@ -353,8 +353,6 @@ def get_or_create_vocab_by_json(vocab_json):
     """
 
     try:
-        if vocab_json["character"] == "文句する":
-            print("WOAH NELLY")
         vocab = get_vocab_by_kanji(vocab_json["character"])
         created = False
     except Vocabulary.DoesNotExist:
@@ -499,6 +497,17 @@ def process_single_item_from_wanikani(vocabulary, user):
     review.save()
     return review, created, synonyms_added_count
 
+def process_single_item_from_wanikani_v2(assignment, user):
+    try:
+        vocab = Vocabulary.objects.get(wk_subject_id=assignment.subject_id)
+    except Vocabulary.DoesNotExist:
+        logger.error(f"Attempted to add a UserSpecific for subject ID: {assignment.subject_id} but failed as we don't have it.")
+        return None, False
+
+    review, created = associate_vocab_to_user(vocab, user)
+    if review.out_of_date(assignment):
+        review.reconcile(assignment)
+    return review, created, 0#Note that synonym added count will need to be fixed.
 
 def import_vocabulary_from_json(vocabulary):
     vocab, is_new = get_or_create_vocab_by_json(vocabulary)
@@ -539,6 +548,42 @@ def process_vocabulary_response_for_user(user, json_data):
     logger.info("Synced Vocabulary for {}".format(user.username))
     return new_review_count, new_synonym_count
 
+def process_vocabulary_response_for_user_v2(user, assignments):
+    """
+    Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
+    :param json_data:
+    :param user:
+    :return:
+    """
+    new_review_count = 0
+    new_synonym_count = 0
+    # Filter items the user has not unlocked.
+
+    for assignment in assignments:
+        if user.profile.follow_me:
+            review, created, synonyms_added_count = process_single_item_from_wanikani_v2(
+                assignment, user
+            )
+            synonyms_added_count += new_synonym_count
+            if created:
+                new_review_count += 1
+            review.save()
+        else: # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
+            update_synonyms_for_assignments(user, assignments)
+    logger.info("Synced Vocabulary for {}".format(user.username))
+
+    return new_review_count
+
+
+def update_synonyms_for_assignments(user, assignments):
+    client = WkV2Client(user.profile.api_key_v2)
+    assignment_subject_ids = [assignment.subject_id for assignment in assignments]
+    study_materials = client.study_materials(subject_ids=assignment_subject_ids)
+    for study_material in study_materials:
+        review = UserSpecific.objects.filter(vocabulary__wk_subject_id=study_material.subject_id)
+        if review.is_study_material_out_of_date(study_material):
+            review.reconcile_study_material(study_material)
+
 
 def sync_recent_unlocked_vocab_with_wk(user):
     if user.profile.unlocked_levels_list():
@@ -564,6 +609,29 @@ def sync_recent_unlocked_vocab_with_wk(user):
                 )
     return 0, 0
 
+def sync_recent_unlocked_vocab_with_wk_v2(user):
+    if user.profile.unlocked_levels_list():
+        levels = [
+            level
+            for level in range(user.profile.level - 2, user.profile.level + 1)
+            if level in user.profile.unlocked_levels_list()
+        ]
+        if levels:
+            try:
+                client = WkV2Client(user.profile.api_key_v2)
+                assignments = client.assignments(subject_types="vocabulary", levels=levels, fetch_all=True)
+                new_review_count = process_vocabulary_response_for_user_v2(
+                    user, assignments
+                )
+                return new_review_count
+            except exceptions.InvalidWaniKaniKey:
+                user.profile.api_valid = False
+                user.profile.save()
+            except exceptions.WanikaniAPIException as e:
+                logger.warn(
+                    "Couldn't sync recent vocab for {}".format(user.username), e
+                )
+    return 0, 0
 
 def sync_unlocked_vocab_with_wk(user):
     if user.profile.unlocked_levels_list():
@@ -593,6 +661,31 @@ def sync_unlocked_vocab_with_wk(user):
         return new_review_count, new_synonym_count
     else:
         return 0, 0
+
+def sync_unlocked_vocab_with_wk_v2(user):
+    if user.profile.unlocked_levels_list():
+        new_review_count = 0
+
+        logger.info(
+            "Creating sync string for user {}: {}".format(
+                user.username, user.profile.api_key
+            )
+        )
+        try:
+            client = WkV2Client(user.profile.api_key_v2)
+            assignments = client.assignments(subject_types="vocabulary", fetch_all=True)
+
+            new_review_count = process_vocabulary_response_for_user_v2(
+                user, assignments
+            )
+            new_review_count += new_review_count
+        except InvalidWanikaniApiKeyException:
+            user.profile.api_valid = False
+            user.profile.save()
+
+        return new_review_count
+    else:
+        return 0
 
 
 @shared_task

@@ -332,9 +332,42 @@ class UserSpecific(models.Model):
     wanikani_burned = models.BooleanField(default=False)
     notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
     critical = models.BooleanField(default=False)
+    wk_assignment_last_modified = models.DateTimeField(null=True)
+    wk_study_materials_last_modified = models.DateTimeField(null=True)
+    meaning_note = models.CharField(max_length=2000)
+    reading_note = models.CharField(max_length=2000)
 
     class Meta:
         unique_together = ("vocabulary", "user")
+
+    def is_assignment_out_of_date(self, assignment):
+        return self.wk_assignment_last_modified is None or self.wk_assignment_last_modified < assignment.data_updated_at
+
+    def is_study_material_out_of_date(self, study_material):
+        return self.wk_study_materials_last_modified is None or self.wk_study_materials_last_modified < study_material.data_updated_at
+
+    def reconcile_assignment(self, assignment):
+        self.wanikani_srs = assignment.srs_stage_name
+        self.wanikani_srs_numeric = assignment.srs_stage
+        self.wanikani_burned = assignment.burned_at is not None
+        self.save()
+
+    def reconcile_study_material(self, study_material):
+        self.meaning_note = study_material.meaning_note
+        self.reading_note = study_material.reading_note
+        self._add_meaning_synonyms(study_material.meaning_synonyms)
+        self.save()
+
+    def _add_meaning_synonyms(self, meaning_synonyms):
+        if meaning_synonyms is not None:
+            meaning_synonyms_to_add = []
+            for meaning_synonym in meaning_synonyms:
+                synonym = MeaningSynonym()
+                synonym.text = meaning_synonym
+                synonym.review = self
+                meaning_synonyms_to_add.append(synonym)
+            self.meaning_synonyms.all().delete()
+            self.meaning_synonyms.add(*meaning_synonyms_to_add, bulk=False)
 
     def answered_correctly(self, first_try=True):
         # This is a check to see if it is a "lesson" object.

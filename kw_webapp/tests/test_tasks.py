@@ -506,3 +506,10 @@ class TestTasks(TestCase):
         self.user.profile.save()
 
         sync_user_profile_with_wk(self.user)
+
+    def test_full_sync_of_user_on_v2(self):
+        sync_with_wk()
+        #TODO Start here, see what fails when we try to run it. Also, will have to setup a bunch of mock responses,
+        #TODO or else just test the ingetsion functions separately with fake wanikani_api client stuff.
+
+
