@@ -11,7 +11,7 @@ from kw_webapp.tasks import (
     build_API_sync_string_for_api_key_for_levels)
 
 from requests.exceptions import ConnectionError
-from kw_webapp.tests import sample_api_responses
+from kw_webapp.tests import sample_api_responses, sample_api_responses_v2
 
 
 def create_user(username):
@@ -116,6 +116,36 @@ def mock_user_info_response(api_key):
         status=200,
         content_type="application/json",
     )
+
+def mock_assignments_with_one_assignment():
+    responses.add(
+        responses.GET,
+        build_assignments_url(),
+        json=sample_api_responses_v2.single_assignment,
+        status=200,
+        content_type="application/json"
+    )
+
+def mock_user_response_v2():
+    responses.add(
+        responses.GET,
+        "https://api.wanikani.com/v2/user",
+        json=sample_api_responses_v2.user_profile,
+        status=200,
+        content_type="application/json"
+    )
+
+def mock_subjects_from_wanikani():
+    responses.add(
+        responses.GET,
+        "https://api.wanikani.com/v2/user",
+        json=sample_api_responses_v2.user_profile,
+        status=200,
+        content_type="application/json"
+    )
+
+def build_assignments_url():
+    return "https://api.wanikani.com/v2/assignments"
 
 
 def mock_invalid_api_user_info_response(api_key):

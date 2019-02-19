@@ -334,8 +334,8 @@ class UserSpecific(models.Model):
     critical = models.BooleanField(default=False)
     wk_assignment_last_modified = models.DateTimeField(null=True)
     wk_study_materials_last_modified = models.DateTimeField(null=True)
-    meaning_note = models.CharField(max_length=2000)
-    reading_note = models.CharField(max_length=2000)
+    meaning_note = models.CharField(max_length=2000, null=True)
+    reading_note = models.CharField(max_length=2000, null=True)
 
     class Meta:
         unique_together = ("vocabulary", "user")
