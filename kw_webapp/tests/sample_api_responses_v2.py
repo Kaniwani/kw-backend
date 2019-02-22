@@ -113,3 +113,36 @@ user_profile = {
     }
   }
 }
+
+single_study_material = {
+  "object": "collection",
+  "url": "https://api.wanikani.com/v2/study_materials",
+  "pages": {
+    "per_page": 500,
+    "next_url": None,
+    "previous_url": None
+  },
+  "total_count": 1,
+  "data_updated_at": "2018-08-26T00:05:50.331703Z",
+  "data": [
+    {
+      "id": 1539170,
+      "object": "study_material",
+      "url": "https://api.wanikani.com/v2/study_materials/1539170",
+      "data_updated_at": "2017-06-01T19:01:36.573350Z",
+      "data": {
+        "created_at": "2017-02-01T15:55:42.058583Z",
+        "subject_id": 1,
+        "subject_type": "vocabulary",
+        "meaning_note": "Sample meaning note",
+        "reading_note": "Sample reading note",
+        "meaning_synonyms": [
+          "young girl",
+          "young lady",
+          "young miss"
+        ],
+        "hidden": False
+      }
+    }
+  ]
+}

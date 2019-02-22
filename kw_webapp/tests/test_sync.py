@@ -47,7 +47,7 @@ from kw_webapp.tests.utils import (
     create_review_for_specific_time,
     mock_vocab_list_response_with_single_vocabulary,
     mock_user_info_response,
-    mock_assignments_with_one_assignment, mock_user_response_v2, mock_subjects_from_wanikani)
+    mock_assignments_with_one_assignment, mock_user_response_v2, mock_subjects_from_wanikani, mock_study_materials)
 from kw_webapp.utils import generate_user_stats, one_time_merge_level
 
 
@@ -55,10 +55,6 @@ class TestTasks(TestCase):
     def setUp(self):
         self.user = create_user("Tadgh")
         create_profile(self.user, "any_key", 5)
-        self.vocabulary = create_vocab("radioactive bat")
-        self.reading = create_reading(self.vocabulary, "ねこ", "猫", 2)
-        self.review = create_review(self.vocabulary, self.user)
-        self._vocab_api_regex = re.compile("https://www\.wanikani\.com/api/user/.*")
         self.prepLocalVocabulary()
 
     def prepLocalVocabulary(self):
@@ -289,11 +285,32 @@ class TestTasks(TestCase):
         mock_assignments_with_one_assignment()
         mock_subjects_from_wanikani()
 
-        self.user.profile.api_key_v2 = "2510f001-fe9e-414c-ba19-ccf79af40060"
+        self.user.profile.api_key_v2 = "whatever"
         self.user.profile.save()
+
         syncer = WanikaniUserSyncerV2(self.user.profile)
         syncer.sync_with_wk(full_sync=True)
 
+        lessons = get_users_lessons(self.user)
+        assert lessons.count() == 1
+
+
+    @responses.activate
+    def test_synonyms_are_ported_in_v2(self):
+        mock_user_response_v2()
+        mock_assignments_with_one_assignment()
+        mock_study_materials()
+
+        syncer = WanikaniUserSyncerV2(self.user.profile)
+        syncer.sync_with_wk(full_sync=False)
+
+        review = UserSpecific.objects.filter(user=self.user)[0]
+        assert review.meaning_note is not None
+        assert review.meaning_synonyms.count() == 3
+        assert "young lady" in review.synonyms_list()
 
 
 
+    def test_vocabulary_meaning_changes_carry_over(self):
+        pass
+        write function to handle updating on a cron, and then also test that the meanings, etc update

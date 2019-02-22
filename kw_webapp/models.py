@@ -350,12 +350,15 @@ class UserSpecific(models.Model):
         self.wanikani_srs = assignment.srs_stage_name
         self.wanikani_srs_numeric = assignment.srs_stage
         self.wanikani_burned = assignment.burned_at is not None
+        self.wk_assignment_last_modified = assignment.data_updated_at
+
         self.save()
 
     def reconcile_study_material(self, study_material):
         self.meaning_note = study_material.meaning_note
         self.reading_note = study_material.reading_note
         self._add_meaning_synonyms(study_material.meaning_synonyms)
+        self.wk_study_materials_last_modified = study_material.data_updated_at
         self.save()
 
     def _add_meaning_synonyms(self, meaning_synonyms):

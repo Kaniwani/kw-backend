@@ -117,14 +117,25 @@ def mock_user_info_response(api_key):
         content_type="application/json",
     )
 
-def mock_assignments_with_one_assignment():
+def mock_study_materials():
     responses.add(
         responses.GET,
-        build_assignments_url(),
-        json=sample_api_responses_v2.single_assignment,
+        build_study_materials_url(),
+        json=sample_api_responses_v2.single_study_material,
         status=200,
         content_type="application/json"
     )
+
+def _mock_wk_response(url, json):
+    responses.add(
+        responses.GET,
+        url,
+        json=json,
+        status=200,
+        content_type="application/json"
+    )
+def mock_assignments_with_one_assignment():
+    _mock_wk_response(build_assignments_url(), sample_api_responses_v2.single_assignment)
 
 def mock_user_response_v2():
     responses.add(
@@ -146,6 +157,9 @@ def mock_subjects_from_wanikani():
 
 def build_assignments_url():
     return "https://api.wanikani.com/v2/assignments"
+
+def build_study_materials_url():
+    return "https://api.wanikani.com/v2/study_materials"
 
 
 def mock_invalid_api_user_info_response(api_key):

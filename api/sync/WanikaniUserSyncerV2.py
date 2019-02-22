@@ -35,13 +35,14 @@ class WanikaniUserSyncerV2:
             else:
                 new_review_count = self.sync_unlocked_vocab_with_wk_v2()
 
+            updated_synonym_count = self.sync_study_materials()
             return profile_sync_succeeded, new_review_count
         else:
             self.logger.warning(
                 "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be "
                 "followed "
             )
-            return profile_sync_succeeded, 0, 0
+            return profile_sync_succeeded, 0
 
     def sync_user_profile_with_wk(self):
         """
@@ -103,7 +104,6 @@ class WanikaniUserSyncerV2:
         :return:
         """
         new_review_count = 0
-        new_synonym_count = 0
         # Filter items the user has not unlocked.
 
         for assignment in assignments:
@@ -112,8 +112,6 @@ class WanikaniUserSyncerV2:
                 if created:
                     new_review_count += 1
                 review.save()
-            else:  # User does not want to be followed,just sync synonyms
-                self.update_synonyms_for_assignments(assignments)
         self.logger.info("Synced Vocabulary for {}".format(self.user.username))
 
         return new_review_count
@@ -125,9 +123,8 @@ class WanikaniUserSyncerV2:
             self.logger.error(f"Attempted to add a UserSpecific for subject ID: {assignment.subject_id} but failed as we don't have it.")
             return None, False
         review, created = self.associate_vocab_to_user(vocab)
-        # TODO IMPLEMENT out_of_date for UserSpecific
-        if review.out_of_date(assignment):
-            review.reconcile(assignment)
+        if review.is_assignment_out_of_date(assignment):
+            review.reconcile_assignment(assignment)
         return review, created #Note that synonym added count will need to be fixed.
 
 
@@ -166,6 +163,22 @@ class WanikaniUserSyncerV2:
                     )
                 )
             return None, None
+    def sync_study_materials(self):
+        self.logger.info(f"About to synchronize all synonyms for {self.user.username}")
+        study_materials = self.client.study_materials(subject_types="vocabulary", fetch_all=True)
+        updated_synonym_count = 0
+        for study_material in study_materials:
+            try:
+                review = UserSpecific.objects.get(user=self.user, vocabulary__wk_subject_id=study_material.subject_id)
+            except UserSpecific.DoesNotExist:
+                pass
+            else:
+                if review.is_study_material_out_of_date(study_material):
+                    review.reconcile_study_material(study_material)
+                    updated_synonym_count += 1
+
+        self.logger.info(f"Updated {updated_synonym_count} synonyms for {self.user.username}")
+        return updated_synonym_count
 
     def sync_unlocked_vocab_with_wk_v2(self):
         if self.profile.unlocked_levels_list():
@@ -180,7 +193,6 @@ class WanikaniUserSyncerV2:
                 assignments = self.client.assignments(subject_types="vocabulary", fetch_all=True)
 
                 new_review_count = self.process_vocabulary_response_for_user_v2(assignments)
-                new_review_count += new_review_count
             except InvalidWanikaniApiKeyException:
                 self.profile.api_valid = False
                 self.profile.save()
