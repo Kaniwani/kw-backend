@@ -47,7 +47,7 @@ from kw_webapp.tests.utils import (
     create_review_for_specific_time,
     mock_vocab_list_response_with_single_vocabulary,
     mock_user_info_response,
-    mock_assignments_with_one_assignment, mock_user_response_v2, mock_subjects_from_wanikani, mock_study_materials)
+    mock_assignments_with_one_assignment, mock_user_response_v2, mock_subjects_v2, mock_study_materials)
 from kw_webapp.utils import generate_user_stats, one_time_merge_level
 
 
@@ -283,7 +283,7 @@ class TestTasks(TestCase):
         # Setup mocks for user response and full sync (with a single assignment)
         mock_user_response_v2()
         mock_assignments_with_one_assignment()
-        mock_subjects_from_wanikani()
+        mock_subjects_v2()
 
         self.user.profile.api_key_v2 = "whatever"
         self.user.profile.save()
@@ -310,7 +310,16 @@ class TestTasks(TestCase):
         assert "young lady" in review.synonyms_list()
 
 
-
+    @responses.activate
     def test_vocabulary_meaning_changes_carry_over(self):
-        pass
-        write function to handle updating on a cron, and then also test that the meanings, etc update
+
+        mock_subjects_v2()
+
+        syncer = WanikaniUserSyncerV2(self.user.profile)
+        updated_vocabulary_count = syncer.sync_vocabulary_to_server()
+        assert updated_vocabulary_count == 1
+
+        updated_vocabulary_count = syncer.sync_vocabulary_to_server()
+        assert updated_vocabulary_count == 0
+
+

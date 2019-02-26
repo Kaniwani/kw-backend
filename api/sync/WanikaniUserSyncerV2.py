@@ -200,3 +200,19 @@ class WanikaniUserSyncerV2:
             return new_review_count
         else:
             return 0
+
+    def sync_vocabulary_to_server(self):
+        self.logger.info("Beginning Subject Sync from WK API")
+        try:
+            updated_vocabulary_count = 0
+            vocabulary = self.client.subjects(types="vocabulary")
+            for remote_vocabulary in vocabulary:
+                local_vocabulary = Vocabulary.objects.get(fetch_all=True, wk_subject_id=remote_vocabulary.subject_id)
+                if local_vocabulary.is_out_of_date(remote_vocabulary):
+                    local_vocabulary.reconcile(remote_vocabulary)
+                    updated_vocabulary_count += 1
+            return updated_vocabulary_count
+        except InvalidWanikaniApiKeyException:
+            self.logger.error("Couldn't synchronize vocabulary, as the API key is out of date.")
+            return 0
+

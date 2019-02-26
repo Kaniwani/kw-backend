@@ -146,13 +146,14 @@ def mock_user_response_v2():
         content_type="application/json"
     )
 
-def mock_subjects_from_wanikani():
+def mock_subjects_v2():
     responses.add(
         responses.GET,
-        "https://api.wanikani.com/v2/user",
-        json=sample_api_responses_v2.user_profile,
+        "https://api.wanikani.com/v2/subjects",
+        json=sample_api_responses_v2.single_vocab_v2,
         status=200,
-        content_type="application/json"
+        content_type="application/json",
+        headers={"Etag": "sampleEtag"}
     )
 
 def build_assignments_url():
