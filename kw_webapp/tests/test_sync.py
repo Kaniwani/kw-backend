@@ -58,11 +58,11 @@ class TestTasks(TestCase):
         self.prepLocalVocabulary()
 
     def prepLocalVocabulary(self):
-        v = Vocabulary.objects.create()
-        v.meaning = "Test"
-        v.wk_subject_id = 1
-        v.save()
-        return v
+        self.v = Vocabulary.objects.create()
+        self.v.meaning = "Test"
+        self.v.wk_subject_id = 1
+        self.v.save()
+        return self.v
 
     @responses.activate
     def test_creating_new_synonyms_on_sync(self):
@@ -312,14 +312,23 @@ class TestTasks(TestCase):
 
     @responses.activate
     def test_vocabulary_meaning_changes_carry_over(self):
-
         mock_subjects_v2()
-
         syncer = WanikaniUserSyncerV2(self.user.profile)
+        assert self.v.meaning == "Test"
         updated_vocabulary_count = syncer.sync_vocabulary_to_server()
         assert updated_vocabulary_count == 1
+        self.v.refresh_from_db()
+        assert self.v.meaning == "One"
 
+    @responses.activate
+    def test_vocabulary_auxiliary_meanings_changes_carry_over(self):
+        mock_subjects_v2()
+        syncer = WanikaniUserSyncerV2(self.user.profile)
+        assert self.v.auxiliary_meanings_whitelist is None
         updated_vocabulary_count = syncer.sync_vocabulary_to_server()
-        assert updated_vocabulary_count == 0
+        assert updated_vocabulary_count == 1
+        self.v.refresh_from_db()
+        assert self.v.auxiliary_meanings_whitelist == "1,uno"
+
 
 

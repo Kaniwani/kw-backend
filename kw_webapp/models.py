@@ -179,6 +179,7 @@ class Vocabulary(models.Model):
     wk_subject_id = models.IntegerField(default=0) #TODO we will need to run a one-time script to match up vocab by kanji, then assign a WK id.
     wk_last_modified = models.DateTimeField(null=True)
     parts_of_speech = models.ManyToManyField(PartOfSpeech)
+    auxiliary_meanings_whitelist = models.CharField(max_length=500, null=True)
     level = models.PositiveIntegerField(
         null=True,
         validators=[
@@ -209,7 +210,7 @@ class Vocabulary(models.Model):
 
         # Reset alternate meanings to whatever is current
         self.alternate_meanings = ",".join([m.meaning for m in vocabulary.meanings if not m.primary])
-
+        self.auxiliary_meanings_whitelist = ",".join([aux.meaning for aux in vocabulary.auxiliary_meanings])
         # Reconcile the difference in readings.
         self._delete_stale_readings_based_on(vocabulary)
         self._add_new_readings_based_on(vocabulary)

@@ -83,6 +83,10 @@ subjects_v2 = {
           {
             "type": "whitelist",
             "meaning": "1"
+          },
+          {
+            "type": "whitelist",
+            "meaning": "uno"
           }
         ],
         "readings": [

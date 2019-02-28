@@ -150,7 +150,7 @@ def mock_subjects_v2():
     responses.add(
         responses.GET,
         "https://api.wanikani.com/v2/subjects",
-        json=sample_api_responses_v2.single_vocab_v2,
+        json=sample_api_responses_v2.subjects_v2,
         status=200,
         content_type="application/json",
         headers={"Etag": "sampleEtag"}

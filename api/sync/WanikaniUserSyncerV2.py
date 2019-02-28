@@ -207,7 +207,7 @@ class WanikaniUserSyncerV2:
             updated_vocabulary_count = 0
             vocabulary = self.client.subjects(types="vocabulary")
             for remote_vocabulary in vocabulary:
-                local_vocabulary = Vocabulary.objects.get(fetch_all=True, wk_subject_id=remote_vocabulary.subject_id)
+                local_vocabulary = Vocabulary.objects.get(wk_subject_id=remote_vocabulary.id)
                 if local_vocabulary.is_out_of_date(remote_vocabulary):
                     local_vocabulary.reconcile(remote_vocabulary)
                     updated_vocabulary_count += 1
