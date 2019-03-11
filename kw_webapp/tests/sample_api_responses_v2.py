@@ -1,15 +1,15 @@
 single_vocab_v2 = {
-      "id": 1,
-      "object": "vocabulary",
-      "url": "https://api.wanikani.com/v2/subjects/2468",
-      "data_updated_at": "2018-12-12T23:10:32.253867Z",
-      "data": {
-        "created_at": "2012-02-28T08:10:16.000000Z",
-        "level": 1,
-        "slug": "一つ",
-        "hidden_at": None,
-        "document_url": "https://www.wanikani.com/vocabulary/%E4%B8%80%E3%81%A4",
-        "characters": "current_character",
+  "id": 2468,
+  "object": "vocabulary",
+  "url": "https://api.wanikani.com/v2/subjects/2468",
+  "data_updated_at": "2019-02-21T00:13:06.623548Z",
+  "data": {
+    "created_at": "2012-02-28T08:10:16.000000Z",
+    "level": 1,
+    "slug": "一つ",
+    "hidden_at": None,
+    "document_url": "https://www.wanikani.com/vocabulary/%E4%B8%80%E3%81%A4",
+    "characters": "一つ",
         "meanings": [
           {
             "meaning": "Doesnt matter",
@@ -40,14 +40,58 @@ single_vocab_v2 = {
             "accepted_answer": True
           }
         ],
-        "parts_of_speech": [
-          "verb", "definitely a verb"
-        ],
-        "component_subject_ids": [
-          440
-        ]
+    "parts_of_speech": [
+      "verb",
+      "definitely a verb"
+    ],
+    "component_subject_ids": [
+      440
+    ],
+    "meaning_mnemonic": "This word follows the \"number of things\" pattern where there's a kanji for a number plus つ on the end. Whenever you see this, you know the word means \"____ things.\" Knowing that, as long as you know the kanji (which you do) you can figure out what number of things it is. For this one, it's the kanji for <kanji>one</kanji> plus つ. So, this one is <vocabulary>one thing</vocabulary>.",
+    "reading_mnemonic": "Since all of the \"number of things\" words all follow the same pattern (number plus つ), you really just have to remember the part before the つ (and then remember that the つ is in all of these). All of the readings are the kun'yomi reading, which means we'll have to use a mnemonic to remember them (you know the on'yomi reading of the kanji portion).\r\n\r\nSo, you have <vocabulary>one thing</vocabulary>. What one thing do you have? You have one of He-Man's Toes, aka a single <reading>He-Toe</reading> (ひと). So what's the thing you have only one of? You have one He-Toe. Imagine He-Man walking around with one missing toe, trying to find you so he can get it back. At least you'll be able to run faster than him now.",
+    "context_sentences": [
+      {
+        "en": "Choose one answer.",
+        "ja": "こたえを一つえらびます。"
+      },
+      {
+        "en": "It's limited to one per customer.",
+        "ja": "お一人さま一つかぎりです。"
+      },
+      {
+        "en": "I met a one-eyed goblin yesterday.",
+        "ja": "きのう、一つめこぞうにあった。"
       }
-    }
+    ],
+    "pronunciation_audios": [
+      {
+        "url": "https://cdn.wanikani.com/audios/3050-subject-2468.mp3?1547862363",
+        "metadata": {
+          "gender": "male",
+          "source_id": 2714,
+          "pronunciation": "ひとつ",
+          "voice_actor_id": 2,
+          "voice_actor_name": "Kenichi",
+          "voice_description": "Tokyo accent"
+        },
+        "content_type": "audio/mpeg"
+      },
+      {
+        "url": "https://cdn.wanikani.com/audios/3047-subject-2468.ogg?1547862363",
+        "metadata": {
+          "gender": "male",
+          "source_id": 2714,
+          "pronunciation": "ひとつ",
+          "voice_actor_id": 2,
+          "voice_actor_name": "Kenichi",
+          "voice_description": "Tokyo accent"
+        },
+        "content_type": "audio/ogg"
+      }
+    ],
+    "lesson_position": 45
+  }
+}
 
 subjects_v2 = {
   "object": "collection",
@@ -93,6 +137,11 @@ subjects_v2 = {
           {
             "primary": True,
             "reading": "いち",
+            "accepted_answer": True
+          },
+          {
+            "primary": False,
+            "reading": "one - but in japanese",
             "accepted_answer": True
           }
         ],

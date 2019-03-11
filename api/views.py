@@ -69,7 +69,7 @@ from kw_webapp.tasks import (
     sync_user_profile_with_wk,
     user_returns_from_vacation,
     user_begins_vacation,
-    follow_user,
+    user_started_following,
     reset_user,
     get_users_lessons,
 )
@@ -77,7 +77,7 @@ from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSyn
     Announcement, Profile, Report, MeaningSynonym
 from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
     get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
-    user_begins_vacation, follow_user, reset_user, get_users_lessons, get_all_users_reviews
+    user_begins_vacation, user_started_following, reset_user, get_users_lessons, get_all_users_reviews
 
 import logging
 
@@ -539,7 +539,7 @@ class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
             user_begins_vacation(user)
 
         if not old_instance.follow_me and serializer.validated_data.get("follow_me"):
-            follow_user(user)
+            user_started_following(user)
 
         # Since if we have gotten this far, we know that API key is valid, we set it here.
         api_validated = serializer.validated_data.get("api_key", None)

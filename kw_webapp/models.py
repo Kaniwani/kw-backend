@@ -191,9 +191,6 @@ class Vocabulary(models.Model):
     def reading_count(self):
         return self.readings.all().count()
 
-    def available_readings(self, level):
-        return self.readings.filter(level__lte=level)
-
     def get_absolute_url(self):
         return "https://www.wanikani.com/vocabulary/{}/".format(self.readings.all()[0])
 
@@ -208,15 +205,15 @@ class Vocabulary(models.Model):
             if meaning_obj.primary:
                 self.meaning = meaning_obj.meaning
 
-        # Reset alternate meanings to whatever is current
+        # Reset alternate and auxiliary meanings to whatever is current
         self.alternate_meanings = ",".join([m.meaning for m in vocabulary.meanings if not m.primary])
         self.auxiliary_meanings_whitelist = ",".join([aux.meaning for aux in vocabulary.auxiliary_meanings])
+
         # Reconcile the difference in readings.
         self._delete_stale_readings_based_on(vocabulary)
         self._add_new_readings_based_on(vocabulary)
         self._reconcile_parts_of_speech_based_on(vocabulary)
 
-        # Save it!
         self.save()
 
     def _reconcile_parts_of_speech_based_on(self, vocabulary):
@@ -263,8 +260,6 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
-
-
 
 
 class Reading(models.Model):
@@ -352,7 +347,6 @@ class UserSpecific(models.Model):
         self.wanikani_srs_numeric = assignment.srs_stage
         self.wanikani_burned = assignment.burned_at is not None
         self.wk_assignment_last_modified = assignment.data_updated_at
-
         self.save()
 
     def reconcile_study_material(self, study_material):

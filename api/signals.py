@@ -21,7 +21,7 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 def sync_unlocks_with_wk(sender, **kwargs):
     if kwargs["user"]:
         user = kwargs["user"]
-        sync_with_wk(user.id, full_sync=user.profile.follow_me)
+        sync_with_wk(user.id, full=user.profile.follow_me)
         if user_still_has_no_lessons(user):
             unlock_previous_level(user)
 

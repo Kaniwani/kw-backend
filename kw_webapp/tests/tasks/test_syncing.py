@@ -15,24 +15,6 @@ class TestSyncing(APITestCase):
     def setUp(self):
         setupTestFixture(self)
 
-    @responses.activate
-    def test_vocabulary_meaning_changes_reflect_locally(self):
-        self.client.force_login(self.user)
-
-        self.assertEqual(self.vocabulary.meaning, "radioactive bat")
-
-        mock_user_info_response(self.user.profile.api_key)
-        mock_vocab_list_response_with_single_vocabulary_with_changed_meaning(self.user)
-
-        sync_with_wk(self.user.id)
-
-        self.vocabulary.refresh_from_db()
-        self.assertEqual(
-            self.vocabulary.meaning,
-            sample_api_responses.single_vocab_response_with_changed_meaning[
-                "requested_information"
-            ][0]["meaning"],
-        )
 
     @responses.activate
     def test_sync_with_modified_synonyms_replaces_old_synonyms(self):

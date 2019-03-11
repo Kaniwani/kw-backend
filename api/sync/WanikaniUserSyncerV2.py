@@ -5,10 +5,11 @@ from django.utils import timezone
 from wanikani_api.client import Client as WkV2Client
 from wanikani_api.exceptions import InvalidWanikaniApiKeyException
 
+from api.sync.WanikaniUserSyncer import WanikaniUserSyncer
 from kw_webapp.models import Vocabulary, UserSpecific
 
 
-class WanikaniUserSyncerV2:
+class WanikaniUserSyncerV2(WanikaniUserSyncer):
     def __init__(self, profile):
         self.logger = logging.getLogger(__name__)
         self.profile = profile
@@ -31,12 +32,12 @@ class WanikaniUserSyncerV2:
         profile_sync_succeeded = self.sync_user_profile_with_wk()
         if profile_sync_succeeded:
             if not full_sync:
-                new_review_count = self.sync_recent_unlocked_vocab_with_wk_v2()
+                new_review_count = self.sync_recent_unlocked_vocab()
             else:
-                new_review_count = self.sync_unlocked_vocab_with_wk_v2()
+                new_review_count = self.sync_unlocked_vocab()
 
             updated_synonym_count = self.sync_study_materials()
-            return profile_sync_succeeded, new_review_count
+            return profile_sync_succeeded, new_review_count, updated_synonym_count
         else:
             self.logger.warning(
                 "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be "
@@ -72,8 +73,9 @@ class WanikaniUserSyncerV2:
         self.logger.info("Synced {}'s Profile.".format(self.user.username))
         return True
 
-    def sync_recent_unlocked_vocab_with_wk_v2(self):
+    def sync_recent_unlocked_vocab(self):
         if self.user.profile.unlocked_levels_list():
+            # We look over the last 3 levels
             levels = [
                 level
                 for level in range(self.user.profile.level - 2, self.profile.level + 1)
@@ -81,8 +83,7 @@ class WanikaniUserSyncerV2:
             ]
             if levels:
                 try:
-                    client = WkV2Client(self.user.profile.api_key_v2)
-                    assignments = client.assignments(subject_types="vocabulary", levels=levels, fetch_all=True)
+                    assignments = self.client.assignments(subject_types="vocabulary", levels=levels, fetch_all=True)
                     new_review_count = self.process_vocabulary_response_for_user_v2(
                         assignments
                     )
@@ -107,6 +108,10 @@ class WanikaniUserSyncerV2:
         # Filter items the user has not unlocked.
 
         for assignment in assignments:
+            # We don't port over stuff the user has never looked at
+            if assignment.started_at is None:
+                continue
+            # If the user is being
             if self.profile.follow_me:
                 review, created = self.process_single_item_from_wanikani_v2(assignment)
                 if created:
@@ -122,22 +127,13 @@ class WanikaniUserSyncerV2:
         except Vocabulary.DoesNotExist:
             self.logger.error(f"Attempted to add a UserSpecific for subject ID: {assignment.subject_id} but failed as we don't have it.")
             return None, False
-        review, created = self.associate_vocab_to_user(vocab)
+        review, created = self.get_or_create_review_for_user(vocab)
         if review.is_assignment_out_of_date(assignment):
             review.reconcile_assignment(assignment)
         return review, created #Note that synonym added count will need to be fixed.
 
-
-    def update_synonyms_for_assignments(self, assignments):
-        client = WkV2Client(self.profile.api_key_v2)
-        assignment_subject_ids = [assignment.subject_id for assignment in assignments]
-        study_materials = client.study_materials(subject_ids=assignment_subject_ids)
-        for study_material in study_materials:
-            review = UserSpecific.objects.filter(vocabulary__wk_subject_id=study_material.subject_id)
-            if review.is_study_material_out_of_date(study_material):
-                review.reconcile_study_material(study_material)
-
-    def associate_vocab_to_user(self, vocab):
+    # TODO migrate this to class manager in ORM?
+    def get_or_create_review_for_user(self, vocab):
         """
         takes a vocab, and creates a UserSpecific object for the user based on it. Returns the vocab object.
         :param vocab: the vocabulary object to associate to the user.
@@ -163,6 +159,7 @@ class WanikaniUserSyncerV2:
                     )
                 )
             return None, None
+
     def sync_study_materials(self):
         self.logger.info(f"About to synchronize all synonyms for {self.user.username}")
         study_materials = self.client.study_materials(subject_types="vocabulary", fetch_all=True)
@@ -180,7 +177,7 @@ class WanikaniUserSyncerV2:
         self.logger.info(f"Updated {updated_synonym_count} synonyms for {self.user.username}")
         return updated_synonym_count
 
-    def sync_unlocked_vocab_with_wk_v2(self):
+    def sync_unlocked_vocab(self):
         if self.profile.unlocked_levels_list():
             new_review_count = 0
 
@@ -201,18 +198,33 @@ class WanikaniUserSyncerV2:
         else:
             return 0
 
-    def sync_vocabulary_to_server(self):
+    def sync_top_level_vocabulary(self):
         self.logger.info("Beginning Subject Sync from WK API")
         try:
             updated_vocabulary_count = 0
+            created_vocabulary_count = 0
             vocabulary = self.client.subjects(types="vocabulary")
             for remote_vocabulary in vocabulary:
-                local_vocabulary = Vocabulary.objects.get(wk_subject_id=remote_vocabulary.id)
-                if local_vocabulary.is_out_of_date(remote_vocabulary):
-                    local_vocabulary.reconcile(remote_vocabulary)
-                    updated_vocabulary_count += 1
+                try:
+                    local_vocabulary = Vocabulary.objects.get(wk_subject_id=remote_vocabulary.id)
+                    if local_vocabulary.is_out_of_date(remote_vocabulary):
+                        local_vocabulary.reconcile(remote_vocabulary)
+                        updated_vocabulary_count += 1
+                except Vocabulary.DoesNotExist as e:
+                    local_vocabulary = Vocabulary.objects.create(wk_subject_id=remote_vocabulary.id)
+                    local_vocabulary.reconcile()
+                    created_vocabulary_count += 1
             return updated_vocabulary_count
         except InvalidWanikaniApiKeyException:
             self.logger.error("Couldn't synchronize vocabulary, as the API key is out of date.")
             return 0
+
+    def unlock_vocab(self, levels):
+        new_assignments = self.client.assignments(levels=levels)
+        self.process_vocabulary_response_for_user_v2(new_assignments)
+
+    def get_wanikani_level(self):
+        user_info = self.client.user_information()
+        return user_info.level
+
 

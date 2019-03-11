@@ -103,13 +103,6 @@ class TestModels(APITestCase):
         r = create_reading(self.vocabulary, "ねこな", "猫", 1)
         self.assertEqual(self.vocabulary.reading_count(), 2)
 
-    def test_available_readings_returns_only_readings_youve_unlocked(self):
-        v = create_vocab("cat")
-        r = create_reading(v, "ねこ", "ねこ", 5)
-        r = create_reading(v, "ねこな", "猫", 1)
-
-        self.assertTrue(len(v.available_readings(2)) == 1)
-
     def test_synonym_adding(self):
         self.review.meaning_synonyms.get_or_create(text="kitty")
 

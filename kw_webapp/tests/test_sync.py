@@ -6,33 +6,17 @@ import time
 from django.test import TestCase
 from django.utils import timezone
 
+from api.sync.SyncerFactory import Syncer
+from api.sync.WanikaniUserSyncer import WanikaniUserSyncer
+from api.sync.WanikaniUserSyncerV1 import WanikaniUserSyncerV1
 from api.sync.WanikaniUserSyncerV2 import WanikaniUserSyncerV2
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific, MeaningSynonym, AnswerSynonym
 from kw_webapp.tasks import (
-    create_new_vocabulary,
-    past_time,
-    all_srs,
-    associate_vocab_to_user,
-    build_API_sync_string_for_user,
-    sync_unlocked_vocab_with_wk,
-    lock_level_for_user,
-    unlock_all_possible_levels_for_user,
-    build_API_sync_string_for_user_for_levels,
-    user_returns_from_vacation,
-    get_users_future_reviews,
-    sync_all_users_to_wk,
-    reset_user,
-    get_users_current_reviews,
-    reset_levels,
-    get_users_lessons,
-    get_vocab_by_kanji,
-    build_user_information_api_string,
-    get_level_pages,
     sync_user_profile_with_wk)
-from kw_webapp.tasks import create_new_vocabulary, past_time, all_srs, associate_vocab_to_user, \
-    build_API_sync_string_for_user, sync_unlocked_vocab_with_wk, \
-    lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
+from kw_webapp.tasks import past_time, all_srs, \
+    sync_unlocked_vocab_with_wk, \
+    unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
     reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji, \
     build_user_information_api_string, get_level_pages, sync_with_wk
@@ -61,6 +45,7 @@ class TestTasks(TestCase):
         self.v = Vocabulary.objects.create()
         self.v.meaning = "Test"
         self.v.wk_subject_id = 1
+        self.reading = create_reading(self.v, "reading", "character", 1)
         self.v.save()
         return self.v
 
@@ -315,7 +300,7 @@ class TestTasks(TestCase):
         mock_subjects_v2()
         syncer = WanikaniUserSyncerV2(self.user.profile)
         assert self.v.meaning == "Test"
-        updated_vocabulary_count = syncer.sync_vocabulary_to_server()
+        updated_vocabulary_count = syncer.sync_top_level_vocabulary()
         assert updated_vocabulary_count == 1
         self.v.refresh_from_db()
         assert self.v.meaning == "One"
@@ -325,10 +310,32 @@ class TestTasks(TestCase):
         mock_subjects_v2()
         syncer = WanikaniUserSyncerV2(self.user.profile)
         assert self.v.auxiliary_meanings_whitelist is None
-        updated_vocabulary_count = syncer.sync_vocabulary_to_server()
+        updated_vocabulary_count = syncer.sync_top_level_vocabulary()
         assert updated_vocabulary_count == 1
         self.v.refresh_from_db()
         assert self.v.auxiliary_meanings_whitelist == "1,uno"
 
+    @responses.activate
+    def test_vocabulary_reading_changes_carry_over(self):
+        mock_subjects_v2()
+        syncer = WanikaniUserSyncerV2(self.user.profile)
+        assert self.v.readings.count() == 1
+        assert self.v.readings.all()[0].kana == "reading"
+        updated_vocabulary_count = syncer.sync_top_level_vocabulary()
+        assert updated_vocabulary_count == 1
+        self.v.refresh_from_db()
+        expected_reading_kanas = [reading.kana for reading in self.v.readings.all()]
+        assert "いち" in expected_reading_kanas
+        assert "one - but in japanese" in expected_reading_kanas
 
+    def test_syncer_factory(self):
+        # Should return a V2 syncer when the user has a v2 api key added,
+        # otherwise, V1.
+        syncer = Syncer.factory(self.user.profile)
+        assert isinstance(syncer, WanikaniUserSyncerV1)
 
+        # now for v2
+        self.user.profile.api_key_v2 = "no longer empty!"
+        self.user.profile.save()
+        syncer = Syncer.factory(self.user.profile)
+        assert isinstance(syncer, WanikaniUserSyncerV2)
