@@ -232,7 +232,7 @@ def build_v1_user_information_api_string(api_key):
 def sync_with_wk(user_id, full=False):
     p = Profile.objects.get(user__id=user_id)
     syncer = Syncer.factory(p)
-    syncer.sync_with_wk(full_sync=full)
+    return syncer.sync_with_wk(full_sync=full)
 
 
 def has_multiple_kanji(vocab):

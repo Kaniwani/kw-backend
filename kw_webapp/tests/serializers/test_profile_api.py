@@ -187,11 +187,13 @@ class TestProfileApi(APITestCase):
         self.user.profile.refresh_from_db()
         assert self.user.profile.follow_me is True
 
+    @responses.activate
     def test_attempting_to_sync_with_invalid_api_key_sets_correct_profile_value(self):
         # Given
         self.client.force_login(self.user)
-        self.user.profile.api_key = "Some Garbage"
+        self.user.profile.api_key = "SomeGarbage"
         self.user.profile.save()
+        mock_invalid_api_user_info_response("SomeGarbage")
 
         # When
         self.client.post(reverse("api:user-sync"))

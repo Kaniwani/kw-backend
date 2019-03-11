@@ -168,7 +168,7 @@ def mock_invalid_api_user_info_response(api_key):
         responses.GET,
         build_v1_user_information_api_string(api_key),
         json={"Nothing": "Nothing"},
-        status=200,
+        status=401,
         content_type="application/json",
     )
 

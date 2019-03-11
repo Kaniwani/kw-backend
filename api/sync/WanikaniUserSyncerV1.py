@@ -73,11 +73,11 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         profile_sync_succeeded = self.sync_user_profile_with_wk()
         if profile_sync_succeeded:
             if not full_sync:
-                new_review_count = self.sync_recent_unlocked_vocab_with_wk()
+                new_review_count, new_synonym_count = self.sync_recent_unlocked_vocab()
             else:
-                new_review_count = self.sync_unlocked_vocab_with_wk()
+                new_review_count, new_synonym_count = self.sync_unlocked_vocab()
 
-            return profile_sync_succeeded, new_review_count
+            return profile_sync_succeeded, new_review_count, new_synonym_count
         else:
             self.logger.warning(
              "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed "
