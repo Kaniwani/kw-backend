@@ -17,7 +17,7 @@ from kw_webapp.tests.utils import (
     mock_user_info_response,
     mock_invalid_api_user_info_response,
     setupTestFixture,
-)
+    mock_empty_vocabulary_response)
 
 
 class TestProfileApi(APITestCase):
@@ -163,8 +163,11 @@ class TestProfileApi(APITestCase):
         data = response.data
         assert data is not None
 
+    @responses.activate
     def test_enable_follow_me_syncs_user_immediately(self):
         # Given
+        mock_user_info_response(self.user.profile.api_key)
+        mock_empty_vocabulary_response(self.user.profile.api_key, self.user.profile.level)
         self.client.force_login(self.user)
         self.user.profile.follow_me = False
         self.user.profile.save()
