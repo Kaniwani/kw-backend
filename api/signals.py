@@ -5,7 +5,7 @@ from djoser.signals import user_registered
 from rest_framework.authtoken.models import Token
 
 from kw_webapp import constants
-from kw_webapp.tasks import sync_with_wk, get_users_lessons, unlock_eligible_vocab_from_levels
+from kw_webapp.tasks import sync_with_wk, get_users_lessons
 
 import logging
 

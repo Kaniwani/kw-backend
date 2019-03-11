@@ -39,50 +39,21 @@ from api.serializers import (
     ReviewCountSerializer,
 )
 from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating, IsAdminOrAuthenticatedAndCreating
-from api.responses import InvalidWanikaniAPIKeyResponse
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
-    ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer, RegistrationSerializer, \
+    ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer, \
     ReviewCountSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
-from kw_webapp.models import (
-    Vocabulary,
-    UserSpecific,
-    Reading,
-    Level,
-    AnswerSynonym,
-    FrequentlyAskedQuestion,
-    Announcement,
-    Profile,
-    Report,
-    MeaningSynonym,
-)
-from kw_webapp.tasks import (
-    get_users_current_reviews,
-    unlock_eligible_vocab_from_levels,
-    lock_level_for_user,
-    get_users_critical_reviews,
-    sync_with_wk,
-    all_srs,
-    sync_user_profile_with_wk,
-    user_returns_from_vacation,
-    user_begins_vacation,
-    user_started_following,
-    reset_user,
-    get_users_lessons,
-)
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
     Announcement, Profile, Report, MeaningSynonym
-from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
-    user_begins_vacation, user_started_following, reset_user, get_users_lessons, get_all_users_reviews
 
 import logging
 
-from kw_webapp.wanikani.exceptions import InvalidWaniKaniKey
-
+from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_critical_reviews, \
+    get_all_users_reviews, all_srs, reset_user, user_returns_from_vacation, user_begins_vacation, \
+    user_started_following, sync_with_wk
 
 logger = logging.getLogger(__name__)
 

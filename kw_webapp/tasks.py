@@ -217,21 +217,6 @@ def unlock_all_possible_levels_for_user(user):
     return level_list, unlocked_now, unlocked_total, locked
 
 
-@shared_task
-def unlock_eligible_vocab_from_levels(user, levels):
-    """
-    I don't like duplicating code like this, but its for the purpose of reducing API call load on WaniKani. It's a
-    hassle if the user caps out.
-    :param user: user to add vocab to. :param levels: requested level unlock. This can
-    also be a list. :return: unlocked count, locked count
-    """
-
-    api_call_string = build_API_sync_string_for_user_for_levels(user, levels)
-    response = make_api_call(api_call_string)
-    unlocked_this_request, total_unlocked, locked = process_vocabulary_response_for_unlock(user, response)
-    return unlocked_this_request, total_unlocked, locked
-
-
 def get_wanikani_level_by_api_key(api_key):
     api_string = "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
     response = make_api_call(api_string)
@@ -387,7 +372,6 @@ def user_started_following(user):
         syncer.sync_user_profile_with_wk()
         # in V1 its this: unlock_eligible_vocab_from_levels(user, user.profile.level)
         syncer.unlock_vocab(user.profile.level)
-        sync_user_profile_with_wk(user)
     except exceptions.InvalidWaniKaniKey:
         user.profile.api_valid = False
         user.profile.save()
