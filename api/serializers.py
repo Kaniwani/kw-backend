@@ -9,7 +9,7 @@ from django.db.models.functions import TruncHour, TruncDate
 from rest_framework import serializers
 
 from api import serializer_fields
-from api.validators import WanikaniApiKeyValidator
+from api.validators import WanikaniApiKeyValidatorV1
 from kw_webapp.constants import (
     KwSrsLevel,
     KANIWANI_SRS_LEVELS,
@@ -149,7 +149,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     )
     join_date = serializers.SerializerMethodField()
     api_key = serializers.CharField(
-        max_length=32, validators=[WanikaniApiKeyValidator()]
+        max_length=32, validators=[WanikaniApiKeyValidatorV1()]
     )
 
     class Meta:
@@ -235,7 +235,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class RegistrationSerializer(serializers.ModelSerializer):
     api_key = serializers.CharField(
-        write_only=True, max_length=32, validators=[WanikaniApiKeyValidator()]
+        write_only=True, max_length=32, validators=[WanikaniApiKeyValidatorV1()]
     )
     password = serializers.CharField(write_only=True, style={"input_type": "password"})
 
@@ -285,7 +285,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(many=False, read_only=True)
     api_key = serializers.CharField(
-        write_only=True, max_length=32, validators=[WanikaniApiKeyValidator()]
+        write_only=True, max_length=32, validators=[WanikaniApiKeyValidatorV1()]
     )
     password = serializers.CharField(write_only=True)
 

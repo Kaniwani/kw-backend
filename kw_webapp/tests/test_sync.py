@@ -19,7 +19,7 @@ from kw_webapp.tasks import past_time, all_srs, \
     unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
     reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji, \
-    build_user_information_api_string, get_level_pages, sync_with_wk
+    build_v1_user_information_api_string, get_level_pages, sync_with_wk
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import (

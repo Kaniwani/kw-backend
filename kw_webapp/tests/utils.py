@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from kw_webapp.constants import API_KEY
 from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile
 from kw_webapp.tasks import (
-    build_user_information_api_string,
+    build_v1_user_information_api_string,
     build_API_sync_string_for_user_for_levels,
     build_API_sync_string_for_api_key_for_levels)
 
@@ -92,7 +92,7 @@ def mock_vocab_list_response_with_single_vocabulary(user):
 def mock_user_info_response_at_level(api_key, level):
     responses.add(
         responses.GET,
-        build_user_information_api_string(api_key),
+        build_v1_user_information_api_string(api_key),
         json=sample_api_responses.user_information_response_at_level(level),
         status=200,
         content_type="application/json",
@@ -101,7 +101,7 @@ def mock_user_info_response_at_level(api_key, level):
 def mock_user_info_response_with_higher_level(api_key):
     responses.add(
         responses.GET,
-        build_user_information_api_string(api_key),
+        build_v1_user_information_api_string(api_key),
         json=sample_api_responses.user_information_response_with_higher_level,
         status=200,
         content_type="application/json",
@@ -111,7 +111,7 @@ def mock_user_info_response_with_higher_level(api_key):
 def mock_user_info_response(api_key):
     responses.add(
         responses.GET,
-        build_user_information_api_string(api_key),
+        build_v1_user_information_api_string(api_key),
         json=sample_api_responses.user_information_response,
         status=200,
         content_type="application/json",
@@ -166,7 +166,7 @@ def build_study_materials_url():
 def mock_invalid_api_user_info_response(api_key):
     responses.add(
         responses.GET,
-        build_user_information_api_string(api_key),
+        build_v1_user_information_api_string(api_key),
         json={"Nothing": "Nothing"},
         status=200,
         content_type="application/json",

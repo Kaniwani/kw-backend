@@ -1,15 +1,17 @@
 import requests
 from rest_framework import serializers
 
-from kw_webapp.tasks import build_user_information_api_string
+from kw_webapp.tasks import build_v1_user_information_api_string
 
 
-class WanikaniApiKeyValidator(object):
+class WanikaniApiKeyValidatorV1(object):
+    #TODO write a similar one of these for v2 validation
+
     def __init__(self):
         self.failure_message = "This API key appears to be invalid"
 
     def __call__(self, value):
-        api_string = build_user_information_api_string(value)
+        api_string = build_v1_user_information_api_string(value)
         r = requests.get(api_string)
         if r.status_code == 200:
             json_data = r.json()
