@@ -205,14 +205,9 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
     def get_wanikani_level(self):
         api_string = self.build_user_information_api_string(self.profile.api_key)
 
-        try:
-            json_data = make_api_call(api_string)
-            user_info = json_data["user_information"]
-            return user_info["level"]
-        except exceptions.InvalidWaniKaniKey:
-            self.profile.api_valid = False
-            self.profile.save()
-            return False
+        json_data = make_api_call(api_string)
+        user_info = json_data["user_information"]
+        return user_info["level"]
 
 
     def process_vocabulary_response_for_user(self, json_data):

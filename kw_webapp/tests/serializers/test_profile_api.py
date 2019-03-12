@@ -17,7 +17,7 @@ from kw_webapp.tests.utils import (
     mock_user_info_response,
     mock_invalid_api_user_info_response,
     setupTestFixture,
-    mock_empty_vocabulary_response)
+    mock_empty_vocabulary_response, mock_for_registration)
 
 
 class TestProfileApi(APITestCase):
@@ -116,10 +116,12 @@ class TestProfileApi(APITestCase):
             Vocabulary.MultipleObjectsReturned, get_vocab_by_kanji, "kanji"
         )
 
+    @responses.activate
     def test_users_with_invalid_api_keys_correctly_get_their_flag_changed_in_profile(
         self
     ):
         self.user.profile.api_key = "ABC123"
+        mock_invalid_api_user_info_response(self.user.profile.api_key)
         self.user.profile.api_valid = True
         self.user.profile.save()
 
@@ -203,7 +205,9 @@ class TestProfileApi(APITestCase):
         self.user.profile.refresh_from_db()
         assert self.user.profile.api_valid is False
 
+    @responses.activate
     def test_registration(self):
+        mock_for_registration(constants.API_KEY, self.user.profile.level)
         response = self.client.post(
             reverse("api:auth:user-create"),
             data={

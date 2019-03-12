@@ -70,12 +70,24 @@ def build_test_api_string_for_merging():
     api_call = "https://www.wanikani.com/api/user/{}/vocabulary/TEST".format(API_KEY)
     return api_call
 
+def mock_for_registration(api_key, wk_level):
+    mock_vocab_list_response_with_single_vocabulary(api_key, wk_level)
+    mock_user_info_response(api_key)
 
 def mock_empty_vocabulary_response(api_key, level):
     responses.add(
         responses.GET,
         build_API_sync_string_for_api_key_for_levels(api_key, level),
         json=sample_api_responses.no_vocab_response,
+        status=200,
+        content_type="application/json",
+    )
+
+def mock_vocab_list_response_with_single_vocabulary(api_key, level):
+    responses.add(
+        responses.GET,
+        build_API_sync_string_for_api_key_for_levels(api_key, level),
+        json=sample_api_responses.single_vocab_response,
         status=200,
         content_type="application/json",
     )
@@ -162,7 +174,6 @@ def build_assignments_url():
 def build_study_materials_url():
     return "https://api.wanikani.com/v2/study_materials"
 
-
 def mock_invalid_api_user_info_response(api_key):
     responses.add(
         responses.GET,
@@ -172,6 +183,9 @@ def mock_invalid_api_user_info_response(api_key):
         content_type="application/json",
     )
 
+def mock_anything_to_wanikani_to_401():
+    #TODO write this function.
+    pass
 
 def mock_vocab_list_response_with_single_vocabulary_with_four_synonyms(user):
     responses.add(

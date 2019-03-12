@@ -18,7 +18,7 @@ from kw_webapp.tests.utils import (
     mock_user_info_response,
     mock_user_info_response_at_level, mock_empty_vocabulary_response,
     mock_vocab_list_response_with_single_vocabulary_with_changed_meaning,
-    mock_vocab_list_response_with_single_vocabulary)
+    mock_vocab_list_response_with_single_vocabulary, mock_invalid_api_user_info_response)
 
 
 class TestUser(APITestCase):
@@ -95,10 +95,12 @@ class TestUser(APITestCase):
         self.user.profile.refresh_from_db()
         assert self.user.profile.level == 17
 
+    @responses.activate
     def test_invalid_api_key_during_reset_correctly_shows_400(self):
         self.client.force_login(self.user)
         self.user.profile.api_key = "definitelybrokenAPIkey"
         self.user.profile.save()
+        mock_invalid_api_user_info_response(self.user.profile.api_key)
 
         response = self.client.post(reverse("api:user-reset"), data={"level": 1})
         assert response.status_code == 400

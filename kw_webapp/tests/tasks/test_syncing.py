@@ -1,11 +1,8 @@
 import responses
 from rest_framework.test import APITestCase
 
-from kw_webapp.tasks import sync_with_wk, sync_recent_unlocked_vocab_with_wk
-from kw_webapp.tests import sample_api_responses
+from api.sync.SyncerFactory import Syncer
 from kw_webapp.tests.utils import (
-    mock_user_info_response,
-    mock_vocab_list_response_with_single_vocabulary_with_changed_meaning,
     mock_vocab_list_response_with_single_vocabulary_with_four_synonyms,
     setupTestFixture,
 )
@@ -25,7 +22,7 @@ class TestSyncing(APITestCase):
 
         mock_vocab_list_response_with_single_vocabulary_with_four_synonyms(self.user)
 
-        sync_recent_unlocked_vocab_with_wk(self.user)
+        Syncer.factory(self.user.profile).sync_recent_unlocked_vocab()
 
         self.review.refresh_from_db()
         self.assertEqual(len(self.review.meaning_synonyms.all()), 4)

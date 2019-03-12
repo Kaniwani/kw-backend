@@ -44,6 +44,7 @@ from api.serializers import ReviewSerializer, VocabularySerializer, StubbedRevie
     FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
     ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer, \
     ReviewCountSerializer
+from api.sync.SyncerFactory import Syncer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
@@ -159,9 +160,9 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
         if int(requested_level) > user.profile.level:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        unlocked_this_request, total_unlocked, locked = unlock_eligible_vocab_from_levels(
-            user, requested_level
-        )
+        unlocked_this_request, total_unlocked, locked = Syncer\
+            .factory(user.profile)\
+            .unlock_vocab(requested_level)
         user.profile.unlocked_levels.get_or_create(level=requested_level)
 
         return Response(

@@ -4,6 +4,7 @@ from django.dispatch import receiver
 from djoser.signals import user_registered
 from rest_framework.authtoken.models import Token
 
+from api.sync.SyncerFactory import Syncer
 from kw_webapp import constants
 from kw_webapp.tasks import sync_with_wk, get_users_lessons
 
@@ -37,6 +38,7 @@ def unlock_previous_level(user):
     else:
         previous_level = user.profile.level - 1
         user.profile.unlocked_levels.get_or_create(level=previous_level)
-        unlock_eligible_vocab_from_levels(user, previous_level)
+        syncer = Syncer.factory(user.profile)
+        syncer.unlock_vocab(previous_level)
 
 user_registered.connect(sync_unlocks_with_wk)

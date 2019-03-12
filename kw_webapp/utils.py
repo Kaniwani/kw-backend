@@ -1,6 +1,5 @@
 import random
 
-import requests
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.utils import timezone
@@ -20,13 +19,10 @@ from kw_webapp.models import (
     logger,
 )
 from kw_webapp.tasks import (
-    create_new_vocabulary,
     has_multiple_kanji,
-    import_vocabulary_from_json,
 )
 from kw_webapp.wanikani import make_api_call
-from kw_webapp.tasks import unlock_eligible_vocab_from_levels
-from kw_webapp.tests.utils import create_review, create_review_for_specific_time
+from kw_webapp.tests.utils import create_review_for_specific_time
 
 
 def wipe_all_reviews_for_user(user):
@@ -112,7 +108,8 @@ def one_time_merge_level(level, user=None):
             )
             handle_merger(vocabulary_json, found_vocabulary)
         elif found_vocabulary.count() == 0:
-            create_new_vocabulary(vocabulary_json)
+            Syncer(create_new_vocabulary(vocabulary_json)
+                   #TODO START HERE PROBABLY REMOVE WHOLE FUNCTION
         else:
             print("No conflict, but meaning has changed. Changing meaning!")
             to_be_edited = found_vocabulary[0]

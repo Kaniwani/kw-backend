@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.db.models import F, Count
 from django.db.models import Min
 from django.db.models.functions import TruncHour, TruncDate
+from wanikani_api.exceptions import InvalidWanikaniApiKeyException
 
 from api.sync.SyncerFactory import Syncer
 from kw_webapp.constants import KANIWANI_SRS_LEVELS, KwSrsLevel
@@ -372,9 +373,10 @@ def user_started_following(user):
         syncer.sync_user_profile_with_wk()
         # in V1 its this: unlock_eligible_vocab_from_levels(user, user.profile.level)
         syncer.unlock_vocab(user.profile.level)
-    except exceptions.InvalidWaniKaniKey:
+    except exceptions.InvalidWaniKaniKey or InvalidWanikaniApiKeyException as e:
         user.profile.api_valid = False
         user.profile.save()
+        raise e
 
 
 def disable_follow_me(user):
