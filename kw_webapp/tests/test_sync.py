@@ -7,69 +7,41 @@ from django.test import TestCase
 from django.utils import timezone
 
 from api.sync.SyncerFactory import Syncer
-from api.sync.WanikaniUserSyncer import WanikaniUserSyncer
 from api.sync.WanikaniUserSyncerV1 import WanikaniUserSyncerV1
 from api.sync.WanikaniUserSyncerV2 import WanikaniUserSyncerV2
 from kw_webapp import constants
-from kw_webapp.models import Vocabulary, UserSpecific, MeaningSynonym, AnswerSynonym
-from kw_webapp.tasks import (
-    sync_user_profile_with_wk)
+from kw_webapp.models import Vocabulary, UserSpecific
 from kw_webapp.tasks import past_time, all_srs, \
-    sync_unlocked_vocab_with_wk, \
     unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
-    reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji, \
-    build_v1_user_information_api_string, get_level_pages, sync_with_wk
+    get_users_lessons, \
+    sync_with_wk, get_users_current_reviews
 from kw_webapp.tests import sample_api_responses
-from kw_webapp.tests.sample_api_responses import single_vocab_requested_information
 from kw_webapp.tests.utils import (
     create_review,
     create_vocab,
     create_user,
     create_profile,
     create_reading,
-    create_review_for_specific_time,
-    mock_vocab_list_response_with_single_vocabulary,
-    mock_user_info_response,
-    mock_assignments_with_one_assignment, mock_user_response_v2, mock_subjects_v2, mock_study_materials)
-from kw_webapp.utils import generate_user_stats, one_time_merge_level
+    mock_assignments_with_one_assignment, mock_user_response_v2, mock_subjects_v2, mock_study_materials, create_lesson)
 
 
-class TestTasks(TestCase):
+class TestSync(TestCase):
     def setUp(self):
         self.user = create_user("Tadgh")
         create_profile(self.user, "any_key", 5)
         self.prepLocalVocabulary()
+        self.reading = create_reading(self.v, "ねこ", "猫", 1)
+        self.review = create_review(self.v, self.user)
+        self._vocab_api_regex = re.compile("https://www\.wanikani\.com/api/user/.*")
+
 
     def prepLocalVocabulary(self):
         self.v = Vocabulary.objects.create()
-        self.v.meaning = "Test"
+        self.v.meaning = "radioactive bat"
         self.v.wk_subject_id = 1
-        self.reading = create_reading(self.v, "reading", "character", 1)
         self.v.save()
         return self.v
-
-    @responses.activate
-    def test_creating_new_synonyms_on_sync(self):
-        resp_body = deepcopy(sample_api_responses.single_vocab_response)
-        resp_body["requested_information"][0]["user_specific"]["user_synonyms"] = [
-            "kitten",
-            "large rat",
-        ]
-
-        responses.add(
-            responses.GET,
-            self._vocab_api_regex,
-            json=resp_body,
-            status=200,
-            content_type="application/json",
-        )
-
-        sync_unlocked_vocab_with_wk(self.user)
-
-        synonyms_list = self.review.synonyms_list()
-        self.assertIn("large rat", synonyms_list)
-        self.assertIn("kitten", synonyms_list)
 
     def test_building_unlock_all_string_works(self):
         sample_level = constants.LEVEL_MAX
@@ -113,9 +85,9 @@ class TestTasks(TestCase):
             content_type="application/json",
         )
 
-        sync_unlocked_vocab_with_wk(self.user)
+        Syncer.factory(self.user.profile).sync_with_wk()
         newly_synced_review = UserSpecific.objects.get(
-            user=self.user, vocabulary__meaning=self.vocabulary.meaning
+            user=self.user, vocabulary__meaning=self.v.meaning
         )
 
         self.assertEqual(newly_synced_review.wanikani_srs, "apprentice")
@@ -216,6 +188,7 @@ class TestTasks(TestCase):
     ):
         self.review.next_review_date = timezone.now()
         self.review.needs_review = False
+        self.review.streak = 1
         self.review.save()
 
         future_reviews = get_users_future_reviews(
@@ -256,18 +229,13 @@ class TestTasks(TestCase):
         self.assertIn("kitten", synonyms_list)
         self.assertIn("large rat", synonyms_list)
 
-    def test_syncing_user_profile_on_v2(self):
-        self.user.profile.api_key_v2 = "2510f001-fe9e-414c-ba19-ccf79af40060"
-        self.user.profile.save()
-
-        sync_user_profile_with_wk(self.user)
-
     @responses.activate
     def test_full_sync_of_user_on_v2(self):
 
         # Setup mocks for user response and full sync (with a single assignment)
         mock_user_response_v2()
         mock_assignments_with_one_assignment()
+        mock_study_materials()
         mock_subjects_v2()
 
         self.user.profile.api_key_v2 = "whatever"
@@ -276,8 +244,8 @@ class TestTasks(TestCase):
         syncer = WanikaniUserSyncerV2(self.user.profile)
         syncer.sync_with_wk(full_sync=True)
 
-        lessons = get_users_lessons(self.user)
-        assert lessons.count() == 1
+        reviews = get_users_current_reviews(self.user)
+        assert reviews.count() == 1
 
 
     @responses.activate
@@ -299,7 +267,7 @@ class TestTasks(TestCase):
     def test_vocabulary_meaning_changes_carry_over(self):
         mock_subjects_v2()
         syncer = WanikaniUserSyncerV2(self.user.profile)
-        assert self.v.meaning == "Test"
+        assert self.v.meaning == "radioactive bat"
         updated_vocabulary_count = syncer.sync_top_level_vocabulary()
         assert updated_vocabulary_count == 1
         self.v.refresh_from_db()
@@ -320,7 +288,7 @@ class TestTasks(TestCase):
         mock_subjects_v2()
         syncer = WanikaniUserSyncerV2(self.user.profile)
         assert self.v.readings.count() == 1
-        assert self.v.readings.all()[0].kana == "reading"
+        assert self.v.readings.all()[0].kana == "ねこ"
         updated_vocabulary_count = syncer.sync_top_level_vocabulary()
         assert updated_vocabulary_count == 1
         self.v.refresh_from_db()

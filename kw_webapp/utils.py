@@ -70,58 +70,6 @@ def correct_next_review_dates():
         print(i, u)
 
 
-def one_time_merge_level(level, user=None):
-    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(
-        constants.API_KEY, level
-    )
-    response = make_api_call(api_call)
-    vocab_list = response["requested_information"]
-    print("Vocab found:{}".format(len(vocab_list)))
-
-    for vocabulary_json in vocab_list:
-        print("**************************************************************")
-        print(
-            "Analyzing vocab with kanji:[{}]\tCanonical meaning is:[{}]".format(
-                vocabulary_json["character"], vocabulary_json["meaning"]
-            )
-        )
-        found_vocabulary = Vocabulary.objects.filter(
-            readings__character=vocabulary_json["character"]
-        )
-        print(
-            "found [{}] vocabulary on the server with kanji [{}]".format(
-                found_vocabulary.count(), vocabulary_json["character"]
-            )
-        )
-        if (
-            found_vocabulary.count() == 1
-            and found_vocabulary[0].meaning == vocabulary_json["meaning"]
-        ):
-            print(
-                "No conflict found. Precisely 1 vocab on server, and meaning matches."
-            )
-        elif found_vocabulary.count() > 1:
-            print(
-                "Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(
-                    found_vocabulary.count(), vocabulary_json["meaning"]
-                )
-            )
-            handle_merger(vocabulary_json, found_vocabulary)
-        elif found_vocabulary.count() == 0:
-            Syncer(create_new_vocabulary(vocabulary_json)
-                   #TODO START HERE PROBABLY REMOVE WHOLE FUNCTION
-        else:
-            print("No conflict, but meaning has changed. Changing meaning!")
-            to_be_edited = found_vocabulary[0]
-            to_be_edited.meaning = vocabulary_json["meaning"]
-            to_be_edited.save()
-
-
-def one_time_merger(user=None):
-    for level in range(1, 61):
-        one_time_merge_level(level, user=None)
-
-
 def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
     print("New vocabulary id is:[{}]".format(vocabulary.id))
     print(
@@ -205,17 +153,6 @@ def generate_user_stats(user):
             for review in reviews:
                 print(review)
     print("Finished printing duplicates")
-
-
-def handle_merger(vocabulary_json, found_vocabulary):
-    ids_to_delete = found_vocabulary.values_list("id", flat=True)
-    ids_to_delete_list = list(ids_to_delete)
-    vocabulary = create_new_vocabulary(vocabulary_json)
-    create_new_review_and_merge_existing(vocabulary, found_vocabulary)
-    Vocabulary.objects.filter(pk__in=ids_to_delete_list).exclude(
-        id=vocabulary.id
-    ).delete()
-
 
 def blow_away_duplicate_reviews_for_all_users():
     users = User.objects.filter(profile__isnull=False)

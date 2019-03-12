@@ -384,7 +384,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         synonym_count = 0
 
         try:
-            review = UserSpecific.objects.get(user=self.profile.useruser, vocabulary=vocab)
+            review = UserSpecific.objects.get(user=self.profile.user, vocabulary=vocab)
             _, synonym_count = self.synchronize_synonyms(review, user_specific_json)
         except UserSpecific.DoesNotExist:
             pass

@@ -212,9 +212,7 @@ def unlock_all_possible_levels_for_user(user):
     how many vocab remain locked (as they are locked in WK)
     """
     level_list = [level for level in range(1, user.profile.level + 1)]
-    unlocked_now, unlocked_total, locked = unlock_eligible_vocab_from_levels(
-        user, level_list
-    )
+    unlocked_now, unlocked_total, locked = Syncer.factory(user.profile).unlock_vocab(level_list)
     return level_list, unlocked_now, unlocked_total, locked
 
 

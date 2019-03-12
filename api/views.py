@@ -54,7 +54,7 @@ import logging
 
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_critical_reviews, \
     get_all_users_reviews, all_srs, reset_user, user_returns_from_vacation, user_begins_vacation, \
-    user_started_following, sync_with_wk
+    user_started_following, sync_with_wk, lock_level_for_user
 
 logger = logging.getLogger(__name__)
 

@@ -84,7 +84,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
             if levels:
                 try:
                     assignments = self.client.assignments(subject_types="vocabulary", levels=levels, fetch_all=True)
-                    new_review_count = self.process_vocabulary_response_for_user_v2(
+                    new_review_count, total_unlocked, total_locked = self.process_vocabulary_response_for_user_v2(
                         assignments
                     )
                     return new_review_count
@@ -105,21 +105,24 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
         :return:
         """
         new_review_count = 0
+        unlocked_count = 0
+        locked_count = 0
         # Filter items the user has not unlocked.
-
         for assignment in assignments:
             # We don't port over stuff the user has never looked at
             if assignment.started_at is None:
+                locked_count += 1
                 continue
             # If the user is being
             if self.profile.follow_me:
                 review, created = self.process_single_item_from_wanikani_v2(assignment)
                 if created:
                     new_review_count += 1
+                unlocked_count += 1
                 review.save()
         self.logger.info("Synced Vocabulary for {}".format(self.user.username))
 
-        return new_review_count
+        return new_review_count, unlocked_count, locked_count
 
     def process_single_item_from_wanikani_v2(self, assignment):
         try:
@@ -189,7 +192,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
             try:
                 assignments = self.client.assignments(subject_types="vocabulary", fetch_all=True)
 
-                new_review_count = self.process_vocabulary_response_for_user_v2(assignments)
+                new_review_count, total_unlocked, total_locked = self.process_vocabulary_response_for_user_v2(assignments)
             except InvalidWanikaniApiKeyException:
                 self.profile.api_valid = False
                 self.profile.save()
@@ -221,7 +224,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
 
     def unlock_vocab(self, levels):
         new_assignments = self.client.assignments(levels=levels)
-        self.process_vocabulary_response_for_user_v2(new_assignments)
+        return self.process_vocabulary_response_for_user_v2(new_assignments)
 
     def get_wanikani_level(self):
         user_info = self.client.user_information()
