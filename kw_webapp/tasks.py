@@ -319,27 +319,6 @@ def sync_all_users_to_wk():
 
 
 
-
-def user_started_following(user):
-    try:
-        syncer = Syncer.factory(user.profile)
-        user.profile.level = syncer.get_wanikani_level()
-        user.profile.unlocked_levels.get_or_create(level=user.profile.level)
-        user.profile.save()
-        syncer.sync_user_profile_with_wk()
-        # in V1 its this: unlock_eligible_vocab_from_levels(user, user.profile.level)
-        syncer.unlock_vocab(user.profile.level)
-    except exceptions.InvalidWaniKaniKey or InvalidWanikaniApiKeyException as e:
-        user.profile.api_valid = False
-        user.profile.save()
-        raise e
-
-
-def disable_follow_me(user):
-    user.profile.follow_me = False
-    user.profile.save()
-
-
 def get_24_hour_time_span():
     # Fetch all reviews from now, until just before this hour tomorrow. e.g. ~24 hour span.
     now = timezone.now()
@@ -381,8 +360,7 @@ def build_upcoming_srs_for_user(user):
 def reset_user(user, reset_to_level):
     reset_levels(user, reset_to_level)
     reset_reviews(user, reset_to_level)
-    disable_follow_me(user)
-
+    user.profile.stop_following_wanikani()
     # Set to current level.
     level = Syncer.factory(user.profile).get_wanikani_level()
     user.profile.level = level

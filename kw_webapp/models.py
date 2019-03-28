@@ -9,7 +9,9 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
 from django.db.models import Count, F
 from django.utils import timezone
+from wanikani_api.exceptions import InvalidWanikaniApiKeyException
 
+from api.sync.SyncerFactory import Syncer
 from kw_webapp import constants
 from kw_webapp.constants import (
     TWITTER_USERNAME_REGEX,
@@ -18,6 +20,7 @@ from kw_webapp.constants import (
     WANIKANI_SRS_LEVELS,
 )
 from kw_webapp.tasks import all_srs
+from kw_webapp.wanikani import exceptions
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +116,24 @@ class Profile(models.Model):
     # Vacation Settings
     on_vacation = models.BooleanField(default=False)
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
+
+    def start_following_wanikani(self):
+        try:
+            syncer = Syncer.factory(self)
+            self.level = syncer.get_wanikani_level()
+            self.unlocked_levels.get_or_create(level=self.level)
+            self.save()
+            syncer.sync_user_profile_with_wk()
+            # in V1 its this: unlock_eligible_vocab_from_levels(user, user.profile.level)
+            syncer.unlock_vocab(self.level)
+        except exceptions.InvalidWaniKaniKey or InvalidWanikaniApiKeyException as e:
+            self.api_valid = False
+            self.save()
+            raise e
+
+    def stop_following_wanikani(self):
+        self.follow_me = False
+        self.save()
 
     def begin_vacation(self):
         self.vacation_date = timezone.now()

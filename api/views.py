@@ -54,7 +54,7 @@ import logging
 
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_critical_reviews, \
     get_all_users_reviews, all_srs, reset_user, \
-    user_started_following, sync_with_wk, lock_level_for_user
+    sync_with_wk, lock_level_for_user
 
 logger = logging.getLogger(__name__)
 
@@ -511,7 +511,7 @@ class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
             old_instance.begin_vacation()
 
         if not old_instance.follow_me and serializer.validated_data.get("follow_me"):
-            user_started_following(user)
+            old_instance.start_following_wanikani()
 
         # Since if we have gotten this far, we know that API key is valid, we set it here.
         api_validated = serializer.validated_data.get("api_key", None)
