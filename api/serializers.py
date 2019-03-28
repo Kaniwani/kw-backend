@@ -9,7 +9,7 @@ from django.db.models.functions import TruncHour, TruncDate
 from rest_framework import serializers
 
 from api import serializer_fields
-from api.validators import WanikaniApiKeyValidatorV1
+from api.validators import WanikaniApiKeyValidatorV1, WanikaniApiKeyValidatorV2
 from kw_webapp.constants import (
     KwSrsLevel,
     KANIWANI_SRS_LEVELS,
@@ -151,6 +151,9 @@ class ProfileSerializer(serializers.ModelSerializer):
     api_key = serializers.CharField(
         max_length=32, validators=[WanikaniApiKeyValidatorV1()]
     )
+    api_key_v2 = serializers.CharField(
+        max_length=40, validators=[WanikaniApiKeyValidatorV2()]
+    )
 
     class Meta:
         model = Profile
@@ -158,6 +161,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "id",
             "name",
             "api_key",
+            "api_key_v2",
             "api_valid",
             "level",
             "follow_me",
@@ -237,11 +241,14 @@ class RegistrationSerializer(serializers.ModelSerializer):
     api_key = serializers.CharField(
         write_only=True, max_length=32, validators=[WanikaniApiKeyValidatorV1()]
     )
+    api_key_v2 = serializers.CharField(
+        write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV2()]
+    )
     password = serializers.CharField(write_only=True, style={"input_type": "password"})
 
     class Meta:
         model = User
-        fields = ("api_key", "password", "username", "email")
+        fields = ("api_key", "api_key_v2", "password", "username", "email")
 
     def validate_password(self, value):
         if len(value) < 4:
@@ -274,11 +281,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Username or email already in use!")
 
         api_key = validated_data.pop("api_key", None)
-
+        api_key_v2 = validated_data.pop("api_key_v2", None)
         user = User.objects.create(**validated_data)
         user.set_password(validated_data.get("password"))
         user.save()
-        Profile.objects.create(user=user, api_key=api_key, level=1)
+        Profile.objects.create(user=user, api_key=api_key, api_key_v2=api_key_v2, level=1)
         return user
 
 
@@ -287,11 +294,14 @@ class UserSerializer(serializers.ModelSerializer):
     api_key = serializers.CharField(
         write_only=True, max_length=32, validators=[WanikaniApiKeyValidatorV1()]
     )
+    api_key_v2 = serializers.CharField(
+        write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV2()]
+    )
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ("api_key", "password", "username", "email", "profile")
+        fields = ("api_key", "api_key_v2", "password", "username", "email", "profile")
         read_only_fields = (
             "id",
             "last_login",
