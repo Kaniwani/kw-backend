@@ -53,7 +53,7 @@ from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSyn
 import logging
 
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_critical_reviews, \
-    get_all_users_reviews, all_srs, reset_user, user_returns_from_vacation, user_begins_vacation, \
+    get_all_users_reviews, all_srs, reset_user, user_begins_vacation, \
     user_started_following, sync_with_wk, lock_level_for_user
 
 logger = logging.getLogger(__name__)
@@ -503,7 +503,7 @@ class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
         if old_instance.on_vacation and not serializer.validated_data.get(
             "on_vacation"
         ):
-            user_returns_from_vacation(user)
+            old_instance.return_from_vacation()
 
         if not old_instance.on_vacation and serializer.validated_data.get(
             "on_vacation"

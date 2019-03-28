@@ -394,6 +394,10 @@ def one_time_orphaned_level_clear():
     levels.delete()
 
 
+def has_multiple_kanji(vocab):
+    kanji = [reading.character for reading in vocab.readings.all()]
+    kanji2 = set(kanji)
+    return len(kanji2) > 1
 
 def add_subject_ids():
     from wanikani_api.client import Client
@@ -415,8 +419,6 @@ def add_subject_ids():
 
     unmatched = Vocabulary.objects.filter(wk_subject_id=0)
     return unmatched, no_local_equivalent
-
-
 
 
 def repopulate():

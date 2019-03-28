@@ -7,7 +7,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import Count, F
 from django.utils import timezone
 
 from kw_webapp import constants
@@ -17,6 +17,7 @@ from kw_webapp.constants import (
     WkSrsLevel,
     WANIKANI_SRS_LEVELS,
 )
+from kw_webapp.tasks import all_srs
 
 logger = logging.getLogger(__name__)
 
@@ -112,6 +113,37 @@ class Profile(models.Model):
     # Vacation Settings
     on_vacation = models.BooleanField(default=False)
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
+
+    def return_from_vacation(self):
+        """
+        Called when a user disables vacation mode. A one-time pass through their reviews in order to correct their last_studied_date, and quickly run an SRS run to determine which reviews currently need to be looked at.
+        """
+        logger.info("{} has returned from vacation!".format(self.user.username))
+        if self.vacation_date:
+            users_reviews = UserSpecific.objects.filter(user=self.user)
+            elapsed_vacation_time = timezone.now() - self.vacation_date
+            updated_count = users_reviews.update(
+                last_studied=F("last_studied") + elapsed_vacation_time
+            )
+            users_reviews.update(
+                next_review_date=F("next_review_date") + elapsed_vacation_time
+            )
+            logger.info(
+                "brought {} reviews out of hibernation for {}".format(
+                    updated_count, self.user.username
+                )
+            )
+            logger.info(
+                "User {} has been gone for timedelta: {}".format(
+                    self.user.username, str(elapsed_vacation_time)
+                )
+            )
+
+        self.vacation_date = None
+        self.on_vacation = False
+        self.save()
+        all_srs(self.user)
+        #TODO MOVE THIS INTO THE VIEW.
 
     def get_minimum_wk_srs_threshold_for_review(self):
         minimum_wk_srs = self.minimum_wk_srs_level_to_review
@@ -310,6 +342,13 @@ class Report(models.Model):
         )
 
 
+class LessonManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(streak=0)
+
+class ReviewManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(streak__gte=1)
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
@@ -332,6 +371,9 @@ class UserSpecific(models.Model):
     wk_study_materials_last_modified = models.DateTimeField(null=True)
     meaning_note = models.CharField(max_length=2000, null=True)
     reading_note = models.CharField(max_length=2000, null=True)
+
+    lessons = LessonManager()
+    reviews = ReviewManager()
 
     class Meta:
         unique_together = ("vocabulary", "user")

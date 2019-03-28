@@ -13,8 +13,7 @@ from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific
 from kw_webapp.tasks import past_time, all_srs, \
     unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
-    user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
-    get_users_lessons, \
+    get_users_future_reviews, sync_all_users_to_wk, \
     sync_with_wk, get_users_current_reviews
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import (
@@ -116,7 +115,7 @@ class TestSync(TestCase):
         self.review.save()
         previously_studied = self.review.last_studied
 
-        user_returns_from_vacation(self.user)
+        self.user.profile.return_from_vacation(self.user)
 
         self.review.refresh_from_db()
         self.assertNotEqual(self.review.last_studied, previously_studied)
@@ -307,3 +306,5 @@ class TestSync(TestCase):
         self.user.profile.save()
         syncer = Syncer.factory(self.user.profile)
         assert isinstance(syncer, WanikaniUserSyncerV2)
+
+

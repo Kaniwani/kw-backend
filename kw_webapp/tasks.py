@@ -234,12 +234,6 @@ def sync_with_wk(user_id, full=False):
     return syncer.sync_with_wk(full_sync=full)
 
 
-def has_multiple_kanji(vocab):
-    kanji = [reading.character for reading in vocab.readings.all()]
-    kanji2 = set(kanji)
-    return len(kanji2) > 1
-
-
 def get_users_reviews(user):
     return UserSpecific.objects.filter(user=user,
                                        wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
@@ -300,7 +294,6 @@ def get_all_users_reviews(user):
 @shared_task
 def sync_all_users_to_wk():
     """
-    TODO fix this to use syncer objects.
     calls sync_with_wk for all users, causing all users to have their newly unlocked vocabulary synchronized to KW.
 
     :return: the number of users successfully synced to WK.
@@ -323,38 +316,6 @@ def sync_all_users_to_wk():
         sync_with_wk.apply_async(args=[user.id, True], queue="long_running_sync")
         affected_count += 1
     return affected_count
-
-
-def user_returns_from_vacation(user):
-    """
-    Called when a user disables vacation mode. A one-time pass through their reviews in order to correct their last_studied_date, and quickly run an SRS run to determine which reviews currently need to be looked at.
-    """
-    logger.info("{} has returned from vacation!".format(user.username))
-    vacation_date = user.profile.vacation_date
-    if vacation_date:
-        users_reviews = UserSpecific.objects.filter(user=user)
-        elapsed_vacation_time = timezone.now() - vacation_date
-        updated_count = users_reviews.update(
-            last_studied=F("last_studied") + elapsed_vacation_time
-        )
-        users_reviews.update(
-            next_review_date=F("next_review_date") + elapsed_vacation_time
-        )
-        logger.info(
-            "brought {} reviews out of hibernation for {}".format(
-                updated_count, user.username
-            )
-        )
-        logger.info(
-            "User {} has been gone for timedelta: {}".format(
-                user.username, str(elapsed_vacation_time)
-            )
-        )
-
-    user.profile.vacation_date = None
-    user.profile.on_vacation = False
-    user.profile.save()
-    all_srs(user)
 
 
 def user_begins_vacation(user):

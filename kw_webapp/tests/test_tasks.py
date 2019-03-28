@@ -13,7 +13,7 @@ from kw_webapp.models import Vocabulary, UserSpecific, MeaningSynonym, AnswerSyn
 from kw_webapp.tasks import  past_time, all_srs, associate_vocab_to_user, \
     build_API_sync_string_for_user, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
-    user_returns_from_vacation, get_users_future_reviews, sync_all_users_to_wk, \
+    get_users_future_reviews, sync_all_users_to_wk, \
     reset_user, get_users_current_reviews, reset_levels, get_users_lessons, get_vocab_by_kanji, \
      get_level_pages, sync_with_wk
 from kw_webapp.tests import sample_api_responses
@@ -164,47 +164,6 @@ class TestTasks(TestCase):
 
         self.assertEqual(newly_synced_review.wanikani_srs, "apprentice")
         self.assertEqual(newly_synced_review.wanikani_srs_numeric, 3)
-
-    def test_user_returns_from_vacation_correctly_increments_review_timestamps(self):
-        now = timezone.now()
-        two_hours_ago = now - timezone.timedelta(hours=2)
-        two_hours_from_now = now + timezone.timedelta(hours=2)
-        four_hours_from_now = now + timezone.timedelta(hours=4)
-
-        self.user.profile.on_vacation = True
-
-        # Create review that should be reviewed never again, but got reviewed 2 hours ago.
-        review = create_review(create_vocab("wazoop"), self.user)
-        review.burned = True
-        review.next_review_date = None
-        review.last_studied = two_hours_ago
-        review.save()
-
-        self.user.profile.vacation_date = two_hours_ago
-        self.user.profile.save()
-        self.review.last_studied = two_hours_ago
-        self.review.next_review_date = two_hours_from_now
-
-        self.review.save()
-        previously_studied = self.review.last_studied
-
-        user_returns_from_vacation(self.user)
-
-        self.review.refresh_from_db()
-        self.assertNotEqual(self.review.last_studied, previously_studied)
-
-        self.assertAlmostEqual(
-            self.review.next_review_date,
-            four_hours_from_now,
-            delta=timezone.timedelta(minutes=15),
-        )
-        self.assertAlmostEqual(
-            self.review.last_studied, now, delta=timezone.timedelta(minutes=15)
-        )
-        self.assertAlmostEqual(
-            review.last_studied, two_hours_ago, delta=timezone.timedelta(minutes=15)
-        )
-        self.assertAlmostEqual(review.next_review_date, None)
 
     def test_users_who_are_on_vacation_are_ignored_by_all_srs_algorithm(self):
         self.review.last_studied = past_time(10)
