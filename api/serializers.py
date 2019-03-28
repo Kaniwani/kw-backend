@@ -277,12 +277,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if preexisting_users.count() > 0:
             raise serializers.ValidationError("Username or email already in use!")
 
-        api_key = validated_data.pop("api_key", None)
         api_key_v2 = validated_data.pop("api_key_v2", None)
         user = User.objects.create(**validated_data)
         user.set_password(validated_data.get("password"))
         user.save()
-        Profile.objects.create(user=user, api_key=api_key, api_key_v2=api_key_v2, level=1)
+        Profile.objects.create(user=user, api_key_v2=api_key_v2, level=1)
         return user
 
 

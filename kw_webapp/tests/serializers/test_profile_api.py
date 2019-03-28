@@ -17,7 +17,8 @@ from kw_webapp.tests.utils import (
     mock_user_info_response,
     mock_invalid_api_user_info_response,
     setupTestFixture,
-    mock_empty_vocabulary_response, mock_for_registration)
+    mock_empty_vocabulary_response, mock_for_registration, mock_user_response_v2, mock_subjects_v2,
+    mock_assignments_with_one_assignment, mock_study_materials)
 
 
 class TestProfileApi(APITestCase):
@@ -207,15 +208,18 @@ class TestProfileApi(APITestCase):
 
     @responses.activate
     def test_registration(self):
-        mock_for_registration(constants.API_KEY, self.user.profile.level)
+        mock_subjects_v2()
+        mock_assignments_with_one_assignment()
+        mock_user_response_v2()
+        mock_study_materials()
         response = self.client.post(
             reverse("api:auth:user-create"),
             data={
                 "username": "createme",
                 "password": "password",
-                "api_key_v2": constants.API_KEY,
+                "api_key_v2": constants.API_KEY_V2,
                 "email": "asdf@email.com",
-            },
+            }
         )
         assert response.status_code == 201
 

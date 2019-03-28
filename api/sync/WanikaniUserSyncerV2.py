@@ -116,6 +116,11 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
             # If the user is being
             if self.profile.follow_me:
                 review, created = self.process_single_item_from_wanikani_v2(assignment)
+
+                # If no review was created, it means we are missing the subject. We can deal with this later
+                if review is None:
+                    self.logger.error("We somehow don't have a subject with id {}!!".format(assignment.subject_id))
+                    continue
                 if created:
                     new_review_count += 1
                 unlocked_count += 1
