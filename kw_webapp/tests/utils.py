@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from kw_webapp.constants import API_KEY
 from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile
 from kw_webapp.tasks import (
-    build_v1_user_information_api_string,
     build_API_sync_string_for_user_for_levels,
     build_API_sync_string_for_api_key_for_levels)
 
@@ -33,6 +32,9 @@ def create_lesson(vocabulary, user):
     u.streak = 0
     u.save()
     return u
+
+def build_v1_user_information_api_string(api_key):
+    return "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
 
 @responses.activate
 def create_profile(user, api_key, level):

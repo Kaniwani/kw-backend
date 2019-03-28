@@ -124,7 +124,6 @@ class Profile(models.Model):
             self.unlocked_levels.get_or_create(level=self.level)
             self.save()
             syncer.sync_user_profile_with_wk()
-            # in V1 its this: unlock_eligible_vocab_from_levels(user, user.profile.level)
             syncer.unlock_vocab(self.level)
         except exceptions.InvalidWaniKaniKey or InvalidWanikaniApiKeyException as e:
             self.api_valid = False

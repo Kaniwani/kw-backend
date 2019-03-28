@@ -216,16 +216,6 @@ def unlock_all_possible_levels_for_user(user):
     return level_list, unlocked_now, unlocked_total, locked
 
 
-def get_wanikani_level_by_api_key(api_key):
-    api_string = "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
-    response = make_api_call(api_string)
-    user_info = response["user_information"]
-    level = user_info["level"]
-    return level
-
-
-def build_v1_user_information_api_string(api_key):
-    return "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
 
 @shared_task
 def sync_with_wk(user_id, full=False):
