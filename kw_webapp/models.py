@@ -114,6 +114,10 @@ class Profile(models.Model):
     on_vacation = models.BooleanField(default=False)
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
 
+    def begin_vacation(self):
+        self.vacation_date = timezone.now()
+        self.save()
+
     def return_from_vacation(self):
         """
         Called when a user disables vacation mode. A one-time pass through their reviews in order to correct their last_studied_date, and quickly run an SRS run to determine which reviews currently need to be looked at.

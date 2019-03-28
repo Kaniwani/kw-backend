@@ -318,9 +318,6 @@ def sync_all_users_to_wk():
     return affected_count
 
 
-def user_begins_vacation(user):
-    user.profile.vacation_date = timezone.now()
-    user.profile.save()
 
 
 def user_started_following(user):
