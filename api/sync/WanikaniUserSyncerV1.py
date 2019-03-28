@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
 
-from django.contrib.auth.models import User
 from django.utils import timezone
 
 from api.sync.WanikaniUserSyncer import WanikaniUserSyncer

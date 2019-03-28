@@ -7,11 +7,9 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
-from django.db.models import Count, F
+from django.db.models import F
 from django.utils import timezone
-from wanikani_api.exceptions import InvalidWanikaniApiKeyException
 
-from api.sync.SyncerFactory import Syncer
 from kw_webapp import constants
 from kw_webapp.constants import (
     TWITTER_USERNAME_REGEX,
@@ -19,8 +17,6 @@ from kw_webapp.constants import (
     WkSrsLevel,
     WANIKANI_SRS_LEVELS,
 )
-from kw_webapp.tasks import all_srs
-from kw_webapp.wanikani import exceptions
 
 logger = logging.getLogger(__name__)
 
@@ -54,7 +50,7 @@ class Level(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
-    api_key = models.CharField(max_length=255)
+    api_key = models.CharField(max_length=255, null=True)
     api_key_v2 = models.CharField(max_length=255, null=True)
     api_valid = models.BooleanField(default=True)
     gravatar = models.CharField(max_length=255)
@@ -117,22 +113,6 @@ class Profile(models.Model):
     on_vacation = models.BooleanField(default=False)
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
 
-    def start_following_wanikani(self):
-        try:
-            syncer = Syncer.factory(self)
-            self.level = syncer.get_wanikani_level()
-            self.unlocked_levels.get_or_create(level=self.level)
-            self.save()
-            syncer.sync_user_profile_with_wk()
-            syncer.unlock_vocab(self.level)
-        except exceptions.InvalidWaniKaniKey or InvalidWanikaniApiKeyException as e:
-            self.api_valid = False
-            self.save()
-            raise e
-
-    def stop_following_wanikani(self):
-        self.follow_me = False
-        self.save()
 
     def begin_vacation(self):
         self.vacation_date = timezone.now()
@@ -398,6 +378,7 @@ class UserSpecific(models.Model):
 
     lessons = LessonManager()
     reviews = ReviewManager()
+    objects = models.Manager()
 
     class Meta:
         unique_together = ("vocabulary", "user")

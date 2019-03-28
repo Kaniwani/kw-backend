@@ -13,31 +13,6 @@ from rest_framework.reverse import reverse_lazy
 
 from api.decorators import checks_wanikani
 from api.filters import VocabularyFilter, ReviewFilter
-from api.permissions import (
-    IsAdminOrReadOnly,
-    IsAuthenticatedOrCreating,
-    IsAdminOrAuthenticatedAndCreating,
-)
-from api.serializers import (
-    ReviewSerializer,
-    VocabularySerializer,
-    StubbedReviewSerializer,
-    HyperlinkedVocabularySerializer,
-    ReadingSerializer,
-    LevelSerializer,
-    ReadingSynonymSerializer,
-    FrequentlyAskedQuestionSerializer,
-    AnnouncementSerializer,
-    UserSerializer,
-    ContactSerializer,
-    ProfileSerializer,
-    ReportSerializer,
-    ReportCountSerializer,
-    ReportListSerializer,
-    MeaningSynonymSerializer,
-    RegistrationSerializer,
-    ReviewCountSerializer,
-)
 from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating, IsAdminOrAuthenticatedAndCreating
 from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
     HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
@@ -54,7 +29,7 @@ import logging
 
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_critical_reviews, \
     get_all_users_reviews, all_srs, reset_user, \
-    sync_with_wk, lock_level_for_user
+    sync_with_wk, lock_level_for_user, start_following_wanikani
 
 logger = logging.getLogger(__name__)
 
@@ -511,7 +486,7 @@ class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
             old_instance.begin_vacation()
 
         if not old_instance.follow_me and serializer.validated_data.get("follow_me"):
-            old_instance.start_following_wanikani()
+            start_following_wanikani(user)
 
         # Since if we have gotten this far, we know that API key is valid, we set it here.
         api_validated = serializer.validated_data.get("api_key", None)

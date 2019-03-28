@@ -171,6 +171,22 @@ def build_API_sync_string_for_user(user):
     api_call += level_string
     return api_call
 
+def start_following_wanikani(user):
+    try:
+        syncer = Syncer.factory(user.profile)
+        user.profile.level = syncer.get_wanikani_level()
+        user.profile.unlocked_levels.get_or_create(level=user.profile.level)
+        user.profile.save()
+        syncer.sync_user_profile_with_wk()
+        syncer.unlock_vocab(user.profile.level)
+    except exceptions.InvalidWaniKaniKey or InvalidWanikaniApiKeyException as e:
+        user.profile.api_valid = False
+        user.profile.save()
+        raise e
+
+def stop_following_wanikani(user):
+    user.profile.follow_me = False
+    user.profile.save()
 
 def build_API_sync_string_for_user_for_levels(user, levels):
     return build_API_sync_string_for_api_key_for_levels(user.profile.api_key, levels)
@@ -350,7 +366,7 @@ def build_upcoming_srs_for_user(user):
 def reset_user(user, reset_to_level):
     reset_levels(user, reset_to_level)
     reset_reviews(user, reset_to_level)
-    user.profile.stop_following_wanikani()
+    stop_following_wanikani(user)
     # Set to current level.
     level = Syncer.factory(user.profile).get_wanikani_level()
     user.profile.level = level

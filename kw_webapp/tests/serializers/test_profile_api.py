@@ -213,7 +213,7 @@ class TestProfileApi(APITestCase):
             data={
                 "username": "createme",
                 "password": "password",
-                "api_key": constants.API_KEY,
+                "api_key_v2": constants.API_KEY,
                 "email": "asdf@email.com",
             },
         )

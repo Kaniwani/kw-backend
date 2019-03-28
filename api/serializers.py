@@ -238,9 +238,6 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class RegistrationSerializer(serializers.ModelSerializer):
-    api_key = serializers.CharField(
-        write_only=True, max_length=32, validators=[WanikaniApiKeyValidatorV1()]
-    )
     api_key_v2 = serializers.CharField(
         write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV2()]
     )
@@ -248,7 +245,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("api_key", "api_key_v2", "password", "username", "email")
+        fields = ("api_key_v2", "password", "username", "email")
 
     def validate_password(self, value):
         if len(value) < 4:
