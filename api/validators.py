@@ -28,6 +28,8 @@ class WanikaniApiKeyValidatorV2(object):
         self.failure_message = "This V2 API key appears to be invalid"
 
     def __call__(self, value):
+        if not value or value == 'None':
+            return None
         client = WkV2Client(value)
         try:
             client.user_information()

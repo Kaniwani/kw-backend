@@ -96,7 +96,7 @@ CELERY_RESULTS_SERIALIZER = 'json'
 CELERY_TIMEZONE = MY_TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     "all_user_srs_every_hour": {
-        "task": "kw_webapp.tasks.all_srs",
+        "task": "kw_webapp.srs.all_srs",
         "schedule": crontab(minute="*/15"),
     },
     "update_users_unlocked_vocab": {

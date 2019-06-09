@@ -195,7 +195,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                 )
             )
             try:
-                assignments = self.client.assignments(subject_types="vocabulary", fetch_all=True)
+                assignments = self.client.assignments(subject_types="vocabulary", levels=self.profile.unlocked_levels_list(), fetch_all=True)
 
                 new_review_count, total_unlocked, total_locked = self.process_vocabulary_response_for_user_v2(assignments)
             except InvalidWanikaniApiKeyException:

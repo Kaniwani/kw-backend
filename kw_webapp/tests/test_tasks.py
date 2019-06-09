@@ -10,7 +10,8 @@ from api.sync.SyncerFactory import Syncer
 from api.sync.WanikaniUserSyncerV2 import WanikaniUserSyncerV2
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific, MeaningSynonym, AnswerSynonym
-from kw_webapp.tasks import  past_time, all_srs, associate_vocab_to_user, \
+from kw_webapp.srs import all_srs
+from kw_webapp.tasks import  past_time, associate_vocab_to_user, \
     build_API_sync_string_for_user, \
     lock_level_for_user, unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     get_users_future_reviews, sync_all_users_to_wk, \

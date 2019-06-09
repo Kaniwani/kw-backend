@@ -146,8 +146,6 @@ class Profile(models.Model):
         self.vacation_date = None
         self.on_vacation = False
         self.save()
-        all_srs(self.user)
-        #TODO MOVE THIS INTO THE VIEW.
 
     def get_minimum_wk_srs_threshold_for_review(self):
         minimum_wk_srs = self.minimum_wk_srs_level_to_review

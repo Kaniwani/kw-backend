@@ -288,10 +288,10 @@ class RegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(many=False, read_only=True)
     api_key = serializers.CharField(
-        write_only=True, max_length=32, validators=[WanikaniApiKeyValidatorV1()]
+        write_only=True, max_length=32, validators=[WanikaniApiKeyValidatorV1()], allow_null=True, allow_blank=True
     )
     api_key_v2 = serializers.CharField(
-        write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV2()]
+        write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV2()], allow_null=True, allow_blank=True
     )
     password = serializers.CharField(write_only=True)
 

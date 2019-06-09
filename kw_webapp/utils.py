@@ -18,9 +18,6 @@ from kw_webapp.models import (
     Level,
     logger,
 )
-from kw_webapp.tasks import (
-    has_multiple_kanji,
-)
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.tests.utils import create_review_for_specific_time
 

@@ -11,7 +11,8 @@ from api.sync.WanikaniUserSyncerV1 import WanikaniUserSyncerV1
 from api.sync.WanikaniUserSyncerV2 import WanikaniUserSyncerV2
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific
-from kw_webapp.tasks import past_time, all_srs, \
+from kw_webapp.srs import all_srs
+from kw_webapp.tasks import past_time, \
     unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
     get_users_future_reviews, sync_all_users_to_wk, \
     sync_with_wk, get_users_current_reviews
@@ -115,7 +116,8 @@ class TestSync(TestCase):
         self.review.save()
         previously_studied = self.review.last_studied
 
-        self.user.profile.return_from_vacation(self.user)
+        self.user.profile.return_from_vacation()
+        all_srs(self.user)
 
         self.review.refresh_from_db()
         self.assertNotEqual(self.review.last_studied, previously_studied)

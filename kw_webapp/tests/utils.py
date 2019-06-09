@@ -151,6 +151,9 @@ def _mock_wk_response(url, json):
 def mock_assignments_with_one_assignment():
     _mock_wk_response(build_assignments_url(), sample_api_responses_v2.single_assignment)
 
+def mock_assignments_with_no_assignments():
+    _mock_wk_response(build_assignments_url(), sample_api_responses_v2.no_assignments)
+
 def mock_user_response_v2():
     responses.add(
         responses.GET,

@@ -199,6 +199,19 @@ subjects_v2 = {
   ]
 }
 
+no_assignments = {
+"object": "collection",
+  "url": "https://api.wanikani.com/v2/assignments?levels=10",
+  "pages": {
+    "per_page": 500,
+    "next_url": None,
+    "previous_url": None
+  },
+  "total_count": 0,
+  "data_updated_at": "2019-02-18T02:50:55.384575Z",
+  "data": []
+}
+
 single_assignment = {
   "object": "collection",
   "url": "https://api.wanikani.com/v2/assignments?levels=10",

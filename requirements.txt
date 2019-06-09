@@ -49,7 +49,7 @@ pytz==2018.3
 raven==6.6.0
 redis==2.10.5
 requests==2.12.1
-responses==0.5.1
+responses==0.10.6
 simplejson==3.10.0
 six==1.11.0
 sqlparse==0.2.4
@@ -60,4 +60,3 @@ uritemplate==3.0.0
 urllib3==1.21.1
 vine==1.1.4
 
-wanikani_api==0.2.0

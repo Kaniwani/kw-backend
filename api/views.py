@@ -27,8 +27,9 @@ from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSyn
 
 import logging
 
+from kw_webapp.srs import all_srs
 from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_critical_reviews, \
-    get_all_users_reviews, all_srs, reset_user, \
+    get_all_users_reviews, reset_user, \
     sync_with_wk, lock_level_for_user, start_following_wanikani
 
 logger = logging.getLogger(__name__)
@@ -479,6 +480,7 @@ class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
             "on_vacation"
         ):
             old_instance.return_from_vacation()
+            all_srs(user)
 
         if not old_instance.on_vacation and serializer.validated_data.get(
             "on_vacation"
