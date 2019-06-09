@@ -22,8 +22,8 @@ from kw_webapp.tests.utils import (
 )
 from kw_webapp.tests.utils import create_vocab
 
-
 class TestModels(APITestCase):
+
     def setUp(self):
         self.user = create_user("Tadgh")
         self.user.set_password("password")

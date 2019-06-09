@@ -152,7 +152,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         max_length=32, validators=[WanikaniApiKeyValidatorV1()]
     )
     api_key_v2 = serializers.CharField(
-        max_length=40, validators=[WanikaniApiKeyValidatorV2()]
+        max_length=40, validators=[WanikaniApiKeyValidatorV2()], allow_null=True
     )
 
     class Meta:

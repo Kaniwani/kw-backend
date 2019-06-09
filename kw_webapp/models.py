@@ -376,8 +376,6 @@ class UserSpecific(models.Model):
     meaning_note = models.CharField(max_length=2000, null=True)
     reading_note = models.CharField(max_length=2000, null=True)
 
-    lessons = LessonManager()
-    reviews = ReviewManager()
     objects = models.Manager()
 
     class Meta:
