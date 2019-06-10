@@ -220,7 +220,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                         updated_vocabulary_count += 1
                 except Vocabulary.DoesNotExist as e:
                     local_vocabulary = Vocabulary.objects.create(wk_subject_id=remote_vocabulary.id)
-                    local_vocabulary.reconcile()
+                    local_vocabulary.reconcile(remote_vocabulary)
                     created_vocabulary_count += 1
             return updated_vocabulary_count
         except InvalidWanikaniApiKeyException:
