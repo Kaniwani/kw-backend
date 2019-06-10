@@ -321,7 +321,7 @@ class Reading(models.Model):
     furigana_sentence_ja = JSONField(max_length=1000, default={})
 
     class Meta:
-        unique_together = ("character", "kana")
+        unique_together = ("vocabulary", "character", "kana")
 
     def __str__(self):
         return "{} - {} - {} - {}".format(
