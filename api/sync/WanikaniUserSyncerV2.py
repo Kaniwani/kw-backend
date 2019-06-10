@@ -211,7 +211,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
         try:
             updated_vocabulary_count = 0
             created_vocabulary_count = 0
-            vocabulary = self.client.subjects(types="vocabulary")
+            vocabulary = self.client.subjects(types="vocabulary", fetch_all=True)
             for remote_vocabulary in vocabulary:
                 try:
                     self.logger.info(f"About to attempt to reconcile remote vocabulary: {remote_vocabulary}")
