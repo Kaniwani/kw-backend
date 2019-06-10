@@ -214,11 +214,15 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
             vocabulary = self.client.subjects(types="vocabulary")
             for remote_vocabulary in vocabulary:
                 try:
+                    self.logger.info(f"About to attempt to reconcile remote vocabulary: {remote_vocabulary}")
                     local_vocabulary = Vocabulary.objects.get(wk_subject_id=remote_vocabulary.id)
+                    self.logger.info(f"Found a local equivalent with Subject ID attached! {local_vocabulary.id}")
                     if local_vocabulary.is_out_of_date(remote_vocabulary):
+                        self.logger.info("Looks like our local info is out of date. Reconciling.")
                         local_vocabulary.reconcile(remote_vocabulary)
                         updated_vocabulary_count += 1
                 except Vocabulary.DoesNotExist as e:
+                    self.logger.info(f"Couldn't find a Vocabulary with remote id: {remote_vocabulary.id}")
                     local_vocabulary = Vocabulary.objects.create(wk_subject_id=remote_vocabulary.id)
                     local_vocabulary.reconcile(remote_vocabulary)
                     created_vocabulary_count += 1

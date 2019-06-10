@@ -412,6 +412,7 @@ def add_subject_ids():
             match_count += 1
             logger.info(f"{match_count}/{total_subs}:\t{subject.characters}")
         except Vocabulary.DoesNotExist as e:
+            logger.warn(f"Found no local vocabulary with characters: {subject.characters}")
             no_local_equivalent.append(subject)
 
     unmatched = Vocabulary.objects.filter(wk_subject_id=0)
