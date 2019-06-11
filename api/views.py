@@ -4,7 +4,7 @@ from rest_framework import generics, filters
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.decorators import list_route, detail_route, permission_classes
+from rest_framework.decorators import list_route, detail_route, permission_classes, action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -181,7 +181,7 @@ class ReportViewSet(viewsets.ModelViewSet):
     serializer_class = ReportSerializer
     permission_classes = (IsAdminOrAuthenticatedAndCreating,)
 
-    @list_route(methods=["GET"])
+    @action(detail=False)
     def counts(self, request):
         serializer = ReportCountSerializer(Report.objects.all())
         return Response(serializer.data)
@@ -263,7 +263,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
     filter_class = ReviewFilter
     permission_classes = (IsAuthenticated,)
 
-    @list_route(methods=["GET"])
+    @action(detail=False)
     def lesson(self, request):
         lessons = get_users_lessons(request.user)
         page = self.paginate_queryset(lessons)
@@ -274,7 +274,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
         serializer = StubbedReviewSerializer(lessons, many=True)
         return Response(serializer.data)
 
-    @list_route(methods=["GET"])
+    @action(detail=False)
     def current(self, request):
         reviews = get_users_current_reviews(request.user)
         page = self.paginate_queryset(reviews)
@@ -286,7 +286,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
         serializer = StubbedReviewSerializer(reviews, many=True)
         return Response(serializer.data)
 
-    @list_route(methods=["GET"])
+    @action(detail=False)
     def critical(self, request):
         critical_reviews = get_users_critical_reviews(request.user)
         page = self.paginate_queryset(critical_reviews)
@@ -340,7 +340,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
     def unhide(self, request, pk=None):
         return self._set_hidden(request, False, pk)
 
-    @list_route(methods=["GET"])
+    @action(detail=False)
     def counts(self, request):
         user = request.user
         serializer = ReviewCountSerializer(user)
@@ -415,13 +415,13 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
 
         return User.objects.filter(pk=self.request.user.id)
 
-    @list_route(methods=["GET"])
+    @action(detail=False)
     def me(self, request):
         user = request.user
         serializer = self.get_serializer(user, many=False)
         return Response(serializer.data)
 
-    @list_route(methods=["POST"])
+    @action(detail=False, methods=["POST"])
     def sync(self, request):
         should_full_sync = False
         if "full_sync" in request.data:
@@ -438,13 +438,13 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
             }
         )
 
-    @list_route(methods=["POST"])
+    @action(detail=False, methods=["POST"])
     def srs(self, request):
         all_srs(request.user)
         new_review_count = get_users_current_reviews(request.user).count()
         return Response({"review_count": new_review_count})
 
-    @list_route(methods=['POST'])
+    @action(detail=False, methods=['POST'])
     @checks_wanikani
     def reset(self, request):
         reset_to_level = int(request.data["level"]) if "level" in request.data else None
