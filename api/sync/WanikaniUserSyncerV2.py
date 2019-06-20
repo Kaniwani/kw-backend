@@ -140,7 +140,6 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
             review.reconcile_assignment(assignment)
         return review, created #Note that synonym added count will need to be fixed.
 
-    # TODO migrate this to class manager in ORM?
     def get_or_create_review_for_user(self, vocab):
         """
         takes a vocab, and creates a UserSpecific object for the user based on it. Returns the vocab object.
