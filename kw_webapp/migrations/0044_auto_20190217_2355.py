@@ -7,29 +7,27 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0043_userspecific_wk_last_modified'),
-    ]
+    dependencies = [("kw_webapp", "0043_userspecific_wk_last_modified")]
 
     operations = [
         migrations.RenameField(
-            model_name='userspecific',
-            old_name='wk_last_modified',
-            new_name='wk_assignment_last_modified',
+            model_name="userspecific",
+            old_name="wk_last_modified",
+            new_name="wk_assignment_last_modified",
         ),
         migrations.AddField(
-            model_name='userspecific',
-            name='meaning_note',
+            model_name="userspecific",
+            name="meaning_note",
             field=models.CharField(max_length=2000, null=True),
         ),
         migrations.AddField(
-            model_name='userspecific',
-            name='reading_note',
+            model_name="userspecific",
+            name="reading_note",
             field=models.CharField(max_length=2000, null=True),
         ),
         migrations.AddField(
-            model_name='userspecific',
-            name='wk_study_materials_last_modified',
+            model_name="userspecific",
+            name="wk_study_materials_last_modified",
             field=models.DateTimeField(null=True),
         ),
     ]

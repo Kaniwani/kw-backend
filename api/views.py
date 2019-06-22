@@ -4,7 +4,7 @@ from rest_framework import generics, filters
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.decorators import list_route, detail_route, permission_classes, action
+from rest_framework.decorators import detail_route, action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -13,24 +13,59 @@ from rest_framework.reverse import reverse_lazy
 
 from api.decorators import checks_wanikani
 from api.filters import VocabularyFilter, ReviewFilter
-from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating, IsAdminOrAuthenticatedAndCreating
-from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
-    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
-    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
-    ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer, \
-    ReviewCountSerializer
+from api.permissions import (
+    IsAdminOrReadOnly,
+    IsAuthenticatedOrCreating,
+    IsAdminOrAuthenticatedAndCreating,
+)
+from api.serializers import (
+    ReviewSerializer,
+    VocabularySerializer,
+    StubbedReviewSerializer,
+    HyperlinkedVocabularySerializer,
+    ReadingSerializer,
+    LevelSerializer,
+    ReadingSynonymSerializer,
+    FrequentlyAskedQuestionSerializer,
+    AnnouncementSerializer,
+    UserSerializer,
+    ContactSerializer,
+    ProfileSerializer,
+    ReportSerializer,
+    ReportCountSerializer,
+    ReportListSerializer,
+    MeaningSynonymSerializer,
+    ReviewCountSerializer,
+)
 from api.sync.SyncerFactory import Syncer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
-from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
-    Announcement, Profile, Report, MeaningSynonym
+from kw_webapp.models import (
+    Vocabulary,
+    UserSpecific,
+    Reading,
+    Level,
+    AnswerSynonym,
+    FrequentlyAskedQuestion,
+    Announcement,
+    Profile,
+    Report,
+    MeaningSynonym,
+)
 
 import logging
 
 from kw_webapp.srs import all_srs
-from kw_webapp.tasks import get_users_lessons, get_users_current_reviews, get_users_critical_reviews, \
-    get_all_users_reviews, reset_user, \
-    sync_with_wk, lock_level_for_user, start_following_wanikani
+from kw_webapp.tasks import (
+    get_users_lessons,
+    get_users_current_reviews,
+    get_users_critical_reviews,
+    get_all_users_reviews,
+    reset_user,
+    sync_with_wk,
+    lock_level_for_user,
+    start_following_wanikani,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -92,16 +127,17 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
 
     def _serialize_level(self, level, request):
         unlocked = (
-            True if level in request.user.profile.unlocked_levels_list() else False
-        )
-        level_obj = (
-            request.user.profile.unlocked_levels.get(level=level) if unlocked else None
+            True
+            if level in request.user.profile.unlocked_levels_list()
+            else False
         )
 
         pre_serialized_dict = {
             "level": level,
             "unlocked": unlocked,
-            "vocabulary_count": Vocabulary.objects.filter(readings__level=level)
+            "vocabulary_count": Vocabulary.objects.filter(
+                readings__level=level
+            )
             .distinct()
             .count(),
             "vocabulary_url": level,
@@ -136,9 +172,9 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
         if int(requested_level) > user.profile.level:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
-        unlocked_this_request, total_unlocked, locked = Syncer\
-            .factory(user.profile)\
-            .unlock_vocab(requested_level)
+        unlocked_this_request, total_unlocked, locked = Syncer.factory(
+            user.profile
+        ).unlock_vocab(requested_level)
         user.profile.unlocked_levels.get_or_create(level=requested_level)
 
         return Response(
@@ -311,7 +347,10 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
     @detail_route(methods=["POST"])
     def correct(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
-        if not review.can_be_managed_by(request.user) or not review.needs_review:
+        if (
+            not review.can_be_managed_by(request.user)
+            or not review.needs_review
+        ):
             raise PermissionDenied(
                 "You can't review a review that doesn't need to be reviewed! ٩(ఠ益ఠ)۶"
             )
@@ -324,7 +363,10 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
     @detail_route(methods=["POST"])
     def incorrect(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
-        if not review.can_be_managed_by(request.user) or not review.needs_review:
+        if (
+            not review.can_be_managed_by(request.user)
+            or not review.needs_review
+        ):
             raise PermissionDenied(
                 "You can't review a review that doesn't need to be reviewed! ٩(ఠ益ఠ)۶"
             )
@@ -444,10 +486,12 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         new_review_count = get_users_current_reviews(request.user).count()
         return Response({"review_count": new_review_count})
 
-    @action(detail=False, methods=['POST'])
+    @action(detail=False, methods=["POST"])
     @checks_wanikani
     def reset(self, request):
-        reset_to_level = int(request.data["level"]) if "level" in request.data else None
+        reset_to_level = (
+            int(request.data["level"]) if "level" in request.data else None
+        )
         if reset_to_level is None:
             return HttpResponseBadRequest("You must pass a level to reset to.")
         reset_user(request.user, reset_to_level)
@@ -487,7 +531,9 @@ class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
         ):
             old_instance.begin_vacation()
 
-        if not old_instance.follow_me and serializer.validated_data.get("follow_me"):
+        if not old_instance.follow_me and serializer.validated_data.get(
+            "follow_me"
+        ):
             start_following_wanikani(user)
 
         # Since if we have gotten this far, we know that API key is valid, we set it here.
@@ -509,7 +555,9 @@ class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        form = UserContactCustomForm(data=serializer.data, request=self.request)
+        form = UserContactCustomForm(
+            data=serializer.data, request=self.request
+        )
 
         if not form.is_valid():
             return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -8,6 +8,7 @@ from kw_webapp.models import UserSpecific
 
 logger = logging.getLogger(__name__)
 
+
 @shared_task
 def all_srs(user=None):
     """
@@ -33,7 +34,9 @@ def all_srs(user=None):
 
     if user:
         review_set = UserSpecific.objects.filter(
-            user=user, next_review_date__lte=slightly_ahead_of_now, needs_review=False
+            user=user,
+            next_review_date__lte=slightly_ahead_of_now,
+            needs_review=False,
         )
     else:
         review_set = UserSpecific.objects.filter(

@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0044_auto_20190217_2355'),
-    ]
+    dependencies = [("kw_webapp", "0044_auto_20190217_2355")]
 
     operations = [
         migrations.AddField(
-            model_name='vocabulary',
-            name='auxiliary_meanings_whitelist',
+            model_name="vocabulary",
+            name="auxiliary_meanings_whitelist",
             field=models.CharField(max_length=500, null=True),
-        ),
+        )
     ]

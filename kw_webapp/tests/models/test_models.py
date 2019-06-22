@@ -22,8 +22,8 @@ from kw_webapp.tests.utils import (
 )
 from kw_webapp.tests.utils import create_vocab
 
-class TestModels(APITestCase):
 
+class TestModels(APITestCase):
     def setUp(self):
         self.user = create_user("Tadgh")
         self.user.set_password("password")
@@ -54,7 +54,9 @@ class TestModels(APITestCase):
         relevant_review_id = UserSpecific.objects.get(
             user=self.user, vocabulary=self.vocabulary
         ).id
-        before_toggle_hidden = UserSpecific.objects.get(id=relevant_review_id).hidden
+        before_toggle_hidden = UserSpecific.objects.get(
+            id=relevant_review_id
+        ).hidden
 
         if self.client.login(username=self.user.username, password="password"):
             response = self.client.post(
@@ -79,11 +81,15 @@ class TestModels(APITestCase):
     def test_removing_nonexistent_synonym_fails(self):
         remove_text = "un chien"
         self.assertRaises(
-            MeaningSynonym.DoesNotExist, self.review.remove_synonym, remove_text
+            MeaningSynonym.DoesNotExist,
+            self.review.remove_synonym,
+            remove_text,
         )
 
     def test_removing_synonym_by_object_works(self):
-        synonym, created = self.review.meaning_synonyms.get_or_create(text="minou")
+        synonym, created = self.review.meaning_synonyms.get_or_create(
+            text="minou"
+        )
         self.review.meaning_synonyms.remove(synonym)
 
     def test_reading_clean_fails_with_invalid_levels_too_high(self):
@@ -99,8 +105,8 @@ class TestModels(APITestCase):
         self.assertRaises(ValidationError, r.clean_fields)
 
     def test_vocab_number_readings_is_correct(self):
-        r = create_reading(self.vocabulary, "ねこ", "ねこ", 2)
-        r = create_reading(self.vocabulary, "ねこな", "猫", 1)
+        create_reading(self.vocabulary, "ねこ", "ねこ", 2)
+        create_reading(self.vocabulary, "ねこな", "猫", 1)
         self.assertEqual(self.vocabulary.reading_count(), 2)
 
     def test_synonym_adding(self):
@@ -113,7 +119,10 @@ class TestModels(APITestCase):
         self.review.reading_synonyms.create(kana="shwoop", character="fwoop")
 
         expected = list(
-            chain(self.vocabulary.readings.all(), self.review.reading_synonyms.all())
+            chain(
+                self.vocabulary.readings.all(),
+                self.review.reading_synonyms.all(),
+            )
         )
 
         self.assertListEqual(expected, self.review.get_all_readings())
@@ -133,7 +142,9 @@ class TestModels(APITestCase):
 
         self.assertEqual(users_profile.twitter, "@Tadgh")
 
-    def test_setting_an_invalid_twitter_handle_does_not_modify_model_instance(self):
+    def test_setting_an_invalid_twitter_handle_does_not_modify_model_instance(
+        self
+    ):
         invalid_account_name = "!!"
         old_twitter = self.user.profile.twitter
 
@@ -143,7 +154,9 @@ class TestModels(APITestCase):
 
         self.assertEqual(users_profile.twitter, old_twitter)
 
-    def test_setting_a_blank_twitter_handle_does_not_modify_model_instance(self):
+    def test_setting_a_blank_twitter_handle_does_not_modify_model_instance(
+        self
+    ):
         invalid_account_name = "@"
         old_twitter = self.user.profile.twitter
 
@@ -198,9 +211,15 @@ class TestModels(APITestCase):
         users_profile = Profile.objects.get(user=self.user)
         self.assertEqual(old_twitter, users_profile.twitter)
 
-    def test_answering_a_review_correctly_rounds_next_review_date_up_to_interval(self):
-        self.review.next_review_date = self.review.next_review_date.replace(minute=17)
-        self.review.last_studied = self.review.next_review_date.replace(minute=17)
+    def test_answering_a_review_correctly_rounds_next_review_date_up_to_interval(
+        self
+    ):
+        self.review.next_review_date = self.review.next_review_date.replace(
+            minute=17
+        )
+        self.review.last_studied = self.review.next_review_date.replace(
+            minute=17
+        )
         self.review.answered_correctly(first_try=True)
         self.review.refresh_from_db()
 
@@ -221,8 +240,12 @@ class TestModels(APITestCase):
         )
 
     def test_rounding_a_review_time_only_goes_up(self):
-        self.review.next_review_date = self.review.next_review_date.replace(minute=17)
-        self.review.last_studied = self.review.next_review_date.replace(minute=17)
+        self.review.next_review_date = self.review.next_review_date.replace(
+            minute=17
+        )
+        self.review.last_studied = self.review.next_review_date.replace(
+            minute=17
+        )
         self.review._round_review_time_up()
         self.review.refresh_from_db()
 
@@ -262,7 +285,9 @@ class TestModels(APITestCase):
     def test_handle_wanikani_level_up_correctly_levels_up(self):
         old_level = self.user.profile.level
 
-        self.user.profile.handle_wanikani_level_change(self.user.profile.level + 1)
+        self.user.profile.handle_wanikani_level_change(
+            self.user.profile.level + 1
+        )
         self.user.refresh_from_db()
 
         self.assertEqual(self.user.profile.level, old_level + 1)
@@ -338,7 +363,7 @@ class TestModels(APITestCase):
         self.assertTrue(self.review.notes is not None)
 
     def test_tag_names_are_unique(self):
-        original_tag = Tag.objects.create(name="S P I C Y")
+        Tag.objects.create(name="S P I C Y")
         self.assertRaises(IntegrityError, Tag.objects.create, name="S P I C Y")
 
     def test_setting_criticality_of_review(self):
@@ -388,13 +413,21 @@ class TestModels(APITestCase):
         self.vocabulary.parts_of_speech.get_or_create(part="verb")
         self.vocabulary.parts_of_speech.get_or_create(part="out_of_date")
         self.vocabulary.alternate_meanings = "out_of_date"
-        self.vocabulary.readings.get_or_create(kana="current_kana", character="current_character", level=1)
-        self.vocabulary.readings.get_or_create(kana="outdated_kana", character="outdated_character", level=1)
-        self.vocabulary.readings.get_or_create(kana="outdated_kana2", character="outdated_character2", level=1)
+        self.vocabulary.readings.get_or_create(
+            kana="current_kana", character="current_character", level=1
+        )
+        self.vocabulary.readings.get_or_create(
+            kana="outdated_kana", character="outdated_character", level=1
+        )
+        self.vocabulary.readings.get_or_create(
+            kana="outdated_kana2", character="outdated_character2", level=1
+        )
         self.vocabulary.save()
         self.vocabulary.refresh_from_db()
 
-        fake_new_vocab = Vocabulary(json_data=sample_api_responses_v2.single_vocab_v2)
+        fake_new_vocab = Vocabulary(
+            json_data=sample_api_responses_v2.single_vocab_v2
+        )
 
         assert self.vocabulary.is_out_of_date(fake_new_vocab)
         self.vocabulary.reconcile(fake_new_vocab)
@@ -402,15 +435,24 @@ class TestModels(APITestCase):
         self.vocabulary.refresh_from_db()
 
         assert self.vocabulary.readings.count() == 2
-        assert self.vocabulary.readings.filter(kana="swanky new kana").count() == 1
-        assert self.vocabulary.readings.filter(kana="current_kana").count() == 1
+        assert (
+            self.vocabulary.readings.filter(kana="swanky new kana").count()
+            == 1
+        )
+        assert (
+            self.vocabulary.readings.filter(kana="current_kana").count() == 1
+        )
 
         assert self.vocabulary.parts_of_speech.count() == 2
-        assert self.vocabulary.parts_of_speech.filter(part="out_of_date").count() == 0
+        assert (
+            self.vocabulary.parts_of_speech.filter(part="out_of_date").count()
+            == 0
+        )
         assert self.vocabulary.parts_of_speech.filter(part="verb").count() == 1
-        assert self.vocabulary.parts_of_speech.filter(part="definitely a verb").count() == 1
+        assert (
+            self.vocabulary.parts_of_speech.filter(
+                part="definitely a verb"
+            ).count()
+            == 1
+        )
         assert self.vocabulary.alternate_meanings == "secondary doesnt matter"
-
-
-
-

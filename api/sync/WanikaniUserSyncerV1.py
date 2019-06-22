@@ -14,7 +14,6 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         self.profile = profile
         self.logger = logging.getLogger(__name__)
 
-
     def sync_user_profile_with_wk(self):
         """
         Hits the WK api with user information in order to synchronize user metadata such as level and gravatar information.
@@ -23,7 +22,9 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         :return: boolean indicating the success of the API call.
         """
 
-        api_string = self.build_user_information_api_string(self.profile.api_key)
+        api_string = self.build_user_information_api_string(
+            self.profile.api_key
+        )
 
         try:
             json_data = make_api_call(api_string)
@@ -34,7 +35,9 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
 
         user_info = json_data["user_information"]
         self.profile.title = user_info["title"]
-        self.profile.join_date = datetime.utcfromtimestamp(user_info["creation_date"])
+        self.profile.join_date = datetime.utcfromtimestamp(
+            user_info["creation_date"]
+        )
         self.profile.topics_count = user_info["topics_count"]
         self.profile.posts_count = user_info["posts_count"]
         self.profile.about = user_info["about"]
@@ -45,17 +48,23 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         self.profile.api_valid = True
 
         if self.profile.follow_me:
-            self.profile.unlocked_levels.get_or_create(level=user_info["level"])
+            self.profile.unlocked_levels.get_or_create(
+                level=user_info["level"]
+            )
             self.profile.handle_wanikani_level_change(user_info["level"])
 
         self.profile.save()
 
-        self.logger.info("Synced {}'s Profile.".format(self.profile.user.username))
+        self.logger.info(
+            "Synced {}'s Profile.".format(self.profile.user.username)
+        )
 
         return True
 
     def build_user_information_api_string(self, api_key):
-        return "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
+        return "https://www.wanikani.com/api/user/{}/user-information".format(
+            api_key
+        )
 
     def sync_with_wk(self, full_sync=False):
         """
@@ -68,18 +77,26 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         """
         # We split this into two seperate API calls as we do not necessarily know the current level until
         # For the love of god don't delete this next line
-        self.logger.info("About to begin sync for user {}.".format(self.profile.user.username))
+        self.logger.info(
+            "About to begin sync for user {}.".format(
+                self.profile.user.username
+            )
+        )
         profile_sync_succeeded = self.sync_user_profile_with_wk()
         if profile_sync_succeeded:
             if not full_sync:
-                new_review_count, new_synonym_count = self.sync_recent_unlocked_vocab()
+                new_review_count, new_synonym_count = (
+                    self.sync_recent_unlocked_vocab()
+                )
             else:
-                new_review_count, new_synonym_count = self.sync_unlocked_vocab()
+                new_review_count, new_synonym_count = (
+                    self.sync_unlocked_vocab()
+                )
 
             return profile_sync_succeeded, new_review_count, new_synonym_count
         else:
             self.logger.warning(
-             "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed "
+                "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed "
             )
             return profile_sync_succeeded, 0, 0
 
@@ -91,7 +108,9 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         :return: The fully formatted API string that will provide.
         """
         level_string = (
-            ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
+            ",".join(str(level) for level in levels)
+            if isinstance(levels, list)
+            else levels
         )
         api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(
             self.profile.api_key, level_string
@@ -106,11 +125,15 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         if self.profile.unlocked_levels_list():
             levels = [
                 level
-                for level in range(self.profile.level - 2, self.profile.level + 1)
+                for level in range(
+                    self.profile.level - 2, self.profile.level + 1
+                )
                 if level in self.profile.unlocked_levels_list()
             ]
             if levels:
-                request_string = self.build_API_sync_string_for_user_for_levels(levels)
+                request_string = self.build_API_sync_string_for_user_for_levels(
+                    levels
+                )
                 try:
                     json_data = make_api_call(request_string)
                     new_review_count, new_synonym_count = self.process_vocabulary_response_for_user(
@@ -122,21 +145,28 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                     self.profile.save()
                 except exceptions.WanikaniAPIException as e:
                     self.logger.warn(
-                        "Couldn't sync recent vocab for {}".format(self.profile.user.username), e
+                        "Couldn't sync recent vocab for {}".format(
+                            self.profile.user.username
+                        ),
+                        e,
                     )
         return 0, 0
         pass
 
     def get_level_pages(self, levels):
         page_size = 5
-        return [levels[i : i + page_size] for i in range(0, len(levels), page_size)]
+        return [
+            levels[i : i + page_size] for i in range(0, len(levels), page_size)
+        ]
 
     def sync_unlocked_vocab(self):
         if self.profile.unlocked_levels_list():
             pages = self.get_level_pages(self.profile.unlocked_levels_list())
             new_review_count = new_synonym_count = 0
             for page in pages:
-                request_string = self.build_API_sync_string_for_user_for_levels(page)
+                request_string = self.build_API_sync_string_for_user_for_levels(
+                    page
+                )
                 self.logger.info(
                     "Creating sync string for user {}: {}".format(
                         self.profile.user.username, self.profile.api_key
@@ -154,7 +184,10 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                     self.profile.save()
                 except exceptions.WanikaniAPIException as e:
                     self.logger.error(
-                        "Couldn't sync recent vocab for {}".format(self.profile.user.username), e
+                        "Couldn't sync recent vocab for {}".format(
+                            self.profile.user.username
+                        ),
+                        e,
                     )
             return new_review_count, new_synonym_count
         else:
@@ -168,18 +201,24 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         :return: None
         """
 
-        if self.profile :
+        if self.profile:
             for level in self.profile.unlocked_levels_list():
                 self.pull_user_synonyms_by_level(level)
-                self.logger.info("Pulled user synonyms for {}".format(self.profile.user.username))
+                self.logger.info(
+                    "Pulled user synonyms for {}".format(
+                        self.profile.user.username
+                    )
+                )
         else:
-            #TODO move this elsewhere? This full synonym sync code.
+            # TODO move this elsewhere? This full synonym sync code.
             for profile in Profile.objects.all():
                 if len(profile.api_key) == 32:
                     user = profile.user
                     for level in profile.unlocked_levels_list():
                         self.pull_user_synonyms_by_level(level)
-                    self.logger.info("Pulled user synonyms for {}".format(user.username))
+                    self.logger.info(
+                        "Pulled user synonyms for {}".format(user.username)
+                    )
 
     def sync_top_level_vocabulary(self):
         """
@@ -196,18 +235,23 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         also be a list. :return: unlocked count, locked count
         """
 
-        api_call_string = self.build_API_sync_string_for_user_for_levels(levels)
+        api_call_string = self.build_API_sync_string_for_user_for_levels(
+            levels
+        )
         response = make_api_call(api_call_string)
-        unlocked_this_request, total_unlocked, locked = self.process_vocabulary_response_for_unlock(response)
+        unlocked_this_request, total_unlocked, locked = self.process_vocabulary_response_for_unlock(
+            response
+        )
         return unlocked_this_request, total_unlocked, locked
 
     def get_wanikani_level(self):
-        api_string = self.build_user_information_api_string(self.profile.api_key)
+        api_string = self.build_user_information_api_string(
+            self.profile.api_key
+        )
 
         json_data = make_api_call(api_string)
         user_info = json_data["user_information"]
         return user_info["level"]
-
 
     def process_vocabulary_response_for_user(self, json_data):
         """
@@ -235,19 +279,26 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                 if created:
                     new_review_count += 1
                 review.save()
-            else: # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
-                vocabulary, created = self.get_or_create_vocab_by_json(vocabulary_json)
-                new_review, synonyms_added_count = self.associate_synonyms_to_vocab(vocabulary, vocabulary_json['user_specific'])
+            else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
+                vocabulary, created = self.get_or_create_vocab_by_json(
+                    vocabulary_json
+                )
+                new_review, synonyms_added_count = self.associate_synonyms_to_vocab(
+                    vocabulary, vocabulary_json["user_specific"]
+                )
                 new_synonym_count += synonyms_added_count
-        self.logger.info("Synced Vocabulary for {}".format(self.profile.user.username))
+        self.logger.info(
+            "Synced Vocabulary for {}".format(self.profile.user.username)
+        )
         return new_review_count, new_synonym_count
-
 
     def process_single_item_from_wanikani(self, vocabulary):
         user_specific = vocabulary["user_specific"]
         vocab, _ = self.import_vocabulary_from_json(vocabulary)
         review, created = self.associate_vocab_to_user(vocab)
-        review, synonyms_added_count = self.synchronize_synonyms(review, user_specific)
+        review, synonyms_added_count = self.synchronize_synonyms(
+            review, user_specific
+        )
         review.wanikani_srs = user_specific["srs"]
         review.wanikani_srs_numeric = user_specific["srs_numeric"]
         review.wanikani_burned = user_specific["burned"]
@@ -259,7 +310,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         vocab = self.update_local_vocabulary_information(vocab, vocabulary)
         return vocab, is_new
 
-    def get_or_create_vocab_by_json(self,vocab_json):
+    def get_or_create_vocab_by_json(self, vocab_json):
         """
         if lookup by meaning fails, create a new vocab object and return it. See JSON Example here
         https://www.wanikani.com/api
@@ -289,9 +340,13 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             # TODO remove V1 syncer capability to ever update acutal infromation.
             # TODO leave this for the V2 syncer, as it is more accurate.
             self.logger.error(
-                "While attempting to get vocabulary {} we could not find it!".format(kanji)
+                "While attempting to get vocabulary {} we could not find it!".format(
+                    kanji
+                )
             )
-            raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(kanji))
+            raise Vocabulary.DoesNotExist(
+                "Couldn't find meaning: {}".format(kanji)
+            )
         else:
             return v.first()
 
@@ -303,12 +358,16 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         """
         meaning = vocabulary_json["meaning"]
         vocab = Vocabulary.objects.create(meaning=meaning)
-        vocab = self.update_local_vocabulary_information(vocab, vocabulary_json)
+        vocab = self.update_local_vocabulary_information(
+            vocab, vocabulary_json
+        )
         return vocab
 
     def update_local_vocabulary_information(self, vocab, vocabulary_json):
 
-        kana_list = [reading.strip() for reading in vocabulary_json["kana"].split(",")]
+        kana_list = [
+            reading.strip() for reading in vocabulary_json["kana"].split(",")
+        ]
         # Update the local meaning based on WK meaning
         meaning = vocabulary_json["meaning"]
         vocab.meaning = meaning
@@ -325,7 +384,9 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                 self.logger.info(
                     """Created new reading: {}, level {}
                                          associated to vocab {}""".format(
-                        new_reading.kana, new_reading.level, new_reading.vocabulary.meaning
+                        new_reading.kana,
+                        new_reading.level,
+                        new_reading.vocabulary.meaning,
                     )
                 )
         vocab.save()
@@ -349,7 +410,9 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             return review, created
 
         except UserSpecific.MultipleObjectsReturned:
-            us = UserSpecific.objects.filter(vocabulary=vocab, user=self.profile.user)
+            us = UserSpecific.objects.filter(
+                vocabulary=vocab, user=self.profile.user
+            )
             for u in us:
                 self.logger.error(
                     "during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(
@@ -383,8 +446,12 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         synonym_count = 0
 
         try:
-            review = UserSpecific.objects.get(user=self.profile.user, vocabulary=vocab)
-            _, synonym_count = self.synchronize_synonyms(review, user_specific_json)
+            review = UserSpecific.objects.get(
+                user=self.profile.user, vocabulary=vocab
+            )
+            _, synonym_count = self.synchronize_synonyms(
+                review, user_specific_json
+            )
         except UserSpecific.DoesNotExist:
             pass
 
@@ -408,14 +475,17 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         unlocked_this_request = 0
         for vocabulary_json in vocab_list:
             total_unlocked_count += 1
-            _, created, _ = self.process_single_item_from_wanikani(vocabulary_json)
+            _, created, _ = self.process_single_item_from_wanikani(
+                vocabulary_json
+            )
             if created:
                 unlocked_this_request += 1
 
-        self.logger.info("Unlocking level for {}".format(self.profile.user.username))
+        self.logger.info(
+            "Unlocking level for {}".format(self.profile.user.username)
+        )
         remaining_locked = original_length - total_unlocked_count
         return unlocked_this_request, total_unlocked_count, remaining_locked
-
 
     def pull_user_synonyms_by_level(self, level):
         """
@@ -432,22 +502,30 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             for vocabulary in vocabulary_list:
                 meaning = vocabulary["meaning"]
                 if (
-                        vocabulary["user_specific"]
-                        and vocabulary["user_specific"]["user_synonyms"]
+                    vocabulary["user_specific"]
+                    and vocabulary["user_specific"]["user_synonyms"]
                 ):
                     try:
                         review = UserSpecific.objects.get(
                             user=self.profile.user, vocabulary__meaning=meaning
                         )
-                        for synonym in vocabulary["user_specific"]["user_synonyms"]:
+                        for synonym in vocabulary["user_specific"][
+                            "user_synonyms"
+                        ]:
                             review.meaning_synonyms.get_or_create(text=synonym)
                         review.save()
                     except UserSpecific.DoesNotExist as e:
                         self.logger.error(
-                            "Couldn't pull review during a synonym sync: {}".format(e)
+                            "Couldn't pull review during a synonym sync: {}".format(
+                                e
+                            )
                         )
                     except KeyError as e:
-                        self.logger.error("No user_specific or synonyms?: {}".format(json_data))
+                        self.logger.error(
+                            "No user_specific or synonyms?: {}".format(
+                                json_data
+                            )
+                        )
                     except UserSpecific.MultipleObjectsReturned:
                         reviews = UserSpecific.objects.filter(
                             user=self.profile.user, vocabulary__meaning=meaning
@@ -463,4 +541,9 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             self.profile.api_valid = False
             self.profile.save()
         except exceptions.WanikaniAPIException as e:
-            self.logger.warning("Couldnt pull user synonyms for {}".format(self.profile.user.username), e)
+            self.logger.warning(
+                "Couldnt pull user synonyms for {}".format(
+                    self.profile.user.username
+                ),
+                e,
+            )

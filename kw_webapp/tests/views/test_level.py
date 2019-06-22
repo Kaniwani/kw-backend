@@ -13,7 +13,9 @@ from kw_webapp.utils import one_time_orphaned_level_clear
 
 class TestLevel(APITestCase):
     def setUp(self):
-        self._vocab_api_regex = re.compile("https://www\.wanikani\.com/api/user/.*")
+        self._vocab_api_regex = re.compile(
+            r"https://www\.wanikani\.com/api/user/.*"
+        )
         setupTestFixture(self)
 
     def test_locking_current_level_disables_following_setting(self):
@@ -22,7 +24,9 @@ class TestLevel(APITestCase):
         self.user.profile.level = 5
         self.user.save()
 
-        self.client.post(reverse("api:level-lock", args=(self.user.profile.level,)))
+        self.client.post(
+            reverse("api:level-lock", args=(self.user.profile.level,))
+        )
         response = self.client.get(reverse("api:user-me"))
         self.assertFalse(response.data["profile"]["follow_me"])
 
@@ -40,7 +44,9 @@ class TestLevel(APITestCase):
         self.user.save()
         level_too_high = 20
 
-        response = self.client.post(reverse("api:level-unlock", args=(level_too_high,)))
+        response = self.client.post(
+            reverse("api:level-unlock", args=(level_too_high,))
+        )
         self.assertEqual(response.status_code, 403)
 
     @responses.activate
@@ -68,17 +74,19 @@ class TestLevel(APITestCase):
         level = Level.objects.get(profile=self.user.profile, level=5)
         self.assertTrue(level is not None)
 
-        self.client.post(reverse("api:level-lock", args=(self.user.profile.level,)))
+        self.client.post(
+            reverse("api:level-lock", args=(self.user.profile.level,))
+        )
 
         levels = Level.objects.filter(profile=self.user.profile, level=5)
         self.assertEqual(levels.count(), 0)
 
     def test_one_time_orphan_clear_deletes_orphaned_levels(self):
-        l5 = self.user.profile.unlocked_levels.get_or_create(level=5)[0]
+        self.user.profile.unlocked_levels.get_or_create(level=5)[0]
         l6 = self.user.profile.unlocked_levels.get_or_create(level=6)[0]
         l7 = self.user.profile.unlocked_levels.get_or_create(level=7)[0]
-        l8 = self.user.profile.unlocked_levels.get_or_create(level=8)[0]
-        l9 = self.user.profile.unlocked_levels.get_or_create(level=9)[0]
+        self.user.profile.unlocked_levels.get_or_create(level=8)[0]
+        self.user.profile.unlocked_levels.get_or_create(level=9)[0]
 
         level_count = Level.objects.filter(profile=self.user.profile).count()
         self.assertEqual(level_count, 5)

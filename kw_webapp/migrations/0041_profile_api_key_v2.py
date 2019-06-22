@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0040_reading_furigana_sentence_ja'),
-    ]
+    dependencies = [("kw_webapp", "0040_reading_furigana_sentence_ja")]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='api_key_v2',
+            model_name="profile",
+            name="api_key_v2",
             field=models.CharField(max_length=255, null=True),
-        ),
+        )
     ]

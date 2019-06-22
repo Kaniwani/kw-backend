@@ -1,9 +1,7 @@
 import abc
 
 
-
 class WanikaniUserSyncer(abc.ABC):
-
     @abc.abstractmethod
     def sync_user_profile_with_wk(self):
         """

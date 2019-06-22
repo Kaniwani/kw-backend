@@ -8,13 +8,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('kw_webapp', '0038_profile_maximum_wk_srs_level_to_review'),
+        ("kw_webapp", "0038_profile_maximum_wk_srs_level_to_review")
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='order_reviews_by_level',
+            model_name="profile",
+            name="order_reviews_by_level",
             field=models.BooleanField(default=False),
-        ),
+        )
     ]

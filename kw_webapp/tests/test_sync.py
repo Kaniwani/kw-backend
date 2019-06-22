@@ -12,10 +12,15 @@ from api.sync.WanikaniUserSyncerV2 import WanikaniUserSyncerV2
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific
 from kw_webapp.srs import all_srs
-from kw_webapp.tasks import past_time, \
-    unlock_all_possible_levels_for_user, build_API_sync_string_for_user_for_levels, \
-    get_users_future_reviews, sync_all_users_to_wk, \
-    sync_with_wk, get_users_current_reviews
+from kw_webapp.tasks import (
+    past_time,
+    unlock_all_possible_levels_for_user,
+    build_API_sync_string_for_user_for_levels,
+    get_users_future_reviews,
+    sync_all_users_to_wk,
+    sync_with_wk,
+    get_users_current_reviews,
+)
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import (
     create_review,
@@ -23,7 +28,12 @@ from kw_webapp.tests.utils import (
     create_user,
     create_profile,
     create_reading,
-    mock_assignments_with_one_assignment, mock_user_response_v2, mock_subjects_v2, mock_study_materials, create_lesson)
+    mock_assignments_with_one_assignment,
+    mock_user_response_v2,
+    mock_subjects_v2,
+    mock_study_materials,
+    create_lesson,
+)
 
 
 class TestSync(TestCase):
@@ -33,8 +43,9 @@ class TestSync(TestCase):
         self.prepLocalVocabulary()
         self.reading = create_reading(self.v, "ねこ", "猫", 1)
         self.review = create_review(self.v, self.user)
-        self._vocab_api_regex = re.compile("https://www\.wanikani\.com/api/user/.*")
-
+        self._vocab_api_regex = re.compile(
+            r"https://www\.wanikani\.com/api/user/.*"
+        )
 
     def prepLocalVocabulary(self):
         self.v = Vocabulary.objects.create()
@@ -49,7 +60,9 @@ class TestSync(TestCase):
             self.user, [level for level in range(1, sample_level + 1)]
         )
 
-        expected = ",".join([str(level) for level in range(1, sample_level + 1)])
+        expected = ",".join(
+            [str(level) for level in range(1, sample_level + 1)]
+        )
 
         self.assertTrue(expected in api_string)
 
@@ -93,7 +106,9 @@ class TestSync(TestCase):
         self.assertEqual(newly_synced_review.wanikani_srs, "apprentice")
         self.assertEqual(newly_synced_review.wanikani_srs_numeric, 3)
 
-    def test_user_returns_from_vacation_correctly_increments_review_timestamps(self):
+    def test_user_returns_from_vacation_correctly_increments_review_timestamps(
+        self
+    ):
         now = timezone.now()
         two_hours_ago = now - timezone.timedelta(hours=2)
         two_hours_from_now = now + timezone.timedelta(hours=2)
@@ -131,7 +146,9 @@ class TestSync(TestCase):
             self.review.last_studied, now, delta=timezone.timedelta(minutes=15)
         )
         self.assertAlmostEqual(
-            review.last_studied, two_hours_ago, delta=timezone.timedelta(minutes=15)
+            review.last_studied,
+            two_hours_ago,
+            delta=timezone.timedelta(minutes=15),
         )
         self.assertAlmostEqual(review.next_review_date, None)
 
@@ -155,10 +172,14 @@ class TestSync(TestCase):
         reviews_affected = all_srs()
         self.assertEqual(reviews_affected, 0)
 
-    def test_returning_review_count_that_is_time_delimited_functions_correctly(self):
+    def test_returning_review_count_that_is_time_delimited_functions_correctly(
+        self
+    ):
         new_review = create_review(create_vocab("arbitrary word"), self.user)
         new_review.needs_review = False
-        more_than_24_hours_from_now = timezone.now() + timezone.timedelta(hours=25)
+        more_than_24_hours_from_now = timezone.now() + timezone.timedelta(
+            hours=25
+        )
         new_review.next_review_date = more_than_24_hours_from_now
         new_review.save()
         self.review.next_review_date = timezone.now()
@@ -209,18 +230,22 @@ class TestSync(TestCase):
         affected_count = sync_all_users_to_wk()
         self.assertEqual(affected_count, 1)
 
-
     @responses.activate
     def test_creating_new_synonyms_for_users_who_arent_being_followed(self):
         resp_body = deepcopy(sample_api_responses.single_vocab_response)
-        resp_body["requested_information"][0]["user_specific"]["user_synonyms"] = ["kitten", "large rat"]
+        resp_body["requested_information"][0]["user_specific"][
+            "user_synonyms"
+        ] = ["kitten", "large rat"]
 
-        responses.add(responses.GET, self._vocab_api_regex,
-                      json=resp_body,
-                      status=200,
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            self._vocab_api_regex,
+            json=resp_body,
+            status=200,
+            content_type="application/json",
+        )
 
-        #sync_unlocked_vocab_with_wk(self.user)
+        # sync_unlocked_vocab_with_wk(self.user)
         self.user.profile.follow_me = False
         self.user.profile.save()
 
@@ -248,7 +273,6 @@ class TestSync(TestCase):
         reviews = get_users_current_reviews(self.user)
         assert reviews.count() == 1
 
-
     @responses.activate
     def test_synonyms_are_ported_in_v2(self):
         mock_user_response_v2()
@@ -262,7 +286,6 @@ class TestSync(TestCase):
         assert review.meaning_note is not None
         assert review.meaning_synonyms.count() == 3
         assert "young lady" in review.synonyms_list()
-
 
     @responses.activate
     def test_vocabulary_meaning_changes_carry_over(self):
@@ -293,7 +316,9 @@ class TestSync(TestCase):
         updated_vocabulary_count = syncer.sync_top_level_vocabulary()
         assert updated_vocabulary_count == 1
         self.v.refresh_from_db()
-        expected_reading_kanas = [reading.kana for reading in self.v.readings.all()]
+        expected_reading_kanas = [
+            reading.kana for reading in self.v.readings.all()
+        ]
         assert "いち" in expected_reading_kanas
         assert "one - but in japanese" in expected_reading_kanas
 
@@ -308,5 +333,3 @@ class TestSync(TestCase):
         self.user.profile.save()
         syncer = Syncer.factory(self.user.profile)
         assert isinstance(syncer, WanikaniUserSyncerV2)
-
-

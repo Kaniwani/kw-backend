@@ -100,12 +100,16 @@ class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
             .order_by("date", "hour")
         )
         expected_hour = now.hour
-        hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
+        hours = [
+            hour % 24 for hour in range(expected_hour, expected_hour + 24)
+        ]
 
         retval = OrderedDict.fromkeys(hours)
 
         for key in retval.keys():
-            retval[key] = OrderedDict.fromkeys([level.name for level in KwSrsLevel], 0)
+            retval[key] = OrderedDict.fromkeys(
+                [level.name for level in KwSrsLevel], 0
+            )
 
         for review in reviews:
             found_hour = review["hour"].hour
@@ -116,7 +120,7 @@ class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
             retval[expected_hour][srs_level] += review["review_count"]
 
         real_retval = [
-            [count for srs_level, count in hourly_count.items()]
+            [count for srs_rank, count in hourly_count.items()]
             for hour, hourly_count in retval.items()
         ]
         return real_retval
@@ -152,7 +156,9 @@ class ProfileSerializer(serializers.ModelSerializer):
         max_length=32, validators=[WanikaniApiKeyValidatorV1()]
     )
     api_key_v2 = serializers.CharField(
-        max_length=40, validators=[WanikaniApiKeyValidatorV2()], allow_null=True
+        max_length=40,
+        validators=[WanikaniApiKeyValidatorV2()],
+        allow_null=True,
     )
 
     class Meta:
@@ -187,7 +193,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "kanji_svg_draw_speed",
             "info_detail_level_on_success",
             "info_detail_level_on_failure",
-            "order_reviews_by_level"
+            "order_reviews_by_level",
         )
 
         read_only_fields = (
@@ -239,22 +245,33 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class RegistrationSerializer(serializers.ModelSerializer):
     api_key_v2 = serializers.CharField(
-        write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV2()], required=False
+        write_only=True,
+        max_length=40,
+        validators=[WanikaniApiKeyValidatorV2()],
+        required=False,
     )
-    api_key = serializers.CharField(write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV1()], required=False)
-    password = serializers.CharField(write_only=True, style={"input_type": "password"})
+    api_key = serializers.CharField(
+        write_only=True,
+        max_length=40,
+        validators=[WanikaniApiKeyValidatorV1()],
+        required=False,
+    )
+    password = serializers.CharField(
+        write_only=True, style={"input_type": "password"}
+    )
 
     class Meta:
         model = User
-        fields = ("api_key","api_key_v2", "password", "username", "email")
+        fields = ("api_key", "api_key_v2", "password", "username", "email")
 
     def validate(self, data):
         # This validation ensures that one of either V1 or V2 api keys is set.
-        if data.get('api_key') or data.get('api_key_v2'):
+        if data.get("api_key") or data.get("api_key_v2"):
             return data
         else:
-            raise serializers.ValidationError("You must provide either api_key or api_key_v2")
-
+            raise serializers.ValidationError(
+                "You must provide either api_key or api_key_v2"
+            )
 
     def validate_password(self, value):
         if len(value) < 4:
@@ -284,30 +301,49 @@ class RegistrationSerializer(serializers.ModelSerializer):
         )
 
         if preexisting_users.count() > 0:
-            raise serializers.ValidationError("Username or email already in use!")
+            raise serializers.ValidationError(
+                "Username or email already in use!"
+            )
 
         api_key_v2 = validated_data.pop("api_key_v2", None)
         api_key = validated_data.pop("api_key", None)
         user = User.objects.create(**validated_data)
         user.set_password(validated_data.get("password"))
         user.save()
-        Profile.objects.create(user=user, api_key=api_key, api_key_v2=api_key_v2, level=1)
+        Profile.objects.create(
+            user=user, api_key=api_key, api_key_v2=api_key_v2, level=1
+        )
         return user
 
 
 class UserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(many=False, read_only=True)
     api_key = serializers.CharField(
-        write_only=True, max_length=32, validators=[WanikaniApiKeyValidatorV1()], allow_null=True, allow_blank=True
+        write_only=True,
+        max_length=32,
+        validators=[WanikaniApiKeyValidatorV1()],
+        allow_null=True,
+        allow_blank=True,
     )
     api_key_v2 = serializers.CharField(
-        write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV2()], allow_null=True, allow_blank=True
+        write_only=True,
+        max_length=40,
+        validators=[WanikaniApiKeyValidatorV2()],
+        allow_null=True,
+        allow_blank=True,
     )
     password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ("api_key", "api_key_v2", "password", "username", "email", "profile")
+        fields = (
+            "api_key",
+            "api_key_v2",
+            "password",
+            "username",
+            "email",
+            "profile",
+        )
         read_only_fields = (
             "id",
             "last_login",
@@ -346,7 +382,9 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         if preexisting_users.count() > 0:
-            raise serializers.ValidationError("Username or email already in use!")
+            raise serializers.ValidationError(
+                "Username or email already in use!"
+            )
 
         api_key = validated_data.pop("api_key", None)
 
@@ -420,12 +458,17 @@ class VocabularySerializer(serializers.ModelSerializer):
                 minimum_level_to_review = self.context[
                     "request"
                 ].user.profile.get_minimum_wk_srs_threshold_for_review()
-                maximum_level_to_review = self.context['request'].user.profile.get_maximum_wk_srs_threshold_for_review()
+                maximum_level_to_review = self.context[
+                    "request"
+                ].user.profile.get_maximum_wk_srs_threshold_for_review()
                 return (
                     UserSpecific.objects.filter(
                         user=self.context["request"].user,
                         vocabulary=obj,
-                        wanikani_srs_numeric__range=(minimum_level_to_review, maximum_level_to_review)
+                        wanikani_srs_numeric__range=(
+                            minimum_level_to_review,
+                            maximum_level_to_review,
+                        ),
                     ).count()
                     > 0
                 )
@@ -538,7 +581,9 @@ class LevelSerializer(serializers.Serializer):
     level = serializers.IntegerField(read_only=True)
     unlocked = serializers.BooleanField(read_only=True)
     vocabulary_count = serializers.IntegerField(read_only=True)
-    vocabulary_url = serializer_fields.VocabularyByLevelHyperlinkedField(read_only=True)
+    vocabulary_url = serializer_fields.VocabularyByLevelHyperlinkedField(
+        read_only=True
+    )
     lock_url = serializers.CharField(read_only=True)
     fully_unlocked = serializers.BooleanField(read_only=True)
     unlock_url = serializers.CharField(read_only=True)

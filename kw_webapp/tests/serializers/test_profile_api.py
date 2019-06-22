@@ -17,8 +17,13 @@ from kw_webapp.tests.utils import (
     mock_user_info_response,
     mock_invalid_api_user_info_response,
     setupTestFixture,
-    mock_empty_vocabulary_response, mock_for_registration, mock_user_response_v2, mock_subjects_v2,
-    mock_assignments_with_one_assignment, mock_study_materials)
+    mock_empty_vocabulary_response,
+    mock_for_registration,
+    mock_user_response_v2,
+    mock_subjects_v2,
+    mock_assignments_with_one_assignment,
+    mock_study_materials,
+)
 
 
 class TestProfileApi(APITestCase):
@@ -31,8 +36,12 @@ class TestProfileApi(APITestCase):
         self.review.save()
 
         response = self.client.get(reverse("api:user-me"))
-        self.assertEqual(response.data["profile"]["reviews_within_hour_count"], 0)
-        self.assertEqual(response.data["profile"]["reviews_within_day_count"], 1)
+        self.assertEqual(
+            response.data["profile"]["reviews_within_hour_count"], 0
+        )
+        self.assertEqual(
+            response.data["profile"]["reviews_within_day_count"], 1
+        )
 
     def test_profile_contains_expected_fields(self):
         self.client.force_login(self.user)
@@ -40,7 +49,9 @@ class TestProfileApi(APITestCase):
         data = response.data["results"][0]
 
         # Ensure new 2.0 fields are all there
-        self.assertIsNotNone(data["auto_advance_on_success_delay_milliseconds"])
+        self.assertIsNotNone(
+            data["auto_advance_on_success_delay_milliseconds"]
+        )
         self.assertIsNotNone(data["use_eijiro_pro_link"])
         self.assertIsNotNone(data["show_kanji_svg_stroke_order"])
         self.assertIsNotNone(data["show_kanji_svg_grid"])
@@ -50,10 +61,14 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse("api:user-me"))
 
-        self.assertEqual(response.data["profile"]["srs_counts"]["apprentice"], 1)
+        self.assertEqual(
+            response.data["profile"]["srs_counts"]["apprentice"], 1
+        )
         self.assertEqual(response.data["profile"]["srs_counts"]["guru"], 0)
         self.assertEqual(response.data["profile"]["srs_counts"]["master"], 0)
-        self.assertEqual(response.data["profile"]["srs_counts"]["enlightened"], 0)
+        self.assertEqual(
+            response.data["profile"]["srs_counts"]["enlightened"], 0
+        )
         self.assertEqual(response.data["profile"]["srs_counts"]["burned"], 0)
         user_dict = dict(response.data)
         user_dict["profile"]["on_vacation"] = True
@@ -81,25 +96,41 @@ class TestProfileApi(APITestCase):
 
         response = self.client.get(reverse("api:user-me"))
 
-        self.assertEqual(response.data["profile"]["next_review_date"], current_time)
+        self.assertEqual(
+            response.data["profile"]["next_review_date"], current_time
+        )
 
     def test_ordering_on_announcements_works(self):
 
-        Announcement.objects.create(creator=self.user, title="ASD123", body="ASDSAD")
+        Announcement.objects.create(
+            creator=self.user, title="ASD123", body="ASDSAD"
+        )
         sleep(1)
-        Announcement.objects.create(creator=self.user, title="ASD1234", body="ASDSAD")
+        Announcement.objects.create(
+            creator=self.user, title="ASD1234", body="ASDSAD"
+        )
         sleep(1)
-        Announcement.objects.create(creator=self.user, title="ASD1345", body="ASDSAD")
+        Announcement.objects.create(
+            creator=self.user, title="ASD1345", body="ASDSAD"
+        )
         sleep(1)
-        Announcement.objects.create(creator=self.user, title="ASD123456", body="ASDSAD")
+        Announcement.objects.create(
+            creator=self.user, title="ASD123456", body="ASDSAD"
+        )
         sleep(1)
 
         response = self.client.get(reverse("api:announcement-list"))
 
         announcements = response.data["results"]
-        self.assertGreater(announcements[0]["pub_date"], announcements[1]["pub_date"])
-        self.assertGreater(announcements[1]["pub_date"], announcements[2]["pub_date"])
-        self.assertGreater(announcements[2]["pub_date"], announcements[3]["pub_date"])
+        self.assertGreater(
+            announcements[0]["pub_date"], announcements[1]["pub_date"]
+        )
+        self.assertGreater(
+            announcements[1]["pub_date"], announcements[2]["pub_date"]
+        )
+        self.assertGreater(
+            announcements[2]["pub_date"], announcements[3]["pub_date"]
+        )
 
     def test_get_vocab_by_kanji_works_in_case_of_multiple_reading_vocab(self):
         v = create_vocab("my vocab")
@@ -157,7 +188,9 @@ class TestProfileApi(APITestCase):
         request = data["results"][0]
         request["on_vacation"] = True
         response = self.client.put(
-            reverse("api:profile-detail", args=(id,)), data=request, format="json"
+            reverse("api:profile-detail", args=(id,)),
+            data=request,
+            format="json",
         )
         assert response.status_code == 200
         self.user.refresh_from_db()
@@ -170,7 +203,9 @@ class TestProfileApi(APITestCase):
     def test_enable_follow_me_syncs_user_immediately(self):
         # Given
         mock_user_info_response(self.user.profile.api_key)
-        mock_empty_vocabulary_response(self.user.profile.api_key, self.user.profile.level)
+        mock_empty_vocabulary_response(
+            self.user.profile.api_key, self.user.profile.level
+        )
         self.client.force_login(self.user)
         self.user.profile.follow_me = False
         self.user.profile.save()
@@ -191,7 +226,9 @@ class TestProfileApi(APITestCase):
         assert self.user.profile.follow_me is True
 
     @responses.activate
-    def test_attempting_to_sync_with_invalid_api_key_sets_correct_profile_value(self):
+    def test_attempting_to_sync_with_invalid_api_key_sets_correct_profile_value(
+        self
+    ):
         # Given
         self.client.force_login(self.user)
         self.user.profile.api_key = "SomeGarbage"
@@ -219,11 +256,13 @@ class TestProfileApi(APITestCase):
                 "password": "password",
                 "api_key_v2": constants.API_KEY_V2,
                 "email": "asdf@email.com",
-            }
+            },
         )
         assert response.status_code == 201
 
-    def test_review_incorrect_submissions_return_full_modified_review_object(self):
+    def test_review_incorrect_submissions_return_full_modified_review_object(
+        self
+    ):
         self.client.force_login(self.user)
 
         # We have to bump this to two to be able to see the drop in streak.
@@ -288,7 +327,7 @@ class TestProfileApi(APITestCase):
         create_reading(v, reading_to_search, "character_1", 5)
         create_reading(v, reading_to_search, "character_2", 5)
 
-        review = create_review(v, self.user)
+        create_review(v, self.user)
         self.client.force_login(self.user)
 
         response = self.client.get(
@@ -356,8 +395,12 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse("api:user-me"))
 
-        self.assertEqual(response.data["profile"]["reviews_within_day_count"], 2)
-        self.assertEqual(response.data["profile"]["reviews_within_hour_count"], 1)
+        self.assertEqual(
+            response.data["profile"]["reviews_within_day_count"], 2
+        )
+        self.assertEqual(
+            response.data["profile"]["reviews_within_hour_count"], 1
+        )
 
     def test_future_review_counts_preprocessor_does_not_include_currently_active_reviews(
         self
@@ -371,8 +414,12 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse("api:user-me"))
 
-        self.assertEqual(response.data["profile"]["reviews_within_day_count"], 0)
-        self.assertEqual(response.data["profile"]["reviews_within_hour_count"], 0)
+        self.assertEqual(
+            response.data["profile"]["reviews_within_day_count"], 0
+        )
+        self.assertEqual(
+            response.data["profile"]["reviews_within_hour_count"], 0
+        )
 
     def test_review_count_returns_sane_values_when_user_has_no_vocabulary_unlocked(
         self
@@ -382,15 +429,23 @@ class TestProfileApi(APITestCase):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse("api:user-me"))
 
-        self.assertEqual(response.data["profile"]["reviews_within_day_count"], 0)
-        self.assertEqual(response.data["profile"]["reviews_within_hour_count"], 0)
+        self.assertEqual(
+            response.data["profile"]["reviews_within_day_count"], 0
+        )
+        self.assertEqual(
+            response.data["profile"]["reviews_within_hour_count"], 0
+        )
 
     def test_profile_srs_counts_are_correct(self):
         self.client.force_login(user=self.user)
         response = self.client.get(reverse("api:user-me"))
 
-        self.assertEqual(response.data["profile"]["srs_counts"]["apprentice"], 1)
+        self.assertEqual(
+            response.data["profile"]["srs_counts"]["apprentice"], 1
+        )
         self.assertEqual(response.data["profile"]["srs_counts"]["guru"], 0)
         self.assertEqual(response.data["profile"]["srs_counts"]["master"], 0)
-        self.assertEqual(response.data["profile"]["srs_counts"]["enlightened"], 0)
+        self.assertEqual(
+            response.data["profile"]["srs_counts"]["enlightened"], 0
+        )
         self.assertEqual(response.data["profile"]["srs_counts"]["burned"], 0)
