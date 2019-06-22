@@ -246,12 +246,12 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("api_key_v2", "password", "username", "email")
+        fields = ("api_key","api_key_v2", "password", "username", "email")
 
     def validate(self, data):
         # This validation ensures that one of either V1 or V2 api keys is set.
         if data.get('api_key') or data.get('api_key_v2'):
-            return
+            return data
         else:
             raise serializers.ValidationError("You must provide either api_key or api_key_v2")
 
