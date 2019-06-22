@@ -19,6 +19,7 @@ SRS_TIMES = {
     8: 2880,  # Enlightened -> Burned (4 months)
 }
 
+
 class KwSrsLevel(Enum):
     UNTRAINED = "Untrained"
     APPRENTICE = "Apprentice"

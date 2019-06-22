@@ -41,4 +41,5 @@ def unlock_previous_level(user):
         syncer = Syncer.factory(user.profile)
         syncer.unlock_vocab(previous_level)
 
+
 user_registered.connect(sync_unlocks_with_wk)

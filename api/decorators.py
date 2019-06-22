@@ -1,10 +1,10 @@
-
 from functools import wraps
 
 from wanikani_api.exceptions import InvalidWanikaniApiKeyException
 
 from api.responses import InvalidWanikaniAPIKeyResponse
 from kw_webapp.wanikani.exceptions import InvalidWaniKaniKey
+
 
 def checks_wanikani(f):
     @wraps(f)
@@ -22,4 +22,3 @@ def checks_wanikani(f):
             return InvalidWanikaniAPIKeyResponse()
 
     return wrapper
-

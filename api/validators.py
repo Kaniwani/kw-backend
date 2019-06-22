@@ -20,7 +20,9 @@ class WanikaniApiKeyValidatorV1(object):
         raise serializers.ValidationError(self.failure_message)
 
     def build_v1_user_information_api_string(self, api_key):
-        return "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
+        return "https://www.wanikani.com/api/user/{}/user-information".format(
+            api_key
+        )
 
 
 class WanikaniApiKeyValidatorV2(object):
@@ -28,7 +30,7 @@ class WanikaniApiKeyValidatorV2(object):
         self.failure_message = "This V2 API key appears to be invalid"
 
     def __call__(self, value):
-        if not value or value == 'None':
+        if not value or value == "None":
             return None
         client = WkV2Client(value)
         try:

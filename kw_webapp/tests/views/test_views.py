@@ -37,9 +37,13 @@ class TestViews(TestCase):
     def test_removing_synonym_removes_synonym(self):
         dummy_kana = "whatever"
         dummy_characters = "somechar"
-        synonym, created = self.review.add_answer_synonym(dummy_kana, dummy_characters)
+        synonym, created = self.review.add_answer_synonym(
+            dummy_kana, dummy_characters
+        )
 
-        self.client.delete(reverse("api:reading-synonym-detail", args=(synonym.id,)))
+        self.client.delete(
+            reverse("api:reading-synonym-detail", args=(synonym.id,))
+        )
 
         self.review.refresh_from_db()
 

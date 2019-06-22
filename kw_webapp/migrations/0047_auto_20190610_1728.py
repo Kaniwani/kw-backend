@@ -7,18 +7,12 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0046_auto_20190327_2119'),
-    ]
+    dependencies = [("kw_webapp", "0046_auto_20190327_2119")]
 
     operations = [
-        migrations.AlterModelManagers(
-            name='userspecific',
-            managers=[
-            ],
-        ),
+        migrations.AlterModelManagers(name="userspecific", managers=[]),
         migrations.AlterUniqueTogether(
-            name='reading',
-            unique_together=set([('vocabulary', 'character', 'kana')]),
+            name="reading",
+            unique_together=set([("vocabulary", "character", "kana")]),
         ),
     ]

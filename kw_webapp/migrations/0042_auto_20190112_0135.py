@@ -8,29 +8,33 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0041_profile_api_key_v2'),
-    ]
+    dependencies = [("kw_webapp", "0041_profile_api_key_v2")]
 
     operations = [
         migrations.AddField(
-            model_name='vocabulary',
-            name='level',
-            field=models.PositiveIntegerField(null=True, validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(60)]),
+            model_name="vocabulary",
+            name="level",
+            field=models.PositiveIntegerField(
+                null=True,
+                validators=[
+                    django.core.validators.MinValueValidator(1),
+                    django.core.validators.MaxValueValidator(60),
+                ],
+            ),
         ),
         migrations.AddField(
-            model_name='vocabulary',
-            name='parts_of_speech',
-            field=models.ManyToManyField(to='kw_webapp.PartOfSpeech'),
+            model_name="vocabulary",
+            name="parts_of_speech",
+            field=models.ManyToManyField(to="kw_webapp.PartOfSpeech"),
         ),
         migrations.AddField(
-            model_name='vocabulary',
-            name='wk_last_modified',
+            model_name="vocabulary",
+            name="wk_last_modified",
             field=models.DateTimeField(null=True),
         ),
         migrations.AddField(
-            model_name='vocabulary',
-            name='wk_subject_id',
+            model_name="vocabulary",
+            name="wk_subject_id",
             field=models.IntegerField(default=0),
         ),
     ]

@@ -11,6 +11,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name="level", name="partial", field=models.BooleanField(default=False)
+            model_name="level",
+            name="partial",
+            field=models.BooleanField(default=False),
         )
     ]

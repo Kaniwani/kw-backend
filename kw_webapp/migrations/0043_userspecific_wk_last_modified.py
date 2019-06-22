@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0042_auto_20190112_0135'),
-    ]
+    dependencies = [("kw_webapp", "0042_auto_20190112_0135")]
 
     operations = [
         migrations.AddField(
-            model_name='userspecific',
-            name='wk_last_modified',
+            model_name="userspecific",
+            name="wk_last_modified",
             field=models.DateTimeField(null=True),
-        ),
+        )
     ]

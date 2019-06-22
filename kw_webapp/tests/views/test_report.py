@@ -23,7 +23,10 @@ class TestReport(APITestCase):
 
         self.client.post(
             reverse("api:report-list"),
-            data={"reading": self.reading.id, "reason": "This makes no sense!!!"},
+            data={
+                "reading": self.reading.id,
+                "reason": "This makes no sense!!!",
+            },
         )
 
         reports = Report.objects.all()
@@ -42,7 +45,10 @@ class TestReport(APITestCase):
         # multi-report a single vocab.
         self.client.post(
             reverse("api:report-list"),
-            data={"reading": self.reading.id, "reason": "This still makes no sense!!!"},
+            data={
+                "reading": self.reading.id,
+                "reason": "This still makes no sense!!!",
+            },
         )
         self.client.post(
             reverse("api:report-list"),
@@ -71,7 +77,10 @@ class TestReport(APITestCase):
         self.client.force_login(user=user)
         self.client.post(
             reverse("api:report-list"),
-            data={"reading": self.reading.id, "reason": "This still makes no sense!!!"},
+            data={
+                "reading": self.reading.id,
+                "reason": "This still makes no sense!!!",
+            },
         )
 
         # Report another vocab, but only once
@@ -80,7 +89,10 @@ class TestReport(APITestCase):
 
         self.client.post(
             reverse("api:report-list"),
-            data={"reading": reading.id, "reason": "This still makes no sense!!!"},
+            data={
+                "reading": reading.id,
+                "reason": "This still makes no sense!!!",
+            },
         )
 
         # Login with admin

@@ -9,19 +9,17 @@ import django.db.models.manager
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('kw_webapp', '0045_vocabulary_auxiliary_meanings_whitelist'),
+        ("kw_webapp", "0045_vocabulary_auxiliary_meanings_whitelist")
     ]
 
     operations = [
         migrations.AlterModelManagers(
-            name='userspecific',
-            managers=[
-                ('lessons', django.db.models.manager.Manager()),
-            ],
+            name="userspecific",
+            managers=[("lessons", django.db.models.manager.Manager())],
         ),
         migrations.AlterField(
-            model_name='profile',
-            name='api_key',
+            model_name="profile",
+            name="api_key",
             field=models.CharField(max_length=255, null=True),
         ),
     ]

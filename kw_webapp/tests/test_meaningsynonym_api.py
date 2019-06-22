@@ -1,4 +1,3 @@
-
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
@@ -24,7 +23,9 @@ class TestMeaningSynonymApi(APITestCase):
 
         # Create
         synonym = {"review": self.review.id, "text": "My fancy synonym"}
-        response = self.client.post(reverse("api:meaning-synonym-list"), data=synonym)
+        response = self.client.post(
+            reverse("api:meaning-synonym-list"), data=synonym
+        )
         self.assertEqual(response.status_code, 201)
 
         # Read
@@ -38,17 +39,22 @@ class TestMeaningSynonymApi(APITestCase):
         # Update
         synonym["text"] = "A different fancy synonym"
         response = self.client.put(
-            reverse("api:meaning-synonym-detail", args=(synonym["id"],)), data=synonym
+            reverse("api:meaning-synonym-detail", args=(synonym["id"],)),
+            data=synonym,
         )
 
         self.assertEqual(response.status_code, 200)
         # Double check update worked...
         self.review.refresh_from_db()
-        self.assertEqual(self.review.synonyms_string(), "A different fancy synonym")
+        self.assertEqual(
+            self.review.synonyms_string(), "A different fancy synonym"
+        )
         self.assertEqual(len(self.review.synonyms_list()), 1)
 
         # Delete
-        self.client.delete(reverse("api:meaning-synonym-detail", args=(synonym["id"],)))
+        self.client.delete(
+            reverse("api:meaning-synonym-detail", args=(synonym["id"],))
+        )
         self.review.refresh_from_db()
         self.assertEqual(len(self.review.synonyms_list()), 0)
 
@@ -59,7 +65,9 @@ class TestMeaningSynonymApi(APITestCase):
 
         # Lets have the client create their own synonym.
         synonym = {"review": self.review.id, "text": "My fancy synonym"}
-        response = self.client.post(reverse("api:meaning-synonym-list"), data=synonym)
+        response = self.client.post(
+            reverse("api:meaning-synonym-list"), data=synonym
+        )
         self.assertEqual(response.status_code, 201)
 
         # Make sure that the sneaky user CANNOT read it.
