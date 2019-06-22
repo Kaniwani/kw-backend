@@ -1,14 +1,6 @@
-from datetime import timedelta
-from unittest import mock
-
-import responses
-from django.http import HttpResponseForbidden
 from django.test import TestCase, Client
-from django.utils import timezone
 from rest_framework.reverse import reverse
 
-from kw_webapp.tasks import build_API_sync_string_for_user_for_levels
-from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import (
     create_user,
     create_review,
@@ -37,9 +29,13 @@ class TestViews(TestCase):
     def test_removing_synonym_removes_synonym(self):
         dummy_kana = "whatever"
         dummy_characters = "somechar"
-        synonym, created = self.review.add_answer_synonym(dummy_kana, dummy_characters)
+        synonym, created = self.review.add_answer_synonym(
+            dummy_kana, dummy_characters
+        )
 
-        self.client.delete(reverse("api:reading-synonym-detail", args=(synonym.id,)))
+        self.client.delete(
+            reverse("api:reading-synonym-detail", args=(synonym.id,))
+        )
 
         self.review.refresh_from_db()
 

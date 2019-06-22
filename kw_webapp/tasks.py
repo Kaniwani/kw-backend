@@ -1,29 +1,28 @@
 from __future__ import absolute_import
 
+import logging
 from collections import OrderedDict
+from datetime import timedelta, datetime
 
-from celery import shared_task, task
+from celery import shared_task
 from django.contrib.auth.models import User
 from django.db.models import F, Count
 from django.db.models import Min
 from django.db.models.functions import TruncHour, TruncDate
+from django.utils import timezone
 
-from kw_webapp.constants import WANIKANI_SRS_LEVELS, KANIWANI_SRS_LEVELS, KwSrsLevel
-from kw_webapp.wanikani import make_api_call
-from kw_webapp.wanikani import exceptions
-from kw_webapp import constants
+from kw_webapp.constants import (
+    KANIWANI_SRS_LEVELS,
+    KwSrsLevel,
+)
 from kw_webapp.models import (
     UserSpecific,
     Vocabulary,
     Profile,
     Level,
-    MeaningSynonym,
-    AnswerSynonym,
 )
-from datetime import timedelta, datetime
-from django.utils import timezone
-
-import logging
+from kw_webapp.wanikani import exceptions
+from kw_webapp.wanikani import make_api_call
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +64,9 @@ def all_srs(user=None):
 
     if user:
         review_set = UserSpecific.objects.filter(
-            user=user, next_review_date__lte=slightly_ahead_of_now, needs_review=False
+            user=user,
+            next_review_date__lte=slightly_ahead_of_now,
+            needs_review=False,
         )
     else:
         review_set = UserSpecific.objects.filter(
@@ -94,9 +95,13 @@ def get_vocab_by_kanji(kanji):
         raise Vocabulary.MultipleObjectsReturned(error)
     elif number_of_vocabulary == 0:
         logger.error(
-            "While attempting to get vocabulary {} we could not find it!".format(kanji)
+            "While attempting to get vocabulary {} we could not find it!".format(
+                kanji
+            )
         )
-        raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(kanji))
+        raise Vocabulary.DoesNotExist(
+            "Couldn't find meaning: {}".format(kanji)
+        )
     else:
         return v.first()
 
@@ -116,7 +121,9 @@ def get_vocab_by_meaning(meaning):
                 meaning
             )
         )
-        raise Vocabulary.DoesNotExist("Couldn't find meaning: {}".format(meaning))
+        raise Vocabulary.DoesNotExist(
+            "Couldn't find meaning: {}".format(meaning)
+        )
     else:
         return v
 
@@ -151,7 +158,9 @@ def associate_vocab_to_user(vocab, user):
 
 def get_level_pages(levels):
     page_size = 5
-    return [levels[i : i + page_size] for i in range(0, len(levels), page_size)]
+    return [
+        levels[i : i + page_size] for i in range(0, len(levels), page_size)
+    ]
 
 
 def build_API_sync_string_for_user(user):
@@ -167,14 +176,19 @@ def build_API_sync_string_for_user(user):
     # if the user has unlocked recent levels, check for new vocab on them as well.
     levels = user.profile.unlocked_levels_list()
     level_string = (
-        ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
+        ",".join(str(level) for level in levels)
+        if isinstance(levels, list)
+        else levels
     )
     api_call += level_string
     return api_call
 
 
 def build_API_sync_string_for_user_for_levels(user, levels):
-    return build_API_sync_string_for_api_key_for_levels(user.profile.api_key, levels)
+    return build_API_sync_string_for_api_key_for_levels(
+        user.profile.api_key, levels
+    )
+
 
 def build_API_sync_string_for_api_key_for_levels(api_key, levels):
     """
@@ -184,7 +198,9 @@ def build_API_sync_string_for_api_key_for_levels(api_key, levels):
     :return: The fully formatted API string that will provide.
     """
     level_string = (
-        ",".join(str(level) for level in levels) if isinstance(levels, list) else levels
+        ",".join(str(level) for level in levels)
+        if isinstance(levels, list)
+        else levels
     )
     api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(
         api_key, level_string
@@ -230,12 +246,16 @@ def unlock_eligible_vocab_from_levels(user, levels):
 
     api_call_string = build_API_sync_string_for_user_for_levels(user, levels)
     response = make_api_call(api_call_string)
-    unlocked_this_request, total_unlocked, locked = process_vocabulary_response_for_unlock(user, response)
+    unlocked_this_request, total_unlocked, locked = process_vocabulary_response_for_unlock(
+        user, response
+    )
     return unlocked_this_request, total_unlocked, locked
 
 
 def get_wanikani_level_by_api_key(api_key):
-    api_string = "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
+    api_string = "https://www.wanikani.com/api/user/{}/user-information".format(
+        api_key
+    )
     response = make_api_call(api_string)
     user_info = response["user_information"]
     level = user_info["level"]
@@ -243,7 +263,9 @@ def get_wanikani_level_by_api_key(api_key):
 
 
 def build_user_information_api_string(api_key):
-    return "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
+    return "https://www.wanikani.com/api/user/{}/user-information".format(
+        api_key
+    )
 
 
 @shared_task
@@ -265,7 +287,9 @@ def sync_user_profile_with_wk(user):
 
     user_info = json_data["user_information"]
     user.profile.title = user_info["title"]
-    user.profile.join_date = datetime.utcfromtimestamp(user_info["creation_date"])
+    user.profile.join_date = datetime.utcfromtimestamp(
+        user_info["creation_date"]
+    )
     user.profile.topics_count = user_info["topics_count"]
     user.profile.posts_count = user_info["posts_count"]
     user.profile.about = user_info["about"]
@@ -305,7 +329,9 @@ def sync_with_wk(user_id, full_sync=False):
                 user
             )
         else:
-            new_review_count, new_synonym_count = sync_unlocked_vocab_with_wk(user)
+            new_review_count, new_synonym_count = sync_unlocked_vocab_with_wk(
+                user
+            )
 
         return profile_sync_succeeded, new_review_count, new_synonym_count
     else:
@@ -329,7 +355,9 @@ def create_new_vocabulary(vocabulary_json):
 
 def update_local_vocabulary_information(vocab, vocabulary_json):
 
-    kana_list = [reading.strip() for reading in vocabulary_json["kana"].split(",")]
+    kana_list = [
+        reading.strip() for reading in vocabulary_json["kana"].split(",")
+    ]
     # Update the local meaning based on WK meaning
     meaning = vocabulary_json["meaning"]
     vocab.meaning = meaning
@@ -346,7 +374,9 @@ def update_local_vocabulary_information(vocab, vocabulary_json):
             logger.info(
                 """Created new reading: {}, level {}
                                      associated to vocab {}""".format(
-                    new_reading.kana, new_reading.level, new_reading.vocabulary.meaning
+                    new_reading.kana,
+                    new_reading.level,
+                    new_reading.vocabulary.meaning,
                 )
             )
     vocab.save()
@@ -412,24 +442,39 @@ def associate_synonyms_to_vocab(user, vocab, user_specific_json):
 
 
 def get_users_reviews(user):
-    return UserSpecific.objects.filter(user=user,
-                                       wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
-                                       hidden=False)
+    return UserSpecific.objects.filter(
+        user=user,
+        wanikani_srs_numeric__range=(
+            user.profile.get_minimum_wk_srs_threshold_for_review(),
+            user.profile.get_maximum_wk_srs_threshold_for_review(),
+        ),
+        hidden=False,
+    )
 
 
 def get_users_critical_reviews(user):
-    return UserSpecific.objects.filter(user=user,
-                                       wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
-                                       hidden=False,
-                                       critical=True)
+    return UserSpecific.objects.filter(
+        user=user,
+        wanikani_srs_numeric__range=(
+            user.profile.get_minimum_wk_srs_threshold_for_review(),
+            user.profile.get_maximum_wk_srs_threshold_for_review(),
+        ),
+        hidden=False,
+        critical=True,
+    )
 
 
 def get_users_lessons(user):
-    qs = UserSpecific.objects.filter(user=user,
-                                       needs_review=True,
-                                       wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
-                                       hidden=False,
-                                       streak=KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name][0])
+    qs = UserSpecific.objects.filter(
+        user=user,
+        needs_review=True,
+        wanikani_srs_numeric__range=(
+            user.profile.get_minimum_wk_srs_threshold_for_review(),
+            user.profile.get_maximum_wk_srs_threshold_for_review(),
+        ),
+        hidden=False,
+        streak=KANIWANI_SRS_LEVELS[KwSrsLevel.UNTRAINED.name][0],
+    )
 
     if user.profile.order_reviews_by_level:
         qs = qs.order_by("vocabulary__readings__level")
@@ -438,35 +483,53 @@ def get_users_lessons(user):
 
 
 def get_users_current_reviews(user):
-    queryset = UserSpecific.objects.filter(user=user,
-                                       needs_review=True,
-                                       wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
-                                       hidden=False,
-                                       burned=False,
-                                       streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0])
+    queryset = UserSpecific.objects.filter(
+        user=user,
+        needs_review=True,
+        wanikani_srs_numeric__range=(
+            user.profile.get_minimum_wk_srs_threshold_for_review(),
+            user.profile.get_maximum_wk_srs_threshold_for_review(),
+        ),
+        hidden=False,
+        burned=False,
+        streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0],
+    )
     if user.profile.order_reviews_by_level:
         queryset = queryset.order_by("vocabulary__readings__level")
     return queryset
 
+
 def get_users_future_reviews(user, time_limit=None):
-    queryset = UserSpecific.objects.filter(user=user,
-                                           needs_review=False,
-                                           wanikani_srs_numeric__range=(user.profile.get_minimum_wk_srs_threshold_for_review(), user.profile.get_maximum_wk_srs_threshold_for_review()),
-                                           hidden=False,
-                                           burned=False,
-                                           streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0]).annotate(
-        Min('next_review_date')).order_by('next_review_date')
+    queryset = (
+        UserSpecific.objects.filter(
+            user=user,
+            needs_review=False,
+            wanikani_srs_numeric__range=(
+                user.profile.get_minimum_wk_srs_threshold_for_review(),
+                user.profile.get_maximum_wk_srs_threshold_for_review(),
+            ),
+            hidden=False,
+            burned=False,
+            streak__gte=KANIWANI_SRS_LEVELS[KwSrsLevel.APPRENTICE.name][0],
+        )
+        .annotate(Min("next_review_date"))
+        .order_by("next_review_date")
+    )
 
     if isinstance(time_limit, timedelta):
-        queryset = queryset.filter(next_review_date__lte=timezone.now() + time_limit)
+        queryset = queryset.filter(
+            next_review_date__lte=timezone.now() + time_limit
+        )
 
     return queryset
+
 
 def get_all_users_reviews(user):
     min_wk_srs = user.profile.get_minimum_wk_srs_threshold_for_review()
     max_wk_srs = user.profile.get_maximum_wk_srs_threshold_for_review()
-    return UserSpecific.objects.filter(user=user,
-                                       wanikani_srs_numeric__range=(min_wk_srs, max_wk_srs))
+    return UserSpecific.objects.filter(
+        user=user, wanikani_srs_numeric__range=(min_wk_srs, max_wk_srs)
+    )
 
 
 def process_vocabulary_response_for_unlock(user, json_data):
@@ -487,7 +550,9 @@ def process_vocabulary_response_for_unlock(user, json_data):
     unlocked_this_request = 0
     for vocabulary_json in vocab_list:
         total_unlocked_count += 1
-        _, created, _ = process_single_item_from_wanikani(vocabulary_json, user)
+        _, created, _ = process_single_item_from_wanikani(
+            vocabulary_json, user
+        )
         if created:
             unlocked_this_request += 1
 
@@ -540,9 +605,11 @@ def process_vocabulary_response_for_user(user, json_data):
             if created:
                 new_review_count += 1
             review.save()
-        else: # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
+        else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
             vocabulary, created = get_or_create_vocab_by_json(vocabulary_json)
-            new_review, synonyms_added_count = associate_synonyms_to_vocab(user, vocabulary, vocabulary_json['user_specific'])
+            new_review, synonyms_added_count = associate_synonyms_to_vocab(
+                user, vocabulary, vocabulary_json["user_specific"]
+            )
             new_synonym_count += synonyms_added_count
     logger.info("Synced Vocabulary for {}".format(user.username))
     return new_review_count, new_synonym_count
@@ -556,7 +623,9 @@ def sync_recent_unlocked_vocab_with_wk(user):
             if level in user.profile.unlocked_levels_list()
         ]
         if levels:
-            request_string = build_API_sync_string_for_user_for_levels(user, levels)
+            request_string = build_API_sync_string_for_user_for_levels(
+                user, levels
+            )
             try:
                 json_data = make_api_call(request_string)
                 new_review_count, new_synonym_count = process_vocabulary_response_for_user(
@@ -568,7 +637,8 @@ def sync_recent_unlocked_vocab_with_wk(user):
                 user.profile.save()
             except exceptions.WanikaniAPIException as e:
                 logger.warn(
-                    "Couldn't sync recent vocab for {}".format(user.username), e
+                    "Couldn't sync recent vocab for {}".format(user.username),
+                    e,
                 )
     return 0, 0
 
@@ -578,7 +648,9 @@ def sync_unlocked_vocab_with_wk(user):
         pages = get_level_pages(user.profile.unlocked_levels_list())
         new_review_count = new_synonym_count = 0
         for page in pages:
-            request_string = build_API_sync_string_for_user_for_levels(user, page)
+            request_string = build_API_sync_string_for_user_for_levels(
+                user, page
+            )
             logger.info(
                 "Creating sync string for user {}: {}".format(
                     user.username, user.profile.api_key
@@ -596,7 +668,8 @@ def sync_unlocked_vocab_with_wk(user):
                 user.profile.save()
             except exceptions.WanikaniAPIException as e:
                 logger.error(
-                    "Couldn't sync recent vocab for {}".format(user.username), e
+                    "Couldn't sync recent vocab for {}".format(user.username),
+                    e,
                 )
         return new_review_count, new_synonym_count
     else:
@@ -613,7 +686,9 @@ def sync_all_users_to_wk():
     one_week_ago = past_time(24 * 7)
     logger.info("Beginning Bi-daily Sync for all user!")
     users = User.objects.all().exclude(profile__isnull=True)
-    logger.info("Original sync would have occurred for {} users.".format(users.count()))
+    logger.info(
+        "Original sync would have occurred for {} users.".format(users.count())
+    )
     users = User.objects.filter(profile__last_visit__gte=one_week_ago)
     logger.info("Sync will occur for {} users.".format(users.count()))
     affected_count = 0
@@ -625,7 +700,9 @@ def sync_all_users_to_wk():
             + " --- "
             + str(one_week_ago)
         )
-        sync_with_wk.apply_async(args=[user.id, True], queue="long_running_sync")
+        sync_with_wk.apply_async(
+            args=[user.id, True], queue="long_running_sync"
+        )
         affected_count += 1
     return affected_count
 
@@ -652,15 +729,21 @@ def pull_user_synonyms_by_level(user, level):
                     review = UserSpecific.objects.get(
                         user=user, vocabulary__meaning=meaning
                     )
-                    for synonym in vocabulary["user_specific"]["user_synonyms"]:
+                    for synonym in vocabulary["user_specific"][
+                        "user_synonyms"
+                    ]:
                         review.meaning_synonyms.get_or_create(text=synonym)
                     review.save()
                 except UserSpecific.DoesNotExist as e:
                     logger.error(
-                        "Couldn't pull review during a synonym sync: {}".format(e)
+                        "Couldn't pull review during a synonym sync: {}".format(
+                            e
+                        )
                     )
                 except KeyError as e:
-                    logger.error("No user_specific or synonyms?: {}".format(json_data))
+                    logger.error(
+                        "No user_specific or synonyms?: {}".format(json_data)
+                    )
                 except UserSpecific.MultipleObjectsReturned:
                     reviews = UserSpecific.objects.filter(
                         user=user, vocabulary__meaning=meaning
@@ -676,7 +759,9 @@ def pull_user_synonyms_by_level(user, level):
         user.profile.api_valid = False
         user.profile.save()
     except exceptions.WanikaniAPIException as e:
-        logger.warning("Couldnt pull user synonyms for {}".format(user.username), e)
+        logger.warning(
+            "Couldnt pull user synonyms for {}".format(user.username), e
+        )
 
 
 def pull_all_user_synonyms(user=None):
@@ -696,7 +781,9 @@ def pull_all_user_synonyms(user=None):
                 user = profile.user
                 for level in profile.unlocked_levels_list():
                     pull_user_synonyms_by_level(user, level)
-                logger.info("Pulled user synonyms for {}".format(user.username))
+                logger.info(
+                    "Pulled user synonyms for {}".format(user.username)
+                )
 
 
 def user_returns_from_vacation(user):
@@ -738,7 +825,9 @@ def user_begins_vacation(user):
 
 def follow_user(user):
     try:
-        user.profile.level = get_wanikani_level_by_api_key(user.profile.api_key)
+        user.profile.level = get_wanikani_level_by_api_key(
+            user.profile.api_key
+        )
         user.profile.unlocked_levels.get_or_create(level=user.profile.level)
         user.profile.save()
         unlock_eligible_vocab_from_levels(user, user.profile.level)
@@ -763,13 +852,17 @@ def get_24_hour_time_span():
 
 def build_upcoming_srs_for_user(user):
     start, finish = get_24_hour_time_span()
-    reviews = get_users_reviews(user).filter(next_review_date__range=(start, finish))
+    reviews = get_users_reviews(user).filter(
+        next_review_date__range=(start, finish)
+    )
 
     for review in reviews:
         logger.debug(review.next_review_date)
 
     reviews = (
-        reviews.annotate(hour=TruncHour("next_review_date", tzinfo=timezone.utc))
+        reviews.annotate(
+            hour=TruncHour("next_review_date", tzinfo=timezone.utc)
+        )
         .annotate(date=TruncDate("next_review_date", tzinfo=timezone.utc))
         .values("date", "hour")
         .annotate(review_count=Count("id"))
@@ -782,7 +875,9 @@ def build_upcoming_srs_for_user(user):
     for review in reviews:
         found_hour = review["hour"].hour
         while found_hour != expected_hour:
-            logger.debug("{} != {}, skipping.".format(found_hour, expected_hour))
+            logger.debug(
+                "{} != {}, skipping.".format(found_hour, expected_hour)
+            )
             expected_hour = (expected_hour + 1) % 24
         retval[expected_hour] = review["review_count"]
         logger.debug("Inserting reviews at hour {}".format(expected_hour))

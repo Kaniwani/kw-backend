@@ -1,13 +1,11 @@
 import logging
+from datetime import timedelta
 from itertools import chain
 
-from datetime import timedelta
-
-from django.contrib.postgres.fields import JSONField
-from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.contrib.postgres.fields import JSONField
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
 from django.utils import timezone
 
 from kw_webapp import constants
@@ -24,7 +22,9 @@ logger = logging.getLogger(__name__)
 class Announcement(models.Model):
     title = models.CharField(max_length=255)
     body = models.TextField()
-    pub_date = models.DateTimeField("Date Published", auto_now_add=True, null=True)
+    pub_date = models.DateTimeField(
+        "Date Published", auto_now_add=True, null=True
+    )
     creator = models.ForeignKey(User)
 
     def __str__(self):
@@ -49,7 +49,9 @@ class Level(models.Model):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
+    user = models.OneToOneField(
+        User, related_name="profile", on_delete=models.CASCADE
+    )
     api_key = models.CharField(max_length=255)
     api_valid = models.BooleanField(default=True)
     gravatar = models.CharField(max_length=255)
@@ -60,7 +62,9 @@ class Profile(models.Model):
     posts_count = models.PositiveIntegerField(default=0)
     title = models.CharField(max_length=255, default="Turtles", null=True)
     join_date = models.DateField(auto_now_add=True, null=True)
-    last_wanikani_sync_date = models.DateTimeField(auto_now_add=True, null=True)
+    last_wanikani_sync_date = models.DateTimeField(
+        auto_now_add=True, null=True
+    )
     last_visit = models.DateTimeField(null=True, auto_now_add=True)
     level = models.PositiveIntegerField(
         null=True,
@@ -70,11 +74,16 @@ class Profile(models.Model):
         ],
     )
     minimum_wk_srs_level_to_review = models.CharField(
-        max_length=20, choices=WkSrsLevel.choices(), default=WkSrsLevel.APPRENTICE.name
+        max_length=20,
+        choices=WkSrsLevel.choices(),
+        default=WkSrsLevel.APPRENTICE.name,
     )
 
-    maximum_wk_srs_level_to_review = models.CharField(max_length=20, choices=WkSrsLevel.choices(),
-                                                      default=WkSrsLevel.BURNED.name)
+    maximum_wk_srs_level_to_review = models.CharField(
+        max_length=20,
+        choices=WkSrsLevel.choices(),
+        default=WkSrsLevel.BURNED.name,
+    )
 
     order_reviews_by_level = models.BooleanField(default=False)
 
@@ -99,10 +108,12 @@ class Profile(models.Model):
     auto_expand_answer_on_success = models.BooleanField(default=True)
     auto_expand_answer_on_failure = models.BooleanField(default=False)
     info_detail_level_on_success = models.PositiveIntegerField(
-        default=1, validators=[MaxValueValidator(constants.MAX_REVIEW_DETAIL_LEVEL)]
+        default=1,
+        validators=[MaxValueValidator(constants.MAX_REVIEW_DETAIL_LEVEL)],
     )
     info_detail_level_on_failure = models.PositiveIntegerField(
-        default=0, validators=[MaxValueValidator(constants.MAX_REVIEW_DETAIL_LEVEL)]
+        default=0,
+        validators=[MaxValueValidator(constants.MAX_REVIEW_DETAIL_LEVEL)],
     )
 
     # External Site settings
@@ -122,7 +133,6 @@ class Profile(models.Model):
         # Get the maximum allowable WK srs level from the list of levels -> names.
         maximum_streak = WANIKANI_SRS_LEVELS[maximum_wk_srs][-1]
         return maximum_streak
-
 
     def set_twitter_account(self, twitter_account):
         if not twitter_account:
@@ -161,7 +171,10 @@ class Profile(models.Model):
 
     def __str__(self):
         return "{} -- {} -- {} -- {}".format(
-            self.user.username, self.api_key, self.level, self.unlocked_levels_list()
+            self.user.username,
+            self.api_key,
+            self.level,
+            self.unlocked_levels_list(),
         )
 
 
@@ -175,7 +188,9 @@ class Vocabulary(models.Model):
         return self.readings.filter(level__lte=level)
 
     def get_absolute_url(self):
-        return "https://www.wanikani.com/vocabulary/{}/".format(self.readings.all()[0])
+        return "https://www.wanikani.com/vocabulary/{}/".format(
+            self.readings.all()[0]
+        )
 
     def __str__(self):
         return self.meaning
@@ -249,23 +264,28 @@ class Report(models.Model):
         )
 
 
-
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
-    user = models.ForeignKey(User, related_name="reviews", on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        User, related_name="reviews", on_delete=models.CASCADE
+    )
     correct = models.PositiveIntegerField(default=0)
     incorrect = models.PositiveIntegerField(default=0)
     streak = models.PositiveIntegerField(default=0)
     last_studied = models.DateTimeField(blank=True, null=True)
     needs_review = models.BooleanField(default=True)
     unlock_date = models.DateTimeField(default=timezone.now, blank=True)
-    next_review_date = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    next_review_date = models.DateTimeField(
+        default=timezone.now, null=True, blank=True
+    )
     burned = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
     wanikani_srs = models.CharField(max_length=255, default="unknown")
     wanikani_srs_numeric = models.IntegerField(default=0)
     wanikani_burned = models.BooleanField(default=False)
-    notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
+    notes = models.CharField(
+        max_length=500, editable=True, blank=True, null=True
+    )
     critical = models.BooleanField(default=False)
 
     class Meta:
@@ -278,7 +298,10 @@ class UserSpecific(models.Model):
         elif first_try:
             self.correct += 1
             self.streak += 1
-            if self.streak >= constants.WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name][0]:
+            if (
+                self.streak
+                >= constants.WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name][0]
+            ):
                 self.burned = True
 
         self.needs_review = False
@@ -331,7 +354,9 @@ class UserSpecific(models.Model):
             return False
 
     def get_all_readings(self):
-        return list(chain(self.vocabulary.readings.all(), self.reading_synonyms.all()))
+        return list(
+            chain(self.vocabulary.readings.all(), self.reading_synonyms.all())
+        )
 
     def can_be_managed_by(self, user):
         return self.user == user or user.is_superuser
@@ -340,7 +365,9 @@ class UserSpecific(models.Model):
         return [synonym.text for synonym in self.meaning_synonyms.all()]
 
     def synonyms_string(self):
-        return ", ".join([synonym.text for synonym in self.meaning_synonyms.all()])
+        return ", ".join(
+            [synonym.text for synonym in self.meaning_synonyms.all()]
+        )
 
     def remove_synonym(self, text):
         MeaningSynonym.objects.get(text=text).delete()
@@ -411,7 +438,9 @@ class UserSpecific(models.Model):
             - self.last_studied.min.replace(tzinfo=self.last_studied.tzinfo)
         ).seconds
         rounding = (seconds + round_to) // round_to * round_to
-        self.last_studied = self.last_studied + timedelta(0, rounding - seconds, 0)
+        self.last_studied = self.last_studied + timedelta(
+            0, rounding - seconds, 0
+        )
 
         logger.debug(
             "Updating Last Studied Time for user {} for review {}. Went from {} to {}, a rounding of {:.1f} minutes".format(
@@ -428,7 +457,9 @@ class UserSpecific(models.Model):
         round_to = constants.REVIEW_ROUNDING_TIME.total_seconds()
         seconds = (
             self.next_review_date
-            - self.next_review_date.min.replace(tzinfo=self.next_review_date.tzinfo)
+            - self.next_review_date.min.replace(
+                tzinfo=self.next_review_date.tzinfo
+            )
         ).seconds
         rounding = (seconds + round_to) // round_to * round_to
         self.next_review_date = self.next_review_date + timedelta(
@@ -443,7 +474,9 @@ class UserSpecific(models.Model):
             - self.last_studied.min.replace(tzinfo=self.last_studied.tzinfo)
         ).seconds
         rounding = (seconds + round_to) // round_to * round_to
-        self.last_studied = self.last_studied + timedelta(0, rounding - seconds, 0)
+        self.last_studied = self.last_studied + timedelta(
+            0, rounding - seconds, 0
+        )
         self.save()
 
     def _round_review_time_up(self):
@@ -467,7 +500,9 @@ class UserSpecific(models.Model):
 class AnswerSynonym(models.Model):
     character = models.CharField(max_length=255, null=True)
     kana = models.CharField(max_length=255, null=False)
-    review = models.ForeignKey(UserSpecific, related_name="reading_synonyms", null=True)
+    review = models.ForeignKey(
+        UserSpecific, related_name="reading_synonyms", null=True
+    )
 
     class Meta:
         unique_together = ("character", "kana", "review")
@@ -488,7 +523,9 @@ class AnswerSynonym(models.Model):
 
 class MeaningSynonym(models.Model):
     text = models.CharField(max_length=255, blank=False, null=False)
-    review = models.ForeignKey(UserSpecific, related_name="meaning_synonyms", null=True)
+    review = models.ForeignKey(
+        UserSpecific, related_name="meaning_synonyms", null=True
+    )
 
     def __str__(self):
         return self.text

@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import kw_webapp.constants
 
 
 class Migration(migrations.Migration):
@@ -11,7 +10,9 @@ class Migration(migrations.Migration):
     dependencies = [("kw_webapp", "0021_userspecific_critical")]
 
     operations = [
-        migrations.RemoveField(model_name="profile", name="only_review_burned"),
+        migrations.RemoveField(
+            model_name="profile", name="only_review_burned"
+        ),
         migrations.AddField(
             model_name="profile",
             name="minimum_wk_srs_level_to_review",

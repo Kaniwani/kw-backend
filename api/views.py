@@ -1,13 +1,18 @@
+import logging
+
 from django.contrib.auth.models import User
-from django.http import HttpResponseForbidden, HttpResponseBadRequest, Http404
-from rest_framework import generics, filters
+from django.http import HttpResponseForbidden, HttpResponseBadRequest
+from rest_framework import generics
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.decorators import list_route, detail_route, permission_classes
+from rest_framework.decorators import (
+    list_route,
+    detail_route,
+)
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
 
@@ -35,16 +40,8 @@ from api.serializers import (
     ReportCountSerializer,
     ReportListSerializer,
     MeaningSynonymSerializer,
-    RegistrationSerializer,
     ReviewCountSerializer,
 )
-from api.permissions import IsAdminOrReadOnly, IsAuthenticatedOrCreating, IsAdminOrAuthenticatedAndCreating
-from api.responses import InvalidWanikaniAPIKeyResponse
-from api.serializers import ReviewSerializer, VocabularySerializer, StubbedReviewSerializer, \
-    HyperlinkedVocabularySerializer, ReadingSerializer, LevelSerializer, ReadingSynonymSerializer, \
-    FrequentlyAskedQuestionSerializer, AnnouncementSerializer, UserSerializer, ContactSerializer, ProfileSerializer, \
-    ReportSerializer, ReportCountSerializer, ReportListSerializer, MeaningSynonymSerializer, RegistrationSerializer, \
-    ReviewCountSerializer
 from kw_webapp import constants
 from kw_webapp.forms import UserContactCustomForm
 from kw_webapp.models import (
@@ -66,23 +63,13 @@ from kw_webapp.tasks import (
     get_users_critical_reviews,
     sync_with_wk,
     all_srs,
-    sync_user_profile_with_wk,
     user_returns_from_vacation,
     user_begins_vacation,
     follow_user,
     reset_user,
     get_users_lessons,
+    get_all_users_reviews,
 )
-from kw_webapp.models import Vocabulary, UserSpecific, Reading, Level, AnswerSynonym, FrequentlyAskedQuestion, \
-    Announcement, Profile, Report, MeaningSynonym
-from kw_webapp.tasks import get_users_current_reviews, unlock_eligible_vocab_from_levels, lock_level_for_user, \
-    get_users_critical_reviews, sync_with_wk, all_srs, sync_user_profile_with_wk, user_returns_from_vacation, \
-    user_begins_vacation, follow_user, reset_user, get_users_lessons, get_all_users_reviews
-
-import logging
-
-from kw_webapp.wanikani.exceptions import InvalidWaniKaniKey
-
 
 logger = logging.getLogger(__name__)
 
@@ -144,16 +131,22 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
 
     def _serialize_level(self, level, request):
         unlocked = (
-            True if level in request.user.profile.unlocked_levels_list() else False
+            True
+            if level in request.user.profile.unlocked_levels_list()
+            else False
         )
         level_obj = (
-            request.user.profile.unlocked_levels.get(level=level) if unlocked else None
+            request.user.profile.unlocked_levels.get(level=level)
+            if unlocked
+            else None
         )
 
         pre_serialized_dict = {
             "level": level,
             "unlocked": unlocked,
-            "vocabulary_count": Vocabulary.objects.filter(readings__level=level)
+            "vocabulary_count": Vocabulary.objects.filter(
+                readings__level=level
+            )
             .distinct()
             .count(),
             "vocabulary_url": level,
@@ -363,7 +356,10 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
     @detail_route(methods=["POST"])
     def correct(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
-        if not review.can_be_managed_by(request.user) or not review.needs_review:
+        if (
+            not review.can_be_managed_by(request.user)
+            or not review.needs_review
+        ):
             raise PermissionDenied(
                 "You can't review a review that doesn't need to be reviewed! ٩(ఠ益ఠ)۶"
             )
@@ -376,7 +372,10 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
     @detail_route(methods=["POST"])
     def incorrect(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
-        if not review.can_be_managed_by(request.user) or not review.needs_review:
+        if (
+            not review.can_be_managed_by(request.user)
+            or not review.needs_review
+        ):
             raise PermissionDenied(
                 "You can't review a review that doesn't need to be reviewed! ٩(ఠ益ఠ)۶"
             )
@@ -496,10 +495,12 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
         new_review_count = get_users_current_reviews(request.user).count()
         return Response({"review_count": new_review_count})
 
-    @list_route(methods=['POST'])
+    @list_route(methods=["POST"])
     @checks_wanikani
     def reset(self, request):
-        reset_to_level = int(request.data["level"]) if "level" in request.data else None
+        reset_to_level = (
+            int(request.data["level"]) if "level" in request.data else None
+        )
         if reset_to_level is None:
             return HttpResponseBadRequest("You must pass a level to reset to.")
         reset_user(request.user, reset_to_level)
@@ -538,7 +539,9 @@ class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
         ):
             user_begins_vacation(user)
 
-        if not old_instance.follow_me and serializer.validated_data.get("follow_me"):
+        if not old_instance.follow_me and serializer.validated_data.get(
+            "follow_me"
+        ):
             follow_user(user)
 
         # Since if we have gotten this far, we know that API key is valid, we set it here.
@@ -560,7 +563,9 @@ class ContactViewSet(generics.CreateAPIView, viewsets.GenericViewSet):
     def create(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        form = UserContactCustomForm(data=serializer.data, request=self.request)
+        form = UserContactCustomForm(
+            data=serializer.data, request=self.request
+        )
 
         if not form.is_valid():
             return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)

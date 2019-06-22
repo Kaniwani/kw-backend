@@ -1,10 +1,9 @@
+from datetime import timedelta
 from itertools import chain
 
-from datetime import timedelta
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http import HttpResponseForbidden
-from django.test import Client
 from django.utils import timezone
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -51,7 +50,9 @@ class TestModels(APITestCase):
         relevant_review_id = UserSpecific.objects.get(
             user=self.user, vocabulary=self.vocabulary
         ).id
-        before_toggle_hidden = UserSpecific.objects.get(id=relevant_review_id).hidden
+        before_toggle_hidden = UserSpecific.objects.get(
+            id=relevant_review_id
+        ).hidden
 
         if self.client.login(username=self.user.username, password="password"):
             response = self.client.post(
@@ -76,11 +77,15 @@ class TestModels(APITestCase):
     def test_removing_nonexistent_synonym_fails(self):
         remove_text = "un chien"
         self.assertRaises(
-            MeaningSynonym.DoesNotExist, self.review.remove_synonym, remove_text
+            MeaningSynonym.DoesNotExist,
+            self.review.remove_synonym,
+            remove_text,
         )
 
     def test_removing_synonym_by_object_works(self):
-        synonym, created = self.review.meaning_synonyms.get_or_create(text="minou")
+        synonym, created = self.review.meaning_synonyms.get_or_create(
+            text="minou"
+        )
         self.review.meaning_synonyms.remove(synonym)
 
     def test_reading_clean_fails_with_invalid_levels_too_high(self):
@@ -117,7 +122,10 @@ class TestModels(APITestCase):
         self.review.reading_synonyms.create(kana="shwoop", character="fwoop")
 
         expected = list(
-            chain(self.vocabulary.readings.all(), self.review.reading_synonyms.all())
+            chain(
+                self.vocabulary.readings.all(),
+                self.review.reading_synonyms.all(),
+            )
         )
 
         self.assertListEqual(expected, self.review.get_all_readings())
@@ -137,7 +145,9 @@ class TestModels(APITestCase):
 
         self.assertEqual(users_profile.twitter, "@Tadgh")
 
-    def test_setting_an_invalid_twitter_handle_does_not_modify_model_instance(self):
+    def test_setting_an_invalid_twitter_handle_does_not_modify_model_instance(
+        self
+    ):
         invalid_account_name = "!!"
         old_twitter = self.user.profile.twitter
 
@@ -147,7 +157,9 @@ class TestModels(APITestCase):
 
         self.assertEqual(users_profile.twitter, old_twitter)
 
-    def test_setting_a_blank_twitter_handle_does_not_modify_model_instance(self):
+    def test_setting_a_blank_twitter_handle_does_not_modify_model_instance(
+        self
+    ):
         invalid_account_name = "@"
         old_twitter = self.user.profile.twitter
 
@@ -202,9 +214,15 @@ class TestModels(APITestCase):
         users_profile = Profile.objects.get(user=self.user)
         self.assertEqual(old_twitter, users_profile.twitter)
 
-    def test_answering_a_review_correctly_rounds_next_review_date_up_to_interval(self):
-        self.review.next_review_date = self.review.next_review_date.replace(minute=17)
-        self.review.last_studied = self.review.next_review_date.replace(minute=17)
+    def test_answering_a_review_correctly_rounds_next_review_date_up_to_interval(
+        self
+    ):
+        self.review.next_review_date = self.review.next_review_date.replace(
+            minute=17
+        )
+        self.review.last_studied = self.review.next_review_date.replace(
+            minute=17
+        )
         self.review.answered_correctly(first_try=True)
         self.review.refresh_from_db()
 
@@ -225,8 +243,12 @@ class TestModels(APITestCase):
         )
 
     def test_rounding_a_review_time_only_goes_up(self):
-        self.review.next_review_date = self.review.next_review_date.replace(minute=17)
-        self.review.last_studied = self.review.next_review_date.replace(minute=17)
+        self.review.next_review_date = self.review.next_review_date.replace(
+            minute=17
+        )
+        self.review.last_studied = self.review.next_review_date.replace(
+            minute=17
+        )
         self.review._round_review_time_up()
         self.review.refresh_from_db()
 
@@ -266,7 +288,9 @@ class TestModels(APITestCase):
     def test_handle_wanikani_level_up_correctly_levels_up(self):
         old_level = self.user.profile.level
 
-        self.user.profile.handle_wanikani_level_change(self.user.profile.level + 1)
+        self.user.profile.handle_wanikani_level_change(
+            self.user.profile.level + 1
+        )
         self.user.refresh_from_db()
 
         self.assertEqual(self.user.profile.level, old_level + 1)

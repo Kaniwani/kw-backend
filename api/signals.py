@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -5,9 +7,11 @@ from djoser.signals import user_registered
 from rest_framework.authtoken.models import Token
 
 from kw_webapp import constants
-from kw_webapp.tasks import sync_with_wk, get_users_lessons, unlock_eligible_vocab_from_levels
-
-import logging
+from kw_webapp.tasks import (
+    sync_with_wk,
+    get_users_lessons,
+    unlock_eligible_vocab_from_levels,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -38,5 +42,6 @@ def unlock_previous_level(user):
         previous_level = user.profile.level - 1
         user.profile.unlocked_levels.get_or_create(level=previous_level)
         unlock_eligible_vocab_from_levels(user, previous_level)
+
 
 user_registered.connect(sync_unlocks_with_wk)

@@ -2,15 +2,15 @@ from datetime import timedelta
 
 import responses
 from django.contrib.auth.models import User
+from requests.exceptions import ConnectionError
 
 from kw_webapp.constants import API_KEY
 from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile
 from kw_webapp.tasks import (
     build_user_information_api_string,
     build_API_sync_string_for_user_for_levels,
-    build_API_sync_string_for_api_key_for_levels)
-
-from requests.exceptions import ConnectionError
+    build_API_sync_string_for_api_key_for_levels,
+)
 from kw_webapp.tests import sample_api_responses
 
 
@@ -34,6 +34,7 @@ def create_lesson(vocabulary, user):
     u.save()
     return u
 
+
 @responses.activate
 def create_profile(user, api_key, level):
     try:
@@ -43,6 +44,7 @@ def create_profile(user, api_key, level):
     p = Profile.objects.get(user=user)
     p.unlocked_levels.create(level=level)
     return p
+
 
 def create_vocab(meaning):
     v = Vocabulary.objects.create(meaning=meaning)
@@ -67,7 +69,9 @@ def create_review_for_specific_time(user, meaning, time_to_review):
 
 
 def build_test_api_string_for_merging():
-    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/TEST".format(API_KEY)
+    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/TEST".format(
+        API_KEY
+    )
     return api_call
 
 
@@ -80,6 +84,7 @@ def mock_empty_vocabulary_response(api_key, level):
         content_type="application/json",
     )
 
+
 def mock_vocab_list_response_with_single_vocabulary(user):
     responses.add(
         responses.GET,
@@ -89,6 +94,7 @@ def mock_vocab_list_response_with_single_vocabulary(user):
         content_type="application/json",
     )
 
+
 def mock_user_info_response_at_level(api_key, level):
     responses.add(
         responses.GET,
@@ -97,6 +103,7 @@ def mock_user_info_response_at_level(api_key, level):
         status=200,
         content_type="application/json",
     )
+
 
 def mock_user_info_response_with_higher_level(api_key):
     responses.add(
@@ -137,6 +144,7 @@ def mock_vocab_list_response_with_single_vocabulary_with_four_synonyms(user):
         content_type="application/json",
     )
 
+
 def mock_vocab_list_response_with_single_vocabulary(api_key, level):
     responses.add(
         responses.GET,
@@ -145,6 +153,7 @@ def mock_vocab_list_response_with_single_vocabulary(api_key, level):
         status=200,
         content_type="application/json",
     )
+
 
 def mock_vocab_list_response_with_single_vocabulary_with_changed_meaning(user):
     responses.add(

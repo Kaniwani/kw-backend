@@ -6,5 +6,4 @@ class KaniwaniConfig(AppConfig):
     verbose_name = "KaniWani"
 
     def ready(self):
-        import kw_webapp.signals
-        import api.signals
+        pass

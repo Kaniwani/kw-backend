@@ -15,14 +15,16 @@ class Migration(migrations.Migration):
             model_name="profile",
             name="info_detail_level_on_failure",
             field=models.PositiveIntegerField(
-                default=0, validators=[django.core.validators.MaxValueValidator(2)]
+                default=0,
+                validators=[django.core.validators.MaxValueValidator(2)],
             ),
         ),
         migrations.AddField(
             model_name="profile",
             name="info_detail_level_on_success",
             field=models.PositiveIntegerField(
-                default=1, validators=[django.core.validators.MaxValueValidator(2)]
+                default=1,
+                validators=[django.core.validators.MaxValueValidator(2)],
             ),
         ),
     ]

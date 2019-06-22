@@ -1,11 +1,11 @@
 import datetime
+import logging
 from collections import OrderedDict
 
-import requests
 from django.contrib.auth.models import User
-from django.db.models import Q, Count, TimeField
-from django.utils import timezone
+from django.db.models import Q, Count
 from django.db.models.functions import TruncHour, TruncDate
+from django.utils import timezone
 from rest_framework import serializers
 
 from api import serializer_fields
@@ -20,7 +20,6 @@ from kw_webapp.models import (
     Vocabulary,
     UserSpecific,
     Reading,
-    Level,
     Tag,
     AnswerSynonym,
     FrequentlyAskedQuestion,
@@ -35,8 +34,6 @@ from kw_webapp.tasks import (
     get_users_reviews,
     build_upcoming_srs_for_user,
 )
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -100,12 +97,16 @@ class DetailedUpcomingReviewCountSerializer(serializers.BaseSerializer):
             .order_by("date", "hour")
         )
         expected_hour = now.hour
-        hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
+        hours = [
+            hour % 24 for hour in range(expected_hour, expected_hour + 24)
+        ]
 
         retval = OrderedDict.fromkeys(hours)
 
         for key in retval.keys():
-            retval[key] = OrderedDict.fromkeys([level.name for level in KwSrsLevel], 0)
+            retval[key] = OrderedDict.fromkeys(
+                [level.name for level in KwSrsLevel], 0
+            )
 
         for review in reviews:
             found_hour = review["hour"].hour
@@ -183,7 +184,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "kanji_svg_draw_speed",
             "info_detail_level_on_success",
             "info_detail_level_on_failure",
-            "order_reviews_by_level"
+            "order_reviews_by_level",
         )
 
         read_only_fields = (
@@ -237,7 +238,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
     api_key = serializers.CharField(
         write_only=True, max_length=32, validators=[WanikaniApiKeyValidator()]
     )
-    password = serializers.CharField(write_only=True, style={"input_type": "password"})
+    password = serializers.CharField(
+        write_only=True, style={"input_type": "password"}
+    )
 
     class Meta:
         model = User
@@ -271,7 +274,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
         )
 
         if preexisting_users.count() > 0:
-            raise serializers.ValidationError("Username or email already in use!")
+            raise serializers.ValidationError(
+                "Username or email already in use!"
+            )
 
         api_key = validated_data.pop("api_key", None)
 
@@ -330,7 +335,9 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
         if preexisting_users.count() > 0:
-            raise serializers.ValidationError("Username or email already in use!")
+            raise serializers.ValidationError(
+                "Username or email already in use!"
+            )
 
         api_key = validated_data.pop("api_key", None)
 
@@ -404,12 +411,17 @@ class VocabularySerializer(serializers.ModelSerializer):
                 minimum_level_to_review = self.context[
                     "request"
                 ].user.profile.get_minimum_wk_srs_threshold_for_review()
-                maximum_level_to_review = self.context['request'].user.profile.get_maximum_wk_srs_threshold_for_review()
+                maximum_level_to_review = self.context[
+                    "request"
+                ].user.profile.get_maximum_wk_srs_threshold_for_review()
                 return (
                     UserSpecific.objects.filter(
                         user=self.context["request"].user,
                         vocabulary=obj,
-                        wanikani_srs_numeric__range=(minimum_level_to_review, maximum_level_to_review)
+                        wanikani_srs_numeric__range=(
+                            minimum_level_to_review,
+                            maximum_level_to_review,
+                        ),
                     ).count()
                     > 0
                 )
@@ -522,7 +534,9 @@ class LevelSerializer(serializers.Serializer):
     level = serializers.IntegerField(read_only=True)
     unlocked = serializers.BooleanField(read_only=True)
     vocabulary_count = serializers.IntegerField(read_only=True)
-    vocabulary_url = serializer_fields.VocabularyByLevelHyperlinkedField(read_only=True)
+    vocabulary_url = serializer_fields.VocabularyByLevelHyperlinkedField(
+        read_only=True
+    )
     lock_url = serializers.CharField(read_only=True)
     fully_unlocked = serializers.BooleanField(read_only=True)
     unlock_url = serializers.CharField(read_only=True)

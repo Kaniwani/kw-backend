@@ -1,9 +1,7 @@
-from enum import Enum
-
 import re
-
 from collections import OrderedDict
 from datetime import timedelta
+from enum import Enum
 
 # Check these values here: https://cdn.wanikani.com/assets/guide/srs-visualization-4580afac174836361bdc3d3758bd6c7f.png
 SRS_TIMES = {

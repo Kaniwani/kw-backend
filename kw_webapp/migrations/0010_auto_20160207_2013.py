@@ -23,7 +23,10 @@ class Migration(migrations.Migration):
                 ),
                 ("character", models.CharField(max_length=255, null=True)),
                 ("kana", models.CharField(max_length=255)),
-                ("review", models.ForeignKey(to="kw_webapp.UserSpecific", null=True)),
+                (
+                    "review",
+                    models.ForeignKey(to="kw_webapp.UserSpecific", null=True),
+                ),
             ],
             options={},
             bases=(models.Model,),

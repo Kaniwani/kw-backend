@@ -61,7 +61,7 @@ no_vocab_response = {
             "kana": "ねこ",
             "meaning": "radioactive bat",
             "level": 16,
-            "user_specific": None
+            "user_specific": None,
         }
     ],
 }
@@ -211,23 +211,26 @@ user_information_response_with_higher_level = {
     }
 }
 
+
 def user_information_response_at_level(level):
     return {
-    "user_information": {
-        "username": "Tadgh11",
-        "gravatar": "a9453be85d2e722fd7e3b3424a38be30",
-        "level": level,
-        "title": "Turtles",
-        "about": "",
-        "website": "http://www.kaniwani.com",
-        "twitter": "@Tadgh11",
-        "topics_count": 1,
-        "posts_count": 81,
-        "creation_date": 1373371374,
-        "vacation_date": None,
+        "user_information": {
+            "username": "Tadgh11",
+            "gravatar": "a9453be85d2e722fd7e3b3424a38be30",
+            "level": level,
+            "title": "Turtles",
+            "about": "",
+            "website": "http://www.kaniwani.com",
+            "twitter": "@Tadgh11",
+            "topics_count": 1,
+            "posts_count": 81,
+            "creation_date": 1373371374,
+            "vacation_date": None,
+        }
     }
-}
-user_information_response_at_level_1= {
+
+
+user_information_response_at_level_1 = {
     "user_information": {
         "username": "Tadgh11",
         "gravatar": "a9453be85d2e722fd7e3b3424a38be30",
@@ -321,7 +324,12 @@ single_vocab_response_with_4_meaning_synonyms = {
                 "reading_max_streak": 0,
                 "reading_current_streak": 0,
                 "meaning_note": None,
-                "user_synonyms": ["synonym_1", "synonym_2", "synonym_3", "synonym_4"],
+                "user_synonyms": [
+                    "synonym_1",
+                    "synonym_2",
+                    "synonym_3",
+                    "synonym_4",
+                ],
                 "reading_note": None,
             },
         }
@@ -364,7 +372,12 @@ single_vocab_response_with_changed_meaning = {
                 "reading_max_streak": 0,
                 "reading_current_streak": 0,
                 "meaning_note": None,
-                "user_synonyms": ["synonym_1", "synonym_2", "synonym_3", "synonym_4"],
+                "user_synonyms": [
+                    "synonym_1",
+                    "synonym_2",
+                    "synonym_3",
+                    "synonym_4",
+                ],
                 "reading_note": None,
             },
         }

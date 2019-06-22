@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
+
+import django.core.validators
+from django.conf import settings
 from django.db import models, migrations
 from django.utils.timezone import utc
-import datetime
-import django.utils.timezone
-from django.conf import settings
-import django.core.validators
 
 
 class Migration(migrations.Migration):
@@ -92,7 +92,10 @@ class Migration(migrations.Migration):
                         null=True,
                     ),
                 ),
-                ("unlocked_levels", models.ManyToManyField(to="kw_webapp.Level")),
+                (
+                    "unlocked_levels",
+                    models.ManyToManyField(to="kw_webapp.Level"),
+                ),
                 ("user", models.OneToOneField(to=settings.AUTH_USER_MODEL)),
             ],
             options={},
@@ -150,12 +153,16 @@ class Migration(migrations.Migration):
                 ("needs_review", models.BooleanField(default=True)),
                 (
                     "unlock_date",
-                    models.DateTimeField(default=django.utils.timezone.now, blank=True),
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, blank=True
+                    ),
                 ),
                 (
                     "next_review_date",
                     models.DateTimeField(
-                        default=django.utils.timezone.now, blank=True, null=True
+                        default=django.utils.timezone.now,
+                        blank=True,
+                        null=True,
                     ),
                 ),
                 ("burnt", models.BooleanField(default=False)),

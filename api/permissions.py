@@ -1,6 +1,8 @@
-from django.contrib.auth.models import AnonymousUser
-from rest_framework import permissions
-from rest_framework.permissions import IsAdminUser, SAFE_METHODS, IsAuthenticated
+from rest_framework.permissions import (
+    IsAdminUser,
+    SAFE_METHODS,
+    IsAuthenticated,
+)
 
 
 # Allows admin users the ability to do anything, everybody else just gets GET/HEAD/OPTIONS
@@ -16,7 +18,9 @@ class IsMeOrAdmin(IsAdminUser):
     """
 
     def has_object_permission(self, request, view, obj):
-        is_admin = super(IsMeOrAdmin, self).has_object_permission(request, view, obj)
+        is_admin = super(IsMeOrAdmin, self).has_object_permission(
+            request, view, obj
+        )
         return request.user == obj or is_admin
 
 
