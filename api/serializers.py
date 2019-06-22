@@ -239,13 +239,22 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class RegistrationSerializer(serializers.ModelSerializer):
     api_key_v2 = serializers.CharField(
-        write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV2()]
+        write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV2()], required=False
     )
+    api_key = serializers.CharField(write_only=True, max_length=40, validators=[WanikaniApiKeyValidatorV1()], required=False)
     password = serializers.CharField(write_only=True, style={"input_type": "password"})
 
     class Meta:
         model = User
         fields = ("api_key_v2", "password", "username", "email")
+
+    def validate(self, data):
+        # This validation ensures that one of either V1 or V2 api keys is set.
+        if data.get('api_key') or data.get('api_key_v2'):
+            return
+        else:
+            raise serializers.ValidationError("You must provide either api_key or api_key_v2")
+
 
     def validate_password(self, value):
         if len(value) < 4:
@@ -278,10 +287,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Username or email already in use!")
 
         api_key_v2 = validated_data.pop("api_key_v2", None)
+        api_key = validated_data.pop("api_key", None)
         user = User.objects.create(**validated_data)
         user.set_password(validated_data.get("password"))
         user.save()
-        Profile.objects.create(user=user, api_key_v2=api_key_v2, level=1)
+        Profile.objects.create(user=user, api_key=api_key, api_key_v2=api_key_v2, level=1)
         return user
 
 
