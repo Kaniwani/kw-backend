@@ -15,10 +15,12 @@ import os
 from collections import namedtuple
 
 import environ
-import raven
+import sentry_sdk
 from celery.schedules import crontab
 from django.core.urlresolvers import reverse_lazy
 from django.utils.log import DEFAULT_LOGGING
+from sentry_sdk.integrations.celery import CeleryIntegration
+from sentry_sdk.integrations.django import DjangoIntegration
 
 root = environ.Path(__file__) - 2
 log_root = root.path("logs")
@@ -39,55 +41,35 @@ LOGGING = {
         "console": {
             "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
         },
-        "request": {
-            "format": "%(asctime)s %(name)-12s %(levelname)-8s REQUEST: %(message)s"
-        },
         "django.server": DEFAULT_LOGGING["formatters"]["django.server"],
     },
-    "filters": {
-        "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"}
-    },
     "handlers": {
-        "console": {"formatter": "console", "class": "logging.StreamHandler"},
-        "sentry": {
-            "formatter": "console",
-            "level": "WARNING",
-            "filters": ["require_debug_true"],
-            "class": "raven.contrib.django.raven_compat.handlers.SentryHandler",
-        },
-        "app_log": {
-            "formatter": "console",
-            "level": LOGLEVEL,
-            "class": "logging.handlers.TimedRotatingFileHandler",
-            "filename": log_root("kaniwani.log"),
-            "when": "midnight",
-            "backupCount": "30",
-        },
+        "console": {"level": "INFO", "class": "logging.StreamHandler"},
         "django.server": DEFAULT_LOGGING["handlers"]["django.server"],
     },
     "loggers": {
-        # ROOT LOGGER
-        "": {"level": LOGLEVEL, "handlers": ["console", "sentry"]},
-        # For anything in the 'api' directory. e.g. api.views, api.tasks, etc.
-        "api": {
+        # Root logger to catch all warnings and up.
+        "": {"level": "WARNING", "handlers": ["console"]},
+        # This overwrites the default django logger.
+        "django": {"handlers": ["console"], "level": "INFO"},
+        "django.server": DEFAULT_LOGGING["loggers"]["django.server"],
+        "celery": {
             "level": LOGLEVEL,
-            "handlers": ["console", "app_log", "sentry"],
+            "handlers": ["console"],
             "propagate": False,
         },
         "kw_webapp": {
             "level": LOGLEVEL,
-            "handlers": ["console", "app_log", "sentry"],
+            "handlers": ["console"],
             "propagate": False,
         },
-        "celery": {
-            "handlers": ["sentry", "console"],
+        "api": {
             "level": LOGLEVEL,
+            "handlers": ["console"],
             "propagate": False,
         },
-        "django.server": DEFAULT_LOGGING["loggers"]["django.server"],
     },
 }
-
 
 REDIS_URL = env.cache_url("REDIS_URL", default="rediscache://localhost:6379/0")
 
@@ -139,7 +121,6 @@ INSTALLED_APPS = (
     "rest_framework.authtoken",
     "corsheaders",
     "djoser",
-    "raven.contrib.django.raven_compat",
 )
 
 MIDDLEWARE = [
@@ -246,8 +227,8 @@ DJOSER = {
     "PASSWORD_RESET_CONFIRM_URL": "password-reset/{uid}/{token}",
 }
 
-RAVEN_CONFIG = (
-    {"dsn": env("RAVEN_DSN"), "release": env("RELEASE", default="UNKNOWN")}
-    if not DEBUG
-    else {}
-)
+if not DEBUG:
+    sentry_sdk.init(
+        dsn=env("SENTRY_DSN"),
+        integrations=[DjangoIntegration(), CeleryIntegration()],
+    )
