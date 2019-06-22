@@ -6,12 +6,11 @@ from django.contrib.auth.models import User
 from kw_webapp.constants import API_KEY
 from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile
 from kw_webapp.tasks import (
-    build_user_information_api_string,
     build_API_sync_string_for_user_for_levels,
     build_API_sync_string_for_api_key_for_levels)
 
 from requests.exceptions import ConnectionError
-from kw_webapp.tests import sample_api_responses
+from kw_webapp.tests import sample_api_responses, sample_api_responses_v2
 
 
 def create_user(username):
@@ -33,6 +32,9 @@ def create_lesson(vocabulary, user):
     u.streak = 0
     u.save()
     return u
+
+def build_v1_user_information_api_string(api_key):
+    return "https://www.wanikani.com/api/user/{}/user-information".format(api_key)
 
 @responses.activate
 def create_profile(user, api_key, level):
@@ -70,12 +72,24 @@ def build_test_api_string_for_merging():
     api_call = "https://www.wanikani.com/api/user/{}/vocabulary/TEST".format(API_KEY)
     return api_call
 
+def mock_for_registration(api_key, wk_level):
+    mock_vocab_list_response_with_single_vocabulary(api_key, wk_level)
+    mock_user_info_response(api_key)
 
 def mock_empty_vocabulary_response(api_key, level):
     responses.add(
         responses.GET,
         build_API_sync_string_for_api_key_for_levels(api_key, level),
         json=sample_api_responses.no_vocab_response,
+        status=200,
+        content_type="application/json",
+    )
+
+def mock_vocab_list_response_with_single_vocabulary(api_key, level):
+    responses.add(
+        responses.GET,
+        build_API_sync_string_for_api_key_for_levels(api_key, level),
+        json=sample_api_responses.single_vocab_response,
         status=200,
         content_type="application/json",
     )
@@ -92,7 +106,7 @@ def mock_vocab_list_response_with_single_vocabulary(user):
 def mock_user_info_response_at_level(api_key, level):
     responses.add(
         responses.GET,
-        build_user_information_api_string(api_key),
+        build_v1_user_information_api_string(api_key),
         json=sample_api_responses.user_information_response_at_level(level),
         status=200,
         content_type="application/json",
@@ -101,7 +115,7 @@ def mock_user_info_response_at_level(api_key, level):
 def mock_user_info_response_with_higher_level(api_key):
     responses.add(
         responses.GET,
-        build_user_information_api_string(api_key),
+        build_v1_user_information_api_string(api_key),
         json=sample_api_responses.user_information_response_with_higher_level,
         status=200,
         content_type="application/json",
@@ -111,22 +125,72 @@ def mock_user_info_response_with_higher_level(api_key):
 def mock_user_info_response(api_key):
     responses.add(
         responses.GET,
-        build_user_information_api_string(api_key),
+        build_v1_user_information_api_string(api_key),
         json=sample_api_responses.user_information_response,
         status=200,
         content_type="application/json",
     )
 
+def mock_study_materials():
+    responses.add(
+        responses.GET,
+        build_study_materials_url(),
+        json=sample_api_responses_v2.single_study_material,
+        status=200,
+        content_type="application/json"
+    )
+
+def _mock_wk_response(url, json):
+    responses.add(
+        responses.GET,
+        url,
+        json=json,
+        status=200,
+        content_type="application/json"
+    )
+def mock_assignments_with_one_assignment():
+    _mock_wk_response(build_assignments_url(), sample_api_responses_v2.single_assignment)
+
+def mock_assignments_with_no_assignments():
+    _mock_wk_response(build_assignments_url(), sample_api_responses_v2.no_assignments)
+
+def mock_user_response_v2():
+    responses.add(
+        responses.GET,
+        "https://api.wanikani.com/v2/user",
+        json=sample_api_responses_v2.user_profile,
+        status=200,
+        content_type="application/json"
+    )
+
+def mock_subjects_v2():
+    responses.add(
+        responses.GET,
+        "https://api.wanikani.com/v2/subjects",
+        json=sample_api_responses_v2.subjects_v2,
+        status=200,
+        content_type="application/json",
+        headers={"Etag": "sampleEtag"}
+    )
+
+def build_assignments_url():
+    return "https://api.wanikani.com/v2/assignments"
+
+def build_study_materials_url():
+    return "https://api.wanikani.com/v2/study_materials"
 
 def mock_invalid_api_user_info_response(api_key):
     responses.add(
         responses.GET,
-        build_user_information_api_string(api_key),
+        build_v1_user_information_api_string(api_key),
         json={"Nothing": "Nothing"},
-        status=200,
+        status=401,
         content_type="application/json",
     )
 
+def mock_anything_to_wanikani_to_401():
+    #TODO write this function.
+    pass
 
 def mock_vocab_list_response_with_single_vocabulary_with_four_synonyms(user):
     responses.add(
@@ -169,6 +233,8 @@ def setupTestFixture(self):
 
     # Setup some basic vocabulary / reading / review information.
     self.vocabulary = create_vocab("radioactive bat")
+    self.vocabulary.wk_subject_id = 1
+    self.vocabulary.save()
     self.reading = create_reading(self.vocabulary, "ねこ", "猫", 5)
     self.reading.furigana_sentence_ja = {
         "preamble": ["その"],

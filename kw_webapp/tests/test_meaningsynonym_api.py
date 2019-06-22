@@ -1,25 +1,14 @@
-import json
-import pprint
-from datetime import timedelta
-from time import sleep
-from unittest import mock
 
-from django.utils import timezone
-from rest_framework.renderers import JSONRenderer
-from rest_framework.reverse import reverse, reverse_lazy
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
-from kw_webapp.models import Level, Report, Announcement
 from kw_webapp.tests.utils import (
     create_user,
     create_profile,
     create_vocab,
     create_reading,
     create_review,
-    create_review_for_specific_time,
 )
-from kw_webapp.utils import one_time_orphaned_level_clear
 
 
 class TestMeaningSynonymApi(APITestCase):

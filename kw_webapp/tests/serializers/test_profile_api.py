@@ -17,7 +17,8 @@ from kw_webapp.tests.utils import (
     mock_user_info_response,
     mock_invalid_api_user_info_response,
     setupTestFixture,
-)
+    mock_empty_vocabulary_response, mock_for_registration, mock_user_response_v2, mock_subjects_v2,
+    mock_assignments_with_one_assignment, mock_study_materials)
 
 
 class TestProfileApi(APITestCase):
@@ -116,10 +117,12 @@ class TestProfileApi(APITestCase):
             Vocabulary.MultipleObjectsReturned, get_vocab_by_kanji, "kanji"
         )
 
+    @responses.activate
     def test_users_with_invalid_api_keys_correctly_get_their_flag_changed_in_profile(
         self
     ):
         self.user.profile.api_key = "ABC123"
+        mock_invalid_api_user_info_response(self.user.profile.api_key)
         self.user.profile.api_valid = True
         self.user.profile.save()
 
@@ -163,8 +166,11 @@ class TestProfileApi(APITestCase):
         data = response.data
         assert data is not None
 
+    @responses.activate
     def test_enable_follow_me_syncs_user_immediately(self):
         # Given
+        mock_user_info_response(self.user.profile.api_key)
+        mock_empty_vocabulary_response(self.user.profile.api_key, self.user.profile.level)
         self.client.force_login(self.user)
         self.user.profile.follow_me = False
         self.user.profile.save()
@@ -184,11 +190,13 @@ class TestProfileApi(APITestCase):
         self.user.profile.refresh_from_db()
         assert self.user.profile.follow_me is True
 
+    @responses.activate
     def test_attempting_to_sync_with_invalid_api_key_sets_correct_profile_value(self):
         # Given
         self.client.force_login(self.user)
-        self.user.profile.api_key = "Some Garbage"
+        self.user.profile.api_key = "SomeGarbage"
         self.user.profile.save()
+        mock_invalid_api_user_info_response("SomeGarbage")
 
         # When
         self.client.post(reverse("api:user-sync"))
@@ -198,15 +206,20 @@ class TestProfileApi(APITestCase):
         self.user.profile.refresh_from_db()
         assert self.user.profile.api_valid is False
 
+    @responses.activate
     def test_registration(self):
+        mock_subjects_v2()
+        mock_assignments_with_one_assignment()
+        mock_user_response_v2()
+        mock_study_materials()
         response = self.client.post(
             reverse("api:auth:user-create"),
             data={
                 "username": "createme",
                 "password": "password",
-                "api_key": constants.API_KEY,
+                "api_key_v2": constants.API_KEY_V2,
                 "email": "asdf@email.com",
-            },
+            }
         )
         assert response.status_code == 201
 

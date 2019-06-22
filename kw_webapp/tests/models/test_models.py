@@ -1,6 +1,8 @@
 from itertools import chain
 
 from datetime import timedelta
+
+from wanikani_api.models import Vocabulary, Reading, Meaning
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http import HttpResponseForbidden
@@ -11,6 +13,7 @@ from rest_framework.test import APITestCase
 
 from kw_webapp import constants
 from kw_webapp.models import MeaningSynonym, UserSpecific, Profile, Tag
+from kw_webapp.tests import sample_api_responses_v2
 from kw_webapp.tests.utils import (
     create_user,
     create_review,
@@ -19,8 +22,8 @@ from kw_webapp.tests.utils import (
 )
 from kw_webapp.tests.utils import create_vocab
 
-
 class TestModels(APITestCase):
+
     def setUp(self):
         self.user = create_user("Tadgh")
         self.user.set_password("password")
@@ -99,13 +102,6 @@ class TestModels(APITestCase):
         r = create_reading(self.vocabulary, "ねこ", "ねこ", 2)
         r = create_reading(self.vocabulary, "ねこな", "猫", 1)
         self.assertEqual(self.vocabulary.reading_count(), 2)
-
-    def test_available_readings_returns_only_readings_youve_unlocked(self):
-        v = create_vocab("cat")
-        r = create_reading(v, "ねこ", "ねこ", 5)
-        r = create_reading(v, "ねこな", "猫", 1)
-
-        self.assertTrue(len(v.available_readings(2)) == 1)
 
     def test_synonym_adding(self):
         self.review.meaning_synonyms.get_or_create(text="kitty")
@@ -387,3 +383,34 @@ class TestModels(APITestCase):
     def test_newly_created_user_specific_has_null_last_studied_date(self):
         review = create_review(create_vocab("test"), self.user)
         self.assertIsNone(review.last_studied)
+
+    def test_vocabulary_should_be_updated(self):
+        self.vocabulary.parts_of_speech.get_or_create(part="verb")
+        self.vocabulary.parts_of_speech.get_or_create(part="out_of_date")
+        self.vocabulary.alternate_meanings = "out_of_date"
+        self.vocabulary.readings.get_or_create(kana="current_kana", character="current_character", level=1)
+        self.vocabulary.readings.get_or_create(kana="outdated_kana", character="outdated_character", level=1)
+        self.vocabulary.readings.get_or_create(kana="outdated_kana2", character="outdated_character2", level=1)
+        self.vocabulary.save()
+        self.vocabulary.refresh_from_db()
+
+        fake_new_vocab = Vocabulary(json_data=sample_api_responses_v2.single_vocab_v2)
+
+        assert self.vocabulary.is_out_of_date(fake_new_vocab)
+        self.vocabulary.reconcile(fake_new_vocab)
+
+        self.vocabulary.refresh_from_db()
+
+        assert self.vocabulary.readings.count() == 2
+        assert self.vocabulary.readings.filter(kana="swanky new kana").count() == 1
+        assert self.vocabulary.readings.filter(kana="current_kana").count() == 1
+
+        assert self.vocabulary.parts_of_speech.count() == 2
+        assert self.vocabulary.parts_of_speech.filter(part="out_of_date").count() == 0
+        assert self.vocabulary.parts_of_speech.filter(part="verb").count() == 1
+        assert self.vocabulary.parts_of_speech.filter(part="definitely a verb").count() == 1
+        assert self.vocabulary.alternate_meanings == "secondary doesnt matter"
+
+
+
+

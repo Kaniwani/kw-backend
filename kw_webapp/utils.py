@@ -1,6 +1,5 @@
 import random
 
-import requests
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.utils import timezone
@@ -19,14 +18,8 @@ from kw_webapp.models import (
     Level,
     logger,
 )
-from kw_webapp.tasks import (
-    create_new_vocabulary,
-    has_multiple_kanji,
-    import_vocabulary_from_json,
-)
 from kw_webapp.wanikani import make_api_call
-from kw_webapp.tasks import unlock_eligible_vocab_from_levels
-from kw_webapp.tests.utils import create_review, create_review_for_specific_time
+from kw_webapp.tests.utils import create_review_for_specific_time
 
 
 def wipe_all_reviews_for_user(user):
@@ -72,57 +65,6 @@ def correct_next_review_dates():
     for u in us:
         u.set_next_review_time_based_on_last_studied()
         print(i, u)
-
-
-def one_time_merge_level(level, user=None):
-    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(
-        constants.API_KEY, level
-    )
-    response = make_api_call(api_call)
-    vocab_list = response["requested_information"]
-    print("Vocab found:{}".format(len(vocab_list)))
-
-    for vocabulary_json in vocab_list:
-        print("**************************************************************")
-        print(
-            "Analyzing vocab with kanji:[{}]\tCanonical meaning is:[{}]".format(
-                vocabulary_json["character"], vocabulary_json["meaning"]
-            )
-        )
-        found_vocabulary = Vocabulary.objects.filter(
-            readings__character=vocabulary_json["character"]
-        )
-        print(
-            "found [{}] vocabulary on the server with kanji [{}]".format(
-                found_vocabulary.count(), vocabulary_json["character"]
-            )
-        )
-        if (
-            found_vocabulary.count() == 1
-            and found_vocabulary[0].meaning == vocabulary_json["meaning"]
-        ):
-            print(
-                "No conflict found. Precisely 1 vocab on server, and meaning matches."
-            )
-        elif found_vocabulary.count() > 1:
-            print(
-                "Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(
-                    found_vocabulary.count(), vocabulary_json["meaning"]
-                )
-            )
-            handle_merger(vocabulary_json, found_vocabulary)
-        elif found_vocabulary.count() == 0:
-            create_new_vocabulary(vocabulary_json)
-        else:
-            print("No conflict, but meaning has changed. Changing meaning!")
-            to_be_edited = found_vocabulary[0]
-            to_be_edited.meaning = vocabulary_json["meaning"]
-            to_be_edited.save()
-
-
-def one_time_merger(user=None):
-    for level in range(1, 61):
-        one_time_merge_level(level, user=None)
 
 
 def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
@@ -208,17 +150,6 @@ def generate_user_stats(user):
             for review in reviews:
                 print(review)
     print("Finished printing duplicates")
-
-
-def handle_merger(vocabulary_json, found_vocabulary):
-    ids_to_delete = found_vocabulary.values_list("id", flat=True)
-    ids_to_delete_list = list(ids_to_delete)
-    vocabulary = create_new_vocabulary(vocabulary_json)
-    create_new_review_and_merge_existing(vocabulary, found_vocabulary)
-    Vocabulary.objects.filter(pk__in=ids_to_delete_list).exclude(
-        id=vocabulary.id
-    ).delete()
-
 
 def blow_away_duplicate_reviews_for_all_users():
     users = User.objects.filter(profile__isnull=False)
@@ -458,6 +389,34 @@ def copy_review_data(new_review, old_review):
 def one_time_orphaned_level_clear():
     levels = Level.objects.filter(profile=None)
     levels.delete()
+
+
+def has_multiple_kanji(vocab):
+    kanji = [reading.character for reading in vocab.readings.all()]
+    kanji2 = set(kanji)
+    return len(kanji2) > 1
+
+def add_subject_ids():
+    from wanikani_api.client import Client
+    from kw_webapp.tasks import get_vocab_by_kanji
+    client = Client("2510f001-fe9e-414c-ba19-ccf79af40060")
+    subjects = client.subjects(fetch_all=True, types="vocabulary", hidden=False)
+    total_subs = len(subjects)
+    match_count = 0
+    no_local_equivalent = []
+    for subject in subjects:
+        try:
+            local_vocabulary = get_vocab_by_kanji(subject.characters)
+            local_vocabulary.wk_subject_id = subject.id
+            local_vocabulary.reconcile(subject)
+            match_count += 1
+            logger.info(f"{match_count}/{total_subs}:\t{subject.characters}")
+        except Vocabulary.DoesNotExist as e:
+            logger.warn(f"Found no local vocabulary with characters: {subject.characters}")
+            no_local_equivalent.append(subject)
+
+    unmatched = Vocabulary.objects.filter(wk_subject_id=0)
+    return unmatched, no_local_equivalent
 
 
 def repopulate():

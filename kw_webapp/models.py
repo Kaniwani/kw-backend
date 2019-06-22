@@ -7,7 +7,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import User
-from django.db.models import Count
+from django.db.models import F
 from django.utils import timezone
 
 from kw_webapp import constants
@@ -50,7 +50,8 @@ class Level(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, related_name="profile", on_delete=models.CASCADE)
-    api_key = models.CharField(max_length=255)
+    api_key = models.CharField(max_length=255, null=True)
+    api_key_v2 = models.CharField(max_length=255, null=True)
     api_valid = models.BooleanField(default=True)
     gravatar = models.CharField(max_length=255)
     about = models.CharField(max_length=255, default="")
@@ -112,6 +113,40 @@ class Profile(models.Model):
     on_vacation = models.BooleanField(default=False)
     vacation_date = models.DateTimeField(default=None, null=True, blank=True)
 
+
+    def begin_vacation(self):
+        self.vacation_date = timezone.now()
+        self.save()
+
+    def return_from_vacation(self):
+        """
+        Called when a user disables vacation mode. A one-time pass through their reviews in order to correct their last_studied_date, and quickly run an SRS run to determine which reviews currently need to be looked at.
+        """
+        logger.info("{} has returned from vacation!".format(self.user.username))
+        if self.vacation_date:
+            users_reviews = UserSpecific.objects.filter(user=self.user)
+            elapsed_vacation_time = timezone.now() - self.vacation_date
+            updated_count = users_reviews.update(
+                last_studied=F("last_studied") + elapsed_vacation_time
+            )
+            users_reviews.update(
+                next_review_date=F("next_review_date") + elapsed_vacation_time
+            )
+            logger.info(
+                "brought {} reviews out of hibernation for {}".format(
+                    updated_count, self.user.username
+                )
+            )
+            logger.info(
+                "User {} has been gone for timedelta: {}".format(
+                    self.user.username, str(elapsed_vacation_time)
+                )
+            )
+
+        self.vacation_date = None
+        self.on_vacation = False
+        self.save()
+
     def get_minimum_wk_srs_threshold_for_review(self):
         minimum_wk_srs = self.minimum_wk_srs_level_to_review
         minimum_streak = WANIKANI_SRS_LEVELS[minimum_wk_srs][0]
@@ -165,17 +200,83 @@ class Profile(models.Model):
         )
 
 
+class PartOfSpeech(models.Model):
+    part = models.CharField(max_length=30)
+
+    def __str__(self):
+        return str(self.part)
+
+
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
+    alternate_meanings = models.CharField
+    wk_subject_id = models.IntegerField(default=0) #TODO we will need to run a one-time script to match up vocab by kanji, then assign a WK id.
+    wk_last_modified = models.DateTimeField(null=True)
+    parts_of_speech = models.ManyToManyField(PartOfSpeech)
+    auxiliary_meanings_whitelist = models.CharField(max_length=500, null=True)
+    level = models.PositiveIntegerField(
+        null=True,
+        validators=[
+            MinValueValidator(constants.LEVEL_MIN),
+            MaxValueValidator(constants.LEVEL_MAX),
+        ],
+    )
 
     def reading_count(self):
         return self.readings.all().count()
 
-    def available_readings(self, level):
-        return self.readings.filter(level__lte=level)
-
     def get_absolute_url(self):
         return "https://www.wanikani.com/vocabulary/{}/".format(self.readings.all()[0])
+
+    def is_out_of_date(self, vocabulary):
+        return self.wk_last_modified is None or vocabulary.data_updated_at > self.wk_last_modified
+
+    def reconcile(self, vocabulary):
+        self.wk_last_modified = vocabulary.data_updated_at
+        self.level = vocabulary.level
+        # Set whatever is the new primary meaning.
+        for meaning_obj in vocabulary.meanings:
+            if meaning_obj.primary:
+                self.meaning = meaning_obj.meaning
+
+        # Reset alternate and auxiliary meanings to whatever is current
+        self.alternate_meanings = ",".join([m.meaning for m in vocabulary.meanings if not m.primary])
+        self.auxiliary_meanings_whitelist = ",".join([aux.meaning for aux in vocabulary.auxiliary_meanings])
+
+        # Reconcile the difference in readings.
+        self._delete_stale_readings_based_on(vocabulary)
+        self._add_new_readings_based_on(vocabulary)
+        self._reconcile_parts_of_speech_based_on(vocabulary)
+
+        self.save()
+
+    def _reconcile_parts_of_speech_based_on(self, vocabulary):
+        self.parts_of_speech.clear()
+        for pos in vocabulary.parts_of_speech:
+            self.parts_of_speech.get_or_create(part=pos)
+
+    def _delete_stale_readings_based_on(self, vocabulary):
+        reading_kanas = [r.reading for r in  vocabulary.readings]
+        # Clear out old readings that aren't needed anymore.
+        reading_ids_to_delete = []
+        for reading in self.readings.all():
+            if reading.kana not in reading_kanas:
+                reading_ids_to_delete.append(reading.id)
+        self.readings.filter(id__in=reading_ids_to_delete).delete()
+
+    def _add_new_readings_based_on(self, vocabulary):
+        # Add new readings that weren't there before
+        current_reading_kanas = [reading.kana for reading in self.readings.all()]
+        readings_to_add = []
+        for reading_obj in vocabulary.readings:
+            if reading_obj.reading not in current_reading_kanas:
+                new_reading = Reading()
+                new_reading.vocabulary = self
+                new_reading.kana = reading_obj.reading
+                new_reading.character = vocabulary.characters
+                new_reading.level = vocabulary.level
+                readings_to_add.append(new_reading)
+        self.readings.add(*readings_to_add, bulk=False)
 
     def __str__(self):
         return self.meaning
@@ -193,13 +294,6 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class PartOfSpeech(models.Model):
-    part = models.CharField(max_length=30)
-
-    def __str__(self):
-        return str(self.part)
 
 
 class Reading(models.Model):
@@ -227,13 +321,14 @@ class Reading(models.Model):
     furigana_sentence_ja = JSONField(max_length=1000, default={})
 
     class Meta:
-        unique_together = ("character", "kana")
+        unique_together = ("vocabulary", "character", "kana")
 
     def __str__(self):
         return "{} - {} - {} - {}".format(
             self.vocabulary.meaning, self.kana, self.character, self.level
         )
 
+wk_last_seen_date = models.DateTimeField()
 
 class Report(models.Model):
     created_by = models.ForeignKey(User)
@@ -249,6 +344,13 @@ class Report(models.Model):
         )
 
 
+class LessonManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(streak=0)
+
+class ReviewManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(streak__gte=1)
 
 class UserSpecific(models.Model):
     vocabulary = models.ForeignKey(Vocabulary)
@@ -267,9 +369,46 @@ class UserSpecific(models.Model):
     wanikani_burned = models.BooleanField(default=False)
     notes = models.CharField(max_length=500, editable=True, blank=True, null=True)
     critical = models.BooleanField(default=False)
+    wk_assignment_last_modified = models.DateTimeField(null=True)
+    wk_study_materials_last_modified = models.DateTimeField(null=True)
+    meaning_note = models.CharField(max_length=2000, null=True)
+    reading_note = models.CharField(max_length=2000, null=True)
+
+    objects = models.Manager()
 
     class Meta:
         unique_together = ("vocabulary", "user")
+
+    def is_assignment_out_of_date(self, assignment):
+        return self.wk_assignment_last_modified is None or self.wk_assignment_last_modified < assignment.data_updated_at
+
+    def is_study_material_out_of_date(self, study_material):
+        return self.wk_study_materials_last_modified is None or self.wk_study_materials_last_modified < study_material.data_updated_at
+
+    def reconcile_assignment(self, assignment):
+        self.wanikani_srs = assignment.srs_stage_name
+        self.wanikani_srs_numeric = assignment.srs_stage
+        self.wanikani_burned = assignment.burned_at is not None
+        self.wk_assignment_last_modified = assignment.data_updated_at
+        self.save()
+
+    def reconcile_study_material(self, study_material):
+        self.meaning_note = study_material.meaning_note
+        self.reading_note = study_material.reading_note
+        self._add_meaning_synonyms(study_material.meaning_synonyms)
+        self.wk_study_materials_last_modified = study_material.data_updated_at
+        self.save()
+
+    def _add_meaning_synonyms(self, meaning_synonyms):
+        if meaning_synonyms is not None:
+            meaning_synonyms_to_add = []
+            for meaning_synonym in meaning_synonyms:
+                synonym = MeaningSynonym()
+                synonym.text = meaning_synonym
+                synonym.review = self
+                meaning_synonyms_to_add.append(synonym)
+            self.meaning_synonyms.all().delete()
+            self.meaning_synonyms.add(*meaning_synonyms_to_add, bulk=False)
 
     def answered_correctly(self, first_try=True):
         # This is a check to see if it is a "lesson" object.
