@@ -448,7 +448,7 @@ def add_subject_ids():
             logger.info(
                 f"{match_count} / {total_subs}:\t {subject.characters}"
             )
-        except Vocabulary.DoesNotExist as e:
+        except Vocabulary.DoesNotExist:
             logger.warn(
                 f"Found no local vocabulary with characters: {subject.characters}"
             )
@@ -456,27 +456,6 @@ def add_subject_ids():
 
     unmatched = Vocabulary.objects.filter(wk_subject_id=0)
     return unmatched, no_local_equivalent
-
-
-def repopulate():
-    """
-    A task that uses my personal API key in order to re-sync the database. Koichi often decides to switch things around
-    on a level-per-level basis, or add synonyms, or change which readings are allowed. This method attempts to synchronize
-    our data sets.
-
-    :return:
-    """
-    url = (
-        "https://www.wanikani.com/api/user/"
-        + constants.API_KEY
-        + "/vocabulary/{}"
-    )
-    logger.info("Starting DB Repopulation from WaniKani")
-    for level in range(constants.LEVEL_MIN, constants.LEVEL_MAX + 1):
-        json_data = make_api_call(url.format(level))
-        vocabulary_list = json_data["requested_information"]
-        for vocabulary in vocabulary_list:
-            import_vocabulary_from_json(vocabulary)
 
 
 def clear_duplicate_meaning_synonyms_from_reviews():

@@ -273,7 +273,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                         )
                         local_vocabulary.reconcile(remote_vocabulary)
                         updated_vocabulary_count += 1
-                except Vocabulary.DoesNotExist as e:
+                except Vocabulary.DoesNotExist:
                     self.logger.info(
                         f"Couldn't find a Vocabulary with remote id: {remote_vocabulary.id}"
                     )

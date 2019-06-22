@@ -520,7 +520,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                                 e
                             )
                         )
-                    except KeyError as e:
+                    except KeyError:
                         self.logger.error(
                             "No user_specific or synonyms?: {}".format(
                                 json_data
