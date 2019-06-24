@@ -27,7 +27,7 @@ class Announcement(models.Model):
     pub_date = models.DateTimeField(
         "Date Published", auto_now_add=True, null=True
     )
-    creator = models.ForeignKey(User)
+    creator = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.title
@@ -346,7 +346,7 @@ class Reading(models.Model):
     furigana = models.CharField(max_length=100, null=True)
     pitch = models.CharField(max_length=100, null=True)
     parts_of_speech = models.ManyToManyField(PartOfSpeech)
-    furigana_sentence_ja = JSONField(max_length=1000, default={})
+    furigana_sentence_ja = JSONField(max_length=1000, default=dict)
 
     class Meta:
         unique_together = ("vocabulary", "character", "kana")
@@ -361,7 +361,7 @@ wk_last_seen_date = models.DateTimeField()
 
 
 class Report(models.Model):
-    created_by = models.ForeignKey(User)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     reading = models.ForeignKey(
         Reading, on_delete=models.CASCADE, related_name="reports"
@@ -385,7 +385,7 @@ class ReviewManager(models.Manager):
 
 
 class UserSpecific(models.Model):
-    vocabulary = models.ForeignKey(Vocabulary)
+    vocabulary = models.ForeignKey(Vocabulary, on_delete=models.PROTECT)
     user = models.ForeignKey(
         User, related_name="reviews", on_delete=models.CASCADE
     )
@@ -665,7 +665,10 @@ class AnswerSynonym(models.Model):
     character = models.CharField(max_length=255, null=True)
     kana = models.CharField(max_length=255, null=False)
     review = models.ForeignKey(
-        UserSpecific, related_name="reading_synonyms", null=True
+        UserSpecific,
+        on_delete=models.CASCADE,
+        related_name="reading_synonyms",
+        null=True,
     )
 
     class Meta:
@@ -688,7 +691,10 @@ class AnswerSynonym(models.Model):
 class MeaningSynonym(models.Model):
     text = models.CharField(max_length=255, blank=False, null=False)
     review = models.ForeignKey(
-        UserSpecific, related_name="meaning_synonyms", null=True
+        UserSpecific,
+        on_delete=models.CASCADE,
+        related_name="meaning_synonyms",
+        null=True,
     )
 
     def __str__(self):

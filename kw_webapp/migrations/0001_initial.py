@@ -38,7 +38,13 @@ class Migration(migrations.Migration):
                         null=True,
                     ),
                 ),
-                ("creator", models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                (
+                    "creator",
+                    models.ForeignKey(
+                        to=settings.AUTH_USER_MODEL,
+                        on_delete=django.db.models.deletion.CASCADE,
+                    ),
+                ),
             ],
             options={},
             bases=(models.Model,),
@@ -96,7 +102,13 @@ class Migration(migrations.Migration):
                     "unlocked_levels",
                     models.ManyToManyField(to="kw_webapp.Level"),
                 ),
-                ("user", models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        to=settings.AUTH_USER_MODEL,
+                        on_delete=django.db.models.deletion.CASCADE,
+                    ),
+                ),
             ],
             options={},
             bases=(models.Model,),
@@ -166,7 +178,13 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("burnt", models.BooleanField(default=False)),
-                ("user", models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        to=settings.AUTH_USER_MODEL,
+                        on_delete=django.db.models.deletion.CASCADE,
+                    ),
+                ),
             ],
             options={},
             bases=(models.Model,),
@@ -191,13 +209,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="userspecific",
             name="vocabulary",
-            field=models.ForeignKey(to="kw_webapp.Vocabulary"),
+            field=models.ForeignKey(
+                to="kw_webapp.Vocabulary",
+                on_delete=django.db.models.deletion.CASCADE,
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name="reading",
             name="vocabulary",
-            field=models.ForeignKey(to="kw_webapp.Vocabulary"),
+            field=models.ForeignKey(
+                to="kw_webapp.Vocabulary",
+                on_delete=django.db.models.deletion.CASCADE,
+            ),
             preserve_default=True,
         ),
     ]

@@ -25,7 +25,11 @@ class Migration(migrations.Migration):
                 ("text", models.CharField(max_length=255)),
                 (
                     "review",
-                    models.ForeignKey(null=True, to="kw_webapp.UserSpecific"),
+                    models.ForeignKey(
+                        null=True,
+                        to="kw_webapp.UserSpecific",
+                        on_delete=django.db.models.deletion.CASCADE,
+                    ),
                 ),
             ],
             options={},

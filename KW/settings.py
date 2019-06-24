@@ -17,7 +17,6 @@ from collections import namedtuple
 import environ
 import sentry_sdk
 from celery.schedules import crontab
-from django.core.urlresolvers import reverse_lazy
 from django.utils.log import DEFAULT_LOGGING
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -203,6 +202,7 @@ TEMPLATES = [
             "context_processors": [
                 "django.contrib.auth.context_processors.auth",
                 "django.template.context_processors.request",
+                "django.contrib.messages.context_processors.messages",
             ],
             "debug": DEBUG,
         },
