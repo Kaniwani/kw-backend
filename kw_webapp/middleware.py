@@ -14,7 +14,7 @@ class SetLastVisitMiddleware(deprecation.MiddlewareMixin):
     def process_response(self, request, response):
         if (
             hasattr(request, "user")
-            and request.user.is_authenticated()
+            and request.user.is_authenticated
             and self.should_update(request.user)
         ):
             Profile.objects.filter(pk=request.user.profile.pk).update(

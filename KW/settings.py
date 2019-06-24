@@ -97,7 +97,13 @@ CELERY_BEAT_SCHEDULE = {
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "www.kaniwani.com", ".kaniwani.com"]
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    "www.kaniwani.com",
+    ".kaniwani.com",
+    "0.0.0.0",
+]
 
 CORS_ORIGIN_WHITELIST = env.list("CORS_ORIGIN_WHITELIST")
 
