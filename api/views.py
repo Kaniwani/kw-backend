@@ -202,7 +202,7 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
     hyperlinked readings (for increased performance), or else they will be inline
     """
 
-    filter_class = VocabularyFilter
+    filterset_class = VocabularyFilter
     queryset = Vocabulary.objects.all()
 
     def get_serializer_class(self):
@@ -296,7 +296,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
     """
 
     serializer_class = ReviewSerializer
-    filter_class = ReviewFilter
+    filterset_class = ReviewFilter
     permission_classes = (IsAuthenticated,)
 
     @action(detail=False)
