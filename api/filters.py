@@ -99,9 +99,9 @@ class ReviewFilter(filters.FilterSet):
     reading_contains = filters.CharFilter(
         method=filter_reading_contains_for_review
     )
-    srs_level = filters.NumberFilter(name="streak", lookup_expr="exact")
-    srs_level_lt = filters.NumberFilter(name="streak", lookup_expr="lt")
-    srs_level_gt = filters.NumberFilter(name="streak", lookup_expr="gt")
+    srs_level = filters.NumberFilter(field_name="streak", lookup_expr="exact")
+    srs_level_lt = filters.NumberFilter(field_name="streak", lookup_expr="lt")
+    srs_level_gt = filters.NumberFilter(field_name="streak", lookup_expr="gt")
     part_of_speech = filters.CharFilter(method=filter_tag_multi)
 
     class Meta:

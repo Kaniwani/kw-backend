@@ -39,5 +39,5 @@ app_name = "api"
 
 urlpatterns = router.urls + [
     path(r"auth/login/", jwtviews.obtain_jwt_token),
-    path(r"auth/", include("djoser.urls.base")),
+    path(r"auth/", include(("djoser.urls.base", "auth"), namespace="auth")),
 ]

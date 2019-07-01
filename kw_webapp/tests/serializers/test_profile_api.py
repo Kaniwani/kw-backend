@@ -280,6 +280,9 @@ class TestProfileApi(APITestCase):
         self.assertEqual(response.data["streak"], previous_streak - 1)
         self.assertEqual(response.data["incorrect"], previous_incorrect + 1)
 
+    def skip_nones(self, thedict):
+        return {k: v for k, v in thedict.items() if v is not None}
+
     @responses.activate
     def test_api_is_validated_any_time_it_is_modified(self):
         self.client.force_login(self.user)
@@ -297,7 +300,7 @@ class TestProfileApi(APITestCase):
 
         response = self.client.put(
             reverse("api:profile-detail", args=(self.user.profile.id,)),
-            data=self.user.profile.__dict__,
+            data=self.skip_nones(self.user.profile.__dict__),
         )
         self.assertEqual(response.status_code, 400)
 

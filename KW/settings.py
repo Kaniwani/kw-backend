@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     "rest_framework",
     "debug_toolbar",
     "rest_framework.authtoken",
+    "django_filters",
     "corsheaders",
     "djoser",
 )
@@ -229,7 +230,10 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 DJOSER = {
-    "SERIALIZERS": {"user_create": "api.serializers.RegistrationSerializer"},
+    "SERIALIZERS": {
+        "user_create": "api.serializers.RegistrationSerializer",
+        "current_user": "api.serializers.UserSerializer",
+    },
     "PASSWORD_RESET_CONFIRM_URL": "password-reset/{uid}/{token}",
 }
 

@@ -5,7 +5,7 @@ attrs==18.1.0
 Babel==2.5.3
 backports-abc==0.5
 billiard==3.5.0.3
-celery==4.1.0
+celery==4.3.0
 certifi==2017.4.17
 chardet==3.0.3
 click==6.7
