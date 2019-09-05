@@ -183,7 +183,8 @@ class ProfileSerializer(serializers.ModelSerializer):
             "kanji_svg_draw_speed",
             "info_detail_level_on_success",
             "info_detail_level_on_failure",
-            "order_reviews_by_level"
+            "order_reviews_by_level",
+            "burn_reviews",
         )
 
         read_only_fields = (

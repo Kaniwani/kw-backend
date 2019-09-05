@@ -78,6 +78,8 @@ class Profile(models.Model):
 
     order_reviews_by_level = models.BooleanField(default=False)
 
+    burn_reviews = models.BooleanField(default=True)
+
     # General user-changeable settings
     unlocked_levels = models.ManyToManyField(Level)
     follow_me = models.BooleanField(default=True)
