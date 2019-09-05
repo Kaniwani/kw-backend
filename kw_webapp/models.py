@@ -273,7 +273,7 @@ class UserSpecific(models.Model):
     class Meta:
         unique_together = ("vocabulary", "user")
 
-    def answered_correctly(self, first_try=True):
+    def answered_correctly(self, first_try, can_burn):
         # This is a check to see if it is a "lesson" object.
         if self.streak == 0:
             self.streak += 1
@@ -281,7 +281,11 @@ class UserSpecific(models.Model):
             self.correct += 1
             self.streak += 1
             if self.streak >= constants.WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name][0]:
-                self.burned = True
+                # If can burn, do so. Otherwise, keep review at enlightened.
+                if can_burn:
+                    self.burned = True
+                else:
+                    self.streak = constants.WANIKANI_SRS_LEVELS[WkSrsLevel.ENLIGHTENED.name][0]
 
         self.needs_review = False
         self.last_studied = timezone.now()

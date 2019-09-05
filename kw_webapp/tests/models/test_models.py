@@ -205,7 +205,7 @@ class TestModels(APITestCase):
     def test_answering_a_review_correctly_rounds_next_review_date_up_to_interval(self):
         self.review.next_review_date = self.review.next_review_date.replace(minute=17)
         self.review.last_studied = self.review.next_review_date.replace(minute=17)
-        self.review.answered_correctly(first_try=True)
+        self.review.answered_correctly(first_try=True, can_burn=True)
         self.review.refresh_from_db()
 
         self.assertEqual(
@@ -379,7 +379,7 @@ class TestModels(APITestCase):
 
         self.assertTrue(self.review.critical)
 
-        self.review.answered_correctly()
+        self.review.answered_correctly(first_try=True, can_burn=True)
 
         self.review.refresh_from_db()
         self.assertFalse(self.review.critical)
