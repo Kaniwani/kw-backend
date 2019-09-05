@@ -9,7 +9,6 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.reverse import reverse, reverse_lazy
 from rest_framework.test import APITestCase
 
-from kw_webapp.constants import WkSrsLevel, WANIKANI_SRS_LEVELS
 from kw_webapp.models import Level, Report, Announcement
 from kw_webapp.tests.utils import (
     create_user,

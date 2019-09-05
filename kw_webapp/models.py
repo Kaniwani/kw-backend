@@ -16,6 +16,8 @@ from kw_webapp.constants import (
     HTTP_S_REGEX,
     WkSrsLevel,
     WANIKANI_SRS_LEVELS,
+    KwSrsLevel,
+    KANIWANI_SRS_LEVELS,
 )
 
 logger = logging.getLogger(__name__)
@@ -280,12 +282,12 @@ class UserSpecific(models.Model):
         elif first_try:
             self.correct += 1
             self.streak += 1
-            if self.streak >= constants.WANIKANI_SRS_LEVELS[WkSrsLevel.BURNED.name][0]:
+            if self.streak >= constants.KANIWANI_SRS_LEVELS[KwSrsLevel.BURNED.name][0]:
                 # If can burn, do so. Otherwise, keep review at enlightened.
                 if can_burn:
                     self.burned = True
                 else:
-                    self.streak = constants.WANIKANI_SRS_LEVELS[WkSrsLevel.ENLIGHTENED.name][0]
+                    self.streak = constants.KANIWANI_SRS_LEVELS[KwSrsLevel.ENLIGHTENED.name][0]
 
         self.needs_review = False
         self.last_studied = timezone.now()

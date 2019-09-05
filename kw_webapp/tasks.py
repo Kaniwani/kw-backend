@@ -8,7 +8,7 @@ from django.db.models import F, Count
 from django.db.models import Min
 from django.db.models.functions import TruncHour, TruncDate
 
-from kw_webapp.constants import WANIKANI_SRS_LEVELS, KANIWANI_SRS_LEVELS, KwSrsLevel
+from kw_webapp.constants import KANIWANI_SRS_LEVELS, KwSrsLevel
 from kw_webapp.wanikani import make_api_call
 from kw_webapp.wanikani import exceptions
 from kw_webapp import constants
