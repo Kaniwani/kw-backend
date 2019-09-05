@@ -396,3 +396,13 @@ class TestModels(APITestCase):
 
         self.assertEqual(self.review.streak, constants.WANIKANI_SRS_LEVELS[constants.WkSrsLevel.BURNED.name][0])
         self.assertTrue(self.review.burned)
+
+    def test_answered_correctly_cannot_burn(self):
+        enlightened_level = constants.WANIKANI_SRS_LEVELS[constants.WkSrsLevel.ENLIGHTENED.name][0]
+        self.review.streak = enlightened_level
+
+        self.review.answered_correctly(first_try=True, can_burn=False)
+        self.review.refresh_from_db()
+
+        self.assertEqual(self.review.streak, enlightened_level)
+        self.assertFalse(self.review.burned)
