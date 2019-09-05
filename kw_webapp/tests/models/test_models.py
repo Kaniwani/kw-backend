@@ -387,3 +387,12 @@ class TestModels(APITestCase):
     def test_newly_created_user_specific_has_null_last_studied_date(self):
         review = create_review(create_vocab("test"), self.user)
         self.assertIsNone(review.last_studied)
+
+    def test_answered_correctly_can_burn(self):
+        self.review.streak = constants.WANIKANI_SRS_LEVELS[constants.WkSrsLevel.ENLIGHTENED.name][0]
+
+        self.review.answered_correctly(first_try=True, can_burn=True)
+        self.review.refresh_from_db()
+
+        self.assertEqual(self.review.streak, constants.WANIKANI_SRS_LEVELS[constants.WkSrsLevel.BURNED.name][0])
+        self.assertTrue(self.review.burned)
