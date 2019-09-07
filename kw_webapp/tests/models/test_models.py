@@ -205,7 +205,7 @@ class TestModels(APITestCase):
     def test_answering_a_review_correctly_rounds_next_review_date_up_to_interval(self):
         self.review.next_review_date = self.review.next_review_date.replace(minute=17)
         self.review.last_studied = self.review.next_review_date.replace(minute=17)
-        self.review.answered_correctly(first_try=True)
+        self.review.answered_correctly(first_try=True, can_burn=True)
         self.review.refresh_from_db()
 
         self.assertEqual(
@@ -379,7 +379,7 @@ class TestModels(APITestCase):
 
         self.assertTrue(self.review.critical)
 
-        self.review.answered_correctly()
+        self.review.answered_correctly(first_try=True, can_burn=True)
 
         self.review.refresh_from_db()
         self.assertFalse(self.review.critical)
@@ -387,3 +387,22 @@ class TestModels(APITestCase):
     def test_newly_created_user_specific_has_null_last_studied_date(self):
         review = create_review(create_vocab("test"), self.user)
         self.assertIsNone(review.last_studied)
+
+    def test_answered_correctly_can_burn(self):
+        self.review.streak = constants.KANIWANI_SRS_LEVELS[constants.KwSrsLevel.ENLIGHTENED.name][0]
+
+        self.review.answered_correctly(first_try=True, can_burn=True)
+        self.review.refresh_from_db()
+
+        self.assertEqual(self.review.streak, constants.KANIWANI_SRS_LEVELS[constants.KwSrsLevel.BURNED.name][0])
+        self.assertTrue(self.review.burned)
+
+    def test_answered_correctly_cannot_burn(self):
+        enlightened_level = constants.KANIWANI_SRS_LEVELS[constants.KwSrsLevel.ENLIGHTENED.name][0]
+        self.review.streak = enlightened_level
+
+        self.review.answered_correctly(first_try=True, can_burn=False)
+        self.review.refresh_from_db()
+
+        self.assertEqual(self.review.streak, enlightened_level)
+        self.assertFalse(self.review.burned)
