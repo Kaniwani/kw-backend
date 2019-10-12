@@ -1,6 +1,5 @@
 import random
 
-import requests
 from django.contrib.auth.models import User
 from django.db.models import Count
 from django.utils import timezone
@@ -19,14 +18,8 @@ from kw_webapp.models import (
     Level,
     logger,
 )
-from kw_webapp.tasks import (
-    create_new_vocabulary,
-    has_multiple_kanji,
-    import_vocabulary_from_json,
-)
 from kw_webapp.wanikani import make_api_call
-from kw_webapp.tasks import unlock_eligible_vocab_from_levels
-from kw_webapp.tests.utils import create_review, create_review_for_specific_time
+from kw_webapp.tests.utils import create_review_for_specific_time
 
 
 def wipe_all_reviews_for_user(user):
@@ -74,57 +67,6 @@ def correct_next_review_dates():
         print(i, u)
 
 
-def one_time_merge_level(level, user=None):
-    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(
-        constants.API_KEY, level
-    )
-    response = make_api_call(api_call)
-    vocab_list = response["requested_information"]
-    print("Vocab found:{}".format(len(vocab_list)))
-
-    for vocabulary_json in vocab_list:
-        print("**************************************************************")
-        print(
-            "Analyzing vocab with kanji:[{}]\tCanonical meaning is:[{}]".format(
-                vocabulary_json["character"], vocabulary_json["meaning"]
-            )
-        )
-        found_vocabulary = Vocabulary.objects.filter(
-            readings__character=vocabulary_json["character"]
-        )
-        print(
-            "found [{}] vocabulary on the server with kanji [{}]".format(
-                found_vocabulary.count(), vocabulary_json["character"]
-            )
-        )
-        if (
-            found_vocabulary.count() == 1
-            and found_vocabulary[0].meaning == vocabulary_json["meaning"]
-        ):
-            print(
-                "No conflict found. Precisely 1 vocab on server, and meaning matches."
-            )
-        elif found_vocabulary.count() > 1:
-            print(
-                "Conflict found. Precisely [{}] vocab on server for meaning [{}].".format(
-                    found_vocabulary.count(), vocabulary_json["meaning"]
-                )
-            )
-            handle_merger(vocabulary_json, found_vocabulary)
-        elif found_vocabulary.count() == 0:
-            create_new_vocabulary(vocabulary_json)
-        else:
-            print("No conflict, but meaning has changed. Changing meaning!")
-            to_be_edited = found_vocabulary[0]
-            to_be_edited.meaning = vocabulary_json["meaning"]
-            to_be_edited.save()
-
-
-def one_time_merger(user=None):
-    for level in range(1, 61):
-        one_time_merge_level(level, user=None)
-
-
 def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
     print("New vocabulary id is:[{}]".format(vocabulary.id))
     print(
@@ -141,16 +83,18 @@ def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
             " -> ".join(
                 [
                     str(a)
-                    for a in found_vocabulary.exclude(id=vocabulary.id).values_list(
-                        "id", flat=True
-                    )
+                    for a in found_vocabulary.exclude(
+                        id=vocabulary.id
+                    ).values_list("id", flat=True)
                 ]
             )
         )
     )
     ids = found_vocabulary.values_list("id").exclude(id=vocabulary.id)
     for user in User.objects.all():
-        old_reviews = UserSpecific.objects.filter(user=user, vocabulary__in=ids)
+        old_reviews = UserSpecific.objects.filter(
+            user=user, vocabulary__in=ids
+        )
         if old_reviews.count() > 0:
             print(
                 "User [{}] had [{}] reviews which used one of the now merged vocab.".format(
@@ -158,7 +102,9 @@ def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
                 )
             )
             print("Giving them a review for our new vocabulary object...")
-            new_review = UserSpecific.objects.create(vocabulary=vocabulary, user=user)
+            new_review = UserSpecific.objects.create(
+                vocabulary=vocabulary, user=user
+            )
             # Go over all the reviews which were duplicates, and pick the best one as the new accurate one.
             for old_review in old_reviews:
                 if old_review.streak > new_review.streak:
@@ -177,7 +123,9 @@ def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
                 if new_review.notes is None:
                     new_review.notes = old_review.notes
                 else:
-                    new_review.notes = new_review.notes + ", " + old_review.notes
+                    new_review.notes = (
+                        new_review.notes + ", " + old_review.notes
+                    )
 
                 # slap all the synonyms found onto the new review.
                 MeaningSynonym.objects.filter(review=old_review).update(
@@ -210,16 +158,6 @@ def generate_user_stats(user):
     print("Finished printing duplicates")
 
 
-def handle_merger(vocabulary_json, found_vocabulary):
-    ids_to_delete = found_vocabulary.values_list("id", flat=True)
-    ids_to_delete_list = list(ids_to_delete)
-    vocabulary = create_new_vocabulary(vocabulary_json)
-    create_new_review_and_merge_existing(vocabulary, found_vocabulary)
-    Vocabulary.objects.filter(pk__in=ids_to_delete_list).exclude(
-        id=vocabulary.id
-    ).delete()
-
-
 def blow_away_duplicate_reviews_for_all_users():
     users = User.objects.filter(profile__isnull=False)
     for user in users:
@@ -240,7 +178,11 @@ def blow_away_duplicate_reviews_for_user(user):
     for dupe_rev in dupe_revs:
         vocabulary_ids.append(dupe_rev["vocabulary"])
 
-    print("Here are the vocabulary IDs we are gonna check: {}".format(vocabulary_ids))
+    print(
+        "Here are the vocabulary IDs we are gonna check: {}".format(
+            vocabulary_ids
+        )
+    )
     for voc_id in vocabulary_ids:
         review_id_to_save = UserSpecific.objects.filter(
             vocabulary__id=voc_id, user=user
@@ -248,7 +190,9 @@ def blow_away_duplicate_reviews_for_user(user):
         UserSpecific.objects.filter(vocabulary__id=voc_id, user=user).exclude(
             pk=int(review_id_to_save)
         ).delete()
-        new_reviews = UserSpecific.objects.filter(vocabulary__id=voc_id, user=user)
+        new_reviews = UserSpecific.objects.filter(
+            vocabulary__id=voc_id, user=user
+        )
         print("New review count: {}".format(new_reviews.count()))
         assert new_reviews.count() == 1
 
@@ -265,7 +209,9 @@ def one_time_import_jisho(json_file_path):
                     related_reading = Reading.objects.get(
                         character=vocabulary_json["ja"]["characters"]
                     )
-                    outfile.write(merge_with_model(related_reading, vocabulary_json))
+                    outfile.write(
+                        merge_with_model(related_reading, vocabulary_json)
+                    )
                 except Reading.DoesNotExist:
                     pass
                 except Reading.MultipleObjectsReturned:
@@ -296,7 +242,9 @@ def one_time_import_jisho_new_format(json_file_path):
                     related_reading = Reading.objects.get(
                         character=vocabulary_json["character"]
                     )
-                    outfile.write(merge_with_model(related_reading, vocabulary_json))
+                    outfile.write(
+                        merge_with_model(related_reading, vocabulary_json)
+                    )
                 except Reading.DoesNotExist:
                     no_local_vocab.append(vocabulary_json)
                     pass
@@ -330,7 +278,11 @@ def one_time_import_jisho_new_format(json_file_path):
 
 def merge_with_model(related_reading, vocabulary_json):
     if related_reading.kana != vocabulary_json["reading"]:
-        print("Not the primary reading, skipping: {}".format(related_reading.kana))
+        print(
+            "Not the primary reading, skipping: {}".format(
+                related_reading.kana
+            )
+        )
     else:
         print("Found primary Reading: {}".format(related_reading.kana))
     retval = "******\nWorkin on related reading...{},{}".format(
@@ -350,7 +302,9 @@ def merge_with_model(related_reading, vocabulary_json):
 
     if "pitch" in vocabulary_json:
         if len(vocabulary_json["pitch"]) > 0:
-            string_pitch = ",".join([str(pitch) for pitch in vocabulary_json["pitch"]])
+            string_pitch = ",".join(
+                [str(pitch) for pitch in vocabulary_json["pitch"]]
+            )
             related_reading.pitch = string_pitch
 
     if "partOfSpeech" in vocabulary_json:
@@ -375,7 +329,11 @@ def merge_with_model(related_reading, vocabulary_json):
 
 
 def associate_tags(reading, tag):
-    print("associating [{}] to reading {}".format(tag, reading.vocabulary.meaning))
+    print(
+        "associating [{}] to reading {}".format(
+            tag, reading.vocabulary.meaning
+        )
+    )
     tag_obj, created = Tag.objects.get_or_create(name=tag)
     reading.tags.add(tag_obj)
 
@@ -440,7 +398,11 @@ def find_all_duplicates():
 
 
 def copy_review_data(new_review, old_review):
-    print("Copying review data from [{}] -> [{}]".format(old_review.id, new_review.id))
+    print(
+        "Copying review data from [{}] -> [{}]".format(
+            old_review.id, new_review.id
+        )
+    )
     new_review.streak = old_review.streak
     new_review.incorrect = old_review.incorrect
     new_review.correct = old_review.correct
@@ -460,21 +422,40 @@ def one_time_orphaned_level_clear():
     levels.delete()
 
 
-def repopulate():
-    """
-    A task that uses my personal API key in order to re-sync the database. Koichi often decides to switch things around
-    on a level-per-level basis, or add synonyms, or change which readings are allowed. This method attempts to synchronize
-    our data sets.
+def has_multiple_kanji(vocab):
+    kanji = [reading.character for reading in vocab.readings.all()]
+    kanji2 = set(kanji)
+    return len(kanji2) > 1
 
-    :return:
-    """
-    url = "https://www.wanikani.com/api/user/" + constants.API_KEY + "/vocabulary/{}"
-    logger.info("Starting DB Repopulation from WaniKani")
-    for level in range(constants.LEVEL_MIN, constants.LEVEL_MAX + 1):
-        json_data = make_api_call(url.format(level))
-        vocabulary_list = json_data["requested_information"]
-        for vocabulary in vocabulary_list:
-            import_vocabulary_from_json(vocabulary)
+
+def add_subject_ids():
+    from wanikani_api.client import Client
+    from kw_webapp.tasks import get_vocab_by_kanji
+
+    client = Client("2510f001-fe9e-414c-ba19-ccf79af40060")
+    subjects = client.subjects(
+        fetch_all=True, types="vocabulary", hidden=False
+    )
+    total_subs = len(subjects)
+    match_count = 0
+    no_local_equivalent = []
+    for subject in subjects:
+        try:
+            local_vocabulary = get_vocab_by_kanji(subject.characters)
+            local_vocabulary.wk_subject_id = subject.id
+            local_vocabulary.reconcile(subject)
+            match_count += 1
+            logger.info(
+                f"{match_count} / {total_subs}:\t {subject.characters}"
+            )
+        except Vocabulary.DoesNotExist:
+            logger.warn(
+                f"Found no local vocabulary with characters: {subject.characters}"
+            )
+            no_local_equivalent.append(subject)
+
+    unmatched = Vocabulary.objects.filter(wk_subject_id=0)
+    return unmatched, no_local_equivalent
 
 
 def clear_duplicate_meaning_synonyms_from_reviews():
@@ -496,7 +477,9 @@ def clear_duplicate_meaning_synonyms_from_reviews():
                 synonym.delete()
             else:
                 print(
-                    "[{}]First time seeing element {}".format(review_id, synonym.text)
+                    "[{}]First time seeing element {}".format(
+                        review_id, synonym.text
+                    )
                 )
                 seen_synonyms.add(synonym.text)
 

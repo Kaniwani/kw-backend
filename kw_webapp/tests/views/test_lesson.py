@@ -25,7 +25,9 @@ class TestLesson(APITestCase):
         self.client.post(reverse("api:review-correct", args=(self.review.id,)))
 
         # Then
-        response = self.client.get(reverse("api:review-detail", args=(self.review.id,)))
+        response = self.client.get(
+            reverse("api:review-detail", args=(self.review.id,))
+        )
         review = response.data
         self.assertEqual(review["correct"], 0)
         self.assertEqual(review["streak"], 1)

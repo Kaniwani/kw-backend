@@ -11,7 +11,9 @@ class Migration(migrations.Migration):
     dependencies = [("kw_webapp", "0021_userspecific_critical")]
 
     operations = [
-        migrations.RemoveField(model_name="profile", name="only_review_burned"),
+        migrations.RemoveField(
+            model_name="profile", name="only_review_burned"
+        ),
         migrations.AddField(
             model_name="profile",
             name="minimum_wk_srs_level_to_review",

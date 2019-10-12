@@ -11,7 +11,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterUniqueTogether(
-            name="answersynonym", unique_together=set([("character", "kana", "review")])
+            name="answersynonym",
+            unique_together=set([("character", "kana", "review")]),
         ),
         migrations.AlterUniqueTogether(
             name="meaningsynonym", unique_together=set([("text", "review")])

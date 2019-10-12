@@ -23,7 +23,14 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("text", models.CharField(max_length=255)),
-                ("review", models.ForeignKey(null=True, to="kw_webapp.UserSpecific")),
+                (
+                    "review",
+                    models.ForeignKey(
+                        null=True,
+                        to="kw_webapp.UserSpecific",
+                        on_delete=django.db.models.deletion.CASCADE,
+                    ),
+                ),
             ],
             options={},
             bases=(models.Model,),
@@ -56,7 +63,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="profile",
             name="title",
-            field=models.CharField(null=True, max_length=255, default="Turtles"),
+            field=models.CharField(
+                null=True, max_length=255, default="Turtles"
+            ),
             preserve_default=True,
         ),
         migrations.AddField(

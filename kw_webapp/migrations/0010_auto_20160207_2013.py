@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import django
 from django.db import models, migrations
 
 
@@ -23,7 +24,14 @@ class Migration(migrations.Migration):
                 ),
                 ("character", models.CharField(max_length=255, null=True)),
                 ("kana", models.CharField(max_length=255)),
-                ("review", models.ForeignKey(to="kw_webapp.UserSpecific", null=True)),
+                (
+                    "review",
+                    models.ForeignKey(
+                        to="kw_webapp.UserSpecific",
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                    ),
+                ),
             ],
             options={},
             bases=(models.Model,),

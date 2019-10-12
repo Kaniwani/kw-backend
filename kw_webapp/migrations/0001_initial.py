@@ -38,7 +38,13 @@ class Migration(migrations.Migration):
                         null=True,
                     ),
                 ),
-                ("creator", models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                (
+                    "creator",
+                    models.ForeignKey(
+                        to=settings.AUTH_USER_MODEL,
+                        on_delete=django.db.models.deletion.CASCADE,
+                    ),
+                ),
             ],
             options={},
             bases=(models.Model,),
@@ -92,8 +98,17 @@ class Migration(migrations.Migration):
                         null=True,
                     ),
                 ),
-                ("unlocked_levels", models.ManyToManyField(to="kw_webapp.Level")),
-                ("user", models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                (
+                    "unlocked_levels",
+                    models.ManyToManyField(to="kw_webapp.Level"),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        to=settings.AUTH_USER_MODEL,
+                        on_delete=django.db.models.deletion.CASCADE,
+                    ),
+                ),
             ],
             options={},
             bases=(models.Model,),
@@ -150,16 +165,26 @@ class Migration(migrations.Migration):
                 ("needs_review", models.BooleanField(default=True)),
                 (
                     "unlock_date",
-                    models.DateTimeField(default=django.utils.timezone.now, blank=True),
+                    models.DateTimeField(
+                        default=django.utils.timezone.now, blank=True
+                    ),
                 ),
                 (
                     "next_review_date",
                     models.DateTimeField(
-                        default=django.utils.timezone.now, blank=True, null=True
+                        default=django.utils.timezone.now,
+                        blank=True,
+                        null=True,
                     ),
                 ),
                 ("burnt", models.BooleanField(default=False)),
-                ("user", models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        to=settings.AUTH_USER_MODEL,
+                        on_delete=django.db.models.deletion.CASCADE,
+                    ),
+                ),
             ],
             options={},
             bases=(models.Model,),
@@ -184,13 +209,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="userspecific",
             name="vocabulary",
-            field=models.ForeignKey(to="kw_webapp.Vocabulary"),
+            field=models.ForeignKey(
+                to="kw_webapp.Vocabulary",
+                on_delete=django.db.models.deletion.CASCADE,
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name="reading",
             name="vocabulary",
-            field=models.ForeignKey(to="kw_webapp.Vocabulary"),
+            field=models.ForeignKey(
+                to="kw_webapp.Vocabulary",
+                on_delete=django.db.models.deletion.CASCADE,
+            ),
             preserve_default=True,
         ),
     ]

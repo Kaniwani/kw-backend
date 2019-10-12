@@ -19,7 +19,9 @@ class Migration(migrations.Migration):
             model_name="report",
             name="reading",
             field=models.ForeignKey(
-                default=0, on_delete=models.deletion.CASCADE, to="kw_webapp.Reading"
+                default=0,
+                on_delete=models.deletion.CASCADE,
+                to="kw_webapp.Reading",
             ),
             preserve_default=False,
         ),

@@ -7,7 +7,11 @@ logger = logging.getLogger(__name__)
 
 
 def _has_no_errors(response):
-    return response and "error" not in response.json() and response.status_code == 200
+    return (
+        response
+        and "error" not in response.json()
+        and response.status_code == 200
+    )
 
 
 def _has_invalid_key_error(response):

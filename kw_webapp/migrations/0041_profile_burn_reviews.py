@@ -7,14 +7,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('kw_webapp', '0040_reading_furigana_sentence_ja'),
-    ]
+    dependencies = [("kw_webapp", "0047_auto_20190610_1728")]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='burn_reviews',
+            model_name="profile",
+            name="burn_reviews",
             field=models.BooleanField(default=True),
-        ),
+        )
     ]

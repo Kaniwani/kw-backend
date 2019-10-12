@@ -23,7 +23,9 @@ class TestVocabulary(APITestCase):
 
         self.assertEqual(response.data["review"], self.review.id)
 
-    def test_fetching_vocabulary_shows_is_reviable_field_on_associated_vocabulary(self):
+    def test_fetching_vocabulary_shows_is_reviable_field_on_associated_vocabulary(
+        self
+    ):
         self.client.force_login(self.user)
 
         self.review.wanikani_srs_numeric = 1
@@ -33,7 +35,9 @@ class TestVocabulary(APITestCase):
         wk_burned_review.wanikani_srs_numeric = 9
         wk_burned_review.save()
 
-        self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.BURNED.name
+        self.user.profile.minimum_wk_srs_level_to_review = (
+            WkSrsLevel.BURNED.name
+        )
         self.user.profile.save()
         response = self.client.get(reverse("api:vocabulary-list"))
         data = response.data
@@ -60,7 +64,7 @@ class TestVocabulary(APITestCase):
         create_reading(v, reading_to_search, "character_1", 5)
         create_reading(v, reading_to_search, "character_2", 5)
 
-        review = create_review(v, self.user)
+        create_review(v, self.user)
         self.client.force_login(self.user)
 
         response = self.client.get(
@@ -78,4 +82,6 @@ class TestVocabulary(APITestCase):
             reverse("api:vocabulary-detail", args=(self.vocabulary.id,))
         )
         data = response.data
-        self.assertTrue(data["readings"][0]["furigana_sentence_ja"] is not None)
+        self.assertTrue(
+            data["readings"][0]["furigana_sentence_ja"] is not None
+        )

@@ -16,9 +16,16 @@ from kw_webapp.tests.utils import (
     create_reading,
     create_review,
     mock_user_info_response,
-    mock_user_info_response_at_level, mock_empty_vocabulary_response,
+    mock_user_info_response_at_level,
+    mock_empty_vocabulary_response,
     mock_vocab_list_response_with_single_vocabulary_with_changed_meaning,
-    mock_vocab_list_response_with_single_vocabulary)
+    mock_vocab_list_response_with_single_vocabulary,
+    mock_invalid_api_user_info_response,
+    mock_user_response_v2,
+    mock_assignments_with_one_assignment,
+    mock_assignments_with_no_assignments,
+    mock_study_materials,
+)
 
 
 class TestUser(APITestCase):
@@ -56,7 +63,9 @@ class TestUser(APITestCase):
             "new_synonym_count": 0,
         }
 
-        self.assertJSONEqual(str(response.content, encoding="utf8"), correct_response)
+        self.assertJSONEqual(
+            str(response.content, encoding="utf8"), correct_response
+        )
 
     @responses.activate
     def test_adding_a_level_to_reset_command_only_resets_levels_above_or_equal_togiven(
@@ -88,71 +97,52 @@ class TestUser(APITestCase):
         assert self.user.profile.level == 5
 
         # When
-        response = self.client.post(reverse("api:user-reset"), data={"level": 1})
+        response = self.client.post(
+            reverse("api:user-reset"), data={"level": 1}
+        )
         assert "Your account has been reset" in response.data["message"]
 
         # Then
         self.user.profile.refresh_from_db()
         assert self.user.profile.level == 17
 
+    @responses.activate
     def test_invalid_api_key_during_reset_correctly_shows_400(self):
         self.client.force_login(self.user)
         self.user.profile.api_key = "definitelybrokenAPIkey"
         self.user.profile.save()
+        mock_invalid_api_user_info_response(self.user.profile.api_key)
 
-        response = self.client.post(reverse("api:user-reset"), data={"level": 1})
+        response = self.client.post(
+            reverse("api:user-reset"), data={"level": 1}
+        )
         assert response.status_code == 400
 
         self.user.profile.refresh_from_db()
         assert not self.user.profile.api_valid
 
     @responses.activate
-    def test_user_that_is_created_who_has_no_vocab_at_current_level_also_gets_previous_level_unlocked(self):
+    def test_user_that_is_created_who_has_no_vocab_at_current_level_also_gets_previous_level_unlocked(
+        self
+    ):
         # Create a user who is at level 2 on Wanikani, but has no level 2 vocab unlocked, only level 1 vocab.
         fake_username = "fake_username"
         fake_api_key = "fake_api_key"
 
-        mock_user_info_response_at_level(fake_api_key, level=2)
-        mock_empty_vocabulary_response(fake_api_key, level=2)
-        mock_vocab_list_response_with_single_vocabulary(fake_api_key, level=1)
+        mock_user_response_v2()
+        mock_assignments_with_no_assignments()
+        mock_assignments_with_one_assignment()
+        mock_study_materials()
 
         self.client.post(
             reverse("api:auth:user-create"),
             data={
                 "username": fake_username,
                 "password": "password",
-                "api_key": fake_api_key,
+                "api_key_v2": fake_api_key,
                 "email": "asdf@email.com",
             },
         )
 
         user_profile = Profile.objects.get(user__username=fake_username)
         assert len(user_profile.unlocked_levels_list()) == 2
-
-
-    @responses.activate
-    def test_user_at_level_one_with_no_vocab_does_not_attempt_to_unlock_previous_level(self):
-        # Create a user who is at level 1 on Wanikani
-        fake_username = "fake_username"
-        fake_api_key = "fake_api_key"
-        mock_user_info_response_at_level(fake_api_key, 1)
-        mock_empty_vocabulary_response(fake_api_key, 1) # Mock an empty response for level 1
-        self.client.post(
-            reverse("api:auth:user-create"),
-            data={
-                "username": fake_username,
-                "password": "password",
-                "api_key": fake_api_key,
-                "email": "asdf@email.com",
-            },
-        )
-
-        user_profile = Profile.objects.get(user__username=fake_username)
-        assert len(user_profile.unlocked_levels_list()) == 1
-
-
-
-
-
-
-

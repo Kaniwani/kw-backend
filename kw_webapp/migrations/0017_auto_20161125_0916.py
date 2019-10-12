@@ -26,7 +26,9 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.AddField(
-            model_name="reading", name="common", field=models.NullBooleanField()
+            model_name="reading",
+            name="common",
+            field=models.NullBooleanField(),
         ),
         migrations.AddField(
             model_name="reading",

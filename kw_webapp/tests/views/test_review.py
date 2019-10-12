@@ -39,7 +39,9 @@ class TestReview(APITestCase):
         self.assertEqual(resp.data["count"], 0)
 
         # Reset the review.
-        resp = self.client.post(reverse("api:review-reset", args=(self.review.id,)))
+        resp = self.client.post(
+            reverse("api:review-reset", args=(self.review.id,))
+        )
         self.assertEqual(resp.status_code, 204)
 
         # Ensure it now needs to be reviewed.
@@ -88,7 +90,9 @@ class TestReview(APITestCase):
         self.review.streak = 1
         self.review.save()
 
-        self.client.post(reverse("api:review-incorrect", args=(self.review.id,)))
+        self.client.post(
+            reverse("api:review-incorrect", args=(self.review.id,))
+        )
         self.review.refresh_from_db()
         self.assertEqual(self.review.streak, 1)
 
@@ -123,7 +127,9 @@ class TestReview(APITestCase):
     def test_review_views_nested_vocabulary_omits_review_field(self):
         self.client.force_login(user=self.user)
 
-        response = self.client.get(reverse("api:review-detail", args=(self.review.id,)))
+        response = self.client.get(
+            reverse("api:review-detail", args=(self.review.id,))
+        )
 
         self.assertTrue("review" not in response.data["vocabulary"])
 
@@ -147,7 +153,9 @@ class TestReview(APITestCase):
     def test_wrong_answer_records_failure(self):
         self.client.force_login(user=self.user)
 
-        self.client.post(reverse("api:review-incorrect", args=(self.review.id,)))
+        self.client.post(
+            reverse("api:review-incorrect", args=(self.review.id,))
+        )
         self.review.refresh_from_db()
 
         self.assertTrue(self.review.incorrect == 1)
@@ -158,7 +166,9 @@ class TestReview(APITestCase):
     def test_review_page_shows_all_items_when_burnt_setting_is_disabled(self):
         self.client.force_login(user=self.user)
         word = create_vocab("phlange")
-        self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.APPRENTICE.name
+        self.user.profile.minimum_wk_srs_level_to_review = (
+            WkSrsLevel.APPRENTICE.name
+        )
         self.user.profile.save()
         another_review = create_review(word, self.user)
         another_review.wanikani_srs_numeric = 5
@@ -172,7 +182,9 @@ class TestReview(APITestCase):
     def test_filtering_on_wk_srs_levels_works(self):
         self.client.force_login(user=self.user)
         word = create_vocab("phlange")
-        self.user.profile.minimum_wk_srs_level_to_review = WkSrsLevel.BURNED.name
+        self.user.profile.minimum_wk_srs_level_to_review = (
+            WkSrsLevel.BURNED.name
+        )
         self.user.profile.save()
         another_review = create_review(word, self.user)
         another_review.wanikani_srs_numeric = WANIKANI_SRS_LEVELS[
@@ -185,7 +197,9 @@ class TestReview(APITestCase):
         self.assertNotContains(response, "radioactive bat")
         self.assertContains(response, "phlange")
 
-    def test_review_correct_submissions_return_full_modified_review_object(self):
+    def test_review_correct_submissions_return_full_modified_review_object(
+        self
+    ):
         self.client.force_login(self.user)
         previous_streak = self.review.streak
         previous_correct = self.review.correct
@@ -201,17 +215,25 @@ class TestReview(APITestCase):
         self.client.force_login(self.user)
 
         level_4_review = create_review(create_vocab("level4"), self.user)
-        level_4_review.vocabulary.readings.create(level=4, character="level4", kana="level4")
+        level_4_review.vocabulary.readings.create(
+            level=4, character="level4", kana="level4"
+        )
 
         level_5_review = create_review(create_vocab("level5"), self.user)
-        level_5_review.vocabulary.readings.create(level=5, character="level5", kana="level5")
+        level_5_review.vocabulary.readings.create(
+            level=5, character="level5", kana="level5"
+        )
 
         level_3_review = create_review(create_vocab("level3"), self.user)
-        level_3_review.vocabulary.readings.create(level=3, character="level3", kana="level3")
+        level_3_review.vocabulary.readings.create(
+            level=3, character="level3", kana="level3"
+        )
 
         response = self.client.get(reverse("api:review-current"))
         reviews = response.data["results"]
-        actual_review_order = [review["vocabulary"]["readings"][0]["level"] for review in reviews]
+        actual_review_order = [
+            review["vocabulary"]["readings"][0]["level"] for review in reviews
+        ]
 
         assert len(reviews) == 4
         assert [3, 4, 5, 5] != actual_review_order
@@ -221,7 +243,9 @@ class TestReview(APITestCase):
 
         response = self.client.get(reverse("api:review-current"))
         reviews = response.data["results"]
-        actual_review_order = [review["vocabulary"]["readings"][0]["level"] for review in reviews]
+        actual_review_order = [
+            review["vocabulary"]["readings"][0]["level"] for review in reviews
+        ]
 
         assert len(reviews) == 4
         assert [3, 4, 5, 5] == actual_review_order
@@ -229,7 +253,9 @@ class TestReview(APITestCase):
     def test_review_filtering_by_maximum_wk_srs_level(self):
         self.client.force_login(self.user)
 
-        self.user.profile.maximum_wk_srs_level_to_review = WkSrsLevel.APPRENTICE.name
+        self.user.profile.maximum_wk_srs_level_to_review = (
+            WkSrsLevel.APPRENTICE.name
+        )
         self.user.profile.save()
 
         self.review.wanikani_srs_numeric = 5
@@ -247,5 +273,3 @@ class TestReview(APITestCase):
         data = response.data
         self.assertEqual(data["count"], 1)
         # Ensure that any reviews that are apprentice on WK are not shown.
-
-
