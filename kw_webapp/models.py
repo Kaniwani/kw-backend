@@ -459,7 +459,6 @@ class UserSpecific(models.Model):
             self.meaning_synonyms.all().delete()
             self.meaning_synonyms.add(*meaning_synonyms_to_add, bulk=False)
 
-    def answered_correctly(self, first_try=True):
     def answered_correctly(self, first_try, can_burn):
         # This is a check to see if it is a "lesson" object.
         if self.streak == 0:
@@ -467,12 +466,17 @@ class UserSpecific(models.Model):
         elif first_try:
             self.correct += 1
             self.streak += 1
-            if self.streak >= constants.KANIWANI_SRS_LEVELS[KwSrsLevel.BURNED.name][0]:
+            if (
+                self.streak
+                >= constants.KANIWANI_SRS_LEVELS[KwSrsLevel.BURNED.name][0]
+            ):
                 # If can burn, do so. Otherwise, keep review at enlightened.
                 if can_burn:
                     self.burned = True
                 else:
-                    self.streak = constants.KANIWANI_SRS_LEVELS[KwSrsLevel.ENLIGHTENED.name][0]
+                    self.streak = constants.KANIWANI_SRS_LEVELS[
+                        KwSrsLevel.ENLIGHTENED.name
+                    ][0]
 
         self.needs_review = False
         self.last_studied = timezone.now()

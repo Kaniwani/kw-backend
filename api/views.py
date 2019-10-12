@@ -356,7 +356,9 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
             )
 
         was_correct_on_first_try = self._correct_on_first_try(request)
-        review = review.answered_correctly(was_correct_on_first_try, request.user.profile.burn_reviews)
+        review = review.answered_correctly(
+            was_correct_on_first_try, request.user.profile.burn_reviews
+        )
         serializer = self.get_serializer(review, many=False)
         return Response(serializer.data)
 
