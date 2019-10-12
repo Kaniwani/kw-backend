@@ -32,7 +32,7 @@ class TestProfileApi(APITestCase):
 
     def test_profile_contains_correct_within_day_or_hour_counts(self):
         self.client.force_login(user=self.user)
-        self.review.answered_correctly(True)
+        self.review.answered_correctly(first_try=True, can_burn=True)
         self.review.save()
 
         response = self.client.get(reverse("api:user-me"))

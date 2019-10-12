@@ -220,7 +220,7 @@ class TestModels(APITestCase):
         self.review.last_studied = self.review.next_review_date.replace(
             minute=17
         )
-        self.review.answered_correctly(first_try=True)
+        self.review.answered_correctly(first_try=True, can_burn=True)
         self.review.refresh_from_db()
 
         self.assertEqual(
@@ -400,7 +400,7 @@ class TestModels(APITestCase):
 
         self.assertTrue(self.review.critical)
 
-        self.review.answered_correctly()
+        self.review.answered_correctly(first_try=True, can_burn=True)
 
         self.review.refresh_from_db()
         self.assertFalse(self.review.critical)
@@ -456,3 +456,22 @@ class TestModels(APITestCase):
             == 1
         )
         assert self.vocabulary.alternate_meanings == "secondary doesnt matter"
+
+    def test_answered_correctly_can_burn(self):
+        self.review.streak = constants.KANIWANI_SRS_LEVELS[constants.KwSrsLevel.ENLIGHTENED.name][0]
+
+        self.review.answered_correctly(first_try=True, can_burn=True)
+        self.review.refresh_from_db()
+
+        self.assertEqual(self.review.streak, constants.KANIWANI_SRS_LEVELS[constants.KwSrsLevel.BURNED.name][0])
+        self.assertTrue(self.review.burned)
+
+    def test_answered_correctly_cannot_burn(self):
+        enlightened_level = constants.KANIWANI_SRS_LEVELS[constants.KwSrsLevel.ENLIGHTENED.name][0]
+        self.review.streak = enlightened_level
+
+        self.review.answered_correctly(first_try=True, can_burn=False)
+        self.review.refresh_from_db()
+
+        self.assertEqual(self.review.streak, enlightened_level)
+        self.assertFalse(self.review.burned)

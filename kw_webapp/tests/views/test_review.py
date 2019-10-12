@@ -272,4 +272,4 @@ class TestReview(APITestCase):
         response = self.client.get(reverse("api:review-current"))
         data = response.data
         self.assertEqual(data["count"], 1)
-        # Ensure that any reviews tha tare apprentice on WK are not shown.
+        # Ensure that any reviews that are apprentice on WK are not shown.
