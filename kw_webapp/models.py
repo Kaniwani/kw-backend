@@ -290,7 +290,10 @@ class Vocabulary(models.Model):
         # Clear out old readings that aren't needed anymore.
         reading_ids_to_delete = []
         for reading in self.readings.all():
-            if reading.kana not in reading_kanas:
+            if (
+                reading.kana not in reading_kanas
+                or reading.character != vocabulary.characters
+            ):
                 reading_ids_to_delete.append(reading.id)
         self.readings.filter(id__in=reading_ids_to_delete).delete()
 
