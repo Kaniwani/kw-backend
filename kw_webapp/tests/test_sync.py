@@ -319,8 +319,33 @@ class TestSync(TestCase):
         expected_reading_kanas = [
             reading.kana for reading in self.v.readings.all()
         ]
+        expected_reading_kanjis = [
+            reading.character for reading in self.v.readings.all()
+        ]
         assert "いち" in expected_reading_kanas
+        assert "一" in expected_reading_kanjis
         assert "one - but in japanese" in expected_reading_kanas
+
+    @responses.activate
+    def test_vocabulary_reading_deletions_occur(self):
+        mock_subjects_v2()
+        syncer = WanikaniUserSyncerV2(self.user.profile)
+        assert self.v.readings.count() == 1
+        assert self.v.readings.all()[0].kana == "ねこ"
+        updated_vocabulary_count = syncer.sync_top_level_vocabulary()
+        assert updated_vocabulary_count == 1
+        self.v.refresh_from_db()
+        stored_reading_kanas = [
+            reading.kana for reading in self.v.readings.all()
+        ]
+        stored_reading_kanjis = [
+            reading.character for reading in self.v.readings.all()
+        ]
+
+        assert "いち" in stored_reading_kanas
+        assert "一" in stored_reading_kanjis
+        assert "ねこ" not in stored_reading_kanas
+        assert "one - but in japanese" in stored_reading_kanas
 
     def test_syncer_factory(self):
         # Should return a V2 syncer when the user has a v2 api key added,
