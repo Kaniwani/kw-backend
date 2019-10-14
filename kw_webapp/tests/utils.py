@@ -15,7 +15,7 @@ from kw_webapp.tests import sample_api_responses, sample_api_responses_v2
 
 
 def create_user(username):
-    u = User.objects.create(username=username)
+    u = User.objects.create(username=username, email=username + "@gmail.com")
     u.set_password(username)
     u.save()
     return u
