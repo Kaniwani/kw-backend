@@ -4,7 +4,7 @@ import responses
 from django.utils import timezone
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-
+import KW.settings as settings
 from kw_webapp.models import Profile
 from kw_webapp.tasks import build_API_sync_string_for_user_for_levels
 from kw_webapp.tests import sample_api_responses
@@ -146,3 +146,19 @@ class TestUser(APITestCase):
 
         user_profile = Profile.objects.get(user__username=fake_username)
         assert len(user_profile.unlocked_levels_list()) == 2
+
+    def test_login_works_with_email_or_username(self):
+        response = self.client.post(
+            settings.LOGIN_URL,
+            data={
+                "username": self.user.username,
+                "password": self.user.username,
+            },
+        )
+        assert response.status_code == 200
+
+        response = self.client.post(
+            settings.LOGIN_URL,
+            data={"username": self.user.email, "password": self.user.username},
+        )
+        assert response.status_code == 200
