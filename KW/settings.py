@@ -36,6 +36,11 @@ MY_TIME_ZONE = "America/New_York"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(name)s.%(funcName)s:%(lineno)s- %(message)s"
+        }
+    },
     "handlers": {
         "stdout": {
             "level": "DEBUG",
