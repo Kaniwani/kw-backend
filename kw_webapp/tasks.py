@@ -37,20 +37,15 @@ def get_vocab_by_kanji(kanji):
     v = Vocabulary.objects.filter(readings__character=kanji).distinct()
     number_of_vocabulary = v.count()
     if number_of_vocabulary > 1:
-        error = "Found multiple Vocabulary with identical kanji with ids: [{}]".format(
-            ", ".join([str(vocab.id) for vocab in v])
-        )
+        vocab_ids = ", ".join([str(vocab.id) for vocab in v])
+        error = f"Found multiple Vocab with identical kanji with ids: [{vocab_ids}]"
         logger.error(error)
         raise Vocabulary.MultipleObjectsReturned(error)
     elif number_of_vocabulary == 0:
         logger.error(
-            "While attempting to get vocabulary {} we could not find it!".format(
-                kanji
-            )
+            f"While attempting to get vocabulary {kanji} we could not find it!"
         )
-        raise Vocabulary.DoesNotExist(
-            "Couldn't find meaning: {}".format(kanji)
-        )
+        raise Vocabulary.DoesNotExist(f"Couldn't find meaning: {kanji}")
     else:
         return v.first()
 
@@ -66,13 +61,9 @@ def get_vocab_by_meaning(meaning):
         v = Vocabulary.objects.get(meaning=meaning)
     except Vocabulary.DoesNotExist:
         logger.error(
-            "While attempting to get vocabulary {} we could not find it!".format(
-                meaning
-            )
+            f"While attempting to get vocabulary {meaning} we could not find it!"
         )
-        raise Vocabulary.DoesNotExist(
-            "Couldn't find meaning: {}".format(meaning)
-        )
+        raise Vocabulary.DoesNotExist(f"Couldn't find meaning: {meaning}")
     else:
         return v
 
@@ -98,9 +89,7 @@ def associate_vocab_to_user(vocab, user):
         us = UserSpecific.objects.filter(vocabulary=vocab, user=user)
         for u in us:
             logger.error(
-                "during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(
-                    user.username, u
-                )
+                f"during {user.username}'s WK sync, we received multiple UserSpecific objects. Details: {u}"
             )
         return None, None
 
@@ -112,36 +101,19 @@ def get_level_pages(levels):
     ]
 
 
-def build_API_sync_string_for_user(user):
-    """
-    Builds a vocabulary api string for the user which includes all relevant levels. Goes back 3 levels from current by default.
-
-    :param user: The user to have their vocab updated
-    :return: A fully formed and ready-to-request API string.
-    """
-    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/".format(
-        user.profile.api_key
-    )
-    # if the user has unlocked recent levels, check for new vocab on them as well.
-    levels = user.profile.unlocked_levels_list()
-    level_string = (
-        ",".join(str(level) for level in levels)
-        if isinstance(levels, list)
-        else levels
-    )
-    api_call += level_string
-    return api_call
-
-
 def start_following_wanikani(user):
     try:
+        logger.info(f"User {user.username} is toggling on 'Follow Wanikani'")
         syncer = Syncer.factory(user.profile)
         user.profile.level = syncer.get_wanikani_level()
         user.profile.unlocked_levels.get_or_create(level=user.profile.level)
         user.profile.save()
-        syncer.sync_user_profile_with_wk()
+        syncer.sync_user_profile_with_wk
         syncer.unlock_vocab(user.profile.level)
     except exceptions.InvalidWaniKaniKey or InvalidWanikaniApiKeyException as e:
+        logger.warning(
+            f"User {user.username} failed to toggle Follow Wanikani as they have an invalid API key"
+        )
         user.profile.api_valid = False
         user.profile.save()
         raise e
@@ -312,23 +284,20 @@ def sync_all_users_to_wk():
     logger.info("Beginning Bi-daily Sync for all user!")
     users = User.objects.all().exclude(profile__isnull=True)
     logger.info(
-        "Original sync would have occurred for {} users.".format(users.count())
+        f"Original sync would have occurred for {users.count()} users."
     )
     users = User.objects.filter(profile__last_visit__gte=one_week_ago)
-    logger.info("Sync will occur for {} users.".format(users.count()))
+    logger.info(f"Sync will occur for {users.count()} users.")
     affected_count = 0
     for user in users:
         logger.info(
-            user.username
-            + " --- "
-            + str(user.profile.last_visit)
-            + " --- "
-            + str(one_week_ago)
+            f"{user.username} --- {str(user.profile.last_visit)} --- {one_week_ago}"
         )
         sync_with_wk.apply_async(
             args=[user.id, True], queue="long_running_sync"
         )
         affected_count += 1
+    logger.info(f"Bi-daily sync tasks kicked off for {affected_count} users")
     return affected_count
 
 
@@ -346,9 +315,6 @@ def build_upcoming_srs_for_user(user):
         next_review_date__range=(start, finish)
     )
 
-    for review in reviews:
-        logger.debug(review.next_review_date)
-
     reviews = (
         reviews.annotate(
             hour=TruncHour("next_review_date", tzinfo=timezone.utc)
@@ -359,24 +325,25 @@ def build_upcoming_srs_for_user(user):
         .order_by("date", "hour")
     )
 
+    logger.debug(f"Building upcoming SRS details for {user.username}")
     expected_hour = start.hour
     hours = [hour % 24 for hour in range(expected_hour, expected_hour + 24)]
     retval = OrderedDict.fromkeys(hours, 0)
     for review in reviews:
         found_hour = review["hour"].hour
         while found_hour != expected_hour:
-            logger.debug(
-                "{} != {}, skipping.".format(found_hour, expected_hour)
-            )
+            logger.debug(f"{found_hour} != {expected_hour}, skipping.")
             expected_hour = (expected_hour + 1) % 24
         retval[expected_hour] = review["review_count"]
-        logger.debug("Inserting reviews at hour {}".format(expected_hour))
-
+        logger.debug(f"Inserting reviews at hour {expected_hour}")
     real_retval = [value for key, value in retval.items()]
     return real_retval
 
 
 def reset_user(user, reset_to_level):
+    logger.info(
+        f"{user.username} has requested a reset to level {reset_to_level}"
+    )
     reset_levels(user, reset_to_level)
     reset_reviews(user, reset_to_level)
     stop_following_wanikani(user)
@@ -387,11 +354,17 @@ def reset_user(user, reset_to_level):
 
 
 def reset_levels(user, reset_to_level):
+    logger.info(
+        f"{user.username} is having their levels cleared down to {reset_to_level}"
+    )
     user.profile.unlocked_levels.filter(level__gte=reset_to_level).delete()
     user.profile.save()
 
 
 def reset_reviews(user, reset_to_level):
+    logger.info(
+        f"{user.username} is having their reviews cleared cleared down to level {reset_to_level}"
+    )
     reviews_to_delete = UserSpecific.objects.filter(user=user)
     reviews_to_delete = reviews_to_delete.exclude(
         vocabulary__readings__level__lt=reset_to_level

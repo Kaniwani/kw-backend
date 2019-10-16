@@ -14,16 +14,19 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         self.profile = profile
         self.logger = logging.getLogger(__name__)
 
+    @property
     def sync_user_profile_with_wk(self):
         """
-        Hits the WK api with user information in order to synchronize user metadata such as level and gravatar information.
+        Hits the WK api in order to synchronize user metadata such as level and gravatar information.
 
         :param user: The user to sync their profile with WK.
         :return: boolean indicating the success of the API call.
         """
-
         api_string = self.build_user_information_api_string(
             self.profile.api_key
+        )
+        self.logger.info(
+            f"About to attempt profile update for {self.profile.user.username}: {api_string} "
         )
 
         try:
@@ -33,6 +36,9 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             self.profile.save()
             return False
 
+        self.logger.info(
+            f"Successfully fetched profile information for {self.profile.user.username}"
+        )
         user_info = json_data["user_information"]
         self.profile.title = user_info["title"]
         self.profile.join_date = datetime.utcfromtimestamp(
@@ -55,9 +61,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
 
         self.profile.save()
 
-        self.logger.info(
-            "Synced {}'s Profile.".format(self.profile.user.username)
-        )
+        self.logger.info(f"Synced {self.profile.user.username}'s Profile.")
 
         return True
 
@@ -78,17 +82,21 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         # We split this into two seperate API calls as we do not necessarily know the current level until
         # For the love of god don't delete this next line
         self.logger.info(
-            "About to begin sync for user {}.".format(
-                self.profile.user.username
-            )
+            f"About to begin sync profile for user {self.profile.user.username}"
         )
-        profile_sync_succeeded = self.sync_user_profile_with_wk()
+        profile_sync_succeeded = self.sync_user_profile_with_wk
         if profile_sync_succeeded:
             if not full_sync:
+                self.logger.info(
+                    f"About to execute recent sync for {self.profile.user.username}"
+                )
                 new_review_count, new_synonym_count = (
                     self.sync_recent_unlocked_vocab()
                 )
             else:
+                self.logger.info(
+                    f"About to execute _full_ sync for {self.profile.user.username}"
+                )
                 new_review_count, new_synonym_count = (
                     self.sync_unlocked_vocab()
                 )
@@ -96,7 +104,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             return profile_sync_succeeded, new_review_count, new_synonym_count
         else:
             self.logger.warning(
-                "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be followed "
+                "Not attempting to sync, since API key is invalid. We failed to sync the profile "
             )
             return profile_sync_succeeded, 0, 0
 
@@ -131,13 +139,22 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                 if level in self.profile.unlocked_levels_list()
             ]
             if levels:
+                self.logger.info(
+                    f"Target levels: {','.join([str(level) for level in levels])}"
+                )
                 request_string = self.build_API_sync_string_for_user_for_levels(
                     levels
                 )
                 try:
+                    self.logger.info(
+                        f"About to make recent vocab sync request"
+                    )
                     json_data = make_api_call(request_string)
                     new_review_count, new_synonym_count = self.process_vocabulary_response_for_user(
                         json_data
+                    )
+                    self.logger.info(
+                        f"Successfully did a recent sync for {self.profile.user.username}"
                     )
                     return new_review_count, new_synonym_count
                 except exceptions.InvalidWaniKaniKey:
@@ -168,9 +185,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                     page
                 )
                 self.logger.info(
-                    "Creating sync string for user {}: {}".format(
-                        self.profile.user.username, self.profile.api_key
-                    )
+                    f"Creating sync string for user {self.profile.user.username}: {request_string}"
                 )
                 try:
                     response = make_api_call(request_string)
@@ -205,9 +220,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             for level in self.profile.unlocked_levels_list():
                 self.pull_user_synonyms_by_level(level)
                 self.logger.info(
-                    "Pulled user synonyms for {}".format(
-                        self.profile.user.username
-                    )
+                    f"Pulled user synonyms for {self.profile.user.username}"
                 )
         else:
             # TODO move this elsewhere? This full synonym sync code.
@@ -217,7 +230,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                     for level in profile.unlocked_levels_list():
                         self.pull_user_synonyms_by_level(level)
                     self.logger.info(
-                        "Pulled user synonyms for {}".format(user.username)
+                        f"Pulled user synonyms for {user.username}"
                     )
 
     def sync_top_level_vocabulary(self):
@@ -234,7 +247,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         :param user: user to add vocab to. :param levels: requested level unlock. This can
         also be a list. :return: unlocked count, locked count
         """
-
+        self.logger.info(f"About to begin level unlock ")
         api_call_string = self.build_API_sync_string_for_user_for_levels(
             levels
         )
@@ -279,7 +292,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                 if created:
                     new_review_count += 1
                 review.save()
-            else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms instead.
+            else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms
                 vocabulary, created = self.get_or_create_vocab_by_json(
                     vocabulary_json
                 )
@@ -287,9 +300,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                     vocabulary, vocabulary_json["user_specific"]
                 )
                 new_synonym_count += synonyms_added_count
-        self.logger.info(
-            "Synced Vocabulary for {}".format(self.profile.user.username)
-        )
+        self.logger.info(f"Synced Vocabulary for {self.profile.user.username}")
         return new_review_count, new_synonym_count
 
     def process_single_item_from_wanikani(self, vocabulary):
@@ -382,12 +393,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             new_reading.save()
             if created:
                 self.logger.info(
-                    """Created new reading: {}, level {}
-                                         associated to vocab {}""".format(
-                        new_reading.kana,
-                        new_reading.level,
-                        new_reading.vocabulary.meaning,
-                    )
+                    f"Created new reading: {new_reading.kana}, level {new_reading.level} associated to vocab {new_reading.vocabulary.meaning} "
                 )
         vocab.save()
         return vocab
@@ -415,9 +421,8 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             )
             for u in us:
                 self.logger.error(
-                    "during {}'s WK sync, we received multiple UserSpecific objects. Details: {}".format(
-                        self.profile.user.username, u
-                    )
+                    f"during {self.profile.user.username}'s WK sync, we received multiple UserSpecific objects. "
+                    f"Details: {u} "
                 )
             return None, None
 
@@ -481,9 +486,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             if created:
                 unlocked_this_request += 1
 
-        self.logger.info(
-            "Unlocking level for {}".format(self.profile.user.username)
-        )
+        self.logger.info(f"Unlocking level for {self.profile.user.username}")
         remaining_locked = original_length - total_unlocked_count
         return unlocked_this_request, total_unlocked_count, remaining_locked
 
@@ -497,6 +500,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         """
         request_string = self.build_API_sync_string_for_user_for_levels(level)
         try:
+            self.logger.info(f"Pulling down user synonyms: {request_string}")
             json_data = make_api_call(request_string)
             vocabulary_list = json_data["requested_information"]
             for vocabulary in vocabulary_list:
@@ -537,7 +541,8 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                                 )
                             )
 
-        except exceptions.InvalidWaniKaniKey:
+        except exceptions.InvalidWaniKaniKey as e:
+            self.logger.warning("Invalid api key! {}", e)
             self.profile.api_valid = False
             self.profile.save()
         except exceptions.WanikaniAPIException as e:

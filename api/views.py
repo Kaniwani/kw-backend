@@ -238,9 +238,7 @@ class ReportViewSet(viewsets.ModelViewSet):
                 reading__id=reading_id, created_by=request.user
             )
             logger.info(
-                "User {} is updating their report on reading {}".format(
-                    request.user.username, request.data["reading"]
-                )
+                f"User {request.user.username} is updating their report on reading {request.data['reading']}"
             )
             serializer = ReportSerializer(
                 existing_report, data=request.data, partial=True
@@ -250,9 +248,7 @@ class ReportViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         except Report.DoesNotExist:
             logger.info(
-                "User {} is creating report on reading {}".format(
-                    request.user.username, request.data["reading"]
-                )
+                f"User {request.user.username} is creating report on reading {request.data['reading']}"
             )
             serializer = ReportSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
@@ -312,14 +308,25 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
 
     @action(detail=False)
     def current(self, request):
+        logger.info(f"Fetching current reviews for: {request.user.username}")
         reviews = get_users_current_reviews(request.user)
+        logger.debug(
+            f"Fetched current reviews for: {request.user.username}. Paginating.."
+        )
         page = self.paginate_queryset(reviews)
+        logger.debug(f"Paginated reviews for {request.user.username}")
 
         if page is not None:
+            logger.debug(f"Serializing Page for {request.user.username}")
             serializer = StubbedReviewSerializer(page, many=True)
+            logger.debug(f"Serialized Page for {request.user.username}")
             return self.get_paginated_response(serializer.data)
 
+        logger.debug(
+            f"Serializing Full result set for {request.user.username}"
+        )
         serializer = StubbedReviewSerializer(reviews, many=True)
+        logger.debug(f"Serialized Full result set for {request.user.username}")
         return Response(serializer.data)
 
     @action(detail=False)
