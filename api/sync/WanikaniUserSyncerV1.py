@@ -107,7 +107,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             )
             return profile_sync_succeeded, 0, 0
 
-    def build_API_sync_string_for_api_key_for_levels(self, levels):
+    def build_API_sync_string_for_levels(self, levels):
         """
         Given a user, build a vocabulary request string based on their api key, for a particular level.
         :param user: The related user.
@@ -125,9 +125,6 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         api_call += ","
         return api_call
 
-    def build_API_sync_string_for_user_for_levels(self, levels):
-        return self.build_API_sync_string_for_api_key_for_levels(levels)
-
     def sync_recent_unlocked_vocab(self):
         if self.profile.unlocked_levels_list():
             levels = [
@@ -141,9 +138,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                 self.logger.info(
                     f"Target levels: {','.join([str(level) for level in levels])}"
                 )
-                request_string = self.build_API_sync_string_for_user_for_levels(
-                    levels
-                )
+                request_string = self.build_API_sync_string_for_levels(levels)
                 try:
                     self.logger.info(
                         f"About to make recent vocab sync request"
@@ -180,9 +175,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             pages = self.get_level_pages(self.profile.unlocked_levels_list())
             new_review_count = new_synonym_count = 0
             for page in pages:
-                request_string = self.build_API_sync_string_for_user_for_levels(
-                    page
-                )
+                request_string = self.build_API_sync_string_for_levels(page)
                 self.logger.info(
                     f"Creating sync string for user {self.profile.user.username}: {request_string}"
                 )
@@ -247,9 +240,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         also be a list. :return: unlocked count, locked count
         """
         self.logger.info(f"About to begin level unlock ")
-        api_call_string = self.build_API_sync_string_for_user_for_levels(
-            levels
-        )
+        api_call_string = self.build_API_sync_string_for_levels(levels)
         response = make_api_call(api_call_string)
         unlocked_this_request, total_unlocked, locked = self.process_vocabulary_response_for_unlock(
             response

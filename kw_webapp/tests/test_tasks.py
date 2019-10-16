@@ -19,7 +19,6 @@ from kw_webapp.srs import all_srs
 from kw_webapp.tasks import (
     past_time,
     associate_vocab_to_user,
-    build_API_sync_string_for_user,
     lock_level_for_user,
     unlock_all_possible_levels_for_user,
     build_API_sync_string_for_user_for_levels,
@@ -88,10 +87,13 @@ class TestTasks(TestCase):
         self.user.profile.unlocked_levels.get_or_create(level=3)
         self.user.profile.unlocked_levels.get_or_create(level=1)
         self.user.profile.save()
-
-        api_call = build_API_sync_string_for_user(self.user)
+        api_call = Syncer.factory(
+            self.user.profile
+        ).build_API_sync_string_for_levels(
+            self.user.profile.unlocked_levels_list()
+        )
         correct_string = (
-            "https://www.wanikani.com/api/user/any_key/vocabulary/5,3,1"
+            "https://www.wanikani.com/api/user/any_key/vocabulary/5,3,1,"
         )
 
         self.assertEqual(correct_string, api_call)
