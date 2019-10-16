@@ -142,9 +142,7 @@ def build_API_sync_string_for_api_key_for_levels(api_key, levels):
         if isinstance(levels, list)
         else levels
     )
-    api_call = "https://www.wanikani.com/api/user/{}/vocabulary/{}".format(
-        api_key, level_string
-    )
+    api_call = f"https://www.wanikani.com/api/user/{api_key}/vocabulary/{level_string}"
     api_call += ","
     return api_call
 
