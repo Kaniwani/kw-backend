@@ -14,7 +14,6 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         self.profile = profile
         self.logger = logging.getLogger(__name__)
 
-    @property
     def sync_user_profile_with_wk(self):
         """
         Hits the WK api in order to synchronize user metadata such as level and gravatar information.
@@ -84,7 +83,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         self.logger.info(
             f"About to begin sync profile for user {self.profile.user.username}"
         )
-        profile_sync_succeeded = self.sync_user_profile_with_wk
+        profile_sync_succeeded = self.sync_user_profile_with_wk()
         if profile_sync_succeeded:
             if not full_sync:
                 self.logger.info(
