@@ -18,7 +18,8 @@ def all_srs(user=None):
     :param user: Optional Param, the user to be updated. If left blank, will update all users.
     :return: None
     """
-    logger.info("Beginning  SRS run for {}.".format(user or "all users"))
+    related_username = user.username if user else "all users"
+    # logger.info(f"Beginning  SRS run for {related_username}")
     affected_count = 0
     now = timezone.now()
     slightly_ahead_of_now = now + timedelta(minutes=1)
@@ -26,9 +27,7 @@ def all_srs(user=None):
     # Fetches all reviews with next_review_date greater than or equal to NOW, flips them all to needs_review=True
     if user and user.profile.on_vacation:
         logger.info(
-            "Skipping SRS for user {} as they are on vacation as of {}".format(
-                user.username, user.profile.vacation_date
-            )
+            f"Skipping SRS for user {user.username} as they are on vacation as of {user.profile.vacation_date}"
         )
         return 0
 
@@ -47,8 +46,6 @@ def all_srs(user=None):
 
     affected_count += review_set.update(needs_review=True)
     logger.info(
-        "User {} has {} new reviews.".format(
-            user.username if user else "all users", affected_count
-        )
+        f"User {user.username if user else 'all users'} has {affected_count} new reviews."
     )
     return affected_count

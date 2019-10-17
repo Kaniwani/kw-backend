@@ -136,11 +136,10 @@ class Profile(models.Model):
 
     def return_from_vacation(self):
         """
-        Called when a user disables vacation mode. A one-time pass through their reviews in order to correct their last_studied_date, and quickly run an SRS run to determine which reviews currently need to be looked at.
+        Called when a user disables vacation mode. A one-time pass through their reviews in order to correct their
+        last_studied_date, and quickly run an SRS run to determine which reviews currently need to be looked at.
         """
-        logger.info(
-            "{} has returned from vacation!".format(self.user.username)
-        )
+        logger.info(f"{self.user.username} has returned from vacation!")
         if self.vacation_date:
             users_reviews = UserSpecific.objects.filter(user=self.user)
             elapsed_vacation_time = timezone.now() - self.vacation_date
@@ -151,14 +150,10 @@ class Profile(models.Model):
                 next_review_date=F("next_review_date") + elapsed_vacation_time
             )
             logger.info(
-                "brought {} reviews out of hibernation for {}".format(
-                    updated_count, self.user.username
-                )
+                f"brought {updated_count} reviews out of hibernation for {self.user.username}"
             )
             logger.info(
-                "User {} has been gone for timedelta: {}".format(
-                    self.user.username, str(elapsed_vacation_time)
-                )
+                f"User {self.user.username} has been gone for timedelta: {str(elapsed_vacation_time)}"
             )
 
         self.vacation_date = None
@@ -185,12 +180,10 @@ class Profile(models.Model):
         ):
             self.twitter = twitter_account
         elif TWITTER_USERNAME_REGEX.match(twitter_account):
-            self.twitter = "@{}".format(twitter_account)
+            self.twitter = f"@{twitter_account}"
         else:
             logger.warning(
-                "WK returned a funky twitter account name: {},  for user:{} ".format(
-                    twitter_account, self.user.username
-                )
+                f"WK returned a funky twitter account name: {twitter_account},  for user:{self.user.username} "
             )
 
         self.save()
@@ -207,15 +200,20 @@ class Profile(models.Model):
         return [level[0] for level in levels]
 
     def handle_wanikani_level_change(self, new_level):
-        self.level = new_level
-        self.save()
+        if self.level != new_level:
+            logger.info(
+                f"Updating user's level: {self.user.username}: {self.level} -> {new_level}"
+            )
+            self.level = new_level
+            self.save()
 
     def __str__(self):
-        return "{} -- {} -- {} -- {}".format(
-            self.user.username,
-            self.api_key,
-            self.level,
-            self.unlocked_levels_list(),
+        return (
+            f"username:{self.user.username} "
+            f"api_key:{self.api_key} "
+            f"api_key_v2:{self.api_key_v2} "
+            f"level:{self.level} "
+            f"unlocked_levels_list:{self.unlocked_levels_list()}"
         )
 
 
@@ -247,9 +245,7 @@ class Vocabulary(models.Model):
         return self.readings.all().count()
 
     def get_absolute_url(self):
-        return "https://www.wanikani.com/vocabulary/{}/".format(
-            self.readings.all()[0]
-        )
+        return f"https://www.wanikani.com/vocabulary/{self.readings.first().character}"
 
     def is_out_of_date(self, vocabulary):
         return (
@@ -359,12 +355,7 @@ class Reading(models.Model):
         unique_together = ("vocabulary", "character", "kana")
 
     def __str__(self):
-        return "{} - {} - {} - {}".format(
-            self.vocabulary.meaning, self.kana, self.character, self.level
-        )
-
-
-wk_last_seen_date = models.DateTimeField()
+        return f"{self.vocabulary.meaning} - {self.kana} - {self.character} - {self.level}"
 
 
 class Report(models.Model):
@@ -376,9 +367,7 @@ class Report(models.Model):
     reason = models.CharField(max_length=1000)
 
     def __str__(self):
-        return "Report: reading [{}]: {}, by user [{}] at {}".format(
-            self.reading_id, self.reason, self.created_by_id, self.created_at
-        )
+        return f"Report: reading [{self.reading_id}]: {self.reason}, by user [{self.created_by_id}] at {self.created_at}"
 
 
 class LessonManager(models.Manager):
@@ -620,13 +609,7 @@ class UserSpecific(models.Model):
         )
 
         logger.debug(
-            "Updating Last Studied Time for user {} for review {}. Went from {} to {}, a rounding of {:.1f} minutes".format(
-                self.user,
-                self.vocabulary.meaning,
-                original_date.strftime("%H:%M:%S"),
-                self.last_studied.strftime("%H:%M:%S"),
-                (self.last_studied - original_date).total_seconds() / 60,
-            )
+            f"Updating Last Studied Time for user {self.user.username} for review {self.id}. Went from {original_date.strftime('%H:%M:%S'),} to {self.last_studied.strftime('%H:%M:%S')}, a rounding of {(self.last_studied - original_date).total_seconds() / 60} minutes"
         )
         self.save()
 
@@ -661,16 +644,25 @@ class UserSpecific(models.Model):
         self._round_last_studied_date()
 
     def __str__(self):
-        return "{} - {} - {} - c:{} - i:{} - s:{} - ls:{} - nr:{} - uld:{}".format(
-            self.id,
-            self.vocabulary.meaning,
-            self.user.username,
-            self.correct,
-            self.incorrect,
-            self.streak,
-            self.last_studied,
-            self.needs_review,
-            self.unlock_date,
+        return (
+            f"[id:{self.id} "
+            f"meaning:{self.vocabulary.meaning} "
+            f"user:{self.user.username} "
+            f"correct:{self.correct} "
+            f"incorrect:{self.incorrect} "
+            f"streak:{self.streak} "
+            f"last_studied:{self.last_studied} "
+            f"next_review_date:{self.next_review_date} "
+            f"burned:{self.burned} "
+            f"wanikani_burned:{self.wanikani_burned} "
+            f"hidden:{self.hidden} "
+            f"wanikani_srs_numeric:{self.wanikani_srs_numeric} "
+            f"wanikani_srs:{self.wanikani_srs} "
+            f"critical:{self.critical} "
+            f"wk_assignment_last_modified:{self.wk_assignment_last_modified} "
+            f"wk_study_materials_last_modified:{self.wk_study_materials_last_modified} "
+            f"meaning_note:{self.meaning_note} "
+            f"reading_note:{self.reading_note}]"
         )
 
 
@@ -688,9 +680,7 @@ class AnswerSynonym(models.Model):
         unique_together = ("character", "kana", "review")
 
     def __str__(self):
-        return "{} - {} - {} - SYNONYM".format(
-            self.review.vocabulary.meaning, self.kana, self.character
-        )
+        return f"{self.review.vocabulary.meaning} - {self.kana} - {self.character} - SYNONYM"
 
     def as_dict(self):
         return {

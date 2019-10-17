@@ -28,7 +28,7 @@ def wipe_all_reviews_for_user(user):
     if len(reviews) > 0:
         raise ValueError
     else:
-        print("deleted all reviews for " + user.username)
+        logger.info(f"deleted all reviews for {user.username}")
 
 
 def reset_reviews_for_user(user):
@@ -64,12 +64,12 @@ def correct_next_review_dates():
     i = 0
     for u in us:
         u.set_next_review_time_based_on_last_studied()
-        print(i, u)
+        logger.info(i, u)
 
 
 def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
-    print("New vocabulary id is:[{}]".format(vocabulary.id))
-    print(
+    logger.info(f"New vocabulary id is:[{vocabulary.id}]")
+    logger.info(
         "Old vocabulary items had meanings:[{}] ".format(
             " -> ".join(
                 found_vocabulary.exclude(id=vocabulary.id).values_list(
@@ -78,7 +78,7 @@ def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
             )
         )
     )
-    print(
+    logger.info(
         "Old vocabulary items had ids:[{}] ".format(
             " -> ".join(
                 [
@@ -96,29 +96,25 @@ def create_new_review_and_merge_existing(vocabulary, found_vocabulary):
             user=user, vocabulary__in=ids
         )
         if old_reviews.count() > 0:
-            print(
-                "User [{}] had [{}] reviews which used one of the now merged vocab.".format(
-                    user.username, old_reviews.count()
-                )
+            logger.info(
+                f"User [{user.username}] had [{old_reviews.count()}] reviews which used one of the now merged vocab."
             )
-            print("Giving them a review for our new vocabulary object...")
+            logger.info(
+                "Giving them a review for our new vocabulary object..."
+            )
             new_review = UserSpecific.objects.create(
                 vocabulary=vocabulary, user=user
             )
             # Go over all the reviews which were duplicates, and pick the best one as the new accurate one.
             for old_review in old_reviews:
                 if old_review.streak > new_review.streak:
-                    print(
-                        "Old review [{}] has new highest streak: [{}]".format(
-                            old_review.id, old_review.streak
-                        )
+                    logger.info(
+                        f"Old review [{old_review.id}] has new highest streak: [{old_review.streak}]"
                     )
                     copy_review_data(new_review, old_review)
                 else:
-                    print(
-                        "Old review [{}] has lower streak than current maximum.: [{}] < [{}]".format(
-                            old_review.id, old_review.streak, new_review.streak
-                        )
+                    logger.info(
+                        f"Old review [{old_review.id}] has lower streak than current maximum.: [{old_review.streak}] < [{new_review.streak}]"
                     )
                 if new_review.notes is None:
                     new_review.notes = old_review.notes
@@ -149,13 +145,13 @@ def generate_user_stats(user):
                 kanji_review_map[reading.character] = []
                 kanji_review_map[reading.character].append(review)
 
-    print("Printing all duplicates for user.")
+    logger.info("Printing all duplicates for user.")
     for kanji, reviews in kanji_review_map.items():
         if len(reviews) > 1:
-            print("***" + kanji + "***")
+            logger.info("***" + kanji + "***")
             for review in reviews:
-                print(review)
-    print("Finished printing duplicates")
+                logger.info(review)
+    logger.info("Finished printing duplicates")
 
 
 def blow_away_duplicate_reviews_for_all_users():
@@ -173,15 +169,13 @@ def blow_away_duplicate_reviews_for_user(user):
     )
 
     if dupe_revs.count() > 0:
-        print("Duplicate reviews found for user: ".format(dupe_revs.count()))
+        logger.info(f"Duplicate reviews found for user: {dupe_revs.count()}")
     vocabulary_ids = []
     for dupe_rev in dupe_revs:
         vocabulary_ids.append(dupe_rev["vocabulary"])
 
-    print(
-        "Here are the vocabulary IDs we are gonna check: {}".format(
-            vocabulary_ids
-        )
+    logger.info(
+        f"Here are the vocabulary IDs we are gonna check: {vocabulary_ids}"
     )
     for voc_id in vocabulary_ids:
         review_id_to_save = UserSpecific.objects.filter(
@@ -193,7 +187,7 @@ def blow_away_duplicate_reviews_for_user(user):
         new_reviews = UserSpecific.objects.filter(
             vocabulary__id=voc_id, user=user
         )
-        print("New review count: {}".format(new_reviews.count()))
+        logger.info(f"New review count: {new_reviews.count()}")
         assert new_reviews.count() == 1
 
 
@@ -218,9 +212,9 @@ def one_time_import_jisho(json_file_path):
                     readings = Reading.objects.filter(
                         character=vocabulary_json["ja"]["characters"]
                     )
-                    print("FOUND MULTIPLE READINGS")
+                    logger.info("FOUND MULTIPLE READINGS")
                     for reading in readings:
-                        print(
+                        logger.info(
                             reading.vocabulary.meaning,
                             reading.character,
                             reading.kana,
@@ -252,10 +246,10 @@ def one_time_import_jisho_new_format(json_file_path):
                     readings = Reading.objects.filter(
                         character=vocabulary_json["character"]
                     )
-                    print("FOUND MULTIPLE READINGS")
+                    logger.info("FOUND MULTIPLE READINGS")
                     for reading in readings:
                         if reading.kana == vocabulary_json["reading"]:
-                            print(
+                            logger.info(
                                 reading.vocabulary.meaning,
                                 reading.character,
                                 reading.kana,
@@ -267,27 +261,23 @@ def one_time_import_jisho_new_format(json_file_path):
         readings__sentence_en__isnull=False
     )
     if unfilled_vocabulary.count() == 0:
-        print("No missing information!")
+        logger.info("No missing information!")
     else:
-        print("Missing some info!")
+        logger.info("Missing some info!")
         for vocab in unfilled_vocabulary:
-            print(vocab)
-    print("Found no local vocabulary for: ")
-    print(no_local_vocab)
+            logger.info(vocab)
+    logger.info("Found no local vocabulary for: ")
+    logger.info(no_local_vocab)
 
 
 def merge_with_model(related_reading, vocabulary_json):
     if related_reading.kana != vocabulary_json["reading"]:
-        print(
-            "Not the primary reading, skipping: {}".format(
-                related_reading.kana
-            )
+        logger.info(
+            f"Not the primary reading, skipping: {related_reading.kana}"
         )
     else:
-        print("Found primary Reading: {}".format(related_reading.kana))
-    retval = "******\nWorkin on related reading...{},{}".format(
-        related_reading.character, related_reading.id
-    )
+        logger.info(f"Found primary Reading: {related_reading.kana}")
+    retval = f"******\nWorkin on related reading...{related_reading.character},{related_reading.id}"
     retval += str(vocabulary_json)
 
     if "common" in vocabulary_json:
@@ -321,19 +311,13 @@ def merge_with_model(related_reading, vocabulary_json):
         related_reading.sentence_ja = vocabulary_json["sentenceJa"]
 
     related_reading.save()
-    retval += "Finished with reading [{}]! Tags:{},".format(
-        related_reading.id, related_reading.tags.count()
-    )
-    print(retval)
+    retval += f"Finished with reading [{related_reading.id}]! Tags:{related_reading.tags.count()},"
+    logger.info(retval)
     return retval
 
 
 def associate_tags(reading, tag):
-    print(
-        "associating [{}] to reading {}".format(
-            tag, reading.vocabulary.meaning
-        )
-    )
+    logger.info(f"associating [{tag}] to reading {reading}")
     tag_obj, created = Tag.objects.get_or_create(name=tag)
     reading.tags.add(tag_obj)
 
@@ -355,15 +339,15 @@ def create_various_future_reviews_for_user(user):
             review.streak = random.randint(1, 8)
             review.save()
             review.refresh_from_db()
-            print(review)
+            logger.info(review)
 
 
 def survey_conglomerated_vocabulary():
     count = 0
     for vocab in Vocabulary.objects.all():
         if has_multiple_kanji(vocab):
-            print("Found item with multiple Kanji:[{}]".format(vocab.meaning))
-            print(
+            logger.info(f"Found item with multiple Kanji:[{vocab.meaning}]")
+            logger.info(
                 "\n".join(
                     reading.kana + ": " + reading.character
                     for reading in vocab.readings.all()
@@ -371,7 +355,7 @@ def survey_conglomerated_vocabulary():
             )
             count += 1
 
-    print("total count:{}".format(count))
+    logger.info(f"total count:{count}")
 
 
 def find_all_duplicates():
@@ -385,23 +369,21 @@ def find_all_duplicates():
                 kanji_review_map[reading.character] = []
                 kanji_review_map[reading.character].append(vocab)
 
-    print("Printing all duplicates for all vocab.")
+    logger.info("Printing all duplicates for all vocab.")
     duplicate_count = 0
     for kanji, vocabs in kanji_review_map.items():
         if len(vocabs) > 1:
             duplicate_count += 1
-            print("***" + kanji + "***")
+            logger.info("***" + kanji + "***")
             for vocab in vocabs:
 
-                print(vocab)
-    print("Finished printing duplicates: found {}".format(duplicate_count))
+                logger.info(vocab)
+    logger.info(f"Finished printing duplicates: found {duplicate_count}")
 
 
 def copy_review_data(new_review, old_review):
-    print(
-        "Copying review data from [{}] -> [{}]".format(
-            old_review.id, new_review.id
-        )
+    logger.info(
+        f"Copying review data from [{old_review.id}] -> [{new_review.id}]"
     )
     new_review.streak = old_review.streak
     new_review.incorrect = old_review.incorrect
@@ -473,13 +455,11 @@ def clear_duplicate_meaning_synonyms_from_reviews():
         synonyms = MeaningSynonym.objects.filter(review=review_id)
         for synonym in synonyms:
             if synonym.text in seen_synonyms:
-                print("[{}]Deleted element{}".format(review_id, synonym.text))
+                logger.info(f"[{review_id}]Deleted element{synonym}")
                 synonym.delete()
             else:
-                print(
-                    "[{}]First time seeing element {}".format(
-                        review_id, synonym.text
-                    )
+                logger.info(
+                    f"[{review_id}]First time seeing element {synonym}"
                 )
                 seen_synonyms.add(synonym.text)
 
@@ -501,16 +481,10 @@ def clear_duplicate_answer_synonyms_from_reviews():
         synonyms = AnswerSynonym.objects.filter(review=review_id)
         for synonym in synonyms:
             if synonym.kana + "_" + synonym.character in seen_synonyms:
-                print(
-                    "[{}]Deleted element: {}".format(
-                        review_id, synonym.kana + "_" + synonym.character
-                    )
-                )
+                logger.info(f"[{review_id}]Deleted element: {synonym}")
                 synonym.delete()
             else:
-                print(
-                    "[{}]First time seeing element: {}".format(
-                        review_id, synonym.kana + "_" + synonym.character
-                    )
+                logger.info(
+                    f"[{review_id}]First time seeing element: {synonym}"
                 )
                 seen_synonyms.add(synonym.kana + "_" + synonym.character)

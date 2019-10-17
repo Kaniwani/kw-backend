@@ -37,36 +37,35 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "console": {
-            "format": "%(asctime)s %(name)-12s %(levelname)-8s %(message)s"
-        },
-        "django.server": DEFAULT_LOGGING["formatters"]["django.server"],
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(name)s.%(funcName)s:%(lineno)s - %(message)s"
+        }
     },
     "handlers": {
-        "console": {"level": "INFO", "class": "logging.StreamHandler"},
-        "django.server": DEFAULT_LOGGING["handlers"]["django.server"],
+        "stdout": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            "filename": "kaniwani.log",
+            "formatter": "verbose",
+        },
     },
     "loggers": {
-        # Root logger to catch all warnings and up.
-        "": {"level": "WARNING", "handlers": ["console"]},
-        # This overwrites the default django logger.
-        "django": {"handlers": ["console"], "level": "INFO"},
-        "django.server": DEFAULT_LOGGING["loggers"]["django.server"],
-        "celery": {
-            "level": LOGLEVEL,
-            "handlers": ["console"],
-            "propagate": False,
+        "KW": {"handlers": ["stdout", "file"], "level": LOGLEVEL},
+        "kw_webapp": {"handlers": ["stdout", "file"], "level": LOGLEVEL},
+        "api": {"handlers": ["stdout", "file"], "level": LOGLEVEL},
+        "root": {"handlers": ["stdout", "file"], "level": LOGLEVEL},
+        "django": {"handlers": ["stdout", "file"], "level": LOGLEVEL},
+        "django.request": {"handlers": ["stdout", "file"], "level": LOGLEVEL},
+        "django.db.backends": {
+            "handlers": ["stdout", "file"],
+            "level": "WARNING",
         },
-        "kw_webapp": {
-            "level": LOGLEVEL,
-            "handlers": ["console"],
-            "propagate": False,
-        },
-        "api": {
-            "level": LOGLEVEL,
-            "handlers": ["console"],
-            "propagate": False,
-        },
+        "django.security": {"handlers": ["stdout", "file"], "level": LOGLEVEL},
     },
 }
 
@@ -90,9 +89,6 @@ CELERY_BEAT_SCHEDULE = {
         "options": {"queue": "long_running_sync"},
     },
 }
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")

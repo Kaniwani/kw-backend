@@ -6,5 +6,5 @@ class VocabularyByLevelHyperlinkedField(serializers.HyperlinkedRelatedField):
     view_name = "api:vocabulary-list"
 
     def get_url(self, obj, view_name, request, format):
-        result = "{}?level={}".format(reverse(view_name), obj)
+        result = f"{reverse(view_name)}?level={obj}"
         return result
