@@ -9,9 +9,11 @@ from api.sync.WanikaniUserSyncer import WanikaniUserSyncer
 from kw_webapp.models import Vocabulary, UserSpecific
 
 
+logger = logging.getLogger(__name__)
+
+
 class WanikaniUserSyncerV2(WanikaniUserSyncer):
     def __init__(self, profile):
-        self.logger = logging.getLogger(__name__)
         self.profile = profile
         self.user = self.profile.user
         self.client = WkV2Client(profile.api_key_v2)
@@ -28,9 +30,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
         # We split this into two seperate API calls as we do not necessarily know the current level until
         # For the love of god don't delete this next line
         user = User.objects.get(pk=self.user.id)
-        self.logger.info(
-            "About to begin sync for user {}.".format(user.username)
-        )
+        logger.info(f"About to begin sync for user {user.username}.")
         profile_sync_succeeded = self.sync_user_profile_with_wk()
         if profile_sync_succeeded:
             if not full_sync:
@@ -45,7 +45,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                 updated_synonym_count,
             )
         else:
-            self.logger.warning(
+            logger.warning(
                 "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be "
                 "followed "
             )
@@ -78,7 +78,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
 
         self.user.profile.save()
 
-        self.logger.info(f"Synced {self.user.username}'s Profile.")
+        logger.info(f"Synced {self.user.username}'s Profile.")
         return True
 
     def sync_recent_unlocked_vocab(self):
@@ -106,7 +106,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                     self.user.profile.api_valid = False
                     self.user.profile.save()
                 except Exception as e:
-                    self.logger.error(
+                    logger.error(
                         f"Could not sync recent vocab for {self.user.username}",
                         e,
                     )
@@ -136,7 +136,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
 
                 # If no review was created, it means we are missing the subject. We can deal with this later
                 if review is None:
-                    self.logger.error(
+                    logger.error(
                         f"We somehow don't have a subject with id {assignment.subject_id}!!"
                     )
                     continue
@@ -144,14 +144,14 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                     new_review_count += 1
                 unlocked_count += 1
                 review.save()
-        self.logger.info(f"Synced Vocabulary for {self.user.username}")
+        logger.info(f"Synced Vocabulary for {self.user.username}")
         return new_review_count, unlocked_count, locked_count
 
     def process_single_item_from_wanikani_v2(self, assignment):
         try:
             vocab = Vocabulary.objects.get(wk_subject_id=assignment.subject_id)
         except Vocabulary.DoesNotExist:
-            self.logger.error(
+            logger.error(
                 f"Attempted to add a UserSpecific for subject ID: {assignment.subject_id} but failed as we don't have it."
             )
             return None, False
@@ -183,13 +183,13 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
         except UserSpecific.MultipleObjectsReturned:
             us = UserSpecific.objects.filter(vocabulary=vocab, user=self.user)
             for u in us:
-                self.logger.error(
+                logger.error(
                     f"during {self.user.username}'s WK sync, we received multiple UserSpecific objects. Details: {u}"
                 )
             return None, None
 
     def sync_study_materials(self):
-        self.logger.info(
+        logger.info(
             f"About to synchronize all synonyms for {self.user.username}"
         )
         study_materials = self.client.study_materials(
@@ -209,7 +209,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                     review.reconcile_study_material(study_material)
                     updated_synonym_count += 1
 
-        self.logger.info(
+        logger.info(
             f"Updated {updated_synonym_count} synonyms for {self.user.username}"
         )
         return updated_synonym_count
@@ -218,7 +218,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
         if self.profile.unlocked_levels_list():
             new_review_count = 0
 
-            self.logger.info(
+            logger.info(
                 f"Creating sync string for user {self.user.username}: {self.profile.api_key_v2}"
             )
             try:
@@ -240,7 +240,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
             return 0
 
     def sync_top_level_vocabulary(self):
-        self.logger.info(f"Beginning top-level Subject Sync from WK API")
+        logger.info(f"Beginning top-level Subject Sync from WK API")
         try:
             updated_vocabulary_count = 0
             created_vocabulary_count = 0
@@ -249,23 +249,23 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
             )
             for remote_vocabulary in vocabulary:
                 try:
-                    self.logger.info(
+                    logger.info(
                         f"About to attempt to reconcile remote vocabulary: {remote_vocabulary}"
                     )
                     local_vocabulary = Vocabulary.objects.get(
                         wk_subject_id=remote_vocabulary.id
                     )
-                    self.logger.info(
+                    logger.info(
                         f"Found a local equivalent with Subject ID attached! {local_vocabulary.id}"
                     )
                     if local_vocabulary.is_out_of_date(remote_vocabulary):
-                        self.logger.info(
+                        logger.info(
                             "Looks like our local info is out of date. Reconciling."
                         )
                         local_vocabulary.reconcile(remote_vocabulary)
                         updated_vocabulary_count += 1
                 except Vocabulary.DoesNotExist:
-                    self.logger.info(
+                    logger.info(
                         f"Couldn't find a Vocabulary with remote id: {remote_vocabulary.id}"
                     )
                     local_vocabulary = Vocabulary.objects.create(
@@ -273,12 +273,12 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                     )
                     local_vocabulary.reconcile(remote_vocabulary)
                     created_vocabulary_count += 1
-            self.logger.info(
+            logger.info(
                 f"Managed to update {updated_vocabulary_count} vocabulary from V2 API."
             )
             return updated_vocabulary_count
         except InvalidWanikaniApiKeyException:
-            self.logger.error(
+            logger.error(
                 "Couldn't synchronize vocabulary, as the API key is out of date."
             )
             return 0
