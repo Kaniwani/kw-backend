@@ -226,10 +226,9 @@ class PartOfSpeech(models.Model):
 
 class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
-    alternate_meanings = models.CharField
     wk_subject_id = models.IntegerField(
         default=0
-    )  # TODO we will need to run a one-time script to match up vocab by kanji, then assign a WK id.
+    )  # TODO we will need to run a one-time script to tmatch up vocab by kanji, then assign a WK id.
     wk_last_modified = models.DateTimeField(null=True)
     parts_of_speech = models.ManyToManyField(PartOfSpeech)
     auxiliary_meanings_whitelist = models.CharField(max_length=500, null=True)
