@@ -284,7 +284,11 @@ def sync_all_users_to_wk():
     logger.info(
         f"Original sync would have occurred for {users.count()} users."
     )
+    # Get only users who have recently used WK
     users = User.objects.filter(profile__last_visit__gte=one_week_ago)
+    # Get only users who have not lapsed their WK subscription, as we can't query those lapsed users anyhow
+    users = users.filter(profile__has_lapsed_wanikani=False)
+
     logger.info(f"Sync will occur for {users.count()} users.")
     affected_count = 0
     for user in users:

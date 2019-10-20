@@ -90,6 +90,10 @@ class Profile(models.Model):
         default=WkSrsLevel.BURNED.name,
     )
 
+    # If we detect the user on WK is level 3, but their level on WK is higher, _and_ they have follow_me disabled, we set this flag
+    # This flag is used for skipping sync on some users entirely.
+    has_lapsed_wanikani = models.BooleanField(default=False)
+
     order_reviews_by_level = models.BooleanField(default=False)
 
     burn_reviews = models.BooleanField(default=True)
