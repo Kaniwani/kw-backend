@@ -59,11 +59,25 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             )
             self.profile.handle_wanikani_level_change(user_info["level"])
 
+        if self._wanikani_has_lapsed(user_info["level"]):
+            logger.info(
+                "Looks like {}'s Wanikani account has lapsed, we are hibernating their syncing"
+            )
+            self.profile.has_lapsed_wanikani = True
+
         self.profile.save()
 
         logger.info(f"Synced {self.profile.user.username}'s Profile.")
 
         return True
+
+    # Small helper function to detect when WK has lapsed for a user.
+    def _wanikani_has_lapsed(self, detected_level):
+        return (
+            not self.profile.follow_me
+            and detected_level == 3
+            and self.profile.level > 5
+        )
 
     def build_user_information_api_string(self, api_key):
         return f"https://www.wanikani.com/api/user/{api_key}/user-information"
@@ -83,7 +97,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             f"About to begin sync profile for user {self.profile.user.username}"
         )
         profile_sync_succeeded = self.sync_user_profile_with_wk()
-        if profile_sync_succeeded:
+        if profile_sync_succeeded and not self.profile.has_lapsed_wanikani:
             if not full_sync:
                 logger.info(
                     f"About to execute recent sync for {self.profile.user.username}"
@@ -182,8 +196,8 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                     self.profile.api_valid = False
                     self.profile.save()
                 except exceptions.WanikaniAPIException as e:
-                    logger.error(
-                        f"Couldn't sync recent vocab for {self.profile.user.username}: {e}"
+                    logger.warning(
+                        f"Couldn't sync vocab for {self.profile.user.username}: {e}"
                     )
             return new_review_count, new_synonym_count
         else:
