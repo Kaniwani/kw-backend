@@ -61,7 +61,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
 
         if self._wanikani_has_lapsed(user_info["level"]):
             logger.info(
-                "Looks like {}'s Wanikani account has lapsed, we are hibernating their syncing"
+                f"Looks like {self.profile.user.username}'s Wanikani account has lapsed, we are hibernating their syncing"
             )
             self.profile.has_lapsed_wanikani = True
 
