@@ -211,59 +211,28 @@ class TestModels(APITestCase):
         users_profile = Profile.objects.get(user=self.user)
         self.assertEqual(old_twitter, users_profile.twitter)
 
-    def test_answering_a_review_correctly_rounds_next_review_date_up_to_interval(
-        self
-    ):
+    def test_rounding_a_review_time_follows_wk_rules(self):
+        self.review.streak = 0
+        self.review.next_review_date = self.review.next_review_date.replace(
+            hour=10
+        )
         self.review.next_review_date = self.review.next_review_date.replace(
             minute=17
         )
-        self.review.last_studied = self.review.next_review_date.replace(
-            minute=17
-        )
+        self.review.save()
+        self.review.refresh_from_db()
+
+        self.review._round_next_review_date()
+        self.review.refresh_from_db()
+        self.assertEqual(self.review.next_review_date.minute, 0)
+        self.assertEqual(self.review.next_review_date.hour, 10)
+
         self.review.answered_correctly(first_try=True, can_burn=True)
         self.review.refresh_from_db()
+        current_hour = timezone.now().hour
 
-        self.assertEqual(
-            self.review.next_review_date.minute
-            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60),
-            0,
-        )
-        self.assertEqual(
-            self.review.next_review_date.hour
-            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)),
-            0,
-        )
-        self.assertEqual(
-            self.review.next_review_date.second
-            % constants.REVIEW_ROUNDING_TIME.total_seconds(),
-            0,
-        )
-
-    def test_rounding_a_review_time_only_goes_up(self):
-        self.review.next_review_date = self.review.next_review_date.replace(
-            minute=17
-        )
-        self.review.last_studied = self.review.next_review_date.replace(
-            minute=17
-        )
-        self.review._round_review_time_up()
-        self.review.refresh_from_db()
-
-        self.assertEqual(
-            self.review.next_review_date.minute
-            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60),
-            0,
-        )
-        self.assertEqual(
-            self.review.next_review_date.hour
-            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)),
-            0,
-        )
-        self.assertEqual(
-            self.review.next_review_date.second
-            % constants.REVIEW_ROUNDING_TIME.total_seconds(),
-            0,
-        )
+        self.assertEqual(self.review.next_review_date.minute, 0)
+        self.assertEqual(self.review.next_review_date.hour, current_hour + 4)
 
     def test_rounding_up_a_review_rounds_up_last_studied_date(self):
         self.review.last_studied = timezone.now()
