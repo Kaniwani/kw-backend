@@ -170,35 +170,29 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         return 0, 0
         pass
 
-    def get_level_pages(self, levels):
-        page_size = 5
-        return [
-            levels[i : i + page_size] for i in range(0, len(levels), page_size)
-        ]
-
     def sync_unlocked_vocab(self):
         if self.profile.unlocked_levels_list():
-            pages = self.get_level_pages(self.profile.unlocked_levels_list())
             new_review_count = new_synonym_count = 0
-            for page in pages:
-                request_string = self.build_API_sync_string_for_levels(page)
-                logger.info(
-                    f"Creating sync string for user {self.profile.user.username}: {request_string}"
+            request_string = self.build_API_sync_string_for_levels(
+                self.profile.unlocked_levels_list()
+            )
+            logger.info(
+                f"Creating sync string for user {self.profile.user.username}: {request_string}"
+            )
+            try:
+                response = make_api_call(request_string)
+                current_page_review_count, current_page_synonym_count = self.process_vocabulary_response_for_user(
+                    response
                 )
-                try:
-                    response = make_api_call(request_string)
-                    current_page_review_count, current_page_synonym_count = self.process_vocabulary_response_for_user(
-                        response
-                    )
-                    new_review_count += current_page_review_count
-                    new_synonym_count += current_page_synonym_count
-                except exceptions.InvalidWaniKaniKey:
-                    self.profile.api_valid = False
-                    self.profile.save()
-                except exceptions.WanikaniAPIException as e:
-                    logger.warning(
-                        f"Couldn't sync vocab for {self.profile.user.username}: {e}"
-                    )
+                new_review_count += current_page_review_count
+                new_synonym_count += current_page_synonym_count
+            except exceptions.InvalidWaniKaniKey:
+                self.profile.api_valid = False
+                self.profile.save()
+            except exceptions.WanikaniAPIException as e:
+                logger.warning(
+                    f"Couldn't sync vocab for {self.profile.user.username}: {e}"
+                )
             return new_review_count, new_synonym_count
         else:
             return 0, 0
