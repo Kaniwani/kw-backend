@@ -617,29 +617,13 @@ class UserSpecific(models.Model):
         self.save()
 
     def _round_next_review_date(self):
-        round_to = constants.REVIEW_ROUNDING_TIME.total_seconds()
-        seconds = (
-            self.next_review_date
-            - self.next_review_date.min.replace(
-                tzinfo=self.next_review_date.tzinfo
-            )
-        ).seconds
-        rounding = (seconds + round_to) // round_to * round_to
-        self.next_review_date = self.next_review_date + timedelta(
-            0, rounding - seconds, 0
+        self.next_review_date = self.next_review_date.replace(
+            minute=0, second=1
         )
         self.save()
 
     def _round_last_studied_date(self):
-        round_to = constants.REVIEW_ROUNDING_TIME.total_seconds()
-        seconds = (
-            self.last_studied
-            - self.last_studied.min.replace(tzinfo=self.last_studied.tzinfo)
-        ).seconds
-        rounding = (seconds + round_to) // round_to * round_to
-        self.last_studied = self.last_studied + timedelta(
-            0, rounding - seconds, 0
-        )
+        self.last_studied = self.last_studied.replace(minute=0, second=1)
         self.save()
 
     def _round_review_time_up(self):

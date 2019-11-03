@@ -81,7 +81,7 @@ CELERY_TIMEZONE = MY_TIME_ZONE
 CELERY_BEAT_SCHEDULE = {
     "all_user_srs_every_hour": {
         "task": "kw_webapp.srs.all_srs",
-        "schedule": crontab(minute="*/15"),
+        "schedule": crontab(minute="2"),
     },
     "update_users_unlocked_vocab": {
         "task": "kw_webapp.tasks.sync_all_users_to_wk",
