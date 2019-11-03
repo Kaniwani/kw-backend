@@ -623,8 +623,9 @@ class UserSpecific(models.Model):
         self.save()
 
     def _round_last_studied_date(self):
-        self.last_studied = self.last_studied.replace(minute=0, second=1)
-        self.save()
+        if self.last_studied:
+            self.last_studied = self.last_studied.replace(minute=0, second=1)
+            self.save()
 
     def _round_review_time_up(self):
         self._round_next_review_date()
