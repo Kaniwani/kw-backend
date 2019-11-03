@@ -211,34 +211,6 @@ class TestModels(APITestCase):
         users_profile = Profile.objects.get(user=self.user)
         self.assertEqual(old_twitter, users_profile.twitter)
 
-    def test_answering_a_review_correctly_rounds_next_review_date_up_to_interval(
-        self
-    ):
-        self.review.next_review_date = self.review.next_review_date.replace(
-            minute=17
-        )
-        self.review.last_studied = self.review.next_review_date.replace(
-            minute=17
-        )
-        self.review.answered_correctly(first_try=True, can_burn=True)
-        self.review.refresh_from_db()
-
-        self.assertEqual(
-            self.review.next_review_date.minute
-            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / 60),
-            0,
-        )
-        self.assertEqual(
-            self.review.next_review_date.hour
-            % (constants.REVIEW_ROUNDING_TIME.total_seconds() / (60 * 60)),
-            0,
-        )
-        self.assertEqual(
-            self.review.next_review_date.second
-            % constants.REVIEW_ROUNDING_TIME.total_seconds(),
-            0,
-        )
-
     def test_rounding_a_review_time_follows_wk_rules(self):
         self.review.streak = 0
         self.review.next_review_date = self.review.next_review_date.replace(
@@ -261,7 +233,6 @@ class TestModels(APITestCase):
 
         self.assertEqual(self.review.next_review_date.minute, 0)
         self.assertEqual(self.review.next_review_date.hour, current_hour + 4)
-        # TODO RUN TESTS
 
     def test_rounding_a_review_time_only_goes_up(self):
         self.review.next_review_date = self.review.next_review_date.replace(
