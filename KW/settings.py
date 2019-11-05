@@ -27,6 +27,7 @@ log_root = root.path("logs")
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(root.path("KW").file(".env"))
 
+
 LOGLEVEL = env("LOGLEVEL", default="INFO").upper()
 
 # This allows the /docs/ endpoints to correctly build urls.
@@ -123,6 +124,7 @@ INSTALLED_APPS = (
     "django_filters",
     "corsheaders",
     "djoser",
+    "silk",
 )
 
 MIDDLEWARE = [
@@ -136,8 +138,10 @@ MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "kw_webapp.middleware.SetLastVisitMiddleware",
+    "silk.middleware.SilkyMiddleware",  # lock this down to only be used in debug mode at some point.
 ]
 
+DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _request: DEBUG}
 if DEBUG:
     MIDDLEWARE += ["KW.LoggingMiddleware.ExceptionLoggingMiddleware"]
 

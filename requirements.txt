@@ -59,3 +59,6 @@ vine==1.1.4
 
 wanikani_api==0.2.0
 sentry-sdk==0.9.1
+
+django-silk==3.0.4
+

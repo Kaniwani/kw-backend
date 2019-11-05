@@ -1,5 +1,6 @@
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.urls import path
 from django.views.generic import RedirectView
 from rest_framework.documentation import include_docs_urls
 
@@ -17,4 +18,5 @@ urlpatterns = (
 if settings.DEBUG:
     import debug_toolbar
 
+    urlpatterns += (url(r"^silk/", include("silk.urls", namespace="silk")),)
     urlpatterns += (url(r"^__debug__/", include(debug_toolbar.urls)),)
