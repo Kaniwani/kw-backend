@@ -297,7 +297,16 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
 
     @action(detail=False)
     def lesson(self, request):
-        lessons = get_users_lessons(request.user)
+        lessons = (
+            get_users_lessons(request.user)
+            .select_related("vocabulary")
+            .prefetch_related(
+                "meaning_synonyms",
+                "reading_synonyms",
+                "vocabulary__readings",
+                "vocabulary__readings__parts_of_speech",
+            )
+        )
         page = self.paginate_queryset(lessons)
         if page is not None:
             serializer = StubbedReviewSerializer(page, many=True)
@@ -309,7 +318,16 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
     @action(detail=False)
     def current(self, request):
         logger.info(f"Fetching current reviews for: {request.user.username}")
-        reviews = get_users_current_reviews(request.user)
+        reviews = (
+            get_users_current_reviews(request.user)
+            .select_related("vocabulary")
+            .prefetch_related(
+                "meaning_synonyms",
+                "reading_synonyms",
+                "vocabulary__readings",
+                "vocabulary__readings__parts_of_speech",
+            )
+        )
         logger.debug(
             f"Fetched current reviews for: {request.user.username}. Paginating.."
         )

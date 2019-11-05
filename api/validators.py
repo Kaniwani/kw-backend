@@ -22,7 +22,7 @@ class WanikaniApiKeyValidatorV1(object):
                 logger.debug(f"We have valiated API V1 Key {value}")
                 return value
 
-        logger.debug(f"We failed to validate API V2 Key {value}")
+        logger.debug(f"We failed to validate API V1 Key {value}")
         raise serializers.ValidationError(self.failure_message)
 
     def build_v1_user_information_api_string(self, api_key):
