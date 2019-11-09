@@ -10,7 +10,6 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
-from silk.profiling.profiler import silk_profile
 
 from api.decorators import checks_wanikani
 from api.filters import VocabularyFilter, ReviewFilter
@@ -493,25 +492,24 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
 
     @action(detail=False, methods=["POST"])
     def sync(self, request):
-        with silk_profile(name="execute sync"):
-            should_full_sync = False
+        should_full_sync = False
 
-            if "full_sync" in request.query_params:
-                should_full_sync = request.query_params["full_sync"] == "true"
+        if "full_sync" in request.query_params:
+            should_full_sync = request.query_params["full_sync"] == "true"
 
-            if "full_sync" in request.data:
-                should_full_sync = request.data["full_sync"] == "true"
+        if "full_sync" in request.data:
+            should_full_sync = request.data["full_sync"] == "true"
 
-            profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(
-                request.user.id, should_full_sync
-            )
-            return Response(
-                {
-                    "profile_sync_succeeded": profile_sync_succeeded,
-                    "new_review_count": new_review_count,
-                    "new_synonym_count": new_synonym_count,
-                }
-            )
+        profile_sync_succeeded, new_review_count, new_synonym_count = sync_with_wk(
+            request.user.id, should_full_sync
+        )
+        return Response(
+            {
+                "profile_sync_succeeded": profile_sync_succeeded,
+                "new_review_count": new_review_count,
+                "new_synonym_count": new_synonym_count,
+            }
+        )
 
     @action(detail=False, methods=["POST"])
     def srs(self, request):

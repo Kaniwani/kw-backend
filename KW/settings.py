@@ -124,7 +124,6 @@ INSTALLED_APPS = (
     "django_filters",
     "corsheaders",
     "djoser",
-    "silk",
 )
 
 MIDDLEWARE = [
@@ -138,14 +137,10 @@ MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "kw_webapp.middleware.SetLastVisitMiddleware",
-    "silk.middleware.SilkyMiddleware",  # lock this down to only be used in debug mode at some point.
 ]
-SILKY_PYTHON_PROFILER = True
-SILKY_PYTHON_PROFILER_BINARY = True
 
-DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _request: DEBUG}
 if DEBUG:
-    MIDDLEWARE += ["KW.LoggingMiddleware.ExceptionLoggingMiddleware"]
+    pass
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [

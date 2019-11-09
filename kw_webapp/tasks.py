@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from django.db.models import F, Count
 from django.db.models import Min
 from django.db.models.functions import TruncHour, TruncDate
-from silk.profiling.profiler import silk_profile
 from wanikani_api.exceptions import InvalidWanikaniApiKeyException
 
 from api.sync.SyncerFactory import Syncer
