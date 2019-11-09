@@ -140,6 +140,8 @@ MIDDLEWARE = [
     "kw_webapp.middleware.SetLastVisitMiddleware",
     "silk.middleware.SilkyMiddleware",  # lock this down to only be used in debug mode at some point.
 ]
+SILKY_PYTHON_PROFILER = True
+SILKY_PYTHON_PROFILER_BINARY = True
 
 DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _request: DEBUG}
 if DEBUG:

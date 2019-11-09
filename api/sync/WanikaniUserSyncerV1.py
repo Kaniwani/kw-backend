@@ -133,7 +133,6 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             else levels
         )
         api_call = f"https://www.wanikani.com/api/user/{self.profile.api_key}/vocabulary/{level_string}"
-        api_call += ","
         return api_call
 
     def sync_recent_unlocked_vocab(self):
@@ -213,6 +212,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                 )
         else:
             # TODO move this elsewhere? This full synonym sync code.
+            # TODO investigate what this is doing
             for profile in Profile.objects.all():
                 if len(profile.api_key) == 32:
                     user = profile.user
@@ -258,35 +258,83 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         :param user:
         :return:
         """
-        new_review_count = 0
-        new_synonym_count = 0
         vocab_list = json_data["requested_information"]
+        to_be_created, to_be_updated, vocab_dict = self.split_incoming_vocab_into_creates_and_updates(
+            vocab_list
+        )
+        new_synonym_count = self.handle_updates(to_be_updated, vocab_dict)
+        new_review_count = self.handle_new_creations(to_be_created)
+        return new_review_count, new_synonym_count
+
+    def split_incoming_vocab_into_creates_and_updates(self, vocab_list):
         # Filter items the user has not unlocked.
         vocab_list = [
             vocab_json
             for vocab_json in vocab_list
             if vocab_json["user_specific"] is not None
         ]
+        vocab_kanjis = [vocab["character"] for vocab in vocab_list]
+        vocab_dict = {vocab["character"]: vocab for vocab in vocab_list}
+        to_be_updated = (
+            UserSpecific.objects.filter(
+                vocabulary__readings__character__in=vocab_kanjis
+            )
+            .distinct()
+            .select_related("vocabulary")
+            .prefetch_related("vocabulary__readings")
+        )
+        to_be_updated = list(to_be_updated)  # FORCE EVALUATE
+        found_reviews = [
+            review.vocabulary.readings.first().character
+            for review in to_be_updated
+        ]
+        to_be_created = [
+            vocab
+            for vocab in vocab_list
+            if vocab["character"] not in found_reviews
+        ]
+        return to_be_created, to_be_updated, vocab_dict
 
-        for vocabulary_json in vocab_list:
-            if self.profile.follow_me:
-                review, created, synonyms_added_count = self.process_single_item_from_wanikani(
-                    vocabulary_json
+    def handle_updates(self, to_be_updated, vocab_dict):
+        total_synonyms = 0
+        for review in to_be_updated:
+            incoming_vocab = self.suss_vocab(vocab_dict, review)
+            user_specific = incoming_vocab["user_specific"]
+            review, synonyms_added_count = self.synchronize_synonyms(
+                review, user_specific
+            )
+            review.wanikani_srs = user_specific["srs"]
+            review.wanikani_srs_numeric = user_specific["srs_numeric"]
+            review.wanikani_burned = user_specific["burned"]
+            total_synonyms += synonyms_added_count
+        UserSpecific.objects.bulk_update(
+            to_be_updated,
+            ["wanikani_srs", "wanikani_srs_numeric", "wanikani_burned"],
+        )
+
+        return total_synonyms
+
+    def suss_vocab(self, vocab_dict, review):
+        return vocab_dict[review.vocabulary.readings.first().character]
+
+    def handle_new_creations(self, to_be_created):
+        new_review_count = 0
+        creations = []
+        for incoming_vocab in to_be_created:
+            vocabulary, created = self.import_vocabulary_from_json(
+                incoming_vocab
+            )
+            creations.append(
+                UserSpecific(
+                    vocabulary=vocabulary,
+                    user=self.profile.user,
+                    needs_review=True,
+                    next_review_date=timezone.now(),
                 )
-                synonyms_added_count += new_synonym_count
-                if created:
-                    new_review_count += 1
-                review.save()
-            else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms
-                vocabulary, created = self.get_or_create_vocab_by_json(
-                    vocabulary_json
-                )
-                new_review, synonyms_added_count = self.associate_synonyms_to_vocab(
-                    vocabulary, vocabulary_json["user_specific"]
-                )
-                new_synonym_count += synonyms_added_count
-        logger.info(f"Synced Vocabulary for {self.profile.user.username}")
-        return new_review_count, new_synonym_count
+            )
+            new_review_count += 1
+        UserSpecific.objects.bulk_create(creations)
+        return new_review_count
 
     def process_single_item_from_wanikani(self, vocabulary):
         user_specific = vocabulary["user_specific"]
@@ -303,7 +351,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
 
     def import_vocabulary_from_json(self, vocabulary):
         vocab, is_new = self.get_or_create_vocab_by_json(vocabulary)
-        vocab = self.update_local_vocabulary_information(vocab, vocabulary)
+        # vocab = self.update_local_vocabulary_information(vocab, vocabulary)
         return vocab, is_new
 
     def get_or_create_vocab_by_json(self, vocab_json):

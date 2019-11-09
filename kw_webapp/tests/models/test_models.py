@@ -232,7 +232,9 @@ class TestModels(APITestCase):
         current_hour = timezone.now().hour
 
         self.assertEqual(self.review.next_review_date.minute, 0)
-        self.assertEqual(self.review.next_review_date.hour, current_hour + 4)
+        self.assertEqual(
+            self.review.next_review_date.hour, (current_hour + 4) % 24
+        )
 
     def test_rounding_up_a_review_rounds_up_last_studied_date(self):
         self.review.last_studied = timezone.now()

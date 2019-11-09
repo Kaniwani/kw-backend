@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.db.models import F, Count
 from django.db.models import Min
 from django.db.models.functions import TruncHour, TruncDate
+from silk.profiling.profiler import silk_profile
 from wanikani_api.exceptions import InvalidWanikaniApiKeyException
 
 from api.sync.SyncerFactory import Syncer
@@ -143,7 +144,6 @@ def build_API_sync_string_for_api_key_for_levels(api_key, levels):
         else levels
     )
     api_call = f"https://www.wanikani.com/api/user/{api_key}/vocabulary/{level_string}"
-    api_call += ","
     return api_call
 
 
