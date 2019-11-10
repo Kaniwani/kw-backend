@@ -493,6 +493,10 @@ class UserViewSet(viewsets.GenericViewSet, generics.ListCreateAPIView):
     @action(detail=False, methods=["POST"])
     def sync(self, request):
         should_full_sync = False
+
+        if "full_sync" in request.query_params:
+            should_full_sync = request.query_params["full_sync"] == "true"
+
         if "full_sync" in request.data:
             should_full_sync = request.data["full_sync"] == "true"
 

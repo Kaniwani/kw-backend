@@ -93,7 +93,7 @@ class TestTasks(TestCase):
             self.user.profile.unlocked_levels_list()
         )
         correct_string = (
-            "https://www.wanikani.com/api/user/any_key/vocabulary/5,3,1,"
+            "https://www.wanikani.com/api/user/any_key/vocabulary/5,3,1"
         )
 
         self.assertEqual(correct_string, api_call)

@@ -138,12 +138,15 @@ MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "kw_webapp.middleware.SetLastVisitMiddleware",
-    "silk.middleware.SilkyMiddleware",  # lock this down to only be used in debug mode at some point.
 ]
 
-DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _request: DEBUG}
 if DEBUG:
-    MIDDLEWARE += ["KW.LoggingMiddleware.ExceptionLoggingMiddleware"]
+    MIDDLEWARE += ("silk.middleware.SilkyMiddleware",)
+    MIDDLEWARE += ("KW.LoggingMiddleware.ExceptionLoggingMiddleware",)
+    pass
+
+SILKY_PYTHON_PROFILER = True
+SILKY_PYTHON_PROFILER_BINARY = True
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
