@@ -124,6 +124,7 @@ INSTALLED_APPS = (
     "django_filters",
     "corsheaders",
     "djoser",
+    "silk",
 )
 
 MIDDLEWARE = [
@@ -140,7 +141,12 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
+    MIDDLEWARE += ("silk.middleware.SilkyMiddleware",)
+    MIDDLEWARE += ("KW.LoggingMiddleware.ExceptionLoggingMiddleware",)
     pass
+
+SILKY_PYTHON_PROFILER = True
+SILKY_PYTHON_PROFILER_BINARY = True
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [

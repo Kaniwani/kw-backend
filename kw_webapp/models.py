@@ -269,7 +269,11 @@ class Vocabulary(models.Model):
             [m.meaning for m in vocabulary.meanings if not m.primary]
         )
         self.auxiliary_meanings_whitelist = ",".join(
-            [aux.meaning for aux in vocabulary.auxiliary_meanings]
+            [
+                aux.meaning
+                for aux in vocabulary.auxiliary_meanings
+                if aux.type == "whitelist"
+            ]
         )
 
         # Reconcile the difference in readings.
