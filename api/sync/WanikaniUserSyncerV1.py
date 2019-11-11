@@ -103,14 +103,14 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                     f"About to execute recent sync for {self.profile.user.username}"
                 )
                 new_review_count, new_synonym_count = (
-                    self.sync_recent_unlocked_vocab()
+                    self.sync_recent_unlocked_vocab_classic()
                 )
             else:
                 logger.info(
                     f"About to execute _full_ sync for {self.profile.user.username}"
                 )
                 new_review_count, new_synonym_count = (
-                    self.sync_unlocked_vocab()
+                    self.sync_unlocked_vocab_classic()
                 )
 
             return profile_sync_succeeded, new_review_count, new_synonym_count
@@ -170,6 +170,67 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         pass
 
     def sync_unlocked_vocab(self):
+        if self.profile.unlocked_levels_list():
+            new_review_count = new_synonym_count = 0
+            request_string = self.build_API_sync_string_for_levels(
+                self.profile.unlocked_levels_list()
+            )
+            logger.info(
+                f"Creating sync string for user {self.profile.user.username}: {request_string}"
+            )
+            try:
+                response = make_api_call(request_string)
+                current_page_review_count, current_page_synonym_count = self.process_vocabulary_response_for_user(
+                    response
+                )
+                new_review_count += current_page_review_count
+                new_synonym_count += current_page_synonym_count
+            except exceptions.InvalidWaniKaniKey:
+                self.profile.api_valid = False
+                self.profile.save()
+            except exceptions.WanikaniAPIException as e:
+                logger.warning(
+                    f"Couldn't sync vocab for {self.profile.user.username}: {e}"
+                )
+            return new_review_count, new_synonym_count
+        else:
+            return 0, 0
+
+    def sync_recent_unlocked_vocab_classic(self):
+        if self.profile.unlocked_levels_list():
+            levels = [
+                level
+                for level in range(
+                    self.profile.level - 2, self.profile.level + 1
+                )
+                if level in self.profile.unlocked_levels_list()
+            ]
+            if levels:
+                logger.info(
+                    f"Target levels: {','.join([str(level) for level in levels])}"
+                )
+                request_string = self.build_API_sync_string_for_levels(levels)
+                try:
+                    logger.info(f"About to make recent vocab sync request")
+                    json_data = make_api_call(request_string)
+                    new_review_count, new_synonym_count = self.process_vocabulary_response_for_user(
+                        json_data
+                    )
+                    logger.info(
+                        f"Successfully did a recent sync for {self.profile.user.username}"
+                    )
+                    return new_review_count, new_synonym_count
+                except exceptions.InvalidWaniKaniKey:
+                    self.profile.api_valid = False
+                    self.profile.save()
+                except exceptions.WanikaniAPIException as e:
+                    logger.warning(
+                        f"Couldn't sync recent vocab for {self.profile.user.username}:, {e}"
+                    )
+        return 0, 0
+        pass
+
+    def sync_unlocked_vocab_classic(self):
         if self.profile.unlocked_levels_list():
             new_review_count = new_synonym_count = 0
             request_string = self.build_API_sync_string_for_levels(
