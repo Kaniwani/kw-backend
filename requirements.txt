@@ -62,3 +62,4 @@ sentry-sdk==0.9.1
 
 django-silk==3.0.4
 
+elastic-apm==5.2.2

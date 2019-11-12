@@ -103,14 +103,14 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                     f"About to execute recent sync for {self.profile.user.username}"
                 )
                 new_review_count, new_synonym_count = (
-                    self.sync_recent_unlocked_vocab_classic()
+                    self.sync_recent_unlocked_vocab()
                 )
             else:
                 logger.info(
                     f"About to execute _full_ sync for {self.profile.user.username}"
                 )
                 new_review_count, new_synonym_count = (
-                    self.sync_unlocked_vocab_classic()
+                    self.sync_unlocked_vocab()
                 )
 
             return profile_sync_succeeded, new_review_count, new_synonym_count
@@ -152,7 +152,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
                 try:
                     logger.info(f"About to make recent vocab sync request")
                     json_data = make_api_call(request_string)
-                    new_review_count, new_synonym_count = self.process_vocabulary_response_for_user(
+                    new_review_count, new_synonym_count = self.process_vocabulary_response_for_user_classic(
                         json_data
                     )
                     logger.info(
@@ -180,68 +180,7 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
             )
             try:
                 response = make_api_call(request_string)
-                current_page_review_count, current_page_synonym_count = self.process_vocabulary_response_for_user(
-                    response
-                )
-                new_review_count += current_page_review_count
-                new_synonym_count += current_page_synonym_count
-            except exceptions.InvalidWaniKaniKey:
-                self.profile.api_valid = False
-                self.profile.save()
-            except exceptions.WanikaniAPIException as e:
-                logger.warning(
-                    f"Couldn't sync vocab for {self.profile.user.username}: {e}"
-                )
-            return new_review_count, new_synonym_count
-        else:
-            return 0, 0
-
-    def sync_recent_unlocked_vocab_classic(self):
-        if self.profile.unlocked_levels_list():
-            levels = [
-                level
-                for level in range(
-                    self.profile.level - 2, self.profile.level + 1
-                )
-                if level in self.profile.unlocked_levels_list()
-            ]
-            if levels:
-                logger.info(
-                    f"Target levels: {','.join([str(level) for level in levels])}"
-                )
-                request_string = self.build_API_sync_string_for_levels(levels)
-                try:
-                    logger.info(f"About to make recent vocab sync request")
-                    json_data = make_api_call(request_string)
-                    new_review_count, new_synonym_count = self.process_vocabulary_response_for_user(
-                        json_data
-                    )
-                    logger.info(
-                        f"Successfully did a recent sync for {self.profile.user.username}"
-                    )
-                    return new_review_count, new_synonym_count
-                except exceptions.InvalidWaniKaniKey:
-                    self.profile.api_valid = False
-                    self.profile.save()
-                except exceptions.WanikaniAPIException as e:
-                    logger.warning(
-                        f"Couldn't sync recent vocab for {self.profile.user.username}:, {e}"
-                    )
-        return 0, 0
-        pass
-
-    def sync_unlocked_vocab_classic(self):
-        if self.profile.unlocked_levels_list():
-            new_review_count = new_synonym_count = 0
-            request_string = self.build_API_sync_string_for_levels(
-                self.profile.unlocked_levels_list()
-            )
-            logger.info(
-                f"Creating sync string for user {self.profile.user.username}: {request_string}"
-            )
-            try:
-                response = make_api_call(request_string)
-                current_page_review_count, current_page_synonym_count = self.process_vocabulary_response_for_user(
+                current_page_review_count, current_page_synonym_count = self.process_vocabulary_response_for_user_classic(
                     response
                 )
                 new_review_count += current_page_review_count
@@ -312,6 +251,45 @@ class WanikaniUserSyncerV1(WanikaniUserSyncer):
         user_info = json_data["user_information"]
         return user_info["level"]
 
+    def process_vocabulary_response_for_user_classic(self, json_data):
+        """
+        Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
+        :param json_data:
+        :param user:
+        :return:
+        """
+        new_review_count = 0
+        new_synonym_count = 0
+        vocab_list = json_data["requested_information"]
+        # Filter items the user has not unlocked.
+        vocab_list = [
+            vocab_json
+            for vocab_json in vocab_list
+            if vocab_json["user_specific"] is not None
+        ]
+
+        for vocabulary_json in vocab_list:
+            if self.profile.follow_me:
+                review, created, synonyms_added_count = self.process_single_item_from_wanikani(
+                    vocabulary_json
+                )
+                synonyms_added_count += new_synonym_count
+                if created:
+                    new_review_count += 1
+                review.save()
+            else:  # User does not want to be followed, so we prevent creation of new vocab, and sync only synonyms
+                vocabulary, created = self.get_or_create_vocab_by_json(
+                    vocabulary_json
+                )
+                new_review, synonyms_added_count = self.associate_synonyms_to_vocab(
+                    vocabulary, vocabulary_json["user_specific"]
+                )
+                new_synonym_count += synonyms_added_count
+        logger.info(f"Synced Vocabulary for {self.profile.user.username}")
+        return new_review_count, new_synonym_count
+
+    # THIS IS DEPRECATED IN FAVOR of `process_vocabulary_response_for_user_classic`
+    @DeprecationWarning
     def process_vocabulary_response_for_user(self, json_data):
         """
         Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
