@@ -125,7 +125,9 @@ INSTALLED_APPS = (
     "corsheaders",
     "djoser",
     "silk",
+    "elasticapm.contrib.django",
 )
+
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -147,6 +149,13 @@ if DEBUG:
 
 SILKY_PYTHON_PROFILER = True
 SILKY_PYTHON_PROFILER_BINARY = True
+
+ELASTIC_APM = {
+    "SERVICE_NAME": "kaniwani_test",
+    "DEBUG": True,
+    "SERVER_URL": env("APM_SERVER_URL"),
+    "TRANSACTIONS_IGNORE_PATTERNS": ["^OPTIONS "],
+}
 
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
