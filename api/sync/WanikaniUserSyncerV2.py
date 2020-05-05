@@ -284,7 +284,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
             return 0
 
     def unlock_vocab(self, levels):
-        new_assignments = self.client.assignments(type="vocabulary", levels=levels)
+        new_assignments = self.client.assignments(subject_types="vocabulary", levels=levels)
         return self.process_vocabulary_response_for_user_v2(new_assignments)
 
     def get_wanikani_level(self):
