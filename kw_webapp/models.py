@@ -232,7 +232,7 @@ class Vocabulary(models.Model):
     meaning = models.CharField(max_length=255)
     wk_subject_id = models.IntegerField(
         default=0
-    )  # TODO we will need to run a one-time script to tmatch up vocab by kanji, then assign a WK id.
+    )
     wk_last_modified = models.DateTimeField(null=True)
     parts_of_speech = models.ManyToManyField(PartOfSpeech)
     auxiliary_meanings_whitelist = models.CharField(max_length=500, null=True)
@@ -260,14 +260,17 @@ class Vocabulary(models.Model):
         self.wk_last_modified = vocabulary.data_updated_at
         self.level = vocabulary.level
         # Set whatever is the new primary meaning.
-        for meaning_obj in vocabulary.meanings:
-            if meaning_obj.primary:
-                self.meaning = meaning_obj.meaning
 
+        # TODO EVENTUALLY REWORK TO SUPPORT ALTERNATE MEANINGS. For now, just smash em all into one.
+        #for meaning_obj in vocabulary.meanings:
+        #     if meaning_obj.primary:
+        #    self.meaning = meaning_obj.meaning
+
+        self.meaning = ",".join([m_obj.meaning for m_obj in vocabulary.meanings])
         # Reset alternate and auxiliary meanings to whatever is current
-        self.alternate_meanings = ",".join(
-            [m.meaning for m in vocabulary.meanings if not m.primary]
-        )
+        #self.alternate_meanings = ",".join(
+        #    [m.meaning for m in vocabulary.meanings if not m.primary]
+        #)
         self.auxiliary_meanings_whitelist = ",".join(
             [
                 aux.meaning
