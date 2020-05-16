@@ -30,13 +30,13 @@ def filter_level_for_review(queryset, name, value):
 
 def filter_meaning_contains(queryset, name, value):
     if value:
-        return queryset.filter(meaning__regex=whole_word_regex(value))
+        return queryset.filter(meaning__iregex=whole_word_regex(value))
 
 
 def filter_meaning_contains_for_review(queryset, name, value):
     if value:
         return queryset.filter(
-            vocabulary__meaning__regex=whole_word_regex(value)
+            vocabulary__meaning__iregex=whole_word_regex(value)
         )
 
 
