@@ -266,7 +266,7 @@ class Vocabulary(models.Model):
         #     if meaning_obj.primary:
         #    self.meaning = meaning_obj.meaning
 
-        self.meaning = ",".join([m_obj.meaning for m_obj in vocabulary.meanings])
+        self.meaning = ", ".join([m_obj.meaning for m_obj in vocabulary.meanings])
         # Reset alternate and auxiliary meanings to whatever is current
         #self.alternate_meanings = ",".join(
         #    [m.meaning for m in vocabulary.meanings if not m.primary]
