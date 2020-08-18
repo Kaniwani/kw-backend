@@ -437,7 +437,7 @@ class UserSpecific(models.Model):
         )
 
     def reconcile_assignment(self, assignment):
-        self.wanikani_srs = assignment.srs_stage_name
+        self.wanikani_srs = constants.WANIKANI_SRS_LEVELS[assignment.srs_stage]
         self.wanikani_srs_numeric = assignment.srs_stage
         self.wanikani_burned = assignment.burned_at is not None
         self.wk_assignment_last_modified = assignment.data_updated_at

@@ -192,7 +192,6 @@ single_assignment = {
                 "subject_id": 1,
                 "subject_type": "vocabulary",
                 "srs_stage": 4,
-                "srs_stage_name": "Apprentice IV",
                 "unlocked_at": "2018-07-27T17:21:59.578890Z",
                 "started_at": "2018-07-30T01:57:17.619268Z",
                 "passed_at": "2018-08-06T03:36:17.921419Z",
