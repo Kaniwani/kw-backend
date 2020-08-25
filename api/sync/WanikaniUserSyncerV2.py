@@ -112,6 +112,40 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                     )
         return 0, 0
 
+    def process_vocabulary_response_for_user_unlock_v2(self, assignments):
+        """
+        Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
+        :param json_data:
+        :param user:
+        :return:
+        """
+        new_review_count = 0
+        unlocked_count = 0
+        locked_count = 0
+        # Filter items the user has not unlocked.
+        for assignment in assignments:
+            # We don't port over stuff the user has never looked at
+            if assignment.started_at is None:
+                locked_count += 1
+                continue
+            # If the user is being
+            review, created = self.process_single_item_from_wanikani_v2(
+                assignment
+            )
+
+            # If no review was created, it means we are missing the subject. We can deal with this later
+            if review is None:
+                logger.error(
+                    f"We somehow don't have a subject with id {assignment.subject_id}!!"
+                )
+                continue
+            if created:
+                new_review_count += 1
+            unlocked_count += 1
+            review.save()
+        logger.info(f"Synced Vocabulary for {self.user.username}")
+        return new_review_count, unlocked_count, locked_count
+
     def process_vocabulary_response_for_user_v2(self, assignments):
         """
         Given a response object from Requests.get(), iterate over the list of vocabulary, and synchronize the user.
@@ -285,7 +319,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
 
     def unlock_vocab(self, levels):
         new_assignments = self.client.assignments(subject_types="vocabulary", levels=levels)
-        return self.process_vocabulary_response_for_user_v2(new_assignments)
+        return self.process_vocabulary_response_for_user_unlock_v2(new_assignments)
 
     def get_wanikani_level(self):
         user_info = self.client.user_information()

@@ -19,7 +19,7 @@ from kw_webapp.tasks import (
     get_users_future_reviews,
     sync_all_users_to_wk,
     sync_with_wk,
-    get_users_current_reviews,
+    get_users_current_reviews, get_users_lessons,
 )
 from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import (
@@ -271,6 +271,25 @@ class TestSync(TestCase):
         syncer.sync_with_wk(full_sync=True)
 
         reviews = get_users_current_reviews(self.user)
+        assert reviews.count() == 1
+
+    @responses.activate
+    def test_users_not_following_wanikani_still_get_vocab_unlocked_when_they_unlock_a_level(self):
+        mock_user_response_v2()
+        mock_assignments_with_one_assignment()
+        mock_study_materials()
+        mock_subjects_v2()
+
+        self.user.profile.follow_me = False
+        self.user.profile.api_key_v2 = "whatever"
+        # Clear out all reviews so a level unlock works.
+        UserSpecific.objects.filter(user=self.user).delete()
+        syncer = WanikaniUserSyncerV2(self.user.profile)
+        reviews = get_users_current_reviews(self.user)
+        assert reviews.count() == 0
+        new_review_count, unlocked_count, locked_count  = syncer.unlock_vocab(levels=[1])
+        assert new_review_count == 1
+        reviews = get_users_lessons(self.user)
         assert reviews.count() == 1
 
     @responses.activate
