@@ -56,7 +56,6 @@ class Profile(models.Model):
     user = models.OneToOneField(
         User, related_name="profile", on_delete=models.CASCADE
     )
-    api_key = models.CharField(max_length=255, null=True)
     api_key_v2 = models.CharField(max_length=255, null=True)
     api_valid = models.BooleanField(default=True)
     gravatar = models.CharField(max_length=255)
@@ -214,7 +213,6 @@ class Profile(models.Model):
     def __str__(self):
         return (
             f"username:{self.user.username} "
-            f"api_key:{self.api_key} "
             f"api_key_v2:{self.api_key_v2} "
             f"level:{self.level} "
             f"unlocked_levels_list:{self.unlocked_levels_list()}"

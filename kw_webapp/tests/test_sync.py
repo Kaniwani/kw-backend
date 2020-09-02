@@ -7,7 +7,6 @@ from django.test import TestCase
 from django.utils import timezone
 
 from api.sync.SyncerFactory import Syncer
-from api.sync.WanikaniUserSyncerV1 import WanikaniUserSyncerV1
 from api.sync.WanikaniUserSyncerV2 import WanikaniUserSyncerV2
 from kw_webapp import constants
 from kw_webapp.models import Vocabulary, UserSpecific
@@ -367,11 +366,6 @@ class TestSync(TestCase):
         assert "one - but in japanese" in stored_reading_kanas
 
     def test_syncer_factory(self):
-        # Should return a V2 syncer when the user has a v2 api key added,
-        # otherwise, V1.
-        syncer = Syncer.factory(self.user.profile)
-        assert isinstance(syncer, WanikaniUserSyncerV1)
-
         # now for v2
         self.user.profile.api_key_v2 = "no longer empty!"
         self.user.profile.save()

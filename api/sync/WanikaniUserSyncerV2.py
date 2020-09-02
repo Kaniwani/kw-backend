@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 class WanikaniUserSyncerV2(WanikaniUserSyncer):
     def __init__(self, profile):
+        if profile.api_key_v2 is None:
+            logger.info(f"Skipping sync for user {profile.user.username}, as there is no API V2 key")
         self.profile = profile
         self.user = self.profile.user
         self.client = WkV2Client(profile.api_key_v2)
