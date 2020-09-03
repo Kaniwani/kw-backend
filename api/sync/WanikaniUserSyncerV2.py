@@ -51,7 +51,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                 "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be "
                 "followed "
             )
-            return profile_sync_succeeded, 0
+            return profile_sync_succeeded, 0, 0
 
     def sync_user_profile_with_wk(self):
         """

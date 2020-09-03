@@ -213,11 +213,11 @@ class Profile(models.Model):
     def __str__(self):
         return (
             f"username:{self.user.username} "
+            f"api_key:{self.api_key} "
             f"api_key_v2:{self.api_key_v2} "
             f"level:{self.level} "
             f"unlocked_levels_list:{self.unlocked_levels_list()}"
         )
-
 
 class PartOfSpeech(models.Model):
     part = models.CharField(max_length=30)
@@ -435,7 +435,7 @@ class UserSpecific(models.Model):
         )
 
     def reconcile_assignment(self, assignment):
-        self.wanikani_srs = 0
+        self.wanikani_srs = "unknown"
         self.wanikani_srs_numeric = assignment.srs_stage
         self.wanikani_burned = assignment.burned_at is not None
         self.wk_assignment_last_modified = assignment.data_updated_at

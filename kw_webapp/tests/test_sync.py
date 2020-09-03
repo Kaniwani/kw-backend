@@ -14,13 +14,11 @@ from kw_webapp.srs import all_srs
 from kw_webapp.tasks import (
     past_time,
     unlock_all_possible_levels_for_user,
-    build_API_sync_string_for_user_for_levels,
     get_users_future_reviews,
     sync_all_users_to_wk,
     sync_with_wk,
     get_users_current_reviews, get_users_lessons,
 )
-from kw_webapp.tests import sample_api_responses
 from kw_webapp.tests.utils import (
     create_review,
     create_vocab,
@@ -53,57 +51,30 @@ class TestSync(TestCase):
         self.v.save()
         return self.v
 
-    def test_building_unlock_all_string_works(self):
-        sample_level = constants.LEVEL_MAX
-        api_string = build_API_sync_string_for_user_for_levels(
-            self.user, [level for level in range(1, sample_level + 1)]
-        )
-
-        expected = ",".join(
-            [str(level) for level in range(1, sample_level + 1)]
-        )
-
-        self.assertTrue(expected in api_string)
-
     @responses.activate
     def test_unlock_all_unlocks_all(self):
         self.user.profile.api_valid = True
         self.user.profile.save()
-        resp_body = sample_api_responses.single_vocab_response
-        level_list = [level for level in range(1, self.user.profile.level + 1)]
-        responses.add(
-            responses.GET,
-            self._vocab_api_regex,
-            json=resp_body,
-            status=200,
-            content_type="application/json",
-        )
+        mock_assignments_with_one_assignment()
 
         checked_levels, unlocked_now_count, total_unlocked_count, locked_count = unlock_all_possible_levels_for_user(
             self.user
         )
 
-        self.assertListEqual(level_list, checked_levels)
         self.assertEqual(total_unlocked_count, 1)
 
     @responses.activate
     def test_syncing_vocabulary_pulls_srs_level_successfully(self):
-        resp_body = sample_api_responses.single_vocab_response
-        responses.add(
-            responses.GET,
-            self._vocab_api_regex,
-            json=resp_body,
-            status=200,
-            content_type="application/json",
-        )
+        mock_user_response_v2()
+        mock_assignments_with_one_assignment()
+        mock_study_materials()
 
         Syncer.factory(self.user.profile).sync_with_wk()
         newly_synced_review = UserSpecific.objects.get(
             user=self.user, vocabulary__meaning=self.v.meaning
         )
 
-        self.assertEqual(newly_synced_review.wanikani_srs, "apprentice")
-        self.assertEqual(newly_synced_review.wanikani_srs_numeric, 3)
+        self.assertEqual(newly_synced_review.wanikani_srs_numeric, 4)
 
     def test_user_returns_from_vacation_correctly_increments_review_timestamps(
         self
@@ -231,19 +202,11 @@ class TestSync(TestCase):
 
     @responses.activate
     def test_creating_new_synonyms_for_users_who_arent_being_followed(self):
-        resp_body = deepcopy(sample_api_responses.single_vocab_response)
-        resp_body["requested_information"][0]["user_specific"][
-            "user_synonyms"
-        ] = ["kitten", "large rat"]
-
-        responses.add(
-            responses.GET,
-            self._vocab_api_regex,
-            json=resp_body,
-            status=200,
-            content_type="application/json",
-        )
-
+        # Mock synonyms response for V2.
+        mock_user_response_v2()
+        mock_subjects_v2()
+        mock_assignments_with_one_assignment()
+        mock_study_materials()
         # sync_unlocked_vocab_with_wk(self.user)
         self.user.profile.follow_me = False
         self.user.profile.save()
@@ -251,8 +214,9 @@ class TestSync(TestCase):
         sync_with_wk(self.user.id)
 
         synonyms_list = self.review.synonyms_list()
-        self.assertIn("kitten", synonyms_list)
-        self.assertIn("large rat", synonyms_list)
+        self.assertIn("young girl", synonyms_list)
+        self.assertIn("young lady", synonyms_list)
+        self.assertIn("young miss", synonyms_list)
 
     @responses.activate
     def test_full_sync_of_user_on_v2(self):

@@ -123,29 +123,6 @@ def stop_following_wanikani(user):
     user.profile.follow_me = False
     user.profile.save()
 
-
-def build_API_sync_string_for_user_for_levels(user, levels):
-    return build_API_sync_string_for_api_key_for_levels(
-        user.profile.api_key, levels
-    )
-
-
-def build_API_sync_string_for_api_key_for_levels(api_key, levels):
-    """
-    Given a user, build a vocabulary request string based on their api key, for a particular level.
-    :param user: The related user.
-    :param level: The level of vocabulary we want to update.
-    :return: The fully formatted API string that will provide.
-    """
-    level_string = (
-        ",".join(str(level) for level in levels)
-        if isinstance(levels, list)
-        else levels
-    )
-    api_call = f"https://www.wanikani.com/api/user/{api_key}/vocabulary/{level_string}"
-    return api_call
-
-
 def lock_level_for_user(requested_level, user):
     requested_level = int(requested_level)
     reviews = UserSpecific.objects.filter(

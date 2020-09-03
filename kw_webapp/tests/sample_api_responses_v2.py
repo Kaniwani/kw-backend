@@ -175,7 +175,6 @@ no_assignments = {
     "data": [],
 }
 
-
 single_assignment = {
     "object": "collection",
     "url": "https://api.wanikani.com/v2/assignments?levels=10",
@@ -260,3 +259,5 @@ single_study_material = {
         }
     ],
 }
+
+

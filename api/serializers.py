@@ -205,7 +205,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "srs_counts",
             "next_review_date",
             "last_wanikani_sync_date",
-            "join_date",
+            "join_date"
         )
 
     def get_join_date(self, obj):

@@ -14,15 +14,13 @@ from kw_webapp.tests.utils import (
     create_reading,
     create_review,
     create_review_for_specific_time,
-    mock_user_info_response,
-    mock_invalid_api_user_info_response,
+    mock_invalid_api_user_info_response_v2,
     setupTestFixture,
-    mock_empty_vocabulary_response,
     mock_for_registration,
     mock_user_response_v2,
     mock_subjects_v2,
     mock_assignments_with_one_assignment,
-    mock_study_materials,
+    mock_study_materials, mock_assignments_with_no_assignments,
 )
 
 
@@ -153,7 +151,7 @@ class TestProfileApi(APITestCase):
         self
     ):
         self.user.profile.api_key = "ABC123"
-        mock_invalid_api_user_info_response(self.user.profile.api_key)
+        mock_invalid_api_user_info_response_v2()
         self.user.profile.api_valid = True
         self.user.profile.save()
 
@@ -180,7 +178,7 @@ class TestProfileApi(APITestCase):
     @responses.activate
     def test_sending_put_to_profile_correctly_updates_information(self):
         self.client.force_login(self.user)
-        mock_user_info_response(self.user.profile.api_key)
+        mock_user_response_v2()
 
         response = self.client.get(reverse("api:profile-list"))
         data = response.data
@@ -202,10 +200,9 @@ class TestProfileApi(APITestCase):
     @responses.activate
     def test_enable_follow_me_syncs_user_immediately(self):
         # Given
-        mock_user_info_response(self.user.profile.api_key)
-        mock_empty_vocabulary_response(
-            self.user.profile.api_key, self.user.profile.level
-        )
+        mock_user_response_v2()
+        mock_assignments_with_no_assignments()
+
         self.client.force_login(self.user)
         self.user.profile.follow_me = False
         self.user.profile.save()
@@ -233,7 +230,7 @@ class TestProfileApi(APITestCase):
         self.client.force_login(self.user)
         self.user.profile.api_key = "SomeGarbage"
         self.user.profile.save()
-        mock_invalid_api_user_info_response("SomeGarbage")
+        mock_invalid_api_user_info_response_v2()
 
         # When
         self.client.post(reverse("api:user-sync"))
@@ -286,12 +283,9 @@ class TestProfileApi(APITestCase):
     @responses.activate
     def test_api_is_validated_any_time_it_is_modified(self):
         self.client.force_login(self.user)
-        # Setup a valid response
-        valid_key = "valid_key"
-        mock_user_info_response(valid_key)
         # Setup
         invalid_api_key = "invalid_key!"
-        mock_invalid_api_user_info_response(invalid_api_key)
+        mock_invalid_api_user_info_response_v2()
 
         # Test upon PUT in profile.
         self.user.profile.api_key = invalid_api_key
@@ -306,7 +300,7 @@ class TestProfileApi(APITestCase):
 
         response = self.client.patch(
             reverse("api:profile-detail", args=(self.user.profile.id,)),
-            data={"api_key": invalid_api_key},
+            data={"api_key_v2": invalid_api_key},
         )
         self.assertEqual(response.status_code, 400)
 
@@ -317,11 +311,16 @@ class TestProfileApi(APITestCase):
         )
         self.assertFalse(response.data["api_valid"])
 
+    @responses.activate
+    def test_thing(self):
+        self.client.force_login(self.user)
         # Now patch it to a valid key, which should set it to true.
+        mock_user_response_v2()
         response = self.client.patch(
             reverse("api:profile-detail", args=(self.user.profile.id,)),
-            data={"api_key": valid_key},
+            data={"api_key_v2": "ANYTHING"},
         )
+
         self.assertTrue(response.data["api_valid"])
 
     def test_searching_based_on_reading_returns_distinct_responses(self):
