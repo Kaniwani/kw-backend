@@ -119,3 +119,5 @@ outfile.txt
 # Docker & docker-compose
 Docker/postgres/data/
 Docker/redis/data/
+
+venv/
