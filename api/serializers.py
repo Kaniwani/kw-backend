@@ -412,7 +412,7 @@ class VocabularySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Vocabulary
-        fields = ("id", "meaning", "readings", "review", "is_reviewable")
+        fields = ("id", "meaning", "readings", "review", "is_reviewable", "manual_reading_whitelist")
 
     # Grab the ID of the related review for this particular user.
     def get_review(self, obj):
