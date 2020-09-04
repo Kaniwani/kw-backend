@@ -213,7 +213,6 @@ class Profile(models.Model):
     def __str__(self):
         return (
             f"username:{self.user.username} "
-            f"api_key:{self.api_key} "
             f"api_key_v2:{self.api_key_v2} "
             f"level:{self.level} "
             f"unlocked_levels_list:{self.unlocked_levels_list()}"
