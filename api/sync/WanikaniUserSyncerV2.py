@@ -14,6 +14,8 @@ logger = logging.getLogger(__name__)
 
 class WanikaniUserSyncerV2(WanikaniUserSyncer):
     def __init__(self, profile):
+        if profile.api_key_v2 is None:
+            logger.info(f"Skipping sync for user {profile.user.username}, as there is no API V2 key")
         self.profile = profile
         self.user = self.profile.user
         self.client = WkV2Client(profile.api_key_v2)
@@ -49,7 +51,7 @@ class WanikaniUserSyncerV2(WanikaniUserSyncer):
                 "Not attempting to sync, since API key is invalid, or user has indicated they do not want to be "
                 "followed "
             )
-            return profile_sync_succeeded, 0
+            return profile_sync_succeeded, 0, 0
 
     def sync_user_profile_with_wk(self):
         """

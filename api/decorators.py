@@ -14,7 +14,7 @@ def checks_wanikani(f):
         # Currently, depending on whether v1 or v2 throws an error, a uniquely
         # named error is thrown. Eventually when wanikani_api is retrofitted to support
         # V1, these will be merged.
-        except InvalidWaniKaniKey or InvalidWanikaniApiKeyException:
+        except (InvalidWaniKaniKey, InvalidWanikaniApiKeyException):
             request = args[1]
             profile = request.user.profile
             profile.api_valid = False

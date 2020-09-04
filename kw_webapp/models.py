@@ -56,7 +56,6 @@ class Profile(models.Model):
     user = models.OneToOneField(
         User, related_name="profile", on_delete=models.CASCADE
     )
-    api_key = models.CharField(max_length=255, null=True)
     api_key_v2 = models.CharField(max_length=255, null=True)
     api_valid = models.BooleanField(default=True)
     gravatar = models.CharField(max_length=255)
@@ -219,7 +218,6 @@ class Profile(models.Model):
             f"level:{self.level} "
             f"unlocked_levels_list:{self.unlocked_levels_list()}"
         )
-
 
 class PartOfSpeech(models.Model):
     part = models.CharField(max_length=30)
@@ -437,7 +435,7 @@ class UserSpecific(models.Model):
         )
 
     def reconcile_assignment(self, assignment):
-        self.wanikani_srs = 0
+        self.wanikani_srs = "unknown"
         self.wanikani_srs_numeric = assignment.srs_stage
         self.wanikani_burned = assignment.burned_at is not None
         self.wk_assignment_last_modified = assignment.data_updated_at
