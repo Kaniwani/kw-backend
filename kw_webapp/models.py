@@ -240,6 +240,16 @@ class Vocabulary(models.Model):
             MaxValueValidator(constants.LEVEL_MAX),
         ],
     )
+    manual_reading_whitelist = models.CharField(max_length=500, null=True)
+
+    def add_manual_whitelisted_word(self, word):
+        self.readings.add()
+        if (self.manual_reading_whitelist is None):
+            self.manual_reading_whitelist = word
+        else:
+            self.manual_reading_whitelist += "," + word
+
+        self.save()
 
     def reading_count(self):
         return self.readings.all().count()
@@ -259,15 +269,7 @@ class Vocabulary(models.Model):
         # Set whatever is the new primary meaning.
 
         # TODO EVENTUALLY REWORK TO SUPPORT ALTERNATE MEANINGS. For now, just smash em all into one.
-        #for meaning_obj in vocabulary.meanings:
-        #     if meaning_obj.primary:
-        #    self.meaning = meaning_obj.meaning
-
         self.meaning = ", ".join([m_obj.meaning for m_obj in vocabulary.meanings])
-        # Reset alternate and auxiliary meanings to whatever is current
-        #self.alternate_meanings = ",".join(
-        #    [m.meaning for m in vocabulary.meanings if not m.primary]
-        #)
         self.auxiliary_meanings_whitelist = ",".join(
             [
                 aux.meaning
