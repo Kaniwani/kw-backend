@@ -568,7 +568,7 @@ class ProfileViewSet(ListRetrieveUpdateViewSet, viewsets.GenericViewSet):
             start_following_wanikani(user)
 
         # Since if we have gotten this far, we know that API key is valid, we set it here.
-        api_validated = serializer.validated_data.get("api_key", None)
+        api_validated = serializer.validated_data.get("api_key_v2", None)
         if api_validated:
             serializer.validated_data["api_valid"] = True
 
