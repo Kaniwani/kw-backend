@@ -29,21 +29,40 @@ f786ac7434a3        redis:4.0               "docker-entrypoint.s…"   9 minutes
 049a3da0810e        postgres:9.6            "docker-entrypoint.s…"   10 hours ago        Up 8 minutes        5432/tcp                           kw-backend_db_1
 ```
 
-To conner to a container run `docker exec -it <container instance name> bash`. Let's connect to the KW backend container!
+To connect to a container run `docker exec -it <container instance name> bash`. Let's connect to the KW backend container!
 
 ```
 > docker exec -it kw-backend_kw-backend_1 bash
 # <- This is the container terminal! 
 ```
 
-Since this is the first run we will need to apply our migrations and populate the database with our vocab. Django gives us to tools to do this. To open the Django management shell and import our data run:
+Since this is the first run we will need to apply our migrations and populate the database with our vocab. Django gives us to tools to do this. To open the Django management shell and migrate the database run:
 
 ```
 # ./manage.py migrate
+```
+To populate the database, you'll need to sync from Wanikani using a real API (v2) key. First, create an account:
+1. This is easiest done via the UI
+   * Head over to [the kw-frontend repository](https://github.com/Kaniwani/kw-frontend) for instructions on how to run a local instance
+   * Register a new user via the "Register" tab on the welcome page of your local instance
+1. If you're feeling adventurous, you can do this through the backend shell instead
+    * Run the following in the backend container:
+```
 # ./manage.py shell
->>> from kw_webapp.utils import repopulate
->>> repopulate()
+>>> from api.sync.SyncerFactory import Syncer
+>>> from kw_webapp.models import Profile
+>>> from django.contrib.auth import User
+>>> my_user = User(username="my_username", password="securepassword123").save()
+>>> my_profile = Profile(api_key_v2="YOUR_API_KEY_HERE", user=my_user).save()
+>>> syncer = Syncer.factory(my_profile)
+>>> syncer.sync_top_level_vocabulary()
 # A lot of stuff is going to happen here and you may see some errors. Don't panic unless things explode :boom:
+```
+   * After that's done, the db should be populated!
+
+Finally, if you need the integrated jisho data for some reason, reach out to the maintainers and get a file named "wk_vocab_import.json". Put that file in the kw-backend root directory; then, back in your container shell, run:
+```
+# ./manage.py shell
 >>> from kw_webapp.utils import one_time_import_jisho_new_format
 >>> one_time_import_jisho_new_format("wk_vocab_import.json")
 # A lot more things flying by on the terminal. This shouldn't take long but you might as well stretch!
