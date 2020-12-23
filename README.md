@@ -51,9 +51,12 @@ To populate the database, you'll need to sync from Wanikani using a real API (v2
 # ./manage.py shell
 >>> from api.sync.SyncerFactory import Syncer
 >>> from kw_webapp.models import Profile
->>> from django.contrib.auth import User
->>> my_user = User(username="my_username", password="securepassword123").save()
->>> my_profile = Profile(api_key_v2="YOUR_API_KEY_HERE", user=my_user).save()
+>>> from django.contrib.auth.models import User
+>>> my_user = User(username="my_username")
+>>> my_user.set_password("securepassword123")
+>>> my_user.save()
+>>> my_profile = Profile(api_key_v2="YOUR_API_KEY_HERE", user=my_user)
+>>> my_profile.save()
 >>> syncer = Syncer.factory(my_profile)
 >>> syncer.sync_top_level_vocabulary()
 # A lot of stuff is going to happen here and you may see some errors. Don't panic unless things explode :boom:
