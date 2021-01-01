@@ -2,7 +2,6 @@ import re
 
 from django.db.models import Q
 from django_filters import rest_framework as filters
-from environ import environ
 
 from kw_webapp.models import Vocabulary, UserSpecific
 
@@ -30,7 +29,10 @@ def filter_level_for_review(queryset, name, value):
 
 def filter_meaning_contains(queryset, name, value):
     if value:
-        return queryset.filter(meaning__iregex=whole_word_regex(value))
+        return queryset.filter(
+            Q(meaning__iregex=whole_word_regex(value))
+            | Q(userspecific__meaning_synonyms__text__iregex=whole_word_regex(value))
+        ).distinct()
 
 
 def filter_meaning_contains_for_review(queryset, name, value):
