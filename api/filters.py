@@ -29,10 +29,7 @@ def filter_level_for_review(queryset, name, value):
 
 def filter_meaning_contains(queryset, name, value):
     if value:
-        return queryset.filter(
-            Q(meaning__iregex=whole_word_regex(value))
-            | Q(userspecific__meaning_synonyms__text__iregex=whole_word_regex(value))
-        ).distinct()
+        return queryset.filter(meaning__iregex=whole_word_regex(value))
 
 
 # Filter awkwardly shoehorned in with the FilterSet filters,
