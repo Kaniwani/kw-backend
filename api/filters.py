@@ -35,16 +35,22 @@ def filter_meaning_contains(queryset, name, value):
         ).distinct()
 
 
+# Filter awkwardly shoehorned in with the FilterSet filters,
+# but used for direct filtering from the ViewSet
+def filter_user_meaning_contains(queryset, meaning_contains, user_id):
+    if meaning_contains and user_id:
+        return queryset.filter(
+            Q(meaning__iregex=whole_word_regex(meaning_contains))
+            | (Q(userspecific__meaning_synonyms__text__iregex=whole_word_regex(meaning_contains)) &
+               Q(userspecific__user_id=user_id))
+        )
+
+
 def filter_meaning_contains_for_review(queryset, name, value):
     if value:
         return queryset.filter(
             vocabulary__meaning__iregex=whole_word_regex(value)
         )
-
-
-def filter_user_id_for_vocab(queryset, name, value):
-    if value:
-        return queryset.filter(Q(userspecific__user_id=value))
 
 
 def filter_vocabulary_parts_of_speech(queryset, name, value):
@@ -86,7 +92,6 @@ class VocabularyFilter(filters.FilterSet):
     part_of_speech = filters.CharFilter(
         method=filter_vocabulary_parts_of_speech
     )
-    user_id = filters.NumberFilter(method=filter_user_id_for_vocab)
 
     class Meta:
         model = Vocabulary

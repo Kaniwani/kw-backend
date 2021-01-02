@@ -1,5 +1,4 @@
 from django.contrib.auth.models import User
-from django.db.models import Q
 from django.http import HttpResponseForbidden, HttpResponseBadRequest, Http404
 from rest_framework import generics, filters
 from rest_framework import mixins
@@ -13,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
 
 from api.decorators import checks_wanikani
-from api.filters import VocabularyFilter, ReviewFilter, whole_word_regex
+from api.filters import VocabularyFilter, ReviewFilter, filter_user_meaning_contains
 from api.permissions import (
     IsAdminOrReadOnly,
     IsAuthenticatedOrCreating,
@@ -208,13 +207,10 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         meaning_contains = self.request.query_params.get("meaning_contains")
         user_id = self.request.query_params.get("user_id")
-        if user_id and meaning_contains:
+        if meaning_contains and user_id:
+            # short-circuit filtering with the typical filterset
             self.filterset_class = None
-            return Vocabulary.objects.filter(
-                Q(meaning__iregex=whole_word_regex(meaning_contains))
-                | (Q(userspecific__meaning_synonyms__text__iregex=whole_word_regex(meaning_contains)) &
-                   Q(userspecific__user_id=user_id)
-            ))
+            return filter_user_meaning_contains(Vocabulary.objects.all(), meaning_contains, user_id)
         return Vocabulary.objects.all()
 
     def get_serializer_class(self):
