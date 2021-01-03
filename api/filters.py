@@ -40,7 +40,7 @@ def filter_user_meaning_contains(queryset, meaning_contains, user_id):
             Q(meaning__iregex=whole_word_regex(meaning_contains))
             | (Q(userspecific__meaning_synonyms__text__iregex=whole_word_regex(meaning_contains)) &
                Q(userspecific__user_id=user_id))
-        )
+        ).distinct()
 
 
 def filter_meaning_contains_for_review(queryset, name, value):
