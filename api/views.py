@@ -206,9 +206,10 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         meaning_contains = self.request.query_params.get("meaning_contains")
-        user_id = self.request.query_params.get("user_id")
-        if meaning_contains and user_id:
-            # short-circuit filtering with the typical filterset
+        # meaning_contains short-circuits filtering with the typical filterset
+        # we need user info from request
+        if meaning_contains:
+            user_id = self.request.user.id
             self.filterset_class = None
             return filter_user_meaning_contains(Vocabulary.objects.all(), meaning_contains, user_id)
         return Vocabulary.objects.all()

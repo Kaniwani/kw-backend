@@ -17,7 +17,7 @@ class WanikaniApiKeyValidatorV2(object):
         client = WkV2Client(value)
         try:
             client.user_information()
-            logger.debug(f"We have valiated API V2 Key {value}")
+            logger.debug(f"We have validated API V2 Key {value}")
             return value
         except InvalidWanikaniApiKeyException:
             logger.debug(f"We failed to validate API V2 Key {value}")

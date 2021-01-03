@@ -32,7 +32,7 @@ def filter_meaning_contains(queryset, name, value):
         return queryset.filter(meaning__iregex=whole_word_regex(value))
 
 
-# Filter awkwardly shoehorned in with the FilterSet filters,
+# This filter awkwardly shoehorned in with the FilterSet filters,
 # but used for direct filtering from the ViewSet
 def filter_user_meaning_contains(queryset, meaning_contains, user_id):
     if meaning_contains and user_id:
@@ -84,7 +84,6 @@ def filter_reading_contains_for_review(queryset, name, value):
 
 class VocabularyFilter(filters.FilterSet):
     level = filters.NumberFilter(method=filter_level_for_vocab)
-    meaning_contains = filters.CharFilter(method=filter_meaning_contains)
     reading_contains = filters.CharFilter(method=filter_reading_contains)
     part_of_speech = filters.CharFilter(
         method=filter_vocabulary_parts_of_speech
