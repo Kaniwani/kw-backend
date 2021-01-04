@@ -5,8 +5,11 @@ from kw_webapp.constants import WkSrsLevel
 from kw_webapp.tests.utils import (
     create_review,
     create_vocab,
+    create_vocab_with_meaning_synonym,
     create_reading,
     setupTestFixture,
+    create_user,
+    create_profile,
 )
 
 
@@ -23,7 +26,7 @@ class TestVocabulary(APITestCase):
 
         self.assertEqual(response.data["review"], self.review.id)
 
-    def test_fetching_vocabulary_shows_is_reviable_field_on_associated_vocabulary(
+    def test_fetching_vocabulary_shows_is_reviewable_field_on_associated_vocabulary(
         self
     ):
         self.client.force_login(self.user)
@@ -57,6 +60,28 @@ class TestVocabulary(APITestCase):
         )
         data = response.data
         assert len(data["results"]) == 2
+
+    def test_meaning_contains_checks_user_meaning_synonyms(self):
+        self.client.force_login(self.user)
+        vocab_with_synonym = create_vocab_with_meaning_synonym("bioluminescent", "shiny animal", self.user)
+        response = self.client.get(
+            reverse("api:vocabulary-list") + "?meaning_contains=shiny"
+        )
+        data = response.data
+        assert len(data["results"]) == 1
+        assert vocab_with_synonym.id == data["results"][0].get("id")
+
+    def test_meaning_contains_doesnt_check_another_user_synonyms(self):
+        create_vocab_with_meaning_synonym("bioluminescent", "shiny animal", self.user)
+
+        sneaky_user = create_user("sneakster")
+        create_profile(sneaky_user, "any key", 5)
+        self.client.force_login(sneaky_user)
+        response = self.client.get(
+            reverse("api:vocabulary-list") + "?meaning_contains=shiny"
+        )
+        data = response.data
+        assert len(data["results"]) == 0
 
     def test_searching_based_on_reading_returns_distinct_responses(self):
         reading_to_search = "eyylmao"
