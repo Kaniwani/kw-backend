@@ -4,8 +4,13 @@ from datetime import timedelta
 import responses
 from django.contrib.auth.models import User
 
-from kw_webapp.constants import API_KEY
-from kw_webapp.models import Vocabulary, Reading, UserSpecific, Profile
+from kw_webapp.models import (
+    Vocabulary,
+    Reading,
+    UserSpecific,
+    Profile,
+    MeaningSynonym,
+)
 
 from requests.exceptions import ConnectionError
 from kw_webapp.tests import sample_api_responses_v2
@@ -53,6 +58,11 @@ def create_vocab(meaning):
     v = Vocabulary.objects.create(meaning=meaning)
     return v
 
+def create_vocab_with_meaning_synonym(meaning, synonym, user):
+    v = Vocabulary.objects.create(meaning=meaning)
+    review = UserSpecific.objects.create(vocabulary=v, user=user)
+    MeaningSynonym.objects.create(review=review, text=synonym)
+    return v
 
 def create_reading(vocab, reading, character, level):
     r = Reading.objects.create(
