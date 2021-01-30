@@ -2,7 +2,6 @@ import re
 
 from django.db.models import Q
 from django_filters import rest_framework as filters
-from environ import environ
 
 from kw_webapp.models import Vocabulary, UserSpecific
 
@@ -31,6 +30,17 @@ def filter_level_for_review(queryset, name, value):
 def filter_meaning_contains(queryset, name, value):
     if value:
         return queryset.filter(meaning__iregex=whole_word_regex(value))
+
+
+# This filter awkwardly shoehorned in with the FilterSet filters,
+# but used for direct filtering from the ViewSet
+def filter_user_meaning_contains(queryset, meaning_contains, user_id):
+    if meaning_contains and user_id:
+        return queryset.filter(
+            Q(meaning__iregex=whole_word_regex(meaning_contains))
+            | (Q(userspecific__meaning_synonyms__text__iregex=whole_word_regex(meaning_contains)) &
+               Q(userspecific__user_id=user_id))
+        ).distinct()
 
 
 def filter_meaning_contains_for_review(queryset, name, value):
@@ -74,7 +84,6 @@ def filter_reading_contains_for_review(queryset, name, value):
 
 class VocabularyFilter(filters.FilterSet):
     level = filters.NumberFilter(method=filter_level_for_vocab)
-    meaning_contains = filters.CharFilter(method=filter_meaning_contains)
     reading_contains = filters.CharFilter(method=filter_reading_contains)
     part_of_speech = filters.CharFilter(
         method=filter_vocabulary_parts_of_speech
