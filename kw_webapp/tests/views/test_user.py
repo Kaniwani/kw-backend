@@ -1,5 +1,3 @@
-from datetime import timedelta
-
 import responses
 from django.utils import timezone
 from rest_framework.reverse import reverse
@@ -41,23 +39,31 @@ class TestUser(APITestCase):
         #)
 
     @responses.activate
-    def test_adding_a_level_to_reset_command_only_resets_levels_above_or_equal_togiven(
+    def test_reset_command_only_resets_levels_above_requested_level(
         self
     ):
         self.client.force_login(user=self.user)
         v = create_vocab("test")
-        create_reading(v, "test", "test", 3)
+        create_reading(v, "test", "test", 2)
         create_review(v, self.user)
+        # User has unlocked levels 2 and 5
         mock_user_response_v2()
 
         self.user.profile.unlocked_levels.get_or_create(level=2)
         response = self.client.get((reverse("api:review-current")))
         self.assertEqual(response.data["count"], 2)
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [5, 2])
-        self.client.post(reverse("api:user-reset"), data={"level": 3})
 
+        # Reset to level 3, should re-lock level 5
+        self.client.post(reverse("api:user-reset"), data={"level": 3})
         response = self.client.get((reverse("api:review-current")))
-        self.assertEqual(response.data["count"], 0)
+        self.assertEqual(response.data["count"], 1)
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [2])
+
+        # Ensure reset to level 2 keeps reviews at that level
+        self.client.post(reverse("api:user-reset"), data={"level": 2})
+        response = self.client.get((reverse("api:review-current")))
+        self.assertEqual(response.data["count"], 1)
         self.assertListEqual(self.user.profile.unlocked_levels_list(), [2])
 
 
