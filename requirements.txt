@@ -25,7 +25,7 @@ django-filter==2.1.0
 django-guardian==1.4.9
 django-redis-cache==1.7.1
 django-templated-mail==1.1.1
-djangorestframework==3.9.4
+djangorestframework==3.11.2
 djangorestframework-jwt==1.11.0
 djoser==1.7.0
 drf-tracking==1.4.0
