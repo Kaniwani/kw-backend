@@ -1,5 +1,6 @@
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
+from kw_webapp.tasks import set_manual_reading_whitelists
 
 from kw_webapp.tests.utils import (
     create_user,
@@ -17,6 +18,24 @@ class TestMeaningSynonymApi(APITestCase):
         self.vocabulary = create_vocab("radioactive bat")
         self.reading = create_reading(self.vocabulary, "ねこ", "猫", 5)
         self.review = create_review(self.vocabulary, self.user)
+
+    def test_manual_master_synonyms_work(self):
+        vocabulary_one = create_vocab("mother")
+        create_reading(vocabulary_one, "おかあさん", "おかあさん", 1)
+        create_reading(vocabulary_one, "はは2", "はは2", 1)
+
+        vocabulary_two = create_vocab("mom")
+        create_reading(vocabulary_two, "はは2", "はは2", 1)
+        create_reading(vocabulary_two, "はは3", "はは3", 1)
+        create_reading(vocabulary_two, "はは4", "はは4", 1)
+
+        set_manual_reading_whitelists(vocabulary_two, vocabulary_one)
+
+        vocabulary_two.refresh_from_db()
+        vocabulary_one.refresh_from_db()
+        
+        self.assertEqual(vocabulary_two.manual_reading_whitelist, "おかあさん")
+        self.assertEqual(vocabulary_one.manual_reading_whitelist, "はは4,はは3")
 
     def test_user_can_CRUD_all_their_own_synonyms(self):
         self.client.force_login(self.user)

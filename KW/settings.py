@@ -27,7 +27,6 @@ log_root = root.path("logs")
 env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(root.path("KW").file(".env"))
 
-
 LOGLEVEL = env("LOGLEVEL", default="INFO").upper()
 
 # This allows the /docs/ endpoints to correctly build urls.

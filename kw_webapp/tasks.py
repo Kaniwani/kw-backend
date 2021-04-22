@@ -348,3 +348,20 @@ def reset_reviews(user, reset_to_level):
         vocabulary__readings__level__lt=reset_to_level
     )
     reviews_to_delete.delete()
+
+
+def set_manual_reading_whitelists(*vocab):
+    weak_readings = []
+    for vocabulary in vocab:
+        readings = vocabulary.readings.all()
+        for reading in readings:
+            weak_readings.append(reading.kana)
+
+    logger.info(f"Weak reading group is : {weak_readings}")
+    for vocabulary in vocab:
+        readings = vocabulary.readings.all()
+        reading_kanas = [reading.kana for reading in readings]
+        vocab_weak_readings = [weak_reading for weak_reading in weak_readings if weak_reading not in reading_kanas]
+        vocabulary.manual_reading_whitelist = ",".join(vocab_weak_readings)
+        logger.info(f"Vocabulary {vocabulary} has set weak readings to {vocab_weak_readings}")
+        vocabulary.save()
