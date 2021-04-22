@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse_lazy
 
 from api.decorators import checks_wanikani
-from api.filters import VocabularyFilter, ReviewFilter
+from api.filters import VocabularyFilter, ReviewFilter, filter_user_meaning_contains
 from api.permissions import (
     IsAdminOrReadOnly,
     IsAuthenticatedOrCreating,
@@ -203,7 +203,16 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
     """
 
     filterset_class = VocabularyFilter
-    queryset = Vocabulary.objects.all()
+
+    def get_queryset(self):
+        meaning_contains = self.request.query_params.get("meaning_contains")
+        # meaning_contains short-circuits filtering with the typical filterset
+        # we need user info from request
+        if meaning_contains:
+            user_id = self.request.user.id
+            self.filterset_class = None
+            return filter_user_meaning_contains(meaning_contains, user_id)
+        return Vocabulary.objects.all()
 
     def get_serializer_class(self):
         if self.request.query_params.get("hyperlink", "false") == "true":

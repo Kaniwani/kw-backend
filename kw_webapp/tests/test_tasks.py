@@ -205,7 +205,7 @@ class TestTasks(TestCase):
         )
         reset_levels(self.user, 1)
         self.user.refresh_from_db()
-        self.assertListEqual(self.user.profile.unlocked_levels_list(), [])
+        self.assertListEqual(self.user.profile.unlocked_levels_list(), [1])
 
     @responses.activate
     def test_when_user_resets_their_account_we_remove_all_reviews_and_then_unlock_their_current_level(
