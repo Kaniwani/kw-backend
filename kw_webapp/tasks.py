@@ -335,7 +335,7 @@ def reset_levels(user, reset_to_level):
     logger.info(
         f"{user.username} is having their levels cleared down to {reset_to_level}"
     )
-    user.profile.unlocked_levels.filter(level__gte=reset_to_level).delete()
+    user.profile.unlocked_levels.filter(level__gt=reset_to_level).delete()
     user.profile.save()
 
 
@@ -344,7 +344,7 @@ def reset_reviews(user, reset_to_level):
         f"{user.username} is having their reviews cleared cleared down to level {reset_to_level}"
     )
     reviews_to_delete = UserSpecific.objects.filter(user=user)
-    reviews_to_delete = reviews_to_delete.exclude(
-        vocabulary__readings__level__lt=reset_to_level
+    reviews_to_delete = reviews_to_delete.filter(
+        vocabulary__readings__level__gt=reset_to_level
     )
     reviews_to_delete.delete()
