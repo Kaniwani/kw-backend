@@ -211,7 +211,7 @@ class VocabularyViewSet(viewsets.ReadOnlyModelViewSet):
         if meaning_contains:
             user_id = self.request.user.id
             self.filterset_class = None
-            return filter_user_meaning_contains(Vocabulary.objects.all(), meaning_contains, user_id)
+            return filter_user_meaning_contains(meaning_contains, user_id)
         return Vocabulary.objects.all()
 
     def get_serializer_class(self):

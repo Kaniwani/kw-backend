@@ -34,14 +34,14 @@ def filter_meaning_contains(queryset, name, value):
 
 # This filter awkwardly shoehorned in with the FilterSet filters,
 # but used for direct filtering from the ViewSet
-def filter_user_meaning_contains(queryset, meaning_contains, user_id):
-    if meaning_contains and user_id:
-        return queryset.filter(
-            Q(meaning__iregex=whole_word_regex(meaning_contains))
-            | (Q(userspecific__meaning_synonyms__text__iregex=whole_word_regex(meaning_contains)) &
-               Q(userspecific__user_id=user_id))
-        ).distinct()
-
+def filter_user_meaning_contains(meaning_contains, user_id):
+    baseline = Vocabulary.objects.filter(meaning__iregex=whole_word_regex(meaning_contains))
+    user_synonyms = UserSpecific.objects.select_related('vocabulary').filter(
+        Q(user_id=user_id) & Q(meaning_synonyms__text__iregex=whole_word_regex(meaning_contains))
+    )
+    synonyms_vocab_ids = user_synonyms.values_list('vocabulary', flat=True)
+    synonyms_vocab = Vocabulary.objects.filter(id__in=list(synonyms_vocab_ids))
+    return baseline | synonyms_vocab
 
 def filter_meaning_contains_for_review(queryset, name, value):
     if value:
