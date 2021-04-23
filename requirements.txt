@@ -12,8 +12,6 @@ click==6.7
 colorama==0.3.7
 contextlib2==0.5.4
 cookies==2.2.1
-coreapi==2.3.1
-coreschema==0.0.4
 decorator==4.0.10
 Django==2.2.20
 django-contact-form==1.5
@@ -21,15 +19,13 @@ django-cors-middleware==1.3.1
 django-debug-toolbar==1.11.1
 django-environ==0.4.4
 django-extensions==1.9.9
-django-filter==2.1.0
+django-filter==2.4.0
 django-guardian==1.4.9
 django-redis-cache==1.7.1
 django-templated-mail==1.1.1
 djangorestframework==3.11.2
 djangorestframework-jwt==1.11.0
-djoser==1.7.0
-drf-tracking==1.4.0
-drfdocs==0.0.11
+djoser==2.1.0
 flower==0.9.3
 gunicorn==19.7.1
 idna==2.5
@@ -42,7 +38,6 @@ newrelic==2.74.0.54
 psycopg2==2.7.3.1
 pydotplus==2.0.2
 Pygments==2.7.4
-PyJWT==1.5.3
 pyparsing==2.2.0
 pytz==2018.3
 redis==3.2.0
@@ -55,7 +50,7 @@ toml==0.9.4
 tornado==4.5.3
 typing==3.6.4
 uritemplate==3.0.0
-vine==1.1.4
+vine==1.3.0
 wanikani_api==0.5.1
 sentry-sdk==0.9.1
 django-silk==3.0.4

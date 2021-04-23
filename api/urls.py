@@ -18,22 +18,22 @@ from api.views import (
 )
 
 router = DefaultRouter()
-router.register(r"review", ReviewViewSet, base_name="review")
-router.register(r"profile", ProfileViewSet, base_name="profile")
-router.register(r"vocabulary", VocabularyViewSet, base_name="vocabulary")
-router.register(r"report", ReportViewSet, base_name="report")
-router.register(r"reading", ReadingViewSet, base_name="reading")
-router.register(r"level", LevelViewSet, base_name="level")
+router.register(r"review", ReviewViewSet, basename="review")
+router.register(r"profile", ProfileViewSet, basename="profile")
+router.register(r"vocabulary", VocabularyViewSet, basename="vocabulary")
+router.register(r"report", ReportViewSet, basename="report")
+router.register(r"reading", ReadingViewSet, basename="reading")
+router.register(r"level", LevelViewSet, basename="level")
 router.register(
-    r"synonym/reading", ReadingSynonymViewSet, base_name="reading-synonym"
+    r"synonym/reading", ReadingSynonymViewSet, basename="reading-synonym"
 )
 router.register(
-    r"synonym/meaning", MeaningSynonymViewSet, base_name="meaning-synonym"
+    r"synonym/meaning", MeaningSynonymViewSet, basename="meaning-synonym"
 )
-router.register(r"faq", FrequentlyAskedQuestionViewSet, base_name="faq")
-router.register(r"announcement", AnnouncementViewSet, base_name="announcement")
-router.register(r"user", UserViewSet, base_name="user")
-router.register(r"contact", ContactViewSet, base_name="contact")
+router.register(r"faq", FrequentlyAskedQuestionViewSet, basename="faq")
+router.register(r"announcement", AnnouncementViewSet, basename="announcement")
+router.register(r"user", UserViewSet, basename="user")
+router.register(r"contact", ContactViewSet, basename="contact")
 
 app_name = "api"
 

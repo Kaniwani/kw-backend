@@ -247,7 +247,7 @@ class TestProfileApi(APITestCase):
         mock_user_response_v2()
         mock_study_materials()
         response = self.client.post(
-            reverse("api:auth:user-create"),
+            reverse("api:auth:user-list"),
             data={
                 "username": "createme",
                 "password": "password",

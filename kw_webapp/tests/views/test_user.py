@@ -94,7 +94,7 @@ class TestUser(APITestCase):
         mock_study_materials()
 
         self.client.post(
-            reverse("api:auth:user-create"),
+            reverse("api:auth:user-list"),
             data={
                 "username": fake_username,
                 "password": "password",
