@@ -4,7 +4,7 @@ from rest_framework import generics, filters
 from rest_framework import mixins
 from rest_framework import status
 from rest_framework import viewsets
-from rest_framework.decorators import detail_route, action
+from rest_framework.decorators import  action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -97,6 +97,9 @@ class ReadingSynonymViewSet(viewsets.ModelViewSet):
     serializer_class = ReadingSynonymSerializer
 
     def get_queryset(self):
+        if not self.request:
+            return AnswerSynonym.objects.none()
+
         return AnswerSynonym.objects.filter(review__user=self.request.user)
 
 
@@ -104,6 +107,8 @@ class MeaningSynonymViewSet(viewsets.ModelViewSet):
     serializer_class = MeaningSynonymSerializer
 
     def get_queryset(self):
+        if not self.request:
+            return AnswerSynonym.objects.none()
         return MeaningSynonym.objects.filter(review__user=self.request.user)
 
 
@@ -164,7 +169,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
     def _build_unlock_url(self, level):
         return reverse_lazy("api:level-unlock", args=(level,))
 
-    @detail_route(methods=["POST"])
+    @action(detail=True, methods=["POST"])
     @checks_wanikani
     def unlock(self, request, pk=None):
         user = self.request.user
@@ -185,7 +190,7 @@ class LevelViewSet(viewsets.ReadOnlyModelViewSet):
             )
         )
 
-    @detail_route(methods=["POST"])
+    @action(detail=True,methods=["POST"])
     def lock(self, request, pk=None):
         requested_level = pk
         removed_count = lock_level_for_user(requested_level, request.user)
@@ -378,7 +383,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
 
         return False
 
-    @detail_route(methods=["POST"])
+    @action(detail=True,methods=["POST"])
     def correct(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
         if (
@@ -396,7 +401,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
         serializer = self.get_serializer(review, many=False)
         return Response(serializer.data)
 
-    @detail_route(methods=["POST"])
+    @action(detail=True,methods=["POST"])
     def incorrect(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
         if (
@@ -410,11 +415,11 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
         serializer = self.get_serializer(review, many=False)
         return Response(serializer.data)
 
-    @detail_route(methods=["POST"])
+    @action(detail=True,methods=["POST"])
     def hide(self, request, pk=None):
         return self._set_hidden(request, True, pk)
 
-    @detail_route(methods=["POST"])
+    @action(detail=True,methods=["POST"])
     def unhide(self, request, pk=None):
         return self._set_hidden(request, False, pk)
 
@@ -424,7 +429,7 @@ class ReviewViewSet(ListRetrieveUpdateViewSet):
         serializer = ReviewCountSerializer(user)
         return Response(serializer.data)
 
-    @detail_route(methods=["POST"])
+    @action(detail=True,methods=["POST"])
     def reset(self, request, pk=None):
         review = get_object_or_404(UserSpecific, pk=pk)
         review.reset()

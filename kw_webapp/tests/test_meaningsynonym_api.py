@@ -35,7 +35,8 @@ class TestMeaningSynonymApi(APITestCase):
         vocabulary_one.refresh_from_db()
         
         self.assertEqual(vocabulary_two.manual_reading_whitelist, "おかあさん")
-        self.assertEqual(vocabulary_one.manual_reading_whitelist, "はは4,はは3")
+        self.assertTrue("はは4" in vocabulary_one.manual_reading_whitelist)
+        self.assertTrue("はは3" in vocabulary_one.manual_reading_whitelist)
 
     def test_user_can_CRUD_all_their_own_synonyms(self):
         self.client.force_login(self.user)

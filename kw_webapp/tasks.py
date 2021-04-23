@@ -118,7 +118,6 @@ def start_following_wanikani(user):
         user.profile.save()
         raise e
 
-
 def stop_following_wanikani(user):
     user.profile.follow_me = False
     user.profile.save()
