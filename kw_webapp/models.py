@@ -111,6 +111,7 @@ class Profile(models.Model):
     )
 
     # On Success/Failure of review
+    auto_focus_on_advance = models.BooleanField(default=False)
     auto_advance_on_success = models.BooleanField(default=False)
     auto_advance_on_success_delay_milliseconds = models.PositiveIntegerField(
         default=1000
