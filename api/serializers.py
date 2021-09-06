@@ -170,6 +170,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "auto_advance_on_success",
             "unlocked_levels",
             "last_wanikani_sync_date",
+            "auto_focus_on_advance",
             "auto_expand_answer_on_success",
             "auto_expand_answer_on_failure",
             "on_vacation",
