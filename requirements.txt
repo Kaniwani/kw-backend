@@ -1,5 +1,4 @@
 amqp==2.5.0
-anyjson==0.3.3
 appdirs==1.4.3
 attrs==18.1.0
 Babel==2.5.3
