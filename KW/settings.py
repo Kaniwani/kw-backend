@@ -219,10 +219,10 @@ TEMPLATES = [
 ]
 
 MANAGERS = [
-    ("Gary", "tadgh@cs.toronto.edu"),
+    ("Gary", "garygrantgraham@gmail.com"),
     ("Duncan", "duncan.bay@gmail.com"),
 ]
-DEFAULT_FROM_EMAIL = "gary@kaniwani.com"
+DEFAULT_FROM_EMAIL = "garygrantgraham@gmail.com"
 
 JWT_AUTH = {"JWT_VERIFY_EXPIRATION": False}
 
