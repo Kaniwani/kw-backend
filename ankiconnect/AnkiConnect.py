@@ -516,6 +516,137 @@ class AnkiBridge:
         return intervals
 
 
+    def cardsSchedulingInfo(self, cards):
+        collection = self.collection()
+        if collection is None:
+            return []
+
+        now_seconds = time()
+        result = []
+        for cid in cards:
+            try:
+                card = collection.getCard(cid)
+            except TypeError:
+                result.append({})
+                continue
+
+            if card is None:
+                result.append({})
+                continue
+
+            queue = int(card.queue)
+            ctype = int(card.type)
+            due = int(card.due)
+            interval = int(card.ivl)
+            remaining_steps = int(getattr(card, "left", 0))
+
+            is_new = queue == 0
+            is_suspended = queue == -1
+            is_learning = queue in (1, 3)
+            is_review = queue == 2
+
+            due_at = None
+            is_due = False
+
+            if is_new:
+                is_due = True
+            elif is_learning:
+                due_at = due
+                is_due = due_at <= now_seconds
+            else:
+                is_due = bool(self.findCards("cid:%s is:due" % cid))
+
+            result.append(
+                {
+                    "cardId": int(card.id),
+                    "noteId": int(card.nid),
+                    "type": ctype,
+                    "queue": queue,
+                    "due": due,
+                    "dueAt": due_at,
+                    "interval": interval,
+                    "remainingSteps": remaining_steps,
+                    "isNew": is_new,
+                    "isLearning": is_learning,
+                    "isReview": is_review,
+                    "isSuspended": is_suspended,
+                    "isDue": is_due,
+                }
+            )
+
+        return result
+
+
+    def setCardDueAt(self, cards, dueAt):
+        collection = self.collection()
+        if collection is None:
+            return False
+
+        due_at = int(dueAt)
+
+        self.startEditing()
+        updated_any = False
+        for cid in list(cards):
+            try:
+                card = collection.getCard(cid)
+            except TypeError:
+                continue
+
+            if card is None:
+                continue
+
+            card.queue = 1
+            card.type = 1
+            card.due = due_at
+            if hasattr(card, "left"):
+                card.left = 1
+            if hasattr(card, "flush"):
+                card.flush()
+                updated_any = True
+
+        collection.autosave()
+        self.stopEditing()
+        return updated_any
+
+
+    def setCardInterval(self, cards, intervalDays):
+        collection = self.collection()
+        if collection is None:
+            return False
+
+        interval_days = int(intervalDays)
+        sched = getattr(collection, "sched", None)
+        today = getattr(sched, "today", None) if sched is not None else None
+        today = int(today) if today is not None else 0
+
+        self.startEditing()
+        updated_any = False
+        for cid in list(cards):
+            try:
+                card = collection.getCard(cid)
+            except TypeError:
+                continue
+
+            if card is None:
+                continue
+
+            if hasattr(card, "ivl"):
+                card.ivl = interval_days
+            if hasattr(card, "queue"):
+                card.queue = 2
+            if hasattr(card, "type"):
+                card.type = 2
+            if hasattr(card, "due"):
+                card.due = today + interval_days
+            if hasattr(card, "flush"):
+                card.flush()
+                updated_any = True
+
+        collection.autosave()
+        self.stopEditing()
+        return updated_any
+
+
     def startEditing(self):
         self.window().requireReset()
 
@@ -1159,6 +1290,18 @@ class AnkiConnect:
     @webApi()
     def getIntervals(self, cards, complete=False):
         return self.anki.getIntervals(cards, complete)
+
+    @webApi()
+    def cardsSchedulingInfo(self, cards):
+        return self.anki.cardsSchedulingInfo(cards)
+
+    @webApi()
+    def setCardDueAt(self, cards, dueAt):
+        return self.anki.setCardDueAt(cards, dueAt)
+
+    @webApi()
+    def setCardInterval(self, cards, intervalDays):
+        return self.anki.setCardInterval(cards, intervalDays)
 
 
     @webApi()
