@@ -232,7 +232,7 @@ class Vocabulary(models.Model):
     )
     wk_last_modified = models.DateTimeField(null=True)
     parts_of_speech = models.ManyToManyField(PartOfSpeech)
-    auxiliary_meanings_whitelist = models.CharField(max_length=500, null=True)
+    auxiliary_meanings_whitelist = models.CharField(max_length=1000, null=True)
     level = models.PositiveIntegerField(
         null=True,
         validators=[
@@ -240,7 +240,7 @@ class Vocabulary(models.Model):
             MaxValueValidator(constants.LEVEL_MAX),
         ],
     )
-    manual_reading_whitelist = models.CharField(max_length=500, null=True)
+    manual_reading_whitelist = models.CharField(max_length=1000, null=True)
 
     def add_manual_whitelisted_word(self, word):
         self.readings.add()
